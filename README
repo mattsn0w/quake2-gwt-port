@@ -1,0 +1,9 @@
+To install and run:
+./install-resources (will download, unpak, and convert the original Quake II demo resources)
+./build-dedicated-server (will build the client and server code)
+./run-dedicated-server [port] (will run the local Quake II server)
+
+Navigate to:
+  http://localhost:8080/GwtQuake.html
+  (or whatever port you specified to the server)
+

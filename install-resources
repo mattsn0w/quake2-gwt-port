@@ -1,0 +1,2 @@
+#!/bin/sh
+java -jar maven-build/installer/target/gquake-installer-1.0-SNAPSHOT.jar
