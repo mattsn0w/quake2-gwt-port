@@ -23,59 +23,87 @@ import java.io.IOException;
 
 public class WAVConverter extends Converter {
 	
-	static final String[] LAME_DIRS = {
+	static final String[] ENCODER_DIRS = {
 		"/usr/local/bin",
+		"/opt/local/bin",
 	};
 	
 	String lameLocation;
+	String oggLocation;
 	
 	public WAVConverter() {
 		super("wav", "wav");
 		
-		for (String s : LAME_DIRS) {
-			if (findLame(s)) {
+		for (String s : ENCODER_DIRS) {
+			if (findEncoder(s)) {
 				return;
 			}
 		}
 
 		String path = System.getenv("PATH");
 		for (String s : path.split(File.pathSeparator)) {
-			if (findLame(s)) {
+			if (findEncoder(s)) {
 				return;
 			}
 		}
 	}
 
-	private boolean findLame(String path) {
-		File f = new File(path, "lame");
-		if (f.exists()) {
-			lameLocation = f.getAbsolutePath();
-			return true;
+	private boolean findEncoder(String path) {
+		File f;
+		if (lameLocation == null) {
+			f = new File(path, "lame");
+			if (f.exists()) {
+				lameLocation = f.getAbsolutePath();
+			} else {
+				f = new File(path, "lame.exe");
+				if (f.exists()) {
+					lameLocation = f.getAbsolutePath();
+				}
+			}
 		} 
-		f = new File(path, "lame.exe");
-		if (f.exists()) {
-			lameLocation = f.getAbsolutePath();
-			return true;
-		} 
-		return false;
+		if (oggLocation == null) {
+			f = new File(path, "oggenc");
+			if (f.exists()) {
+				oggLocation = f.getAbsolutePath();
+			} else {
+				f = new File(path, "oggenc.exe");
+				if (f.exists()) {
+					oggLocation = f.getAbsolutePath();
+				}
+			}
+		}
+		return lameLocation != null && oggLocation != null;
 	}
 	
 	@Override
 	public void convert(byte[] raw, File outFile) throws IOException {
 		if (lameLocation == null) {
 			System.out.println("lame not found");
-		}
-		
-		Process p = Runtime.getRuntime().exec(
+		} else {
+			Process p = Runtime.getRuntime().exec(
 				lameLocation + " - " + outFile.getCanonicalPath() + ".mp3");
-		p.getOutputStream().write(raw);
-		p.getOutputStream().close();
+			p.getOutputStream().write(raw);
+			p.getOutputStream().close();
 		
-		try {
-			p.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			try {
+				p.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		if (oggLocation == null) {
+			System.out.println("oggenc not found");
+		} else {
+			Process p = Runtime.getRuntime().exec(
+				oggLocation + " - -o " + outFile.getCanonicalPath() + ".ogg");
+			p.getOutputStream().write(raw);
+			p.getOutputStream().close();
+		
+			try {
+				p.waitFor();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
-
 }
