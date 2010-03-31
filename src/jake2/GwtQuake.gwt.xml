@@ -1,0 +1,24 @@
+<module rename-to="gwtquake">
+  <inherits name="com.google.gwt.user.User"/>
+  <inherits name="com.google.gwt.corp.Runtime"/>
+
+  <source path='Globals.java'/>
+
+  <source path='client'/>
+  <source path='game'/>
+  <source path='gwt/client'/>
+  <source path='qcommon'/>
+  <source path='render'/> 
+  <source path='server'/>
+  <source path='sound'/>
+  <source path='sys'/>
+  <source path='util'/>
+
+  <super-source path='emul' />
+
+  <entry-point class="jake2.gwt.client.GwtQuake"/>
+
+  <!--  hacks -->
+  <set-property name='user.agent' value='safari'/>
+  <!-- set-configuration-property name="iframe.linker.script.chunk.size" value="2000000" / -->
+</module>

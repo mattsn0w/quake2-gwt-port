@@ -1,0 +1,199 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>gquake</groupId>
+        <artifactId>gquake-project</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <name>GwtQuake Dedicated WebSocket Server</name>
+    <artifactId>gquake-server</artifactId>
+    <packaging>jar</packaging>
+    <dependencies>
+
+      <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>2.0.0</version>
+      </dependency>
+
+      <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>2.0.0</version>
+      </dependency>
+
+     <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>7.0.1.v20091125</version>
+      </dependency>   
+     <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlet</artifactId>
+        <version>7.0.1.v20091125</version>
+      </dependency>   
+
+     <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-client</artifactId>
+        <version>7.0.1.v20091125</version>
+      </dependency>   
+
+     <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-websocket</artifactId>
+        <version>7.0.1.v20091125</version>
+      </dependency>   
+
+
+     <dependency>
+        <groupId>lwjgl</groupId>
+        <artifactId>lwjgl</artifactId>
+        <version>2.1.0</version>
+        <scope>system</scope>
+      <systemPath>${basedir}/../../lib/lwjgl/lwjgl.jar</systemPath>
+      </dependency>   
+
+     <dependency>
+       <groupId>gquake</groupId>
+       <artifactId>gquake-client</artifactId>
+       <version>1.0-SNAPSHOT</version>
+       <type>war</type>
+     </dependency>
+    </dependencies>
+    <build>
+        <sourceDirectory>${basedir}/../../src</sourceDirectory>
+        <resources>
+<!--
+        <resource>
+          <directory>${basedir}/../..</directory>
+	  <includes>
+	    <include>war/**</include>
+          </includes>
+        </resource>
+-->
+      </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+		    <maxmem>1024m</maxmem>
+                    <excludes>
+                        <exclude>**/jake2/gwt/client/**</exclude>
+                        <exclude>**/jake2/jre/**</exclude>
+                        <exclude>**/gquake/gwt/**</exclude>
+                        <exclude>**/gquake/jre/**</exclude>
+                        <exclude>**/com/google/gwt/corp/emul/**</exclude>
+                        <exclude>**/com/google/gwt/corp/compatibility/**</exclude>
+                        <exclude>**/com/google/gwt/corp/gfx/**</exclude>
+                        <exclude>**/com/google/gwt/corp/localstorage/**</exclude>
+                        <exclude>**/com/google/gwt/corp/webgl/**</exclude>
+                        <exclude>**/com/google/gwt/corp/webgl/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                  <archive>
+                        <manifest>
+                      <addClasspath>true</addClasspath>
+                          <mainClass>jake2.gwt.server.GwtQuakeServer</mainClass>
+                        </manifest>
+                  </archive>
+                </configuration>
+                </plugin>
+	     <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-dependencies</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                <outputDirectory>${project.build.directory}/gwtquake</outputDirectory>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>false</overWriteSnapshots>
+                  <overWriteIfNewer>true</overWriteIfNewer>
+                </configuration>
+              </execution>
+           <execution>
+            <id>copy-installed</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>gquake</groupId>
+                  <artifactId>gquake-server</artifactId>
+                  <version>1.0-SNAPSHOT</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/gwtquake</outputDirectory>
+            </configuration>
+          </execution>
+           <execution>
+            <id>unpack-client</id>
+            <phase>install</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>gquake</groupId>
+                  <artifactId>gquake-client</artifactId>
+                  <version>1.0-SNAPSHOT</version>
+                  <type>war</type>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}/gwtquake/war/</outputDirectory>
+            </configuration>
+          </execution>
+
+            </executions>
+          </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.4.1</version>
+        <executions>
+          <execution>
+                  <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/gwtquake/war</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>${basedir}/../../war</directory>
+		  <excludes>
+		    <exclude>*.pcx</exclude>
+		    <exclude>*.wav</exclude>
+		  </excludes>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin>
+
+        </plugins>
+    </build>
+
+</project>
