@@ -59,6 +59,7 @@ public class Unpak {
     new WALConverter();
     new PCXConverter();
     new TGAConverter();
+    new WAVConverter();
   }
 
   private static final int IDPAKHEADER = (('K' << 24) + ('C' << 16)
@@ -124,7 +125,7 @@ public class Unpak {
     String canonicalPath = new File(outdir, filename).getCanonicalPath();
     File outFile = new File(canonicalPath);
     createPath(outFile.getAbsolutePath());
-    outFile.createNewFile();
+ //   outFile.createNewFile();
 
     ByteBuffer buf = ByteBuffer.allocateDirect(len);
     if (converter != null) {
