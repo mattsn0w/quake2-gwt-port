@@ -27,8 +27,6 @@ public class WAVConverter extends Converter {
 		"/usr/local/bin",
 	};
 	
-	static final String[] TARGET_EXT = {".ogg", ".mp3"};
-	
 	String lameLocation;
 	
 	public WAVConverter() {
@@ -68,15 +66,15 @@ public class WAVConverter extends Converter {
 			System.out.println("lame not found");
 		}
 		
-		for (String ext : TARGET_EXT) {
-			Process p = Runtime.getRuntime().exec(lameLocation + " - " + outFile.getCanonicalPath() + ext);
-			p.getOutputStream().write(raw);
-			p.getOutputStream().close();
-			try {
-				p.waitFor();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		Process p = Runtime.getRuntime().exec(
+				lameLocation + " - " + outFile.getCanonicalPath() + ".mp3");
+		p.getOutputStream().write(raw);
+		p.getOutputStream().close();
+		
+		try {
+			p.waitFor();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 

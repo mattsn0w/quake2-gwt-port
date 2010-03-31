@@ -39,7 +39,7 @@ public abstract class Converter {
   public static Converter get(String name) {
     int idx = name.lastIndexOf('.');
     if (idx != -1) {
-      return converters.get(name.substring(idx + 1));
+      return converters.get(name.substring(idx + 1).toLowerCase());
     }
     return null;
   }
