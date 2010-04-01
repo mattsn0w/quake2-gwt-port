@@ -24,7 +24,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-package jake2.desktop;
+package jake2.sound;
 
 import jake2.qcommon.Globals;
 import jake2.util.Math3D;
@@ -81,7 +81,7 @@ public class PlaySound {
         // Math3D.VectorClear(origin);
     }
 
-    static void reset() {
+    public static void reset() {
         // init the sentinels
         freeList.next = freeList.prev = freeList;
         playableList.next = playableList.prev = playableList;
@@ -140,7 +140,7 @@ public class PlaySound {
         freeList.next = ps;
     }
     
-    static void allocate(float[] origin, int entnum, int entchannel,
+    public static void allocate(float[] origin, int entnum, int entchannel,
             int bufferId, float volume, float attenuation, float timeoffset) {
 
         PlaySound ps = PlaySound.get();

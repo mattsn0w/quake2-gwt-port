@@ -17,6 +17,9 @@ import jake2.qcommon.Defines;
 import jake2.qcommon.FS;
 import jake2.qcommon.Globals;
 import jake2.qcommon.xcommand_t;
+import jake2.sound.ALAdapter;
+import jake2.sound.Channel;
+import jake2.sound.PlaySound;
 import jake2.sound.Sound;
 import jake2.sound.sfx_t;
 import jake2.sound.sfxcache_t;
@@ -29,10 +32,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.OpenALException;
 
 /**
  * LWJGLSoundImpl
@@ -40,6 +39,9 @@ import org.lwjgl.openal.OpenALException;
  * @author dsanders/cwei
  */
 public final class DesktopSound implements Sound {
+  static {
+    ALAdapter.impl = new LWJGLALAdapter();
+  }
 	private boolean hasEAX;
 	
 	private cvar_t s_volume;
@@ -55,20 +57,18 @@ public final class DesktopSound implements Sound {
 			initOpenAL();
 			checkError();
 			initOpenALExtensions();		
-		} catch (OpenALException e) {
-			Com.Printf(e.getMessage() + '\n');
-			return false;
-		} catch (Exception e) {
+		} 
+                catch (Exception e) {
 			Com.DPrintf(e.getMessage() + '\n');
 			return false;
 		}
 		
 		// set the listerner (master) volume
 		s_volume = Cvar.Get("s_volume", "0.7", Defines.CVAR_ARCHIVE);
-		AL10.alGenBuffers(buffers);
+		ALAdapter.impl.alGenBuffers(buffers);
 		int count = Channel.init(buffers);
 		Com.Printf("... using " + count + " channels\n");
-		AL10.alDistanceModel(AL10.AL_INVERSE_DISTANCE_CLAMPED);
+		ALAdapter.impl.alDistanceModel(ALAdapter.AL_INVERSE_DISTANCE_CLAMPED);
 		Cmd.AddCommand("play", new xcommand_t() {
 			public void execute() {
 				Play();
@@ -100,9 +100,9 @@ public final class DesktopSound implements Sound {
 	}
 	
 	
-	private void initOpenAL() throws OpenALException 
+	private void initOpenAL() throws Exception 
 	{
-		try { AL.create(); } catch (LWJGLException e) { throw new OpenALException(e); }
+		ALAdapter.impl.create(); 
 		String deviceName = null;
 
 		String os = System.getProperty("os.name");
@@ -123,9 +123,9 @@ public final class DesktopSound implements Sound {
 //		}
 	}
 	
-	private void initOpenALExtensions() throws OpenALException 
+	private void initOpenALExtensions() throws Exception 
 	{
-//		if (AL10.alIsExtensionPresent("EAX2.0")) 
+//		if (ALAdapter.impl.alIsExtensionPresent("EAX2.0")) 
 //		{
 //			try {
 //				EAX.create();
@@ -151,7 +151,7 @@ public final class DesktopSound implements Sound {
 //			EAX.destroy();
 //		}
 		// Release the context and the device.
-		AL.destroy();
+		ALAdapter.impl.destroy();
 	}
 	
 	// TODO check the sfx direct buffer size
@@ -164,7 +164,7 @@ public final class DesktopSound implements Sound {
 	private void initBuffer(byte[] samples, int bufferId, int freq) {
 		ByteBuffer data = sfxDataBuffer.slice();
 		data.put(samples).flip();
-		AL10.alBufferData(buffers.get(bufferId), AL10.AL_FORMAT_MONO16,
+		ALAdapter.impl.alBufferData(buffers.get(bufferId), ALAdapter.impl.AL_FORMAT_MONO16,
 				data, freq);
 	}
 
@@ -175,12 +175,12 @@ public final class DesktopSound implements Sound {
 	private String alErrorString(){
 		int error;
 		String message = "";
-		if ((error = AL10.alGetError()) != AL10.AL_NO_ERROR) {
+		if ((error = ALAdapter.impl.alGetError()) != ALAdapter.impl.AL_NO_ERROR) {
 			switch(error) {
-				case AL10.AL_INVALID_OPERATION: message = "invalid operation"; break;
-				case AL10.AL_INVALID_VALUE: message = "invalid value"; break;
-				case AL10.AL_INVALID_ENUM: message = "invalid enum"; break;
-				case AL10.AL_INVALID_NAME: message = "invalid name"; break;
+				case ALAdapter.AL_INVALID_OPERATION: message = "invalid operation"; break;
+				case ALAdapter.AL_INVALID_VALUE: message = "invalid value"; break;
+				case ALAdapter.AL_INVALID_ENUM: message = "invalid enum"; break;
+				case ALAdapter.AL_INVALID_NAME: message = "invalid name"; break;
 				default: message = "" + error;
 			}
 		}
@@ -193,7 +193,7 @@ public final class DesktopSound implements Sound {
 	public void Shutdown() {
 		StopAllSounds();
 		Channel.shutdown();
-		AL10.alDeleteBuffers(buffers);
+		ALAdapter.impl.alDeleteBuffers(buffers);
 		exitOpenAL();
 
 		Cmd.RemoveCommand("play");
@@ -239,13 +239,13 @@ public final class DesktopSound implements Sound {
 	public void Update(float[] origin, float[] forward, float[] right, float[] up) {
 		
 		Channel.convertVector(origin, listenerOrigin);		
-//		AL10.nalListenerfv(AL10.AL_POSITION, listenerOrigin, 0); // TODO(jgw)
+//		ALAdapter.impl.nalListenerfv(ALAdapter.impl.AL_POSITION, listenerOrigin, 0); // TODO(jgw)
 
 		Channel.convertOrientation(forward, up, listenerOrientation);		
-//		AL10.nalListenerfv(AL10.AL_ORIENTATION, listenerOrientation, 0); // TODO(jgw)
+//		ALAdapter.impl.nalListenerfv(ALAdapter.impl.AL_ORIENTATION, listenerOrientation, 0); // TODO(jgw)
 		
 		// set the master volume
-		AL10.alListenerf(AL10.AL_GAIN, s_volume.value);
+		ALAdapter.impl.alListenerf(ALAdapter.impl.AL_GAIN, s_volume.value);
 
 // TODO(jgw)
 //		if (hasEAX){
@@ -277,7 +277,7 @@ public final class DesktopSound implements Sound {
 	 */
 	public void StopAllSounds() {
 		// mute the listener (master)
-		AL10.alListenerf(AL10.AL_GAIN, 0);
+		ALAdapter.impl.alListenerf(ALAdapter.impl.AL_GAIN, 0);
 	    PlaySound.reset();
 	    Channel.reset();
 	}
@@ -517,22 +517,22 @@ public final class DesktopSound implements Sound {
 	public void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data) {
         int format;
         if (channels == 2) {
-            format = (width == 2) ? AL10.AL_FORMAT_STEREO16
-                    : AL10.AL_FORMAT_STEREO8;
+            format = (width == 2) ? ALAdapter.impl.AL_FORMAT_STEREO16
+                    : ALAdapter.impl.AL_FORMAT_STEREO8;
         } else {
-            format = (width == 2) ? AL10.AL_FORMAT_MONO16
-                    : AL10.AL_FORMAT_MONO8;
+            format = (width == 2) ? ALAdapter.impl.AL_FORMAT_MONO16
+                    : ALAdapter.impl.AL_FORMAT_MONO8;
         }
         
         // convert to signed 16 bit samples
-        if (format == AL10.AL_FORMAT_MONO8) {
+        if (format == ALAdapter.impl.AL_FORMAT_MONO8) {
             ShortBuffer sampleData = streamBuffer;
             int value;
             for (int i = 0; i < samples; i++) {
                 value = (data.get(i) & 0xFF) - 128;
                 sampleData.put(i, (short) value);
             }
-            format = AL10.AL_FORMAT_MONO16;
+            format = ALAdapter.impl.AL_FORMAT_MONO16;
             width = 2;
             data = sfxDataBuffer.slice();
         }

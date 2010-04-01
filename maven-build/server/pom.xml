@@ -84,6 +84,7 @@
                     <source>1.5</source>
                     <target>1.5</target>
 		    <maxmem>1024m</maxmem>
+		    <fork>true</fork>
                     <excludes>
                         <exclude>**/jake2/gwt/client/**</exclude>
                         <exclude>**/jake2/jre/**</exclude>
