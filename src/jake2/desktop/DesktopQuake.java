@@ -1,10 +1,4 @@
 /*
- * Jake2.java
- * Copyright (C)  2003
- * 
- * $Id: Jake2.java,v 1.9 2005/12/03 19:43:15 salomo Exp $
- */
-/*
  Copyright (C) 1997-2001 Id Software, Inc.
 
  This program is free software; you can redistribute it and/or
@@ -23,6 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  */
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.desktop;
 
 import jake2.client.WebSocketFactoryImpl;

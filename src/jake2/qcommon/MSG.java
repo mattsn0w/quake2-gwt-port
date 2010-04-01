@@ -17,9 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 29.11.2003 by RST.
-// $Id: MSG.java,v 1.8 2005/12/18 22:10:02 cawe Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.qcommon;
 
 import jake2.game.*;

@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 02.02.2004 by RST.
-// $Id: MD4.java,v 1.2 2004/07/09 06:50:49 hzi Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.qcommon;
 
 import java.nio.ByteBuffer;

@@ -1,9 +1,4 @@
 /*
- * NET.java Copyright (C) 2003
- * 
- * $Id: NET.java,v 1.10 2006/01/11 22:04:42 hzi Exp $
- */
-/*
  * Copyright (C) 1997-2001 Id Software, Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,6 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.sys;
 
 

@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 16.11.2005 by RST.
-// $Id: GameChase.java,v 1.2 2006/01/21 21:53:32 salomo Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 

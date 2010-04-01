@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 07.11.2003 by RST.
-// $Id: EdictIterator.java,v 1.3 2005/02/06 18:55:16 salomo Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 /** Helps for iterating over the gedicts[] array. RST.*/

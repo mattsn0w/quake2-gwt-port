@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on on 12.11.2003 by RST.
-// $Id: GameWeapon.java,v 1.6 2005/11/20 22:18:33 salomo Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 

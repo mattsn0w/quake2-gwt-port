@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 07.11.2003 by RST.
-// $Id: EdictFindFilter.java,v 1.2 2004/07/08 15:58:44 hzi Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 /** Helps for filtering the iteration over the gedicts[] array, see GFind(). RST.*/

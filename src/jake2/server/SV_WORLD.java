@@ -17,8 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-// Created on 07.01.2000 by RST.
-// $Id: SV_WORLD.java,v 1.7 2004/09/22 19:22:12 salomo Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.server;
 
 import jake2.game.GameBase;

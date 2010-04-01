@@ -17,9 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 25.01.2004 by RST.
-// $Id: CRC.java,v 1.2 2005/01/23 01:19:06 cawe Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.qcommon;
 
 import jake2.util.Vargs;

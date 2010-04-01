@@ -1,10 +1,4 @@
 /*
- * Menu.java
- * Copyright (C) 2004
- * 
- * $Id: Menu.java,v 1.20.2.1 2006/04/06 13:14:59 cawe Exp $
- */
-/*
  Copyright (C) 1997-2001 Id Software, Inc.
 
  This program is free software; you can redistribute it and/or
@@ -23,6 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  */
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.client;
 
 import static jake2.client.Key.K_BACKSPACE;

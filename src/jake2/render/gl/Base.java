@@ -1,10 +1,4 @@
 /*
- * Base.java
- * Copyright (C) 2003
- *
- * $Id: Base.java,v 1.4 2005/06/08 21:24:52 cawe Exp $
- */
-/*
  Copyright (C) 1997-2001 Id Software, Inc.
  
  This program is free software; you can redistribute it and/or
@@ -23,6 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  
  */
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.render.gl;
 
 import jake2.render.GLAdapter;

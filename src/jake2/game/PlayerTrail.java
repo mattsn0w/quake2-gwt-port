@@ -17,9 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 13.11.2003 by RST.
-// $Id: PlayerTrail.java,v 1.2 2004/09/22 19:22:04 salomo Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 import jake2.util.Math3D;

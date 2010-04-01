@@ -17,11 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  */
-
-// Created on 24.07.2004 by RST.
-
-// $Id: QuakeFile.java,v 1.6 2005/11/20 22:18:34 salomo Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.util;
 
 import jake2.game.*;

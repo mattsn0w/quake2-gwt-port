@@ -17,9 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 13.11.2003 by RST.
-// $Id: M_Medic.java,v 1.4 2005/11/20 22:18:33 salomo Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game.monsters;
 
 import jake2.game.*;

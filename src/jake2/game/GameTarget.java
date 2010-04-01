@@ -17,9 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 28.12.2003 by RST.
-// $Id: GameTarget.java,v 1.8 2006/01/21 21:53:31 salomo Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 import jake2.qcommon.Defines;

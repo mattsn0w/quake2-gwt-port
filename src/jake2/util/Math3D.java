@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 09.12.2003 by RST.
-// $Id: Math3D.java,v 1.9 2005/02/20 21:50:36 salomo Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.util;
 
 import jake2.game.cplane_t;

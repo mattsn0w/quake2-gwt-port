@@ -1,10 +1,4 @@
 /*
- * sfx_t.java
- * Copyright (C) 2004
- * 
- * $Id: sfx_t.java,v 1.3 2005/04/26 20:11:03 cawe Exp $
- */
-/*
 Copyright (C) 1997-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
@@ -23,9 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 28.11.2003 by RST.
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.sound;
 
 public class sfx_t {

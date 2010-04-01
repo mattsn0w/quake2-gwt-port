@@ -1,10 +1,4 @@
 /*
- * Cbuf.java
- * Copyright (C) 2003
- * 
- * $Id: Cbuf.java,v 1.8 2005/12/18 22:10:09 cawe Exp $
- */
-/*
  Copyright (C) 1997-2001 Id Software, Inc.
 
  This program is free software; you can redistribute it and/or
@@ -23,6 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  */
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.qcommon;
 
 import jake2.game.Cmd;

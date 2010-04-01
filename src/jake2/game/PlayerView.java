@@ -17,9 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 28.12.2003 by RST.
-// $Id: PlayerView.java,v 1.5 2005/12/27 21:02:30 salomo Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 import jake2.game.monsters.M_Player;

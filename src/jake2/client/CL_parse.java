@@ -1,10 +1,4 @@
 /*
- * CL_parse.java
- * Copyright (C) 2004
- * 
- * $Id: CL_parse.java,v 1.21 2005/02/19 21:16:03 salomo Exp $
- */
-/*
  Copyright (C) 1997-2001 Id Software, Inc.
 
  This program is free software; you can redistribute it and/or
@@ -23,6 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  */
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.client;
 
 import java.io.IOException;

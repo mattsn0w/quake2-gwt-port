@@ -17,10 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 20.11.2003 by RST.
-// $Id: glconfig_t.java,v 1.2 2005/05/07 18:23:26 cawe Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.render;
 
 public class glconfig_t {

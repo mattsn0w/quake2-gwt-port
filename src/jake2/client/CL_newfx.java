@@ -1,10 +1,4 @@
 /*
- * CL_newfx.java
- * Copyright (C) 2004
- * 
- * $Id: CL_newfx.java,v 1.7 2005/01/17 21:50:42 cawe Exp $
- */
-/*
  Copyright (C) 1997-2001 Id Software, Inc.
 
  This program is free software; you can redistribute it and/or
@@ -23,8 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  */
-
-// Created on 31.01.2004 by RST.
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.client;
 
 import jake2.qcommon.Defines;

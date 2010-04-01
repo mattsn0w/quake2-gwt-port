@@ -17,10 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 02.01.2004 by RST.
-
-// $Id: CM.java,v 1.12 2005/12/04 21:00:17 cawe Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.qcommon;
 
 

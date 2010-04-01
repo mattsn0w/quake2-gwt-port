@@ -17,11 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 27.12.2003 by RST.
-
-// $Id: Info.java,v 1.7 2006/01/10 13:09:18 hzi Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 import jake2.qcommon.Com;

@@ -17,9 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 27.11.2003 by RST.
-// $Id: netadr_t.java,v 1.6 2005/10/26 12:37:58 cawe Exp $
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.qcommon;
 
 import jake2.sys.NET;

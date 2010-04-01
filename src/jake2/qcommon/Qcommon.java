@@ -1,10 +1,4 @@
 /*
- * Qcommon.java
- * Copyright 2003
- * 
- * $Id: Qcommon.java,v 1.22 2006/02/13 10:05:55 hzi Exp $
- */
-/*
 Copyright (C) 1997-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
@@ -22,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+*/
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
 */
 package jake2.qcommon;
 

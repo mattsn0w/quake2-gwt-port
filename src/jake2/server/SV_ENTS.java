@@ -17,11 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 17.01.2004 by RST.
-
-// $Id: SV_ENTS.java,v 1.7 2005/12/27 21:02:30 salomo Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.server;
 
 import jake2.game.*;

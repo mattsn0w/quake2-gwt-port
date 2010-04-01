@@ -1,10 +1,4 @@
 /*
- * CL_fx.java
- * Copyright (C) 2004
- * 
- * $Id: CL_inv.java,v 1.3 2005/12/18 22:10:10 cawe Exp $
- */
-/*
  Copyright (C) 1997-2001 Id Software, Inc.
 
  This program is free software; you can redistribute it and/or
@@ -23,8 +17,10 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
  */
-
-// Created on 31.01.2004 by RST.
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.client;
 
 import jake2.qcommon.Com;

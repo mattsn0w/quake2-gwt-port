@@ -18,7 +18,8 @@
 
   <entry-point class="jake2.gwt.client.GwtQuake"/>
 
-  <!--  hacks -->
+  <!-- There's no need to compile multiple user agents.
+       It only works on WebKit at present, and it's unlikely to need any gecko-
+       specific hacks. -->
   <set-property name='user.agent' value='safari'/>
-  <!-- set-configuration-property name="iframe.linker.script.chunk.size" value="2000000" / -->
 </module>

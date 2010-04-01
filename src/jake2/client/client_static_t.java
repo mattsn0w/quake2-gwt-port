@@ -17,11 +17,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-
-// Created on 27.11.2003 by RST.
-// $Id: client_static_t.java,v 1.1.1.1 2004/07/07 19:58:52 hzi Exp $
-
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.client;
 
 import jake2.qcommon.netchan_t;

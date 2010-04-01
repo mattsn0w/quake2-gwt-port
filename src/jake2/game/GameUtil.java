@@ -17,11 +17,10 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-
-// Created on 01.11.2003 by RST.
-
-// $Id: GameUtil.java,v 1.15 2005/12/27 21:02:31 salomo Exp $
-
+/* Modifications
+   Copyright 2003-2004 Bytonic Software
+   Copyright 2010 Google Inc.
+*/
 package jake2.game;
 
 import jake2.client.M;
