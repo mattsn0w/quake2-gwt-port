@@ -1,2 +1,5 @@
 #!/bin/sh
+pushd maven-build/installer
+../maven/bin/mvn clean install
+popd
 java -jar maven-build/installer/target/gquake-installer-1.0-SNAPSHOT.jar
