@@ -77,11 +77,13 @@ public class WAVConverter extends Converter {
 	
 	@Override
 	public void convert(byte[] raw, File outFile) throws IOException {
+	  String outPath = lowerFile(outFile);
+
 		if (lameLocation == null) {
 			System.out.println("lame not found");
 		} else {
 			Process p = Runtime.getRuntime().exec(
-				lameLocation + " - " + outFile.getCanonicalPath() + ".mp3");
+				lameLocation + " - " + outPath + ".mp3");
 			p.getOutputStream().write(raw);
 			p.getOutputStream().close();
 		
@@ -95,7 +97,7 @@ public class WAVConverter extends Converter {
 			System.out.println("oggenc not found");
 		} else {
 			Process p = Runtime.getRuntime().exec(
-				oggLocation + " - -o " + outFile.getCanonicalPath() + ".ogg");
+				oggLocation + " - -o " + outPath + ".ogg");
 			p.getOutputStream().write(raw);
 			p.getOutputStream().close();
 		
@@ -106,4 +108,10 @@ public class WAVConverter extends Converter {
 			}
 		}
 	}
+
+  private String lowerFile(File outFile) throws IOException {
+    String lowerFileName = outFile.getCanonicalFile().getName().toLowerCase();
+    String pathName = outFile.getCanonicalFile().getParent();
+    return pathName + File.separator + lowerFileName;
+  }
 }
