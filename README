@@ -1,19 +1,5 @@
 Google's HTML5 port of Bytonic Software's Java port of Id Software's Quake II
 
-To install and run:
-  ./install-resources (will download, unpak, and convert the original Quake II demo resources)
-  ./build-dedicated-server (will build the client and server code)
-  ./run-dedicated-server [port] (will run the local Quake II server)
-
-Navigate to:
-  http://localhost:8080/GwtQuake.html
-  (or whatever port you specified to the server)
-
-Eclipse setup:
-  There are .classpath and .project files in the root, which you should be able
-  to import directly.  It's setup to use the Google Plugin for Eclipse
-  (http://code.google.com/eclipse/), though you should be able to get it
-  working without that if you so desire. There's also a launch config in the
-  root that will launch GwtQuakeServer on port 8080. Make sure you've run the
-  maven scripts first, which bring in some dependencies.
+To install and run: http://http://code.google.com/p/quake2-gwt-port/wiki/BuildingAndRunning
+Eclipse setup: http://http://code.google.com/p/quake2-gwt-port/wiki/EclipseSetup
 
