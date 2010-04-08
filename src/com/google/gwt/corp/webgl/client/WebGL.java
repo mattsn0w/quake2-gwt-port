@@ -422,6 +422,9 @@ public class WebGL extends JavaScriptObject {
     for (var i = 0; i < names.length; i++) {
       var ctx = canvas.getContext(names[i], options);
       if (ctx != null) {
+        if ($wnd.WebGLDebugUtils) {
+          return $wnd.WebGLDebugUtils.makeDebugContext(ctx);
+        }
         return ctx;
       }
     }
