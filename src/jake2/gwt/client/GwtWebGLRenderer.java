@@ -206,7 +206,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 		}
 		
 		if (type != jake2.qcommon.QuakeImage.it_pic) {
-			gl.glTexImage2D(GLAdapter.GL_TEXTURE_2D, 0, 4, HOLODECK_TEXTURE_SIZE, HOLODECK_TEXTURE_SIZE, 0, GLAdapter.GL_RGBA, 
+			gl.glTexImage2D(GLAdapter.GL_TEXTURE_2D, 0, GLAdapter.GL_RGBA, HOLODECK_TEXTURE_SIZE, HOLODECK_TEXTURE_SIZE, 0, GLAdapter.GL_RGBA, 
 			    GLAdapter.GL_UNSIGNED_BYTE, holoDeckTexture);
 			gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, GLAdapter.GL_LINEAR);
 			gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);

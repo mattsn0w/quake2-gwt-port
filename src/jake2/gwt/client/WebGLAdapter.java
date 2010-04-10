@@ -312,7 +312,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   @Override
   public void glAlphaFunc(int i, float j) {
-  	// TODO Auto-generated method stub
+  	// TODO: Remove this. Alpha text/func are unsupported in ES.
   }
 
   @Override
@@ -572,6 +572,8 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   @Override
   public final void glEnable(int i) {
+    // In ES, you don't enable/disable TEXTURE_2D. We use it this call to
+    // enable one of the two active textures supported by the shader.
     if (i == GL_TEXTURE_2D) {
     	switch (activeTexture) {
     	case 0:
@@ -583,9 +585,11 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
     	default:
     		throw new RuntimeException();
     	}
+    	return;
     }
-     gl.glEnable(i);
-     checkError("glEnable");
+
+    gl.glEnable(i);
+    checkError("glEnable");
   }
 
   @Override
@@ -755,6 +759,8 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   @Override
   public final void glDisable(int i) {
+    // In ES, you don't enable/disable TEXTURE_2D. We use it this call to
+    // disable one of the two active textures supported by the shader.
     if (i == GL_TEXTURE_2D) {
     	switch (activeTexture) {
     	case 0:
@@ -766,7 +772,9 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
     	default:
     		throw new RuntimeException();
     	}
+    	return;
     } 
+
     gl.glDisable(i);
     checkError("glDisable");
   }

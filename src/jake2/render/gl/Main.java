@@ -306,10 +306,10 @@ public abstract class Main extends Base {
 
 		GL_TexEnv(GLAdapter.GL_MODULATE);
 
-		if (alpha == 1.0)
-		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
-		else
-		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
+//		if (alpha == 1.0)
+//		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
+//		else
+//		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
 		gl.glBegin(GLAdapter._GL_QUADS);
 
@@ -335,7 +335,7 @@ public abstract class Main extends Base {
 
 		gl.glEnd();
 
-		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
+//		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 		GL_TexEnv(GLAdapter.GL_REPLACE);
 
 		if (alpha != 1.0F)
@@ -572,7 +572,7 @@ public abstract class Main extends Base {
 		if (v_blend[3] == 0.0f)
 			return;
 
-		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
+//		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 		gl.glEnable(GLAdapter.GL_BLEND);
 		gl.glDisable(GLAdapter.GL_DEPTH_TEST);
 		gl.glDisable(GLAdapter.GL_TEXTURE_2D);
@@ -595,7 +595,7 @@ public abstract class Main extends Base {
 
 		gl.glDisable(GLAdapter.GL_BLEND);
 		gl.glEnable(GLAdapter.GL_TEXTURE_2D);
-		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
+//		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 
 		gl.glColor4f(1, 1, 1, 1);
 	}
@@ -771,7 +771,7 @@ public abstract class Main extends Base {
 		  gl.glDisable(GLAdapter.GL_CULL_FACE);
 
 		gl.glDisable(GLAdapter.GL_BLEND);
-		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
+//		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 		gl.glEnable(GLAdapter.GL_DEPTH_TEST);
 	}
 
@@ -890,7 +890,7 @@ public abstract class Main extends Base {
 	  gl.glDisable(GLAdapter.GL_DEPTH_TEST);
 	  gl.glDisable(GLAdapter.GL_CULL_FACE);
 	  gl.glDisable(GLAdapter.GL_BLEND);
-	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
+//	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 	  gl.glColor4f(1, 1, 1, 1);
 	}
 
@@ -1374,7 +1374,7 @@ public abstract class Main extends Base {
 		gl.glDisable(GLAdapter.GL_DEPTH_TEST);
 		gl.glDisable(GLAdapter.GL_CULL_FACE);
 		gl.glDisable(GLAdapter.GL_BLEND);
-		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
+//		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 		gl.glColor4f(1, 1, 1, 1);
 
 		/*

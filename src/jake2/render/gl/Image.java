@@ -76,7 +76,7 @@ public abstract class Image extends Main {
 	int gl_tex_solid_format = 3;
 	int gl_tex_alpha_format = 4;
 
-	int gl_filter_min = GLAdapter.GL_LINEAR_MIPMAP_NEAREST;
+	int gl_filter_min = GLAdapter.GL_LINEAR;//GLAdapter.GL_LINEAR_MIPMAP_NEAREST;
 	int gl_filter_max = GLAdapter.GL_LINEAR;
 	
 	Image() {
@@ -193,10 +193,10 @@ public abstract class Image extends Main {
 		{
 			new glmode_t("GL_NEAREST", GLAdapter.GL_NEAREST, GLAdapter.GL_NEAREST),
 			new glmode_t("GL_LINEAR", GLAdapter.GL_LINEAR, GLAdapter.GL_LINEAR),
-			new glmode_t("GL_NEAREST_MIPMAP_NEAREST", GLAdapter.GL_NEAREST_MIPMAP_NEAREST, GLAdapter.GL_NEAREST),
-			new glmode_t("GL_LINEAR_MIPMAP_NEAREST", GLAdapter.GL_LINEAR_MIPMAP_NEAREST, GLAdapter.GL_LINEAR),
-			new glmode_t("GL_NEAREST_MIPMAP_LINEAR", GLAdapter.GL_NEAREST_MIPMAP_LINEAR, GLAdapter.GL_NEAREST),
-			new glmode_t("GL_LINEAR_MIPMAP_LINEAR", GLAdapter.GL_LINEAR_MIPMAP_LINEAR, GLAdapter.GL_LINEAR)};
+			new glmode_t("GL_NEAREST_MIPMAP_NEAREST", GLAdapter.GL_NEAREST/*_MIPMAP_NEAREST*/, GLAdapter.GL_NEAREST),
+			new glmode_t("GL_LINEAR_MIPMAP_NEAREST", GLAdapter.GL_LINEAR/*_MIPMAP_NEAREST*/, GLAdapter.GL_LINEAR),
+			new glmode_t("GL_NEAREST_MIPMAP_LINEAR", GLAdapter.GL_NEAREST/*_MIPMAP_LINEAR*/, GLAdapter.GL_NEAREST),
+			new glmode_t("GL_LINEAR_MIPMAP_LINEAR", GLAdapter.GL_LINEAR/*_MIPMAP_LINEAR*/, GLAdapter.GL_LINEAR)};
 
 	static final int NUM_GL_MODES = modes.length;
 
@@ -266,8 +266,8 @@ public abstract class Image extends Main {
 
 			if (glt.type != QuakeImage.it_pic && glt.type != QuakeImage.it_sky) {
 				GL_Bind(glt.texnum);
-				gl.glTexParameteri(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
-				gl.glTexParameteri(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+				gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
+				gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
 			}
 		}
 	}
@@ -753,7 +753,7 @@ public abstract class Image extends Main {
 						gl.glTexImage2D(
 							GLAdapter.GL_TEXTURE_2D,
 							0,
-							comp,
+							GLAdapter.GL_RGBA/*comp*/,
 							scaled_width,
 							scaled_height,
 							0,
@@ -788,7 +788,7 @@ public abstract class Image extends Main {
 //			}
 //			else {
 				tex.rewind(); tex.put(scaled); tex.rewind();
-				gl.glTexImage2D(GLAdapter.GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, tex);
+				gl.glTexImage2D(GLAdapter.GL_TEXTURE_2D, 0, GLAdapter.GL_RGBA/*comp*/, scaled_width, scaled_height, 0, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, tex);
 //			}
 
 			if (mipmap) {
@@ -823,7 +823,7 @@ public abstract class Image extends Main {
 						gl.glTexImage2D(
 							GLAdapter.GL_TEXTURE_2D,
 							miplevel,
-							comp,
+							GLAdapter.GL_RGBA/*comp*/,
 							scaled_width,
 							scaled_height,
 							0,

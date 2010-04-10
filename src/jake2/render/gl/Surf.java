@@ -1045,7 +1045,7 @@ public abstract class Surf extends Draw {
 		{
 		  gl.glTexImage2D( GLAdapter.GL_TEXTURE_2D, 
 						   0, 
-						   gl_lms.internal_format,
+						   GL_LIGHTMAP_FORMAT/*gl_lms.internal_format*/,
 						   BLOCK_WIDTH, BLOCK_HEIGHT, 
 						   0, 
 						   GL_LIGHTMAP_FORMAT, 
@@ -1316,7 +1316,7 @@ public abstract class Surf extends Draw {
 		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
 		gl.glTexImage2D( GLAdapter.GL_TEXTURE_2D, 
 					   0, 
-					   gl_lms.internal_format,
+					   GL_LIGHTMAP_FORMAT/*gl_lms.internal_format*/,
 					   BLOCK_WIDTH, BLOCK_HEIGHT, 
 					   0, 
 					   GL_LIGHTMAP_FORMAT, 

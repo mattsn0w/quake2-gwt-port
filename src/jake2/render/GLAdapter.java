@@ -40,7 +40,6 @@ public abstract class GLAdapter {
     public static final int GL_ALIASED_POINT_SIZE_RANGE              = 0x846D;
     public static final int GL_ALPHA                                 = 0x1906;
     public static final int GL_ALPHA_BITS                            = 0x0D55;
-    public static final int GL_ALPHA_TEST                            = 0x0BC0;
     public static final int GL_ALWAYS                                = 0x0207;
     public static final int GL_AMBIENT                               = 0x1200;
     public static final int GL_AMBIENT_AND_DIFFUSE                   = 0x1602;
@@ -92,6 +91,7 @@ public abstract class GLAdapter {
     public static final int GL_FOG_HINT                              = 0x0C54;
     public static final int GL_FOG_MODE                              = 0x0B65;
     public static final int GL_FOG_START                             = 0x0B63;
+    public static final int GL_FRAMEBUFFER                           = 0x8D40;
     public static final int GL_FRONT                                 = 0x0404;
     public static final int GL_FRONT_AND_BACK                        = 0x0408;
     public static final int GL_GEQUAL                                = 0x0206;
