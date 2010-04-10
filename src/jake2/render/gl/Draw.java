@@ -30,7 +30,6 @@ import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.QuakeImage;
 import jake2.render.GLAdapter;
-import jake2.render.LineDrawing;
 import jake2.render.image_t;
 import jake2.util.Lib;
 
@@ -142,8 +141,8 @@ public abstract class Draw extends Image {
 //		if (scrap_dirty)
 //			Scrap_Upload();
 
-		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0) ) && !image.has_alpha)
-		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
+//		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0) ) && !image.has_alpha)
+//		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
 		gl.glBegin (GLAdapter.SIMPLE_TEXUTRED_QUAD);
@@ -153,8 +152,8 @@ public abstract class Draw extends Image {
 		gl.glVertex2f (x, y+h);
 		gl.glEnd ();
 
-		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) !=0 ) ) && !image.has_alpha)
-		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
+//		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) !=0 ) ) && !image.has_alpha)
+//		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 	}
 
 
@@ -176,8 +175,8 @@ public abstract class Draw extends Image {
 //		if (scrap_dirty)
 //			Scrap_Upload();
 
-		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) && !image.has_alpha)
-		  gl.glDisable (GLAdapter.GL_ALPHA_TEST);
+//		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) && !image.has_alpha)
+//		  gl.glDisable (GLAdapter.GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
 
@@ -188,8 +187,8 @@ public abstract class Draw extends Image {
 		gl.glVertex2f (x, y+image.height);
 		gl.glEnd ();
 
-		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-		  gl.glEnable (GLAdapter.GL_ALPHA_TEST);
+//		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
+//		  gl.glEnable (GLAdapter.GL_ALPHA_TEST);
 	}
 
 	/*
@@ -210,8 +209,8 @@ public abstract class Draw extends Image {
 			return;
 		}
 
-		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
+//		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
+//		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
 		gl.glBegin (GLAdapter._GL_QUADS);
@@ -225,8 +224,8 @@ public abstract class Draw extends Image {
 		gl.glVertex2f (x, y+h);
 		gl.glEnd ();
 
-		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
-		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
+//		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
+//		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 	}
 
 
@@ -350,7 +349,7 @@ public abstract class Draw extends Image {
 					frac += fracstep;
 				}
 			}
-			gl.glTexImage2D (GLAdapter.GL_TEXTURE_2D, 0, gl_tex_solid_format, 256, 256, 0, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, image32);
+			gl.glTexImage2D (GLAdapter.GL_TEXTURE_2D, 0, GLAdapter.GL_RGBA/*gl_tex_solid_format*/, 256, 256, 0, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, image32);
 //		}
 //		else
 //		{
@@ -386,8 +385,8 @@ public abstract class Draw extends Image {
 		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, GLAdapter.GL_LINEAR);
 		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
 
-		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
-		  gl.glDisable (GLAdapter.GL_ALPHA_TEST);
+//		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
+//		  gl.glDisable (GLAdapter.GL_ALPHA_TEST);
 
 		gl.glBegin (GLAdapter._GL_QUADS);
 		gl.glTexCoord2f (0, 0);
@@ -400,8 +399,7 @@ public abstract class Draw extends Image {
 		gl.glVertex2f (x, y+h);
 		gl.glEnd ();
 
-		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
-		  gl.glEnable (GLAdapter.GL_ALPHA_TEST);
+//		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
+//		  gl.glEnable (GLAdapter.GL_ALPHA_TEST);
 	}
-
 }

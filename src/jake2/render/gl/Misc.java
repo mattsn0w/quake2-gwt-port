@@ -207,7 +207,7 @@ public abstract class Misc extends Mesh {
 	  gl.glCullFace(GLAdapter.GL_FRONT);
 	  gl.glEnable(GLAdapter.GL_TEXTURE_2D);
 
-	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
+//	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 	  gl.glAlphaFunc(GLAdapter.GL_GREATER, 0.666f);
 
 	  gl.glDisable (GLAdapter.GL_DEPTH_TEST);
