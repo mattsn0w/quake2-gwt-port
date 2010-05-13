@@ -294,66 +294,33 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 		
 		GL_Bind(image.texnum);
 
-
-		// canvas does not seem to work for texImage2d
-		// GenertateMipmap does not seem to work at all.....
+		int p2w = 1 << ((int) Math.ceil(Math.log(image.width) / Math.log(2))); 
+		int p2h = 1 << ((int) Math.ceil(Math.log(image.height) / Math.log(2))); 
 
 		if (mipMap) {
-			int p2w = 1 << ((int) Math.ceil(Math.log(image.width) / Math.log(2))); 
-			int p2h = 1 << ((int) Math.ceil(Math.log(image.height) / Math.log(2))); 
+			p2w = p2h = Math.max(p2w, p2h);
+		}
+		
+		image.upload_width = p2w;
+		image.upload_height = p2h;
 
-			if (canvas1.getWidth() < p2w) {
-				canvas1.setWidth(p2w);
-			}
-			if (canvas1.getHeight() < p2h) {
-				canvas1.setHeight(p2h);
-			}
-			
-			image.width = image.upload_width = p2w;
-			image.height = image.upload_height = p2h;
-			
-//			int level = 0;
-//
-//			if (bb.capacity() < p2h * p2w * 4) {
-//				bb = ByteBuffer.allocateDirect(p2h * p2w * 4);
-//			}
-//
-//			do {
-//				canvas1.getContext2D().clearRect(0, 0, p2w, p2h);
-//				canvas1.getContext2D().drawImage(img, 0, 0, p2w, p2h);
-//				ImageData data = canvas1.getContext2D().getImageData(0, 0, p2w, p2h);
-//			
-//				CanvasPixelArray pixels = data.getData();
-//			
-//				int len = p2w * p2h * 4;
-//				ByteBuffer bb = ByteBuffer.allocateDirect(len);
-//				
-//				for(int i = 0; i < len; i++) {
-//					bb.put(i, (byte) (pixels.get(i) ));
-//				}
-//			
-//				webGL.glTexImage2D(WebGL.GL_TEXTURE_2D, level++, GLAdapter.GL_RGBA, p2w, p2h, 0, 
-//						GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, bb);
-//				
-//				p2w = Math.max(p2w / 2, 1);
-//				p2h = Math.max(p2h / 2, 1);
-//			}
-//			while(p2w >1 || p2h > 1);
-//			// TODO: remove when mipMaps work in Webkit
-//			mipMap = false;
-//			}
+		int level = 0;
+		do {
 			canvas1.setWidth(p2w);
 			canvas1.setHeight(p2h);
+
+			canvas1.getContext2D().clearRect(0, 0, p2w, p2h);
 			canvas1.getContext2D().drawImage(img, 0, 0, p2w, p2h);
-			webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, 0, canvas1);
-//			webGL.glGenerateMipmap(WebGL.GL_TEXTURE_2D);
-		} else {
-			image.upload_height = image.height;
-			image.upload_width = image.width;
-			webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, 0, img);
+
+			webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, level++, canvas1);
+			
+			p2w = p2w / 2;
+			p2h = p2h / 2;
 		}
+		while(mipMap && p2w > 0);
+		
 		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, 
-				/*mipMap ? GLAdapter.GL_LINEAR_MIPMAP_NEAREST :*/ GLAdapter.GL_LINEAR);
+				mipMap ? GLAdapter.GL_LINEAR_MIPMAP_NEAREST : GLAdapter.GL_LINEAR);
 		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
 	}
 
