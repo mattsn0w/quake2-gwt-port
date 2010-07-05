@@ -418,14 +418,17 @@ public class WebGL extends JavaScriptObject {
    * available.
    */
   public static native WebGL getContext(Element canvas, JavaScriptObject options) /*-{
-    var names = ["webgl", "moz-webgl", "webkit-webgl", "webkit-3d", "experimental-webgl"];
+    var names = ["experimental-webgl", "webgl", "moz-webgl", "webkit-webgl", "webkit-3d"];
     for (var i = 0; i < names.length; i++) {
-      var ctx = canvas.getContext(names[i], options);
-      if (ctx != null) {
-        if ($wnd.WebGLDebugUtils) {
-          return $wnd.WebGLDebugUtils.makeDebugContext(ctx);
+      try {
+        var ctx = canvas.getContext(names[i], options);
+        if (ctx != null) {
+          if ($wnd.WebGLDebugUtils) {
+            return $wnd.WebGLDebugUtils.makeDebugContext(ctx);
+          }
+          return ctx;
         }
-        return ctx;
+      } catch(e) {
       }
     }
     return null;
