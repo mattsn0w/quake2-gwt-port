@@ -36,7 +36,16 @@ public class glconfig_t {
 	private float version = 1.1f;
 
 	public void parseOpenGLVersion() {
-	    version = Float.parseFloat(version_string.substring(0, 3));
+		StringBuilder digits = new StringBuilder();
+		for (int i = 0; i < version_string.length(); i++) {
+			char c = version_string.charAt(i);
+			if ((c >= '0' && c <= '9') || c== '.') {
+				digits.append(c);
+			}
+		}
+
+		System.out.println("WTF? Sanitized: " + digits);
+		version = Float.parseFloat(digits.toString());
 	}
 	
 	public float getOpenGLVersion() {

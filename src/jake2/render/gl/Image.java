@@ -193,10 +193,10 @@ public abstract class Image extends Main {
 		{
 			new glmode_t("GL_NEAREST", GLAdapter.GL_NEAREST, GLAdapter.GL_NEAREST),
 			new glmode_t("GL_LINEAR", GLAdapter.GL_LINEAR, GLAdapter.GL_LINEAR),
-			new glmode_t("GL_NEAREST_MIPMAP_NEAREST", GLAdapter.GL_NEAREST/*_MIPMAP_NEAREST*/, GLAdapter.GL_NEAREST),
-			new glmode_t("GL_LINEAR_MIPMAP_NEAREST", GLAdapter.GL_LINEAR/*_MIPMAP_NEAREST*/, GLAdapter.GL_LINEAR),
-			new glmode_t("GL_NEAREST_MIPMAP_LINEAR", GLAdapter.GL_NEAREST/*_MIPMAP_LINEAR*/, GLAdapter.GL_NEAREST),
-			new glmode_t("GL_LINEAR_MIPMAP_LINEAR", GLAdapter.GL_LINEAR/*_MIPMAP_LINEAR*/, GLAdapter.GL_LINEAR)};
+			new glmode_t("GL_NEAREST_MIPMAP_NEAREST", GLAdapter.GL_NEAREST_MIPMAP_NEAREST, GLAdapter.GL_NEAREST),
+			new glmode_t("GL_LINEAR_MIPMAP_NEAREST", GLAdapter.GL_LINEAR_MIPMAP_NEAREST, GLAdapter.GL_LINEAR),
+			new glmode_t("GL_NEAREST_MIPMAP_LINEAR", GLAdapter.GL_NEAREST_MIPMAP_LINEAR, GLAdapter.GL_NEAREST),
+			new glmode_t("GL_LINEAR_MIPMAP_LINEAR", GLAdapter.GL_LINEAR_MIPMAP_LINEAR, GLAdapter.GL_LINEAR)};
 
 	static final int NUM_GL_MODES = modes.length;
 

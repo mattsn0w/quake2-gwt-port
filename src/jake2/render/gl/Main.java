@@ -1260,15 +1260,15 @@ public abstract class Main extends Base {
 			VID.Printf(Defines.PRINT_ALL, "...GL_EXT_shared_texture_palette not found\n");
 		}
 
-		if (gl_config.extensions_string.indexOf("GL_ARB_multitexture") >= 0) {
-			VID.Printf(Defines.PRINT_ALL, "...using GL_ARB_multitexture\n");
+//		if (gl_config.extensions_string.indexOf("GL_ARB_multitexture") >= 0) {
+//			VID.Printf(Defines.PRINT_ALL, "...using GL_ARB_multitexture\n");
 			qglActiveTextureARB = true;
 			GL_TEXTURE0 = GLAdapter.GL_TEXTURE0;
 			GL_TEXTURE1 = GLAdapter.GL_TEXTURE1;
-		}
-		else {
-			VID.Printf(Defines.PRINT_ALL, "...GL_ARB_multitexture not found\n");
-		}
+//		}
+//		else {
+//			VID.Printf(Defines.PRINT_ALL, "...GL_ARB_multitexture not found\n");
+//		}
 
 		if (!(qglActiveTextureARB))
 			return false;
