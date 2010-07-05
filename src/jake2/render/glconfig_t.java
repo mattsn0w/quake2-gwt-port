@@ -37,14 +37,17 @@ public class glconfig_t {
 
 	public void parseOpenGLVersion() {
 		StringBuilder digits = new StringBuilder();
+		boolean dot = false;
 		for (int i = 0; i < version_string.length(); i++) {
 			char c = version_string.charAt(i);
-			if ((c >= '0' && c <= '9') || c== '.') {
+			if (c >= '0' && c <= '9') {
+				digits.append(c);
+			} else if (c == '.' && !dot) {
+				dot = true;
 				digits.append(c);
 			}
 		}
 
-		System.out.println("WTF? Sanitized: " + digits);
 		version = Float.parseFloat(digits.toString());
 	}
 	
