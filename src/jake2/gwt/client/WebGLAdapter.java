@@ -396,7 +396,11 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   @Override
   public String glGetString(int id) {
-  	return gl.glGetString(id);
+	  String s = gl.glGetParameter(id);
+	  if (s == null) {
+		  s = gl.glGetString(id);
+	  }
+	  return s == null ? "" : s;
   }
   
 

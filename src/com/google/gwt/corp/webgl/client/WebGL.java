@@ -674,6 +674,11 @@ public class WebGL extends JavaScriptObject {
     }
   }
 
+  public native final String glGetParameter(int id) /*-{
+    return this.getParameter(id);
+  }-*/;
+  
+  @Deprecated
   public native final String glGetString(int id) /*-{
 	return this.getString(id);
   }-*/;
