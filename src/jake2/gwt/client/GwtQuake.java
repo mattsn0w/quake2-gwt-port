@@ -55,7 +55,7 @@ public class GwtQuake implements EntryPoint {
 
   static CanvasElement canvas;
   static Element video;
-  static BrowserType browserType;
+  private static BrowserType browserType;
 
 	private static final String NO_WEBGL_MESSAGE = 
 	  "<div style='padding:20px;font-family: sans-serif;'>" +
@@ -72,6 +72,26 @@ public class GwtQuake implements EntryPoint {
   int w;
   int h;
   
+  static BrowserType getBrowserType() {
+	  if (browserType == null) {
+			String userAgent = Navigator.getUserAgent();
+			System.out.println("UA: " + userAgent);
+			if (userAgent == null) {
+				browserType = BrowserType.OTHER;
+			} else if (userAgent.indexOf("Chrome/") != -1) {
+				browserType = BrowserType.CHROME;
+			} else if (userAgent.indexOf("Safari/") != -1) {
+				browserType = BrowserType.SAFARI;
+			} else if (userAgent.indexOf("Firefox/") != -1 || userAgent.indexOf("Minefield/") != -1) {
+				browserType = BrowserType.FIREFOX;
+			} else {
+				browserType = BrowserType.OTHER;
+			}
+
+	  }
+	  return browserType;
+  }
+  
   public void onModuleLoad() {
   // Initialize drivers.
 	Document doc = Document.get();
@@ -85,19 +105,7 @@ public class GwtQuake implements EntryPoint {
 	style.setBackgroundColor("#000");
 	style.setColor("#888");
 	
-	String userAgent = Navigator.getUserAgent();
-	System.out.println("UA: " + userAgent);
-	if (userAgent == null) {
-		browserType = BrowserType.OTHER;
-	} else if (userAgent.indexOf("Chrome/") != -1) {
-		browserType = BrowserType.CHROME;
-	} else if (userAgent.indexOf("Safari/") != -1) {
-		browserType = BrowserType.SAFARI;
-	} else if (userAgent.indexOf("Firefox/") != -1 || userAgent.indexOf("Minefield/") != -1) {
-		browserType = BrowserType.FIREFOX;
-	} else {
-		browserType = BrowserType.OTHER;
-	}
+//	Window.alert("UA: " + userAgent+ " type: " + browserType);
 	
 	boolean wireframe = (""+Window.Location.getHash()).indexOf("wireframe") != -1;
 	

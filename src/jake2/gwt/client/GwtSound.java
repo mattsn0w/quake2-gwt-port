@@ -245,7 +245,7 @@ public class GwtSound implements Sound {
     if (sc != null) {
       s.cache = sc;
       if (namebuffer.endsWith(".wav")) {
-        namebuffer += GwtQuake.browserType == BrowserType.SAFARI ? ".mp3" : ".ogg";
+        namebuffer += GwtQuake.getBrowserType() == BrowserType.SAFARI ? ".mp3" : ".ogg";
       }
       Console.Print("Creating audio element " + namebuffer + "\r");
       

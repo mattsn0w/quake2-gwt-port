@@ -84,7 +84,8 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
     	  } else {
     	    String response;
     	    if (xhr.getStatus() != 200) {
-              Com.Printf("Failed to load file #" + currentSequenceNumber + "\n");
+              Com.Printf("Failed to load file #" + mySequenceNumber + ": " + path + " status: " + 
+            		  xhr.getStatus() + "/" + xhr.getStatusText() + "\n");
               Compatibility.printStackTrace(e);
               ResourceLoader.fail(new IOException("status = " + xhr.getStatus()));
               response = null;

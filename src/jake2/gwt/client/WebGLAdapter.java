@@ -36,6 +36,7 @@ import com.google.gwt.corp.webgl.client.WebGL.Texture;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 
+import jake2.gwt.client.GwtQuake.BrowserType;
 import jake2.render.DisplayMode;
 import jake2.render.GLAdapter;
 import jake2.render.gl.AbstractGL20Adapter;
@@ -85,12 +86,9 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   	if (logCount >= 1000) {
   		return;
   	}
-	log_((logCount++) + ": " + msg);
+	System.out.println((logCount++) + ": " + msg);
    };
 
-  private native void log_(String msg) /*-{
-	console.log(msg);
-}-*/;
 
   FloatBuffer colorBuffer;
   private CanvasElement canvas;
@@ -396,10 +394,13 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   @Override
   public String glGetString(int id) {
-	  String s = gl.glGetParameter(id);
-	  if (s == null) {
+	  String s;
+	  if (GwtQuake.getBrowserType() == BrowserType.FIREFOX) {
+		  s = gl.glGetParameter(id);
+	  } else {
 		  s = gl.glGetString(id);
 	  }
+	  // Hack to meet more desktop GL expectations to some extent
 	  return s == null ? "" : s;
   }
   
