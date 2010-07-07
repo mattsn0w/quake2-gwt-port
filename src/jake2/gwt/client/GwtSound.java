@@ -30,6 +30,7 @@ import jake2.client.Console;
 import jake2.game.Cmd;
 import jake2.game.cvar_t;
 import jake2.game.entity_state_t;
+import jake2.gwt.client.GwtQuake.BrowserType;
 import jake2.qcommon.Com;
 import jake2.qcommon.Cvar;
 import jake2.qcommon.Defines;
@@ -210,7 +211,7 @@ public class GwtSound implements Sound {
         ==============
         */
   public sfxcache_t LoadSound(sfx_t s) {
-//		log("Loadsound "+s.name);
+	  
     if (s.isCached) {
       return s.cache;
     }
@@ -244,12 +245,14 @@ public class GwtSound implements Sound {
     if (sc != null) {
       s.cache = sc;
       if (namebuffer.endsWith(".wav")) {
-        namebuffer = namebuffer.substring(0, namebuffer.length() - 4)
-            + ".wav.mp3";
+        namebuffer += GwtQuake.browserType == BrowserType.SAFARI ? ".mp3" : ".ogg";
       }
       Console.Print("Creating audio element " + namebuffer + "\r");
+      
       sc.soundUrl = "baseq2/" + namebuffer;
+	  System.out.println("before initbuffer");
       initBuffer(sc.soundUrl, sc.data, s.bufferId, sc.speed);
+	  System.out.println("after initbuffer");
       s.isCached = true;
       // free samples for GC
       s.cache.data = null;
