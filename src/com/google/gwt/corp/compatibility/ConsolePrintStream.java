@@ -48,7 +48,9 @@ public class ConsolePrintStream extends PrintStream {
 	 public native void consoleLog(String msg) /*-{
 	 	if (window.console) {
      	    window.console.log(msg);
-	 	} 
+	 	} else {
+	 		window.title = "LOG:" + msg;
+	 	}
 	  }-*/;
 
 	public void print(char c) {

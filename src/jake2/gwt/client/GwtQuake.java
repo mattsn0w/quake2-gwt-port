@@ -22,7 +22,6 @@ import jake2.client.Dimension;
 import jake2.client.SCR;
 import jake2.client.WebSocketFactoryImpl;
 import jake2.client.refexport_t;
-import jake2.qcommon.Cbuf;
 import jake2.qcommon.Compatibility;
 import jake2.qcommon.Cvar;
 import jake2.qcommon.Globals;
@@ -30,12 +29,10 @@ import jake2.qcommon.Qcommon;
 import jake2.qcommon.ResourceLoader;
 import jake2.sound.S;
 import jake2.sys.NET;
-import jake2.sys.Sys;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.corp.gfx.client.canvas.CanvasElement;
-import com.google.gwt.corp.localstorage.LocalStorage;
 import com.google.gwt.dom.client.BodyElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -45,14 +42,20 @@ import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Navigator;
 
 public class GwtQuake implements EntryPoint {
 
+	enum BrowserType {
+		FIREFOX, CHROME, SAFARI, OTHER
+	};
+	
 	private static final int INTER_FRAME_DELAY = 1;
 	private static final int LOADING_DELAY = 500;
 
   static CanvasElement canvas;
   static Element video;
+  static BrowserType browserType;
 
 	private static final String NO_WEBGL_MESSAGE = 
 	  "<div style='padding:20px;font-family: sans-serif;'>" +
@@ -81,6 +84,20 @@ public class GwtQuake implements EntryPoint {
 	style.setProperty("height", "100%");
 	style.setBackgroundColor("#000");
 	style.setColor("#888");
+	
+	String userAgent = Navigator.getUserAgent();
+	System.out.println("UA: " + userAgent);
+	if (userAgent == null) {
+		browserType = BrowserType.OTHER;
+	} else if (userAgent.indexOf("Chrome/") != -1) {
+		browserType = BrowserType.CHROME;
+	} else if (userAgent.indexOf("Safari/") != -1) {
+		browserType = BrowserType.SAFARI;
+	} else if (userAgent.indexOf("Firefox/") != -1 || userAgent.indexOf("Minefield/") != -1) {
+		browserType = BrowserType.FIREFOX;
+	} else {
+		browserType = BrowserType.OTHER;
+	}
 	
 	boolean wireframe = (""+Window.Location.getHash()).indexOf("wireframe") != -1;
 	
