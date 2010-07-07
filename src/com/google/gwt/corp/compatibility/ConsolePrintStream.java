@@ -49,7 +49,7 @@ public class ConsolePrintStream extends PrintStream {
 	 	if (window.console) {
      	    window.console.log(msg);
 	 	} else {
-	 		window.title = "LOG:" + msg;
+	 		document.title = "LOG:" + msg;
 	 	}
 	  }-*/;
 
