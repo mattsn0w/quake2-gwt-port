@@ -19,25 +19,25 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayNumber;
 
 /**
- * Artificial WebGLArray super class for type safety in WebGL calls with canvas array parameters.
+ * Artificial TypedArray super class for type safety in WebGL calls with canvas array parameters.
  * Note that the slice method is moved to 
  * 
  * @author Stefan Haustein
  */
-public abstract class WebGLArray<T extends WebGLArray<?>> extends JavaScriptObject {
+public abstract class TypedArray<T extends TypedArray<?>> extends JavaScriptObject {
 
-  protected WebGLArray() {
+  protected TypedArray() {
   }
   
   /**
-   * The WebGLArrayBuffer holding the data for this array. 
+   * The ArrayBuffer holding the data for this array. 
    */
-  public final native WebGLArrayBuffer getBuffer() /*-{
+  public final native ArrayBuffer getBuffer() /*-{
     return this.buffer;
   }-*/;
   
   /**
-   * The offset of this data, in bytes, from the start of this WebGLArray's WebGLArrayBuffer. 
+   * The offset of this data, in bytes, from the start of this TypedArray's ArrayBuffer. 
    */
   public final native int getByteOffset() /*-{
     return this.byteOffset;
@@ -58,7 +58,7 @@ public abstract class WebGLArray<T extends WebGLArray<?>> extends JavaScriptObje
   }-*/;
   
   /**
-   * Returns a new WebGLArray  view of the WebGLArrayBuffer  store for this WebGLArray, 
+   * Returns a new TypedArray  view of the ArrayBuffer  store for this TypedArray, 
    * referencing the element at offset in the current view, and containing length elements. 
    */
   public final native T slice(int offset, int length) /*-{

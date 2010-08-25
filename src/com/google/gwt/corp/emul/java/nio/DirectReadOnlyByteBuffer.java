@@ -17,7 +17,7 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.WebGLArrayBuffer;
+import com.google.gwt.corp.webgl.client.ArrayBuffer;
 
 /**
  * HeapByteBuffer, ReadWriteHeapByteBuffer and ReadOnlyHeapByteBuffer compose
@@ -43,7 +43,7 @@ final class DirectReadOnlyByteBuffer extends DirectByteBuffer {
         return buf;
     }
 
-    DirectReadOnlyByteBuffer(WebGLArrayBuffer backingArray, int capacity, int arrayOffset) {
+    DirectReadOnlyByteBuffer(ArrayBuffer backingArray, int capacity, int arrayOffset) {
         super(backingArray, capacity, arrayOffset);
     }
 

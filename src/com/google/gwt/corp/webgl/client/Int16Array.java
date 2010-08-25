@@ -18,85 +18,86 @@ package com.google.gwt.corp.webgl.client;
 import com.google.gwt.core.client.JsArrayNumber;
 
 /**
- * GWT wrapper for the WebGL WebGLIntArray (WARNING:
+ * GWT wrapper for the WebGL Int16Array (WARNING:
  * this is not a stable API). 
  * 
  * @author Stefan Haustein
  */
-public class WebGLIntArray extends WebGLArray<WebGLIntArray> {
+
+public class Int16Array extends TypedArray<Int16Array> {
   
-  protected WebGLIntArray() {
+  protected Int16Array() {
   }
   
   /**
    * Create a new canvas array object of the given length with a new underlying 
-   * WebGLArrayBuffer large enough to hold length elements of the type of this buffer. 
+   * ArrayBuffer large enough to hold length elements of the type of this buffer. 
    * Data in the buffer is initialized to 0. 
    */
-  public static final native WebGLIntArray create(int size) /*-{
-    return new WebGLIntArray(size);
+  public static final native Int16Array create(int size) /*-{
+    return new Int16Array(size);
   }-*/;
 
   /**
-   * Create a new canvas array object with a new underlying WebGLArrayBuffer large enough 
+   * Create a new canvas array object with a new underlying ArrayBuffer large enough 
    * to hold the given data, then copy the passed data into the buffer. 
    */
-  public static final native WebGLIntArray create(JsArrayNumber data) /*-{
-    return new WebGLIntArray(data);
+  public static final native Int16Array create(JsArrayNumber data) /*-{
+    return new Int16Array(data);
   }-*/;
   
   /**
-   * Create a new canvas array object with a new underlying WebGLArrayBuffer large enough 
+   * Create a new canvas array object with a new underlying ArrayBuffer large enough 
    * to hold the given data, then copy the passed data into the buffer. 
    */
-  public static final WebGLIntArray create(int[] data) {
+  public static final Int16Array create(short[] data) {
 // TODO(haustein) Uncomment when set works in FF    
-//    WebGLIntArray result = create(data.length);
+//    Int16Array result = create(data.length);
 //    result.set(data);
 //    return result;
     return create(toJsArray(data));
   }
 
   /**
-   * Create a new canvas array object with a new underlying WebGLArrayBuffer large enough 
+   * Create a new canvas array object with a new underlying ArrayBuffer large enough 
    * to hold the given data, then copy the passed data into the buffer. 
    */
-  public static final native WebGLIntArray create(WebGLIntArray array) /*-{
-    return new WebGLIntArray(array);
+  public static final native Int16Array create(Int16Array array) /*-{
+    return new Int16Array(array);
   }-*/;
   
   /**
-   * Create a new canvas array object using the passed WebGLArrayBuffer for its storage. 
+   * Create a new canvas array object using the passed ArrayBuffer for its storage. 
    */
-  public static final native WebGLIntArray create(WebGLArrayBuffer buffer) /*-{
-    return new WebGLIntArray(buffer);
+  public static final native Int16Array create(ArrayBuffer buffer) /*-{
+    return new Int16Array(buffer);
   }-*/;
 
   /**
-   * Create a new canvas array object using the passed WebGLArrayBuffer for its storage,
+   * Create a new canvas array object using the passed ArrayBuffer for its storage,
    * starting at the given byte offset and extending to the end of the underlying buffer.
    */
-  public static final native WebGLIntArray create(WebGLArrayBuffer buffer, 
+  public static final native Int16Array create(ArrayBuffer buffer, 
       int byteOffset) /*-{
-    return new WebGLIntArray(buffer, byteOffset);
+    return new Int16Array(buffer, byteOffset);
   }-*/;
 
   /**
-   * Create a new canvas array object using the passed WebGLArrayBuffer for its storage. 
-   * @param byteOffset indicates the offset in bytes from the start of the WebGLArrayBuffer.
+   * Create a new canvas array object using the passed ArrayBuffer for its storage. 
+   * @param byteOffset indicates the offset in bytes from the start of the ArrayBuffer.
    * @param length the count of elements from the offset that this WebGLByteArray will 
    *                reference. 
    * @return the new canvas array.
    */
-  public static final native WebGLIntArray create(WebGLArrayBuffer buffer, int byteOffset, 
+  public static final native Int16Array create(ArrayBuffer buffer, int byteOffset, 
       int length) /*-{
-    return new WebGLIntArray(buffer, byteOffset, length);
+    return new Int16Array(buffer, byteOffset, length);
   }-*/;
   
   /**
    * Return the element at the given index. If the index is out of range, an exception is raised. 
    */
-  public native final int get(int index) /*-{
+  public native final short get(int index) /*-{
     return this[index];
   }-*/;
   
@@ -104,7 +105,7 @@ public class WebGLIntArray extends WebGLArray<WebGLIntArray> {
    * Sets the element at the given index to the given value. If the index is out of range, 
    * an exception is raised. 
    */
-  public native final void set(int index, int value) /*-{
+  public native final void set(int index, short value) /*-{
     this[index] = value;
   }-*/;
 
@@ -129,7 +130,7 @@ public class WebGLIntArray extends WebGLArray<WebGLIntArray> {
   /**
    * Set multiple values, reading input values from the array.
    */
-  public native final void set(WebGLIntArray array) /*-{
+  public native final void set(Int16Array array) /*-{
     this.set(array);
   }-*/;
 
@@ -139,14 +140,14 @@ public class WebGLIntArray extends WebGLArray<WebGLIntArray> {
    * @param array the array to read the values from
    * @param offset indicates the index in the current array where values are written. 
    */
-  public native final void set(WebGLIntArray array, int offset) /*-{
+  public native final void set(Int16Array array, int offset) /*-{
     this.set(array, offset);
   }-*/;
 
   /**
    * Set multiple values, reading input values from the array.
    */
-  public final void set(int[] array) {
+  public final void set(short[] array) {
     set(array, 0);
   }
   
@@ -156,7 +157,7 @@ public class WebGLIntArray extends WebGLArray<WebGLIntArray> {
    * @param array the array to read the values from
    * @param offset indicates the index in the current array where values are written. 
    */
-  public final void set(int[] array, int offset) {
+  public final void set(short[] array, int offset) {
     int len = array.length;
     for (int i = 0; i < len; i++) {
       set(i + offset, array[i]);

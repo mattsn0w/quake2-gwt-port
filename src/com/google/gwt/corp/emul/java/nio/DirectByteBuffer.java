@@ -21,10 +21,10 @@ import com.google.gwt.corp.compatibility.Numbers;
 
 import org.apache.harmony.luni.platform.Endianness;
 
-import com.google.gwt.corp.webgl.client.HasWebGLArray;
-import com.google.gwt.corp.webgl.client.WebGLArray;
-import com.google.gwt.corp.webgl.client.WebGLArrayBuffer;
-import com.google.gwt.corp.webgl.client.WebGLByteArray;
+import com.google.gwt.corp.webgl.client.HasTypedArray;
+import com.google.gwt.corp.webgl.client.TypedArray;
+import com.google.gwt.corp.webgl.client.ArrayBuffer;
+import com.google.gwt.corp.webgl.client.Int8Array;
 
 /**
  * DirectByteBuffer, DirectReadWriteByteBuffer and DirectReadOnlyHeapByteBuffer compose
@@ -38,24 +38,24 @@ import com.google.gwt.corp.webgl.client.WebGLByteArray;
  * </p>
  * 
  */
-abstract class DirectByteBuffer extends BaseByteBuffer implements HasWebGLArray {
+abstract class DirectByteBuffer extends BaseByteBuffer implements HasTypedArray {
 
-	WebGLByteArray byteArray;
+	Int8Array byteArray;
 	
     DirectByteBuffer(int capacity) {
-    	this(WebGLArrayBuffer.create(capacity), capacity, 0);
+    	this(ArrayBuffer.create(capacity), capacity, 0);
     }
 
-    DirectByteBuffer(WebGLArrayBuffer buf) {
+    DirectByteBuffer(ArrayBuffer buf) {
     	this(buf, buf.getByteLength(), 0);
     }
     
-    DirectByteBuffer(WebGLArrayBuffer buffer, int capacity, int offset) {
+    DirectByteBuffer(ArrayBuffer buffer, int capacity, int offset) {
     	super(capacity);
-    	byteArray = WebGLByteArray.create(buffer, offset, capacity);
+    	byteArray = Int8Array.create(buffer, offset, capacity);
     }
 
-	public WebGLArray<?> getWebGLArray() {
+	public TypedArray<?> getTypedArray() {
 		return byteArray;
 	}
 	

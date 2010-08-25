@@ -410,6 +410,10 @@ public class WebGL extends JavaScriptObject {
   public static final int GL_COMPILE_STATUS = 35713;
   public static final int GL_LINK_STATUS = 35714;
 
+  // WebGL constants
+  public static final int UNPACK_FLIP_Y_WEBGL            = 0x9240;
+  public static final int UNPACK_PREMULTIPLY_ALPHA_WEBGL = 0x9241;
+
   protected WebGL() {
   }
 
@@ -454,7 +458,7 @@ public class WebGL extends JavaScriptObject {
     this.bindTexture(t, i);
   }-*/;
 
-  public native final void glBufferData(int target, WebGLArray data, int usage) /*-{
+  public native final void glBufferData(int target, TypedArray data, int usage) /*-{
     this.bufferData(target, data, usage);
   }-*/;
 
@@ -602,20 +606,21 @@ public class WebGL extends JavaScriptObject {
   /**
    * Canvas, image and video elements should work here.
    */
-  public native final void glTexImage2D(int target, int texture, Element image)  /*-{
-    this.texImage2D(target, texture, image);
+  public native final void glTexImage2D(int target, int texture, int internalformat, int format, int type, Element image)  /*-{
+    this.texImage2D(target, texture, internalformat, format, type, image);
   }-*/;
 
   /**
    * Canvas, image and video elements should work here.
    */
-  public native final void glTexImage2D(int target, int texture, Element image, boolean flip)  /*-{
-    this.texImage2D(target, texture, image, flip);
+  public native final void glTexImage2D(int target, int texture, int internalformat, int format, int type, Element image, boolean flip)  /*-{
+    this.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    this.texImage2D(target, texture, internalformat, format, type, image);
   }-*/;
 
   
   public native final void glTexImage2D (int target, int level, int internalformat, 
-      int width, int height, int border, int format, int type, WebGLArray<?> pixels) /*-{
+      int width, int height, int border, int format, int type, TypedArray<?> pixels) /*-{
     this.texImage2D(target, level, internalformat, width, height, border, format, type, pixels);
   }-*/;
   
@@ -624,7 +629,7 @@ public class WebGL extends JavaScriptObject {
   }-*/;
 
   public native final void glUniformMatrix4fv(int location, boolean transpose, 
-      WebGLArray<?> data) /*-{
+      TypedArray<?> data) /*-{
     this.uniformMatrix4fv(location, transpose, data); 
   }-*/;
 
@@ -689,13 +694,17 @@ public class WebGL extends JavaScriptObject {
 
 
   public native final void glTexSubImage2D(int target, int level, int xoffset, int yoffset, 
-      int width, int height, int format, int type, WebGLArray<?> pixels) /*-{
+      int width, int height, int format, int type, TypedArray<?> pixels) /*-{
     this.texSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
   }-*/;
   
   public native final void glTexSubImage2D(int target, int level, int xoffset, int yoffset, 
       JavaScriptObject image, boolean optFlipY, boolean optAsPremultipliedAlpha)  /*-{
-    this.texSubImage2D(target, level, xoffset, yoffset, image, optFlipY, optAsPremultipliedAlpha);
+    this.pixelStorei(this.UNPACK_FLIP_Y_WEBGL, optFlipY);
+    this.pixelStorei(this.UNPACK_PREMULTIPLY_ALPHA_WEBGL, optAsPremultipliedAlpha);
+    this.texSubImage2D(target, level, xoffset, yoffset, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    this.pixelStorei(this.UNPACK_FLIP_Y_WEBGL, false);
+    this.pixelStorei(this.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
   }-*/;
 
   public native final void glDepthFunc(int func) /*-{
@@ -718,7 +727,7 @@ public class WebGL extends JavaScriptObject {
   	this.pixelStorei(i, j);
   }-*/;
 
-  public native final void glBufferSubData(int target, int offset, WebGLArray<?> data) /*-{
+  public native final void glBufferSubData(int target, int offset, TypedArray<?> data) /*-{
 	this.bufferSubData(target, offset, data);
   }-*/;
 }
