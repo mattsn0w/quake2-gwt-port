@@ -15,8 +15,8 @@
  */
 package com.google.gwt.corp.webgl.client;
 
-public interface HasWebGLArray {
-	public WebGLArray<?> getWebGLArray();
+public interface HasTypedArray {
+	public TypedArray<?> getTypedArray();
 
 	public int getElementSize();
 }

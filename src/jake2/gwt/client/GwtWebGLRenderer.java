@@ -312,7 +312,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 			canvas1.getContext2D().clearRect(0, 0, p2w, p2h);
 			canvas1.getContext2D().drawImage(img, 0, 0, p2w, p2h);
 
-			webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, level++, canvas1);
+			webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, level++, GLAdapter.GL_RGBA, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, canvas1);
 			
 			p2w = p2w / 2;
 			p2h = p2h / 2;
@@ -332,7 +332,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
     image.upload_height = image.height;
     image.upload_width = image.width;
     GL_Bind(image.texnum);
-    webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, 0, img);
+    webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, 0, GLAdapter.GL_RGBA, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, img);
     gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, GLAdapter.GL_LINEAR);
     gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
   }

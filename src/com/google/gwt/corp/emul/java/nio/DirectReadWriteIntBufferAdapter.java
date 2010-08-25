@@ -16,9 +16,9 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.HasWebGLArray;
-import com.google.gwt.corp.webgl.client.WebGLArray;
-import com.google.gwt.corp.webgl.client.WebGLIntArray;
+import com.google.gwt.corp.webgl.client.HasTypedArray;
+import com.google.gwt.corp.webgl.client.TypedArray;
+import com.google.gwt.corp.webgl.client.Int32Array;
 
 //import org.apache.harmony.nio.internal.DirectBuffer;
 //import org.apache.harmony.luni.platform.PlatformAddress;
@@ -36,7 +36,7 @@ import com.google.gwt.corp.webgl.client.WebGLIntArray;
  * </p>
  * 
  */
-final class DirectReadWriteIntBufferAdapter extends IntBuffer implements HasWebGLArray {
+final class DirectReadWriteIntBufferAdapter extends IntBuffer implements HasTypedArray {
 //implements DirectBuffer {
 
     static IntBuffer wrap(DirectReadWriteByteBuffer byteBuffer) {
@@ -44,13 +44,13 @@ final class DirectReadWriteIntBufferAdapter extends IntBuffer implements HasWebG
     }
 
     private final DirectReadWriteByteBuffer byteBuffer;
-    private final WebGLIntArray intArray;
+    private final Int32Array intArray;
 
     DirectReadWriteIntBufferAdapter(DirectReadWriteByteBuffer byteBuffer) {
         super((byteBuffer.capacity() >> 2));
         this.byteBuffer = byteBuffer;
         this.byteBuffer.clear();
-        this.intArray = WebGLIntArray.create(byteBuffer.byteArray.getBuffer(), 
+        this.intArray = Int32Array.create(byteBuffer.byteArray.getBuffer(), 
         			byteBuffer.byteArray.getByteOffset(),
         			capacity);
     }
@@ -161,7 +161,7 @@ final class DirectReadWriteIntBufferAdapter extends IntBuffer implements HasWebG
         return result;
     }
 
-	public WebGLArray<?> getWebGLArray() {
+	public TypedArray<?> getTypedArray() {
 		return intArray;
 	}
 

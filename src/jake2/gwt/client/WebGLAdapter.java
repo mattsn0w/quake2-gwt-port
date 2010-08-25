@@ -23,15 +23,15 @@ import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.corp.gfx.client.canvas.CanvasElement;
 import com.google.gwt.corp.webgl.client.ByteBufferWrapper;
-import com.google.gwt.corp.webgl.client.HasWebGLArray;
+import com.google.gwt.corp.webgl.client.HasTypedArray;
 import com.google.gwt.corp.webgl.client.WebGL;
-import com.google.gwt.corp.webgl.client.WebGLArray;
-import com.google.gwt.corp.webgl.client.WebGLByteArray;
-import com.google.gwt.corp.webgl.client.WebGLFloatArray;
-import com.google.gwt.corp.webgl.client.WebGLIntArray;
-import com.google.gwt.corp.webgl.client.WebGLShortArray;
-import com.google.gwt.corp.webgl.client.WebGLUnsignedByteArray;
-import com.google.gwt.corp.webgl.client.WebGLUnsignedShortArray;
+import com.google.gwt.corp.webgl.client.TypedArray;
+import com.google.gwt.corp.webgl.client.Int8Array;
+import com.google.gwt.corp.webgl.client.Int16Array;
+import com.google.gwt.corp.webgl.client.Int32Array;
+import com.google.gwt.corp.webgl.client.Float32Array;
+import com.google.gwt.corp.webgl.client.Uint8Array;
+import com.google.gwt.corp.webgl.client.Uint16Array;
 import com.google.gwt.corp.webgl.client.WebGL.Texture;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
@@ -67,7 +67,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   JsArray<WebGL.Buffer> staticBuffers = (JsArray<WebGL.Buffer>) JavaScriptObject.createArray();
   
   class BufferData {
-	  WebGLArray<?> toBind;
+	  TypedArray<?> toBind;
 	  WebGL.Buffer buffer;
 	  int byteStride;
 	  int size;
@@ -179,6 +179,9 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
       "}\n";
 
     String fragmentShaderSource =
+        "#ifdef GL_ES\n" +
+        "precision mediump float;\n" +
+        "#endif\n" +
         "uniform sampler2D s_texture0;  \n" + 
         "uniform sampler2D s_texture1;  \n" + 
         "uniform int s_texEnv0;  \n" + 
@@ -271,7 +274,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
     gl.glActiveTexture(GL_TEXTURE0);
   }
 
-  public String webGLFloatArrayToString(WebGLFloatArray fa) {
+  public String webGLFloatArrayToString(Float32Array fa) {
 	  StringBuilder sb = new StringBuilder();
 	  sb.append("len: " + fa.getLength());
 	  sb.append("data: ");
@@ -281,7 +284,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 	  return sb.toString();
   }
 
-  public String webGLIntArrayToString(WebGLIntArray fa) {
+  public String webGLIntArrayToString(Int32Array fa) {
 	  StringBuilder sb = new StringBuilder();
 	  sb.append("len: " + fa.getLength());
 	  sb.append("data: ");
@@ -291,7 +294,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 	  return sb.toString();
   }
 
-  public String webGLUnsignedShortArrayToString(WebGLUnsignedShortArray fa) {
+  public String webGLUnsignedShortArrayToString(Uint16Array fa) {
 	  StringBuilder sb = new StringBuilder();
 	  sb.append("len: " + fa.getLength());
 	  sb.append("data: ");
@@ -376,7 +379,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 	  gl.glBindBuffer(WebGL.GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
 	  checkError("bindBuffer(el)");
 	  gl.glBufferData(WebGL.GL_ELEMENT_ARRAY_BUFFER, 
-			  getWebGLArray(srcIndexBuf, WebGL.GL_UNSIGNED_SHORT), 
+			  getTypedArray(srcIndexBuf, WebGL.GL_UNSIGNED_SHORT), 
 			  WebGL.GL_DYNAMIC_DRAW);
 	  checkError("bufferData(el)");
 
@@ -461,7 +464,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
   		int height, int border, int format, int type, ByteBuffer pixels) {
 	  
 	textureFormat.set(boundTextureId[activeTexture], internalformat);
-	WebGLArray<?> array = getWebGLArray(pixels, type);
+	TypedArray<?> array = getTypedArray(pixels, type);
   	gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, array);
   	checkError("glTexImage2D");
   }
@@ -471,7 +474,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
   		int height, int border, int format, int type, IntBuffer pixels) {
 	  
 	textureFormat.set(boundTextureId[activeTexture], internalformat);
-	WebGLArray<?> array = getWebGLArray(pixels, type);
+	TypedArray<?> array = getTypedArray(pixels, type);
 	gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, array);
 	checkError("glTexImage2D");
   }
@@ -486,7 +489,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
   @Override
   public void glTexSubImage2D(int target, int level, int xoffset, int yoffset,
   		int width, int height, int format, int type, ByteBuffer pixels) {
-	  WebGLArray<?> array = getWebGLArray(pixels, type);
+	  TypedArray<?> array = getTypedArray(pixels, type);
 	  gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, array);
 	  checkError("glTexSubImage2D");
   }
@@ -494,7 +497,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
   @Override
   public void glTexSubImage2D(int target, int level, int xoffset, int yoffset,
   		int width, int height, int format, int type, IntBuffer pixels) {
-	  WebGLArray<?> array = getWebGLArray(pixels, type);
+	  TypedArray<?> array = getTypedArray(pixels, type);
 	  gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, array);
 	  checkError("glTexSubImage2D");
   }
@@ -568,10 +571,10 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
     checkError("glColor4f");
   }
 
-  public void glTexImage2d(int target, int level, Element image) {
+  public void glTexImage2d(int target, int level, int internalformat, int format, int type, Element image) {
 //		log("setting texImage2d; image: " + image.getSrc());
 
-	  gl.glTexImage2D(target, level, image);
+	  gl.glTexImage2D(target, level, internalformat, format, type, image);
 	  checkError("texImage2D");
   }
 
@@ -636,7 +639,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 	  buf.position(pos + offset);
 	  buf.limit(pos + offset + count);
 	  
-	  WebGLArray<?> data = getWebGLArray(buf, GL_FLOAT);
+	  TypedArray<?> data = getTypedArray(buf, GL_FLOAT);
 	  
 	  gl.glBufferSubData(WebGL.GL_ARRAY_BUFFER, offset * 4, data);
 	  
@@ -646,7 +649,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   private void prepareDraw() {
     if (updateMvpMatrix()) {
-      gl.glUniformMatrix4fv(uMvpMatrix, false, WebGLFloatArray.create(mvpMatrix));
+      gl.glUniformMatrix4fv(uMvpMatrix, false, Float32Array.create(mvpMatrix));
       checkError("prepareDraw");
     }
     
@@ -811,7 +814,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 	  bd.size = size;
 	  bd.normalize = normalize;
 	  bd.type = type;
-      WebGLArray<?> webGLArray = getWebGLArray(nioBuffer, type);
+      TypedArray<?> webGLArray = getTypedArray(nioBuffer, type);
 	  bd.toBind = webGLArray;		  
   }
   
@@ -823,7 +826,7 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 		  buffer = gl.glCreateBuffer();
 		  staticBuffers.set(staticDrawId, buffer);
 		  gl.glBindBuffer(WebGL.GL_ARRAY_BUFFER, buffer);
-		  WebGLArray<?> webGLArray = getWebGLArray(nioBuffer, type);
+		  TypedArray<?> webGLArray = getTypedArray(nioBuffer, type);
 		  gl.glBufferData(WebGL.GL_ARRAY_BUFFER, webGLArray, WebGL.GL_STATIC_DRAW); 
 		  checkError("bufferData");
 		  log("static buffer created; id: " + staticDrawId + " remaining: " + nioBuffer.remaining());
@@ -835,12 +838,12 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
   }
 
 
-  private WebGLArray<?> getWebGLArray(Buffer buffer, int type) {
+  private TypedArray<?> getTypedArray(Buffer buffer, int type) {
 
 	  int elementSize;
-	  HasWebGLArray arrayHolder;
+	  HasTypedArray arrayHolder;
 	  
-	  if (!(buffer instanceof HasWebGLArray)) {
+	  if (!(buffer instanceof HasTypedArray)) {
 		  if (type != GL_BYTE && type != GL_UNSIGNED_BYTE) {
 			  log("buffer byte order problem");
 			  throw new RuntimeException("Buffer byte order problem");
@@ -850,35 +853,35 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 		  } else {
 			  throw new RuntimeException("NYI");
 		  }
-		  arrayHolder = (HasWebGLArray) ((ByteBufferWrapper) buffer).getByteBuffer();
+		  arrayHolder = (HasTypedArray) ((ByteBufferWrapper) buffer).getByteBuffer();
 	  } else {
-		  arrayHolder = (HasWebGLArray) buffer;
+		  arrayHolder = (HasTypedArray) buffer;
 		  elementSize = arrayHolder.getElementSize();
 	  }
 	  
-	  WebGLArray<?> webGLArray = arrayHolder.getWebGLArray();
+	  TypedArray<?> webGLArray = arrayHolder.getTypedArray();
 	  int remainingBytes = buffer.remaining() * elementSize;
 
 	  int byteOffset = webGLArray.getByteOffset() + buffer.position() * elementSize;
 	  
 	  switch (type) {
 	  case WebGL.GL_FLOAT: 
-		  return WebGLFloatArray.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 4);
+		  return Float32Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 4);
 		  
 	  case WebGL.GL_UNSIGNED_BYTE: 
-		  return WebGLUnsignedByteArray.create(webGLArray.getBuffer(), byteOffset, remainingBytes);
+		  return Uint8Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes);
 		  
 	  case WebGL.GL_UNSIGNED_SHORT: 
-		  return WebGLUnsignedShortArray.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 2);
+		  return Uint16Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 2);
 
 	  case WebGL.GL_INT: 
-		  return WebGLIntArray.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 4);
+		  return Int32Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 4);
 
 	  case WebGL.GL_SHORT: 
-		  return WebGLShortArray.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 2);
+		  return Int16Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 2);
   
 	  case WebGL.GL_BYTE: 
-		  return WebGLByteArray.create(webGLArray.getBuffer(), byteOffset, remainingBytes);
+		  return Int8Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes);
 	  }
 	  
 	  throw new IllegalArgumentException();

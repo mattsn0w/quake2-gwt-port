@@ -15,9 +15,9 @@
  */
 package com.google.gwt.corp.compatibility;
 
-import com.google.gwt.corp.webgl.client.WebGLByteArray;
-import com.google.gwt.corp.webgl.client.WebGLFloatArray;
-import com.google.gwt.corp.webgl.client.WebGLIntArray;
+import com.google.gwt.corp.webgl.client.Float32Array;
+import com.google.gwt.corp.webgl.client.Int32Array;
+import com.google.gwt.corp.webgl.client.Int8Array;
 
 public class Numbers {
   
@@ -65,9 +65,9 @@ public class Numbers {
 //    return signBit | ((exponent + 127) << 23) | (significand & 0x007fffff);
   }
   
-  static WebGLByteArray wba = WebGLByteArray.create(4);
-  static WebGLIntArray wia = WebGLIntArray.create(wba.getBuffer(), 0, 1);
-  static WebGLFloatArray wfa = WebGLFloatArray.create(wba.getBuffer(), 0, 1);
+  static Int8Array wba = Int8Array.create(4);
+  static Int32Array wia = Int32Array.create(wba.getBuffer(), 0, 1);
+  static Float32Array wfa = Float32Array.create(wba.getBuffer(), 0, 1);
   
   public static final float intBitsToFloat(int i) {
 //	  wba.set(0, (byte) (i >> 24));

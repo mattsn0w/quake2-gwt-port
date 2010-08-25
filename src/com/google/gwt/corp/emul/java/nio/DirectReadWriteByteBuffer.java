@@ -16,7 +16,7 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.WebGLArrayBuffer;
+import com.google.gwt.corp.webgl.client.ArrayBuffer;
 import com.google.gwt.corp.compatibility.Numbers;
 
 /**
@@ -42,7 +42,7 @@ final class DirectReadWriteByteBuffer extends DirectByteBuffer {
         return buf;
     }
 
-    DirectReadWriteByteBuffer(WebGLArrayBuffer backingArray) {
+    DirectReadWriteByteBuffer(ArrayBuffer backingArray) {
         super(backingArray);
     }
 
@@ -50,7 +50,7 @@ final class DirectReadWriteByteBuffer extends DirectByteBuffer {
         super(capacity);
     }
 
-    DirectReadWriteByteBuffer(WebGLArrayBuffer backingArray, int capacity, int arrayOffset) {
+    DirectReadWriteByteBuffer(ArrayBuffer backingArray, int capacity, int arrayOffset) {
         super(backingArray, capacity, arrayOffset);
     }
 
