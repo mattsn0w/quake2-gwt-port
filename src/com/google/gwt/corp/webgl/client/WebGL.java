@@ -682,11 +682,6 @@ public class WebGL extends JavaScriptObject {
   public native final String glGetParameter(int id) /*-{
     return this.getParameter(id);
   }-*/;
-  
-  @Deprecated
-  public native final String glGetString(int id) /*-{
-	return this.getString(id);
-  }-*/;
 
   public native final void glTexParameteri(int target, int pname, int param) /*-{
   	this.texParameteri(target, pname, param);
