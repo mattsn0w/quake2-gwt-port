@@ -34,8 +34,6 @@ import jake2.render.msurface_t;
 import jake2.util.Math3D;
 import jake2.util.Vec3Cache;
 
-import java.nio.FloatBuffer;
-
 
 /**
  * Warp
@@ -695,13 +693,8 @@ public abstract class Warp extends Model {
 			if (gl_skymip.value != 0 || skyrotate != 0)
 				gl_picmip.value++;
 
-			if ( qglColorTableEXT && gl_ext_palettedtexture.value != 0) {
-				//	Com_sprintf (pathname, sizeof(pathname), "env/%s%s.pcx", skyname, suf[i]);
-				pathname = "env/" + skyname + suf[i] + ".pcx";
-			} else {
-				// Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
-				pathname = "env/" + skyname + suf[i] + ".tga";
-			}
+			// Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
+			pathname = "env/" + skyname + suf[i] + ".tga";
 
 //			gl.log("loadSky:" + pathname);
 			

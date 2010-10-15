@@ -41,7 +41,6 @@ import jake2.qcommon.QuakeImage;
 import jake2.qcommon.qfiles;
 import jake2.qcommon.xcommand_t;
 import jake2.render.GLAdapter;
-import jake2.render.glconfig_t;
 import jake2.render.glstate_t;
 import jake2.render.image_t;
 import jake2.render.mleaf_t;
@@ -67,11 +66,8 @@ public abstract class Main extends Base {
 
 	// this a hack for function pointer test
 	// default disabled
-	boolean qglColorTableEXT = false;
 	boolean qglActiveTextureARB = false;
 	boolean qglPointParameterfEXT = false;
-	boolean qglLockArraysEXT = false;
-	boolean qwglSwapIntervalEXT = false;
 
 	//	=================
 	//  abstract methods
@@ -126,7 +122,6 @@ public abstract class Main extends Base {
 
 	float gldepthmin, gldepthmax;
 
-	glconfig_t gl_config = new glconfig_t();
 	glstate_t gl_state = new glstate_t();
 
 	image_t r_notexture; // use for bad textures
@@ -1099,176 +1094,10 @@ public abstract class Main extends Base {
 	 * R_Init2
 	 */
 	protected boolean R_Init2() {
-		/*
-		** get our various GL strings
-		*/
-		gl_config.vendor_string = gl.glGetString(GLAdapter.GL_VENDOR);
-		VID.Printf(Defines.PRINT_ALL, "GL_VENDOR: " + gl_config.vendor_string + '\n');
-		gl_config.renderer_string = gl.glGetString(GLAdapter.GL_RENDERER);
-		VID.Printf(Defines.PRINT_ALL, "GL_RENDERER: " + gl_config.renderer_string + '\n');
-		gl_config.version_string = gl.glGetString(GLAdapter.GL_VERSION);
-		VID.Printf(Defines.PRINT_ALL, "GL_VERSION: " + gl_config.version_string + '\n');
-		gl_config.extensions_string = gl.glGetString(GLAdapter.GL_EXTENSIONS);
-		VID.Printf(Defines.PRINT_ALL, "GL_EXTENSIONS: " + gl_config.extensions_string + '\n');
-		
-		gl_config.parseOpenGLVersion();
-
-		String renderer_buffer = gl_config.renderer_string.toLowerCase();
-		String vendor_buffer = gl_config.vendor_string.toLowerCase();
-
-		if (renderer_buffer.indexOf("voodoo") >= 0) {
-			if (renderer_buffer.indexOf("rush") < 0)
-				gl_config.renderer = GL_RENDERER_VOODOO;
-			else
-				gl_config.renderer = GL_RENDERER_VOODOO_RUSH;
-		}
-		else if (vendor_buffer.indexOf("sgi") >= 0)
-			gl_config.renderer = GL_RENDERER_SGI;
-		else if (renderer_buffer.indexOf("permedia") >= 0)
-			gl_config.renderer = GL_RENDERER_PERMEDIA2;
-		else if (renderer_buffer.indexOf("glint") >= 0)
-			gl_config.renderer = GL_RENDERER_GLINT_MX;
-		else if (renderer_buffer.indexOf("glzicd") >= 0)
-			gl_config.renderer = GL_RENDERER_REALIZM;
-		else if (renderer_buffer.indexOf("gdi") >= 0)
-			gl_config.renderer = GL_RENDERER_MCD;
-		else if (renderer_buffer.indexOf("pcx2") >= 0)
-			gl_config.renderer = GL_RENDERER_PCX2;
-		else if (renderer_buffer.indexOf("verite") >= 0)
-			gl_config.renderer = GL_RENDERER_RENDITION;
-		else
-			gl_config.renderer = GL_RENDERER_OTHER;
-
-		String monolightmap = gl_monolightmap.string.toUpperCase();
-		if (monolightmap.length() < 2 || monolightmap.charAt(1) != 'F') {
-			if (gl_config.renderer == GL_RENDERER_PERMEDIA2) {
-				Cvar.Set("gl_monolightmap", "A");
-				VID.Printf(Defines.PRINT_ALL, "...using gl_monolightmap 'a'\n");
-			}
-			else if ((gl_config.renderer & GL_RENDERER_POWERVR) != 0) {
-				Cvar.Set("gl_monolightmap", "0");
-			}
-			else {
-				Cvar.Set("gl_monolightmap", "0");
-			}
-		}
-
-		// power vr can't have anything stay in the framebuffer, so
-		// the screen needs to redraw the tiled background every frame
-		if ((gl_config.renderer & GL_RENDERER_POWERVR) != 0) {
-			Cvar.Set("scr_drawall", "1");
-		}
-		else {
-			Cvar.Set("scr_drawall", "0");
-		}
-
-		// MCD has buffering issues
-		if (gl_config.renderer == GL_RENDERER_MCD) {
-			Cvar.SetValue("gl_finish", 1);
-		}
-
-		if ((gl_config.renderer & GL_RENDERER_3DLABS) != 0) {
-			if (gl_3dlabs_broken.value != 0.0f)
-				gl_config.allow_cds = false;
-			else
-				gl_config.allow_cds = true;
-		}
-		else {
-			gl_config.allow_cds = true;
-		}
-
-		if (gl_config.allow_cds)
-			VID.Printf(Defines.PRINT_ALL, "...allowing CDS\n");
-		else
-			VID.Printf(Defines.PRINT_ALL, "...disabling CDS\n");
-
-		/*
-		** grab extensions
-		*/
-		if (gl_config.extensions_string.indexOf("GL_EXT_compiled_vertex_array") >= 0
-			|| gl_config.extensions_string.indexOf("GL_SGI_compiled_vertex_array") >= 0) {
-			VID.Printf(Defines.PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n");
-			//		 qglLockArraysEXT = ( void * ) qwglGetProcAddress( "glLockArraysEXT" );
-			if (gl_ext_compiled_vertex_array.value != 0.0f)
-				qglLockArraysEXT = true;
-			else
-				qglLockArraysEXT = false;
-			//		 qglUnlockArraysEXT = ( void * ) qwglGetProcAddress( "glUnlockArraysEXT" );
-			//qglUnlockArraysEXT = true;
-		}
-		else {
-			VID.Printf(Defines.PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n");
-			qglLockArraysEXT = false;
-		}
-
-		if (gl_config.extensions_string.indexOf("WGL_EXT_swap_control") >= 0) {
-			qwglSwapIntervalEXT = true;
-			VID.Printf(Defines.PRINT_ALL, "...enabling WGL_EXT_swap_control\n");
-		} else {
-			qwglSwapIntervalEXT = false;
-			VID.Printf(Defines.PRINT_ALL, "...WGL_EXT_swap_control not found\n");
-		}
-
-		if (gl_config.extensions_string.indexOf("GL_EXT_point_parameters") >= 0) {
-			if (gl_ext_pointparameters.value != 0.0f) {
-				//			 qglPointParameterfEXT = ( void (APIENTRY *)( GLenum, GLfloat ) ) qwglGetProcAddress( "glPointParameterfEXT" );
-				qglPointParameterfEXT = true;
-				//			 qglPointParameterfvEXT = ( void (APIENTRY *)( GLenum, const GLfloat * ) ) qwglGetProcAddress( "glPointParameterfvEXT" );
-				VID.Printf(Defines.PRINT_ALL, "...using GL_EXT_point_parameters\n");
-			}
-			else {
-				VID.Printf(Defines.PRINT_ALL, "...ignoring GL_EXT_point_parameters\n");
-			}
-		}
-		else {
-			VID.Printf(Defines.PRINT_ALL, "...GL_EXT_point_parameters not found\n");
-		}
-
-		// #ifdef __linux__
-		//	 if ( strstr( gl_config.extensions_string, "3DFX_set_global_palette" ))
-		//	 {
-		//		 if ( gl_ext_palettedtexture->value )
-		//		 {
-		//			 VID.Printf( Defines.PRINT_ALL, "...using 3DFX_set_global_palette\n" );
-		//			 qgl3DfxSetPaletteEXT = ( void ( APIENTRY * ) (GLuint *) )qwglGetProcAddress( "gl3DfxSetPaletteEXT" );
-		////			 qglColorTableEXT = Fake_glColorTableEXT;
-		//		 }
-		//		 else
-		//		 {
-		//			 VID.Printf( Defines.PRINT_ALL, "...ignoring 3DFX_set_global_palette\n" );
-		//		 }
-		//	 }
-		//	 else
-		//	 {
-		//		 VID.Printf( Defines.PRINT_ALL, "...3DFX_set_global_palette not found\n" );
-		//	 }
-		// #endif
-
-		if (!qglColorTableEXT
-			&& gl_config.extensions_string.indexOf("GL_EXT_paletted_texture") >= 0
-			&& gl_config.extensions_string.indexOf("GL_EXT_shared_texture_palette") >= 0) {
-			if (gl_ext_palettedtexture.value != 0.0f) {
-				VID.Printf(Defines.PRINT_ALL, "...using GL_EXT_shared_texture_palette\n");
-				qglColorTableEXT = false; // true; TODO jogl bug
-			}
-			else {
-				VID.Printf(Defines.PRINT_ALL, "...ignoring GL_EXT_shared_texture_palette\n");
-				qglColorTableEXT = false;
-			}
-		}
-		else {
-			VID.Printf(Defines.PRINT_ALL, "...GL_EXT_shared_texture_palette not found\n");
-		}
-
-//		if (gl_config.extensions_string.indexOf("GL_ARB_multitexture") >= 0) {
-//			VID.Printf(Defines.PRINT_ALL, "...using GL_ARB_multitexture\n");
-			qglActiveTextureARB = true;
-			GL_TEXTURE0 = GLAdapter.GL_TEXTURE0;
-			GL_TEXTURE1 = GLAdapter.GL_TEXTURE1;
-//		}
-//		else {
-//			VID.Printf(Defines.PRINT_ALL, "...GL_ARB_multitexture not found\n");
-//		}
+		qglPointParameterfEXT = true;
+		qglActiveTextureARB = true;
+		GL_TEXTURE0 = GLAdapter.GL_TEXTURE0;
+		GL_TEXTURE1 = GLAdapter.GL_TEXTURE1;
 
 		if (!(qglActiveTextureARB))
 			return false;
@@ -1342,22 +1171,6 @@ public abstract class Main extends Base {
 		*/
 		if (vid_gamma.modified) {
 			vid_gamma.modified = false;
-
-			if ((gl_config.renderer & GL_RENDERER_VOODOO) != 0) {
-				// wird erstmal nicht gebraucht
-
-				/* 
-				char envbuffer[1024];
-				float g;
-				
-				g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
-				Com_sprintf( envbuffer, sizeof(envbuffer), "SSTV2_GAMMA=%f", g );
-				putenv( envbuffer );
-				Com_sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
-				putenv( envbuffer );
-				*/
-				VID.Printf(Defines.PRINT_DEVELOPER, "gamma anpassung fuer VOODOO nicht gesetzt");
-			}
 		}
 
 		GLimp_BeginFrame(camera_separation);

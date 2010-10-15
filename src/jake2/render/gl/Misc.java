@@ -191,10 +191,12 @@ public abstract class Misc extends Mesh {
 	** GL_Strings_f
 	*/
 	void GL_Strings_f()	{
+	  /*
 		VID.Printf(Defines.PRINT_ALL, "GL_VENDOR: " + gl_config.vendor_string + '\n');
 		VID.Printf(Defines.PRINT_ALL, "GL_RENDERER: " + gl_config.renderer_string + '\n');
 		VID.Printf(Defines.PRINT_ALL, "GL_VERSION: " + gl_config.version_string + '\n');
 		VID.Printf(Defines.PRINT_ALL, "GL_EXTENSIONS: " + gl_config.extensions_string + '\n');
+		*/
 	}
 
 	/*
@@ -269,12 +271,6 @@ public abstract class Misc extends Mesh {
 		if ( gl_swapinterval.modified )
 		{
 			gl_swapinterval.modified = false;
-			if ( !gl_state.stereo_enabled ) 
-			{
-				if (qwglSwapIntervalEXT) {
-					// ((WGL)gl).wglSwapIntervalEXT((int)gl_swapinterval.value);
-				}
-			}
 		}
 	}
 }

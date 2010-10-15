@@ -624,32 +624,7 @@ public abstract class Image extends Main {
 		}
 	}
 
-	/*
-	===============
-	GL_Upload32
-	
-	Returns has_alpha
-	===============
-	*/
-	void GL_BuildPalettedTexture(ByteBuffer paletted_texture, int[] scaled, int scaled_width, int scaled_height) {
-
-		int r, g, b, c;
-		int size = scaled_width * scaled_height;
-
-		for (int i = 0; i < size; i++) {
-
-			r = (scaled[i] >> 3) & 31;
-			g = (scaled[i] >> 10) & 63;
-			b = (scaled[i] >> 19) & 31;
-
-			c = r | (g << 5) | (b << 11);
-
-			paletted_texture.put(i, gl_state.d_16to8table[c]);
-		}
-	}
-
 	int upload_width, upload_height;
-	boolean uploaded_paletted;
 
 	/*
 	===============
@@ -677,8 +652,6 @@ public abstract class Image extends Main {
 		// Arrays.fill(paletted_texture, (byte)0);
 //		paletted_texture.clear();
 //		for (int j=0; j<256*256; j++) paletted_texture.put(j,(byte)0);
-
-		uploaded_paletted = false;
 
 		for (scaled_width = 1; scaled_width < width; scaled_width <<= 1);
 		if (gl_round_down.value > 0.0f && scaled_width > width && mipmap)
@@ -929,8 +902,6 @@ public abstract class Image extends Main {
 		}
 		image.upload_width = upload_width; // after power of 2 and scales
 		image.upload_height = upload_height;
-		image.paletted = uploaded_paletted;
-			
 	}
 
 	
@@ -1096,18 +1067,7 @@ public abstract class Image extends Main {
 
 		Draw_GetPalette();
 
-		if (qglColorTableEXT) {
-			gl_state.d_16to8table = FS.LoadFile("pics/16to8.dat");
-			if (gl_state.d_16to8table == null)
-				Com.Error(Defines.ERR_FATAL, "Couldn't load pics/16to8.pcx");
-		}
-
-		if ((gl_config.renderer & (GL_RENDERER_VOODOO | GL_RENDERER_VOODOO2)) != 0) {
-			g = 1.0F;
-		}
-
 		for (i = 0; i < 256; i++) {
-
 			if (g == 1.0f) {
 				gammatable[i] = (byte) i;
 			}

@@ -36,7 +36,6 @@ import com.google.gwt.corp.webgl.client.WebGL.Texture;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
 
-import jake2.gwt.client.GwtQuake.BrowserType;
 import jake2.render.DisplayMode;
 import jake2.render.GLAdapter;
 import jake2.render.gl.AbstractGL20Adapter;
@@ -388,8 +387,6 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 	  checkError("drawElements");
   }
 
-
-  
   @Override
   public void glFinish() {
   	gl.glFinish();
@@ -397,24 +394,10 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   @Override
   public String glGetString(int id) {
-	  String s;
-	  if (GwtQuake.getBrowserType() == BrowserType.FIREFOX) {
-		  s = gl.glGetParameter(id);
-	  } else {
-		  s = gl.glGetString(id);
-	  }
 	  // Hack to meet more desktop GL expectations to some extent
+	  String s = gl.glGetParameter(id);
 	  return s == null ? "" : s;
   }
-  
-
-
-  
-//  @Override
-//  public final void glHint(int h, int i) {
-//    gl.glHint(h, i);
-//  }
-
 
   @Override
   public void glPixelStorei(int i, int j) {
