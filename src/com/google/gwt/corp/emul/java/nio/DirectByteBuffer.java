@@ -17,14 +17,12 @@
 
 package java.nio;
 
+import jake2.gwt.client.HasArrayBufferView;
 import com.google.gwt.corp.compatibility.Numbers;
-
 import org.apache.harmony.luni.platform.Endianness;
-
-import com.google.gwt.corp.webgl.client.HasTypedArray;
-import com.google.gwt.corp.webgl.client.TypedArray;
-import com.google.gwt.corp.webgl.client.ArrayBuffer;
-import com.google.gwt.corp.webgl.client.Int8Array;
+import com.google.gwt.typedarrays.client.ArrayBuffer;
+import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.google.gwt.typedarrays.client.Int8Array;
 
 /**
  * DirectByteBuffer, DirectReadWriteByteBuffer and DirectReadOnlyHeapByteBuffer compose
@@ -38,10 +36,10 @@ import com.google.gwt.corp.webgl.client.Int8Array;
  * </p>
  * 
  */
-abstract class DirectByteBuffer extends BaseByteBuffer implements HasTypedArray {
+abstract class DirectByteBuffer extends BaseByteBuffer implements HasArrayBufferView {
 
 	Int8Array byteArray;
-	
+
     DirectByteBuffer(int capacity) {
     	this(ArrayBuffer.create(capacity), capacity, 0);
     }
@@ -55,7 +53,7 @@ abstract class DirectByteBuffer extends BaseByteBuffer implements HasTypedArray 
     	byteArray = Int8Array.create(buffer, offset, capacity);
     }
 
-	public TypedArray<?> getTypedArray() {
+	public ArrayBufferView getTypedArray() {
 		return byteArray;
 	}
 	

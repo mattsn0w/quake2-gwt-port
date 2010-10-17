@@ -32,14 +32,15 @@ import jake2.sys.NET;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.corp.gfx.client.canvas.CanvasElement;
 import com.google.gwt.dom.client.BodyElement;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
@@ -194,7 +195,9 @@ public class GwtQuake implements EntryPoint {
       timer.schedule(INTER_FRAME_DELAY);
     } catch (Exception e) {
     	Compatibility.printStackTrace(e);
-      body.setInnerHTML(NO_WEBGL_MESSAGE);
+    	DivElement div = doc.createDivElement();
+    	div.setInnerHTML(NO_WEBGL_MESSAGE);
+    	body.appendChild(div);
     }
   }
 }

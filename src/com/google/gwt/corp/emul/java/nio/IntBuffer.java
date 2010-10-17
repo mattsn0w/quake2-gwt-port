@@ -399,21 +399,21 @@ public abstract class IntBuffer extends Buffer implements Comparable<IntBuffer> 
      *
      * @return see {@code array()}
      */
-    abstract int[] protectedArray();
+    protected abstract int[] protectedArray();
 
     /**
      * Child class implements this method to realize {@code arrayOffset()}.
      *
      * @return see {@code arrayOffset()}
      */
-    abstract int protectedArrayOffset();
+    protected abstract int protectedArrayOffset();
 
     /**
      * Child class implements this method to realize {@code hasArray()}.
      *
      * @return see {@code hasArray()}
      */
-    abstract boolean protectedHasArray();
+    protected abstract boolean protectedHasArray();
 
     /**
      * Writes the given int to the current position and increases the position

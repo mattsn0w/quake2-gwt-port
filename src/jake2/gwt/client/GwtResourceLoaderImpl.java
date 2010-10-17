@@ -67,8 +67,6 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
   public void loadResourceAsync(final String path, final ResourceLoader.Callback callback) {
     XMLHttpRequest req = XMLHttpRequest.create();
     
-    final String eol = path.endsWith(".bsp") ? "\n" : "\r";
-    
     final Exception e = new Exception();
     final int mySequenceNumber = freeSequenceNumber++;
     
@@ -76,7 +74,7 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
       boolean receivingMsg;
       public void onReadyStateChange(final XMLHttpRequest xhr) {
     	if (xhr.getReadyState() == 3 && !receivingMsg) {
-    	  Com.Printf("Receiving #" + mySequenceNumber + ": " + path + eol);
+    	  Com.Printf("Receiving #" + mySequenceNumber + ": " + path + "\n");
     	  receivingMsg = true;
     	} else if (xhr.getReadyState() == 4) {
     	  if (mySequenceNumber < ignoreSequenceNumbersBelow) {
@@ -86,7 +84,6 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
     	    if (xhr.getStatus() != 200) {
               Com.Printf("Failed to load file #" + mySequenceNumber + ": " + path + " status: " + 
             		  xhr.getStatus() + "/" + xhr.getStatusText() + "\n");
-              Compatibility.printStackTrace(e);
               ResourceLoader.fail(new IOException("status = " + xhr.getStatus()));
               response = null;
             } else {
@@ -102,7 +99,7 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
       }
     });
 
-    Com.Printf("Requesting: " + path + eol);
+    Com.Printf("Requesting: " + path + "\n");
 
     overrideMimeType(req, "text/plain; charset=x-user-defined");
     req.open("GET", "/baseq2/" + path);
