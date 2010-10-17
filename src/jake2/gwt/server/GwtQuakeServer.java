@@ -1,0 +1,81 @@
+/*
+Copyright (C) 2010 Copyright 2010 Google Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+package jake2.gwt.server;
+
+import jake2.desktop.CompatibilityImpl;
+import jake2.desktop.ResourceLoaderImpl;
+import jake2.qcommon.Compatibility;
+import jake2.qcommon.ResourceLoader;
+import jake2.server.QuakeServer;
+import jake2.sys.NET;
+
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.Context;
+import org.mortbay.jetty.servlet.DefaultServlet;
+import org.mortbay.jetty.servlet.ServletHolder;
+
+/**
+ * This entry point runs a multiplayer-capable GwtQuake server.
+ * 
+ * It runs an embedded Jetty instance, and depends upon Jetty 7's experimental
+ * WebSocket support for c/s communication.
+ */
+public class GwtQuakeServer {
+
+  private static void printUsageAndDie() {
+    System.err.println("usage: GwtQuakeServer [port] [quake args]");
+    System.err.println("Note that this will use both [port] and [port+1]");
+    System.exit(-1);
+  }
+
+  public static void main(String[] args) throws Exception {
+    String[] qargs = args;
+
+    int port = 8080;
+    if (args.length > 0) {
+      try {
+        port = Integer.parseInt(args[0]);
+      } catch (NumberFormatException e) {
+        System.err.println("Unable to parse port: " + args[0]);
+        printUsageAndDie();
+      }
+
+      qargs = new String[args.length - 1];
+      System.arraycopy(args, 1, qargs, 0, qargs.length);
+    }
+
+    Compatibility.impl = new CompatibilityImpl();
+    ResourceLoader.impl = new ResourceLoaderImpl();
+    NET.socketFactory = new ServerWebSocketFactoryImpl();
+
+    createServer(port);
+    QuakeServer.run(qargs);
+  }
+
+  private static void createServer(int port) throws Exception {
+    Server server = new Server(port);
+
+    Context root = new Context(server, "/");
+    root.setResourceBase("war");
+
+    root.addServlet(new ServletHolder(new GwtQuakeServlet()), "/GwtQuake.html");
+    root.addServlet(new ServletHolder(new DefaultServlet()), "/*");
+    server.start();
+  }
+}

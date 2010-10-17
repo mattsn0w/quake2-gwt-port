@@ -1,0 +1,3 @@
+#!/bin/sh
+java -jar maven-build/server/target/gwtquake/gquake-server-1.0-SNAPSHOT.jar $1
+
