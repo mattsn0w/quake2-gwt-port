@@ -18,8 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.gwt.server;
 
-import jake2.desktop.CompatibilityImpl;
-import jake2.desktop.ResourceLoaderImpl;
 import jake2.qcommon.Compatibility;
 import jake2.qcommon.ResourceLoader;
 import jake2.server.QuakeServer;
