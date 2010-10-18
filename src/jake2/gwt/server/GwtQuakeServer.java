@@ -25,10 +25,10 @@ import jake2.qcommon.ResourceLoader;
 import jake2.server.QuakeServer;
 import jake2.sys.NET;
 
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.DefaultServlet;
-import org.mortbay.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
  * This entry point runs a multiplayer-capable GwtQuake server.
@@ -71,11 +71,12 @@ public class GwtQuakeServer {
   private static void createServer(int port) throws Exception {
     Server server = new Server(port);
 
-    Context root = new Context(server, "/");
-    root.setResourceBase("war");
+    ServletContextHandler handler = new ServletContextHandler();
+    handler.setResourceBase("war");
+    handler.addServlet(new ServletHolder(new GwtQuakeServlet()), "/GwtQuake.html");
+    handler.addServlet(new ServletHolder(new DefaultServlet()), "/*");
+    server.setHandler(handler);
 
-    root.addServlet(new ServletHolder(new GwtQuakeServlet()), "/GwtQuake.html");
-    root.addServlet(new ServletHolder(new DefaultServlet()), "/*");
     server.start();
   }
 }
