@@ -19,8 +19,6 @@ import com.google.gwt.dom.client.NativeEvent;
 
 public class CloseEvent extends NativeEvent {
 
-	protected CloseEvent() {
-		
-	}
-	
+  protected CloseEvent() {
+  }
 }

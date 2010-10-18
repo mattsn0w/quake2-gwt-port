@@ -25,6 +25,9 @@ package com.google.gwt.typedarrays.client;
  * an ArrayBuffer.
  * 
  * Taken from the Khronos TypedArrays Draft Spec as of Aug 30, 2010.
+ * 
+ * Note: This is not implemented in WebKit yet.
+ *   c.f. https://bugs.webkit.org/show_bug.cgi?id=46541
  */
 public class DataView extends ArrayBufferView {
 

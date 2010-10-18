@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 package jake2.qcommon;
 
-import java.nio.ByteOrder;
-
 public class Defines {
 
 	public final static int WEAPON_READY = 0;
@@ -1350,10 +1348,6 @@ public class Defines {
 	public final static int FILEISFILE = 4;
 
 	public final static int FILEISDIRECTORY = 8;
-
-	// datentyp konstanten
-	// groesse in bytes
-    public final static boolean LITTLE_ENDIAN = (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN);
 
 	public final static int SIZE_OF_SHORT = 2;
 

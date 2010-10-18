@@ -16,7 +16,6 @@
 package com.google.gwt.corp.websocket;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.dom.client.NativeEvent;
 
 public class WebSocket extends JavaScriptObject {
 
@@ -38,14 +37,28 @@ public class WebSocket extends JavaScriptObject {
     return new WebSocket(url, protocol);
   }-*/;
 
-  
-  protected WebSocket() { }
+  protected WebSocket() {
+  }
 
-  public final native void close() /*-{ this.close(); }-*/;
-  public final native int getBufferedAmount() /*-{ return this.bufferedAmount; }-*/;
-  public final native short getReadyState() /*-{ return this.readyState; }-*/;
-  public final native String getURL() /*-{ return this.url; }-*/;
-  public final native boolean send(String data) /*-{ return this.send(data); }-*/;
+  public final native void close() /*-{
+    this.close();
+  }-*/;
+
+  public final native int getBufferedAmount() /*-{
+    return this.bufferedAmount;
+  }-*/;
+
+  public final native short getReadyState() /*-{
+    return this.readyState;
+  }-*/;
+
+  public final native String getURL() /*-{
+    return this.url;
+  }-*/;
+
+  public final native boolean send(String data) /*-{
+    return this.send(data);
+  }-*/;
 
   public final native void setListener(Listener listener) /*-{
     if (!listener) {

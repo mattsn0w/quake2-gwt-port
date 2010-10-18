@@ -34,7 +34,6 @@ import jake2.util.Math3D;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 
 import com.google.gwt.user.client.Command;
 
