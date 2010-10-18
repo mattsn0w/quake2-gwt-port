@@ -205,9 +205,13 @@ public class WebGLAdapter extends AbstractGL20Adapter {
         + "    } else {" + "      finalColor = texel;" + "    }" + "  } \n"
         +
         // simple alpha check
-        " if (finalColor.a == 0.0) {\n" + "   discard;\n" + " }\n"
-        + " gl_FragColor = finalColor; \n" + "}\n";
-    // }
+        "if (finalColor.a == 0.0) {\n" +
+        "  discard;\n" +
+        "}\n" +
+        "float gamma = 1.5;\n" +
+        "float igamma = 1.0 / gamma;\n" +
+        "gl_FragColor = vec4(pow(finalColor.r, igamma), pow(finalColor.g, igamma), pow(finalColor.b, igamma), finalColor.a);" +
+        "}\n";
 
     // create our shaders
     WebGLShader vertexShader = loadShader(VERTEX_SHADER, vertexShaderSource);
