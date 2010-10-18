@@ -19,7 +19,6 @@ import com.google.gwt.dom.client.NativeEvent;
 
 public class OpenEvent extends NativeEvent {
 
-	protected OpenEvent() {
-		
-	}
+  protected OpenEvent() {
+  }
 }

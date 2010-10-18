@@ -28,8 +28,14 @@ import jake2.qcommon.Compatibility;
 import jake2.qcommon.FS;
 import jake2.qcommon.Globals;
 
-import java.io.*;
-import java.nio.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 public class Lib {
 

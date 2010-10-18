@@ -28,7 +28,6 @@ import jake2.game.entity_state_t;
 import jake2.qcommon.Defines;
 import jake2.qcommon.sizebuf_t;
 
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
 public class server_t {

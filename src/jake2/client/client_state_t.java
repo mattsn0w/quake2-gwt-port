@@ -30,9 +30,6 @@ import jake2.render.image_t;
 import jake2.render.model_t;
 import jake2.sound.*;
 
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-
 public class client_state_t {
 
 	public client_state_t() {
@@ -104,11 +101,6 @@ public class client_state_t {
 	String layout = ""; // general 2D overlay
 	int inventory[] = new int[Defines.MAX_ITEMS];
 
-	//
-	// non-gameserver infornamtion
-	// FIXME: move this cinematic stuff into the cin_t structure
-	ByteBuffer cinematic_file;
-	
 	int cinematictime; // cls.realtime for first cinematic frame
 	int cinematicframe;
 	byte cinematicpalette[] = new byte[768];

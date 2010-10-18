@@ -28,7 +28,6 @@ import jake2.util.Math3D;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 
 public class pmove_state_t {
 	//	this structure needs to be communicated bit-accurate
