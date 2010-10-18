@@ -35,12 +35,12 @@ public class Object {
   private transient JavaScriptObject expando;
 
   /**
-   * magic magic magic.
+   * A JavaScript Json map for looking up castability between types.
    * 
    * @skip
    */
   @SuppressWarnings("unused")
-  private transient int typeId;
+  private transient JavaScriptObject castableTypeMap;
 
   /**
    * magic magic magic.
@@ -48,7 +48,7 @@ public class Object {
    * @skip
    */
   @SuppressWarnings("unused")
-  private transient Object typeMarker;
+  private transient JavaScriptObject typeMarker;
 
   public boolean equals(Object other) {
     return this == other;
@@ -58,6 +58,8 @@ public class Object {
    * Magic; unlike the real JRE, we don't spec this method as final. The
    * compiler will generate a polymorphic override on every other class which
    * will return the correct class object.
+   * 
+   * TODO(scottb): declare this final, but have the compiler fix it up.
    */
   public Class<? extends Object> getClass() {
     return Object.class;
