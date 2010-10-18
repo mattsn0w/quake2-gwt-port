@@ -1,3 +1,0 @@
-#!/bin/sh
-cd maven-build
-./maven/bin/mvn clean install
