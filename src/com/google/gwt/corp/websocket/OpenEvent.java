@@ -15,6 +15,11 @@
  */
 package com.google.gwt.corp.websocket;
 
-public class OpenEvent {
+import com.google.gwt.dom.client.NativeEvent;
 
+public class OpenEvent extends NativeEvent {
+
+	protected OpenEvent() {
+		
+	}
 }
