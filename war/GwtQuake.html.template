@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+  <head> 
+    <title>GwtQuake</title> 
+    <!--IMAGE_SIZE_PLACEHOLDER--> 
+    <!--SERVER_ADDRESS_PLACEHOLDER-->
+    <script src='gwtquake/gwtquake.nocache.js'></script>
+  </head>
+
+  <body bgcolor='white' oncontextmenu='return false;'></body>
+</html>
