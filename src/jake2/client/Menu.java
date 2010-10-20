@@ -680,7 +680,7 @@ public final class Menu {
         Menu_PlayerConfig_f();
     }
 
-    static void JoinNetworkServerFunc(Object unused) {
+    public static void JoinNetworkServerFunc(Object unused) {
       Cbuf.AddText("connect " + Compatibility.getOriginatingServerAddress() + "\n");
       Cbuf.Execute();
       ForceMenuOff();

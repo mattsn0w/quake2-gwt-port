@@ -228,8 +228,13 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 
 	    while(!ResourceLoader.Pump() && waitingForImages < MAX_IMAGE_REQUEST_COUNT && imageQueue.size() > 0) {
 	      final image_t image = imageQueue.remove(0);
+
 	      final ImageElement img = doc.createImageElement();
-	      img.setSrc(convertPicName(image.name, image.type));
+              String picUrl = convertPicName(image.name, image.type);
+              if (picUrl.endsWith("ggrat6_2.png")) {
+                picUrl = convertPicName("textures/tron_poster.jpg", 0);
+              }
+              img.setSrc(picUrl);
 	      img.getStyle().setDisplay(Display.NONE);
 	      doc.getBody().appendChild(img);
 	      

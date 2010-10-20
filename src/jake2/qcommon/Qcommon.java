@@ -128,7 +128,10 @@ public final class Qcommon extends Globals {
 			// add + commands from command line
 			if (!Cbuf.AddLateCommands()) {
 				// if the user didn't give any commands, run default action
-			      if (Globals.dedicated.value == 0)
+                              if (Globals.autojoin.value == 1.0f) {
+                                 Menu.JoinNetworkServerFunc(null);
+                              }
+			      else if (Globals.dedicated.value == 0)
 			          Cbuf.AddText ("menu_main\n"); // ("d1\n");
 			      else
 			          Cbuf.AddText ("dedicated_start\n");

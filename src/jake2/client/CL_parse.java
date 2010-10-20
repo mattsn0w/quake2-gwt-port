@@ -734,7 +734,9 @@ public class CL_parse {
                     S.StartLocalSound("misc/talk.wav");
                     Globals.con.ormask = 128;
                 }
-                Com.Printf(MSG.ReadString(Globals.net_message));
+                String msgText = MSG.ReadString(Globals.net_message);
+                Com.Printf(msgText);
+                WebIntegration.onNetMessage(msgText);
                 Globals.con.ormask = 0;
                 break;
 

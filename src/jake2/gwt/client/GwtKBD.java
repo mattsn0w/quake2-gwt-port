@@ -66,7 +66,16 @@ public class GwtKBD extends KBD {
 public double mouseDownTime;
 
 public double mouseUpTime;		
-  
+
+  private static native void getNotificationPerm() /*-{
+    if($wnd.webkitNotifications)
+           {
+             var nc = $wnd.webkitNotifications;
+             if(nc.checkPermission()) { nc.requestPermission(function() {}); }
+           }
+
+  }-*/;
+
   private boolean hasMeta(NativeEvent nevt) {
     return nevt.getAltKey() || nevt.getMetaKey() || nevt.getCtrlKey();
   }
@@ -74,7 +83,7 @@ public double mouseUpTime;
   private class Handler implements NativePreviewHandler {
 
 	public void onPreviewNativeEvent(NativePreviewEvent event) {
-         
+      getNotificationPerm();
       NativeEvent nevt = event.getNativeEvent();
       if ("keydown".equals(nevt.getType())) {
         Do_Key_Event(XLateKey(nevt.getKeyCode()), true);

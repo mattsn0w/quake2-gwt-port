@@ -57,7 +57,7 @@ public class GwtQuake implements EntryPoint {
   static Element video;
   private static BrowserType browserType;
 
-	private static final String NO_WEBGL_MESSAGE = 
+	private static final java.lang.String NO_WEBGL_MESSAGE =
 	  "<div style='padding:20px;font-family: sans-serif;'>" +
 	  "<h2>WebGL Support Required</h2>" +
 	  "<p>For a list of compatible browsers and installation instructions, please refer to" +
@@ -129,6 +129,8 @@ public class GwtQuake implements EntryPoint {
 	body.appendChild(video);
 	
     try {
+      Globals.autojoin.value =
+          Window.Location.getHash().indexOf("autojoin") != -1 ? 1.0f : 0.0f;
       final refexport_t renderer = wireframe 
       	? new GwtWireframeGLRenderer(canvas) : new GwtWebGLRenderer(canvas, video);
       Globals.re = renderer;

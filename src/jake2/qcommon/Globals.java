@@ -95,7 +95,7 @@ public class Globals extends Defines {
 	public static cvar_t timescale;
 	public static cvar_t in_mouse;
 	public static cvar_t in_joystick;
-
+        public static cvar_t autojoin = new cvar_t();
 
 	public static sizebuf_t net_message = new sizebuf_t();
 
