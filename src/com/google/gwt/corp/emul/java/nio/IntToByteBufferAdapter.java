@@ -16,7 +16,7 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.ByteBufferWrapper;
+import jake2.gwt.client.ByteBufferWrapper;
 
 //import org.apache.harmony.nio.internal.DirectBuffer;
 //import org.apache.harmony.luni.platform.PlatformAddress;

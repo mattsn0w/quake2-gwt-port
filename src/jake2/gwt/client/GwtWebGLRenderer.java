@@ -21,22 +21,14 @@ package jake2.gwt.client;
 import jake2.client.refexport_t;
 import jake2.qcommon.Com;
 import jake2.qcommon.ResourceLoader;
-import jake2.render.GLAdapter;
 import jake2.render.image_t;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayInteger;
-import com.google.gwt.corp.gfx.client.canvas.CanvasElement;
-import com.google.gwt.corp.gfx.client.canvas.CanvasPixelArray;
-import com.google.gwt.corp.gfx.client.canvas.CanvasRenderingContext2D;
-import com.google.gwt.corp.gfx.client.canvas.ImageData;
-import com.google.gwt.corp.webgl.client.WebGL;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -45,9 +37,14 @@ import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.html5.client.CanvasElement;
+import com.google.gwt.html5.client.CanvasPixelArray;
+import com.google.gwt.html5.client.CanvasRenderingContext2D;
+import com.google.gwt.html5.client.ImageData;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Widget;
+
+import static com.google.gwt.webgl.client.WebGLRenderingContext.*;
 
 public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport_t {
 	
@@ -134,9 +131,6 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 		
 		init();
 	}
-	
-
-	
 
 	@Override
 	protected void GL_ResampleTexture(int[] in, int inwidth, int inheight,
@@ -206,10 +200,10 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 		}
 		
 		if (type != jake2.qcommon.QuakeImage.it_pic) {
-			gl.glTexImage2D(GLAdapter.GL_TEXTURE_2D, 0, GLAdapter.GL_RGBA, HOLODECK_TEXTURE_SIZE, HOLODECK_TEXTURE_SIZE, 0, GLAdapter.GL_RGBA, 
-			    GLAdapter.GL_UNSIGNED_BYTE, holoDeckTexture);
-			gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, GLAdapter.GL_LINEAR);
-			gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
+			gl.glTexImage2D(TEXTURE_2D, 0, RGBA, HOLODECK_TEXTURE_SIZE, HOLODECK_TEXTURE_SIZE, 0, RGBA, 
+			    UNSIGNED_BYTE, holoDeckTexture);
+			gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
+			gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
 		}
 
 		imageQueue.add(image);
@@ -272,7 +266,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 	protected void waitingForImages(int i) {
 		waitingForImages += i;
 		if (waitingForImages > 0) {
-		  Com.Printf("Waiting for " + waitingForImages + " images\r");
+		  Com.Printf("Waiting for " + waitingForImages + " images\n");
 		}
 	}
 
@@ -317,16 +311,16 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 			canvas1.getContext2D().clearRect(0, 0, p2w, p2h);
 			canvas1.getContext2D().drawImage(img, 0, 0, p2w, p2h);
 
-			webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, level++, GLAdapter.GL_RGBA, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, canvas1);
-			
+			webGL.glTexImage2d(TEXTURE_2D, level++, RGBA, RGBA, UNSIGNED_BYTE, canvas1);
+
 			p2w = p2w / 2;
 			p2h = p2h / 2;
 		}
 		while(mipMap && p2w > 0);
 		
-		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, 
-				mipMap ? GLAdapter.GL_LINEAR_MIPMAP_NEAREST : GLAdapter.GL_LINEAR);
-		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
+		gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, 
+				mipMap ? LINEAR_MIPMAP_NEAREST : LINEAR);
+		gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
 	}
 
   public void __setPicDataHighLevel(image_t image, ImageElement img) {
@@ -337,9 +331,9 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
     image.upload_height = image.height;
     image.upload_width = image.width;
     GL_Bind(image.texnum);
-    webGL.glTexImage2d(WebGL.GL_TEXTURE_2D, 0, GLAdapter.GL_RGBA, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, img);
-    gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, GLAdapter.GL_LINEAR);
-    gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
+    webGL.glTexImage2d(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, img);
+    gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
+    gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
   }
 
 	public void setPicDataLowLevel(image_t image, ImageElement img) {

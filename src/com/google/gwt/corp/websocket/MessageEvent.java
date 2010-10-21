@@ -15,17 +15,13 @@
  */
 package com.google.gwt.corp.websocket;
 
-public class MessageEvent {
+import com.google.gwt.dom.client.NativeEvent;
 
-	private String data;
-	  MessageEvent(String data) {
-		  this.data = data;
-	  }
+public class MessageEvent extends NativeEvent {
+  protected MessageEvent() {
+  }
 
-	  public final String getData() { 
-		  return this.data; 
-	  }
-	  
-	  
-
+  public final native String getData() /*-{
+    return this.data;
+  }-*/;
 }

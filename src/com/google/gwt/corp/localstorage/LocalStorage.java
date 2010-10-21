@@ -20,71 +20,71 @@ import jake2.qcommon.Compatibility;
 import java.io.IOException;
 
 import com.google.gwt.core.client.JavaScriptException;
-import com.google.gwt.core.client.JavaScriptObject;
 
 public class LocalStorage {
 
-	public static String getItem(String key) throws IOException {
-		try {
-			return getItemImpl(key);
-		} catch (JavaScriptException e) {
-			Compatibility.printStackTrace(e);
-			throw new IOException("" + e);
-		}
-	}
-	
-	public static String key(int index) throws IOException {
-		try {
-			return keyImpl(index);
-		} catch (JavaScriptException e) {
-			Compatibility.printStackTrace(e);
-			throw new IOException("" + e);
-		}
-	}
+  public static String getItem(String key) throws IOException {
+    try {
+      return getItemImpl(key);
+    } catch (JavaScriptException e) {
+      Compatibility.printStackTrace(e);
+      throw new IOException("" + e);
+    }
+  }
 
-	public static int length() throws IOException {
-		try {
-			return lengthImpl();
-		} catch (JavaScriptException e) {
-			Compatibility.printStackTrace(e);
-			throw new IOException("" + e);
-		}
-	}
-  
-	public static void removeItem(String key) throws IOException {
-		try {
-			removeItemImpl(key);
-		} catch (JavaScriptException e) {
-			Compatibility.printStackTrace(e);
-			throw new IOException("" + e);
-		}
-	}
-	public static void setItem(String key, String value) throws IOException {
-		try {
-			setItemImpl(key, value);
-		} catch (JavaScriptException e) {
-			Compatibility.printStackTrace(e);
-			throw new IOException("" + e);
-		}
-	}
+  public static String key(int index) throws IOException {
+    try {
+      return keyImpl(index);
+    } catch (JavaScriptException e) {
+      Compatibility.printStackTrace(e);
+      throw new IOException("" + e);
+    }
+  }
 
-	private native static String getItemImpl(String key) /*-{
-		return $wnd.localStorage.getItem(key);
-  	}-*/;
+  public static int length() throws IOException {
+    try {
+      return lengthImpl();
+    } catch (JavaScriptException e) {
+      Compatibility.printStackTrace(e);
+      throw new IOException("" + e);
+    }
+  }
 
-	private native static String keyImpl(int index) /*-{
-		return $wnd.localStorage.key(index);
-  	}-*/;
+  public static void removeItem(String key) throws IOException {
+    try {
+      removeItemImpl(key);
+    } catch (JavaScriptException e) {
+      Compatibility.printStackTrace(e);
+      throw new IOException("" + e);
+    }
+  }
 
-	public native static int lengthImpl() /*-{
-		return $wnd.localStorage.length;
-  	}-*/;
+  public static void setItem(String key, String value) throws IOException {
+    try {
+      setItemImpl(key, value);
+    } catch (JavaScriptException e) {
+      Compatibility.printStackTrace(e);
+      throw new IOException("" + e);
+    }
+  }
 
-	public native static void setItemImpl(String key, String value) /*-{
-    	$wnd.localStorage.setItem(key, value);
-  	}-*/;
+  private native static String getItemImpl(String key) /*-{
+    return $wnd.localStorage.getItem(key);
+  }-*/;
 
-	public native static void removeItemImpl(String key) /*-{
+  private native static String keyImpl(int index) /*-{
+    return $wnd.localStorage.key(index);
+  }-*/;
+
+  public native static int lengthImpl() /*-{
+    return $wnd.localStorage.length;
+  }-*/;
+
+  public native static void setItemImpl(String key, String value) /*-{
+    $wnd.localStorage.setItem(key, value);
+  }-*/;
+
+  public native static void removeItemImpl(String key) /*-{
 		$wnd.localStorage.removeItem(key);
-  	}-*/;
+	}-*/;
 }

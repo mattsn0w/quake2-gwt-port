@@ -16,12 +16,10 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.HasTypedArray;
-import com.google.gwt.corp.webgl.client.TypedArray;
-import com.google.gwt.corp.webgl.client.Int16Array;
+import jake2.gwt.client.HasArrayBufferView;
 
-//import org.apache.harmony.nio.internal.DirectBuffer;
-//import org.apache.harmony.luni.platform.PlatformAddress;
+import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.google.gwt.typedarrays.client.Int16Array;
 
 /**
  * This class wraps a byte buffer to be a short buffer.
@@ -36,7 +34,7 @@ import com.google.gwt.corp.webgl.client.Int16Array;
  * </p>
  * 
  */
-final class DirectReadWriteShortBufferAdapter extends ShortBuffer implements HasTypedArray {
+final class DirectReadWriteShortBufferAdapter extends ShortBuffer implements HasArrayBufferView {
 //implements DirectBuffer {
 
     static ShortBuffer wrap(DirectReadWriteByteBuffer byteBuffer) {
@@ -161,7 +159,7 @@ final class DirectReadWriteShortBufferAdapter extends ShortBuffer implements Has
         return result;
     }
 
-	public TypedArray<?> getTypedArray() {
+	public ArrayBufferView getTypedArray() {
 		return shortArray;
 	}
 	

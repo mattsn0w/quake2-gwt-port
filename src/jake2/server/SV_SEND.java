@@ -23,15 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.server;
 
-import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteOrder;
 
-import jake2.*;
-import jake2.client.*;
 import jake2.game.*;
 import jake2.qcommon.*;
-import jake2.render.*;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 

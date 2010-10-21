@@ -15,6 +15,10 @@
  */
 package com.google.gwt.corp.websocket;
 
-public class CloseEvent {
+import com.google.gwt.dom.client.NativeEvent;
 
+public class CloseEvent extends NativeEvent {
+
+  protected CloseEvent() {
+  }
 }

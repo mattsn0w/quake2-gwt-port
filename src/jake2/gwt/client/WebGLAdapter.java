@@ -1,40 +1,39 @@
 /*
-Copyright (C) 2010 Copyright 2010 Google Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ * Copyright (C) 2010 Copyright 2010 Google Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ * 
+ * See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 package jake2.gwt.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
-import com.google.gwt.core.client.JsArrayInteger;
-import com.google.gwt.corp.gfx.client.canvas.CanvasElement;
-import com.google.gwt.corp.webgl.client.ByteBufferWrapper;
-import com.google.gwt.corp.webgl.client.HasTypedArray;
-import com.google.gwt.corp.webgl.client.WebGL;
-import com.google.gwt.corp.webgl.client.TypedArray;
-import com.google.gwt.corp.webgl.client.Int8Array;
-import com.google.gwt.corp.webgl.client.Int16Array;
-import com.google.gwt.corp.webgl.client.Int32Array;
-import com.google.gwt.corp.webgl.client.Float32Array;
-import com.google.gwt.corp.webgl.client.Uint8Array;
-import com.google.gwt.corp.webgl.client.Uint16Array;
-import com.google.gwt.corp.webgl.client.WebGL.Texture;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.Window;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.ARRAY_BUFFER;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.BYTE;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.COMPILE_STATUS;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.DYNAMIC_DRAW;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.ELEMENT_ARRAY_BUFFER;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.FLOAT;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.FRAGMENT_SHADER;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.INT;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.LINK_STATUS;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.NO_ERROR;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.SHORT;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.STATIC_DRAW;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.STREAM_DRAW;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.UNSIGNED_BYTE;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.UNSIGNED_SHORT;
+import static com.google.gwt.webgl.client.WebGLRenderingContext.VERTEX_SHADER;
 
 import jake2.render.DisplayMode;
 import jake2.render.GLAdapter;
@@ -46,53 +45,73 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
+import com.google.gwt.core.client.JsArrayInteger;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.html5.client.CanvasElement;
+import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int16Array;
+import com.google.gwt.typedarrays.client.Int32Array;
+import com.google.gwt.typedarrays.client.Int8Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.webgl.client.WebGLBuffer;
+import com.google.gwt.webgl.client.WebGLProgram;
+import com.google.gwt.webgl.client.WebGLRenderingContext;
+import com.google.gwt.webgl.client.WebGLShader;
+import com.google.gwt.webgl.client.WebGLTexture;
+import com.google.gwt.webgl.client.WebGLUniformLocation;
+
 /**
  * Partial mapping of lwjgl to WebGL.
  * 
  * @author Stefan Haustein
  */
+@SuppressWarnings("unchecked")
 public class WebGLAdapter extends AbstractGL20Adapter {
 
   static final int SMALL_BUF_COUNT = 4;
-  
-  int uMvpMatrix;
-  int uSampler0;
-  int uSampler1;
-  int uTexEnv0;
-  int uTexEnv1;
-  int uEnableTexture0;
-  int uEnableTexture1;
 
-  JsArray<WebGL.Buffer> staticBuffers = (JsArray<WebGL.Buffer>) JavaScriptObject.createArray();
-  
+  WebGLUniformLocation uMvpMatrix;
+  WebGLUniformLocation uSampler0;
+  WebGLUniformLocation uSampler1;
+  WebGLUniformLocation uTexEnv0;
+  WebGLUniformLocation uTexEnv1;
+  WebGLUniformLocation uEnableTexture0;
+  WebGLUniformLocation uEnableTexture1;
+
+  JsArray<WebGLBuffer> staticBuffers = (JsArray<WebGLBuffer>) JavaScriptObject.createArray();
+
   class BufferData {
-	  TypedArray<?> toBind;
-	  WebGL.Buffer buffer;
-	  int byteStride;
-	  int size;
-	  int type;
-	  int byteSize;
-	  boolean normalize;
+    ArrayBufferView toBind;
+    WebGLBuffer buffer;
+    int byteStride;
+    int size;
+    int type;
+    int byteSize;
+    boolean normalize;
   }
-  
+
   private BufferData[] bufferData = new BufferData[SMALL_BUF_COUNT];
-  
-  public final WebGL gl;
+
+  public final WebGLRenderingContext gl;
 
   int logCount = 0;
-  
-  public void log(String msg) {
-  	if (logCount >= 1000) {
-  		return;
-  	}
-	System.out.println((logCount++) + ": " + msg);
-   };
 
+  public void log(String msg) {
+    if (logCount >= 1000) {
+      return;
+    }
+    System.out.println((logCount++) + ": " + msg);
+  };
 
   FloatBuffer colorBuffer;
   private CanvasElement canvas;
-  
-  JsArray<WebGL.Texture> textures = (JsArray<Texture>) JsArray.createArray();
+
+  JsArray<WebGLTexture> textures = (JsArray<WebGLTexture>) JsArray.createArray();
   JsArrayInteger textureFormats = (JsArrayInteger) JsArray.createArray();
 
   private int clientActiveTexture = 0;
@@ -100,58 +119,50 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   private int[] boundTextureId = new int[2];
   private int[] texEnvMode = new int[2];
   private JsArrayInteger textureFormat = (JsArrayInteger) JavaScriptObject.createArray();
-  private WebGL.Buffer elementBuffer;
+  private WebGLBuffer elementBuffer;
 
-  
   public WebGLAdapter(CanvasElement canvas) {
     super(canvas.getWidth(), canvas.getHeight());
 
     this.canvas = canvas;
-    gl = WebGL.getContext(canvas, JavaScriptObject.createObject());
+    gl = canvas.getContextWebGL();
 
     if (gl == null) {
       throw new UnsupportedOperationException("WebGL N/A");
     }
-    
+
     initShader();
     checkError("initShader");
-    
-    elementBuffer = gl.glCreateBuffer();
-    checkError("createBuffer f. elements");
-    
-    for (int i = 0; i < bufferData.length; i++) {
-		  BufferData bd = new BufferData();
-		  bd.buffer = gl.glCreateBuffer();
-		    checkError("createBuffer" + i);
-		  bufferData[i] = bd;
-	  }
 
-    
+    elementBuffer = gl.createBuffer();
+    checkError("createBuffer f. elements");
+
+    for (int i = 0; i < bufferData.length; i++) {
+      BufferData bd = new BufferData();
+      bd.buffer = gl.createBuffer();
+      checkError("createBuffer" + i);
+      bufferData[i] = bd;
+    }
   }
 
-  
-  
-//  private native JavaScriptObject noPremultipliedAlpha() /*-{
-//	return {premultipliedAlpha: false};
-//  }-*/;
-
-private WebGL.Shader loadShader(int shaderType, String shaderSource) {
+  private WebGLShader loadShader(int shaderType, String shaderSource) {
     // Create the shader object
-    WebGL.Shader shader = gl.glCreateShader(shaderType);
+    WebGLShader shader = gl.createShader(shaderType);
     if (shader == null) {
       throw new RuntimeException();
     }
     // Load the shader source
-    gl.glShaderSource(shader, shaderSource);
+    gl.shaderSource(shader, shaderSource);
 
     // Compile the shader
-    gl.glCompileShader(shader);
+    gl.compileShader(shader);
 
     // Check the compile status
-    boolean compiled = gl.glGetShaderParameterb(shader, WebGL.GL_COMPILE_STATUS);
+    boolean compiled = gl.getShaderParameterb(shader, COMPILE_STATUS);
     if (!compiled) {
       // Something went wrong during compilation; get the error
-      throw new RuntimeException ("Shader compile error: " + gl.glGetShaderInfoLog(shader));
+      throw new RuntimeException("Shader compile error: "
+          + gl.getShaderInfoLog(shader));
     }
     return shader;
   }
@@ -159,60 +170,40 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
   public static native String getUserAgent() /*-{
     return navigator.userAgent.toLowerCase();
   }-*/;
-  
-  private void initShader() {
-    String vertexShaderSource =
-      "attribute vec4 a_position;\n" + 
-      "attribute vec4 a_color;\n" + 
-      "attribute vec2 a_texCoord0; \n" +
-      "attribute vec2 a_texCoord1; \n" +
-      "uniform mat4 u_mvpMatrix; \n" + 
-      "varying vec4 v_color; \n" + 
-      "varying vec2 v_texCoord0; \n" + 
-      "varying vec2 v_texCoord1; \n" + 
-      "void main() {\n" + 
-      "  gl_Position = u_mvpMatrix * a_position;\n" + 
-      "  v_color = a_color;        \n" +
-      "  v_texCoord0 = a_texCoord0;  \n" +
-      "  v_texCoord1 = a_texCoord1;  \n" +
-      "}\n";
 
-    String fragmentShaderSource =
-        "#ifdef GL_ES\n" +
-        "precision mediump float;\n" +
-        "#endif\n" +
-        "uniform sampler2D s_texture0;  \n" + 
-        "uniform sampler2D s_texture1;  \n" + 
-        "uniform int s_texEnv0;  \n" + 
-        "uniform int s_texEnv1;  \n" + 
-        "uniform int u_enable_texture_0; \n" +
-        "uniform int u_enable_texture_1; \n" +
-        "varying vec4 v_color; \n" + 
-        "varying vec2 v_texCoord0;      \n" + 
-        "varying vec2 v_texCoord1;" +
-        "vec4 finalColor;      \n" + 
-        "void main() {                 \n" + 
-        "finalColor = v_color;" + 
-        "  if (u_enable_texture_0 == 1) { \n" +
-        "    vec4 texel = texture2D(s_texture0, v_texCoord0); \n" +
-        "    if(s_texEnv0 == 1) { "+
-        "      finalColor = finalColor * texel;"+
-        "    } else if (s_texEnv0 == 2) {" +
-        "      finalColor = vec4(texel.r, texel.g, texel.b, finalColor.a);" +
-        "    } else {"+
-        "      finalColor = texel;"+
-        "    }"+
-        "}"+
-        " if (u_enable_texture_1 == 1) { \n" +
-        "      vec4 texel = texture2D(s_texture1, v_texCoord1); \n" +
-        "    if(s_texEnv1 == 1) { "+
-        "      finalColor = finalColor * texel;"+
-        "    } else if (s_texEnv1 == 2) {" +
-        "      finalColor = vec4(texel.r, texel.g, texel.b, finalColor.a);" +
-        "    } else {"+
-        "      finalColor = texel;"+
-        "    }"+
-        "  } \n" +
+  private void initShader() {
+    String vertexShaderSource = "attribute vec4 a_position;\n"
+        + "attribute vec4 a_color;\n" + "attribute vec2 a_texCoord0; \n"
+        + "attribute vec2 a_texCoord1; \n" + "uniform mat4 u_mvpMatrix; \n"
+        + "varying vec4 v_color; \n" + "varying vec2 v_texCoord0; \n"
+        + "varying vec2 v_texCoord1; \n" + "void main() {\n"
+        + "  gl_Position = u_mvpMatrix * a_position;\n"
+        + "  v_color = a_color;        \n" + "  v_texCoord0 = a_texCoord0;  \n"
+        + "  v_texCoord1 = a_texCoord1;  \n" + "}\n";
+
+    String fragmentShaderSource = "#ifdef GL_ES\n"
+        + "precision mediump float;\n" + "#endif\n"
+        + "uniform sampler2D s_texture0;  \n"
+        + "uniform sampler2D s_texture1;  \n" + "uniform int s_texEnv0;  \n"
+        + "uniform int s_texEnv1;  \n" + "uniform int u_enable_texture_0; \n"
+        + "uniform int u_enable_texture_1; \n" + "varying vec4 v_color; \n"
+        + "varying vec2 v_texCoord0;      \n" + "varying vec2 v_texCoord1;"
+        + "vec4 finalColor;      \n" + "void main() {                 \n"
+        + "finalColor = v_color;" + "  if (u_enable_texture_0 == 1) { \n"
+        + "    vec4 texel = texture2D(s_texture0, v_texCoord0); \n"
+        + "    if(s_texEnv0 == 1) { "
+        + "      finalColor = finalColor * texel;"
+        + "    } else if (s_texEnv0 == 2) {"
+        + "      finalColor = vec4(texel.r, texel.g, texel.b, finalColor.a);"
+        + "    } else {" + "      finalColor = texel;" + "    }" + "}"
+        + " if (u_enable_texture_1 == 1) { \n"
+        + "      vec4 texel = texture2D(s_texture1, v_texCoord1); \n"
+        + "    if(s_texEnv1 == 1) { "
+        + "      finalColor = finalColor * texel;"
+        + "    } else if (s_texEnv1 == 2) {"
+        + "      finalColor = vec4(texel.r, texel.g, texel.b, finalColor.a);"
+        + "    } else {" + "      finalColor = texel;" + "    }" + "  } \n"
+        +
         // simple alpha check
         "if (finalColor.a == 0.0) {\n" +
         "  discard;\n" +
@@ -221,116 +212,123 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
         "float igamma = 1.0 / gamma;\n" +
         "gl_FragColor = vec4(pow(finalColor.r, igamma), pow(finalColor.g, igamma), pow(finalColor.b, igamma), finalColor.a);" +
         "}\n";
-    
+
     // create our shaders
-    WebGL.Shader vertexShader = loadShader(WebGL.GL_VERTEX_SHADER, vertexShaderSource);
-    WebGL.Shader fragmentShader = loadShader(WebGL.GL_FRAGMENT_SHADER, fragmentShaderSource);
-    
+    WebGLShader vertexShader = loadShader(VERTEX_SHADER, vertexShaderSource);
+    WebGLShader fragmentShader = loadShader(FRAGMENT_SHADER,
+        fragmentShaderSource);
+
     if (vertexShader == null || fragmentShader == null) {
-    	log("Shader error");
+      log("Shader error");
       throw new RuntimeException("shader error");
     }
 
     // Create the program object
-    WebGL.Program programObject = gl.glCreateProgram();
-    if (programObject == null || gl.glGetError() != WebGL.GL_NO_ERROR) {
-    	log("Program errror");
+    WebGLProgram programObject = gl.createProgram();
+    if (programObject == null || gl.getError() != NO_ERROR) {
+      log("Program errror");
       throw new RuntimeException("program error");
     }
+
     // Attach our two shaders to the program
 
-    gl.glAttachShader(programObject, vertexShader);
-    gl.glAttachShader(programObject, fragmentShader);
+    gl.attachShader(programObject, vertexShader);
+    gl.attachShader(programObject, fragmentShader);
 
     // Bind "vPosition" to attribute 0
-    gl.glBindAttribLocation(programObject, GLAdapter.ARRAY_POSITION, "a_position");
-    gl.glBindAttribLocation(programObject, GLAdapter.ARRAY_COLOR, "a_color");
-    gl.glBindAttribLocation(programObject, GLAdapter.ARRAY_TEXCOORD_0, "a_texCoord0");
-    gl.glBindAttribLocation(programObject, GLAdapter.ARRAY_TEXCOORD_1, "a_texCoord1");
+    gl.bindAttribLocation(programObject, GLAdapter.ARRAY_POSITION, "a_position");
+    gl.bindAttribLocation(programObject, GLAdapter.ARRAY_COLOR, "a_color");
+    gl.bindAttribLocation(programObject, GLAdapter.ARRAY_TEXCOORD_0,
+        "a_texCoord0");
+    gl.bindAttribLocation(programObject, GLAdapter.ARRAY_TEXCOORD_1,
+        "a_texCoord1");
 
     // Link the program
-    gl.glLinkProgram(programObject);
+    gl.linkProgram(programObject);
 
-    //TODO(haustein) get position, color from the linker, too
-    uMvpMatrix = gl.glGetUniformLocation(programObject, "u_mvpMatrix");
-    uSampler0 = gl.glGetUniformLocation(programObject, "s_texture0");
-    uSampler1 = gl.glGetUniformLocation(programObject, "s_texture1");
-    uTexEnv0 = gl.glGetUniformLocation(programObject, "s_texEnv0");
-    uTexEnv1 = gl.glGetUniformLocation(programObject, "s_texEnv1");
+    // TODO(haustein) get position, color from the linker, too
+    uMvpMatrix = gl.getUniformLocation(programObject, "u_mvpMatrix");
+    uSampler0 = gl.getUniformLocation(programObject, "s_texture0");
+    uSampler1 = gl.getUniformLocation(programObject, "s_texture1");
+    uTexEnv0 = gl.getUniformLocation(programObject, "s_texEnv0");
+    uTexEnv1 = gl.getUniformLocation(programObject, "s_texEnv1");
 
-    uEnableTexture0 = gl.glGetUniformLocation(programObject, "u_enable_texture_0");
-    uEnableTexture1 = gl.glGetUniformLocation(programObject, "u_enable_texture_1");
+    uEnableTexture0 = gl.getUniformLocation(programObject, "u_enable_texture_0");
+    uEnableTexture1 = gl.getUniformLocation(programObject, "u_enable_texture_1");
 
     // // Check the link status
-    boolean linked = gl.glGetProgramParameterb(programObject, WebGL.GL_LINK_STATUS);
+    boolean linked = gl.getProgramParameterb(programObject, LINK_STATUS);
     if (!linked) {
-      throw new RuntimeException("linker Error: " + gl.glGetProgramInfoLog (programObject));
+      throw new RuntimeException("linker Error: "
+          + gl.getProgramInfoLog(programObject));
     }
 
-    gl.glUseProgram(programObject);
+    gl.useProgram(programObject);
 
-    gl.glUniform1i(uSampler0, 0);
-    gl.glUniform1i(uSampler1, 1);
-    gl.glActiveTexture(GL_TEXTURE0);
+    gl.uniform1i(uSampler0, 0);
+    gl.uniform1i(uSampler1, 1);
+    gl.activeTexture(GL_TEXTURE0);
   }
 
   public String webGLFloatArrayToString(Float32Array fa) {
-	  StringBuilder sb = new StringBuilder();
-	  sb.append("len: " + fa.getLength());
-	  sb.append("data: ");
-	  for (int i = 0; i < Math.min(fa.getLength(), 10); i++) {
-		  sb.append(fa.get(i) + ",");
-	  }
-	  return sb.toString();
+    StringBuilder sb = new StringBuilder();
+    sb.append("len: " + fa.getLength());
+    sb.append("data: ");
+    for (int i = 0; i < Math.min(fa.getLength(), 10); i++) {
+      sb.append(fa.get(i) + ",");
+    }
+    return sb.toString();
   }
 
   public String webGLIntArrayToString(Int32Array fa) {
-	  StringBuilder sb = new StringBuilder();
-	  sb.append("len: " + fa.getLength());
-	  sb.append("data: ");
-	  for (int i = 0; i < Math.min(fa.getLength(), 10); i++) {
-		  sb.append(fa.get(i) + ",");
-	  }
-	  return sb.toString();
+    StringBuilder sb = new StringBuilder();
+    sb.append("len: " + fa.getLength());
+    sb.append("data: ");
+    for (int i = 0; i < Math.min(fa.getLength(), 10); i++) {
+      sb.append(fa.get(i) + ",");
+    }
+    return sb.toString();
   }
 
   public String webGLUnsignedShortArrayToString(Uint16Array fa) {
-	  StringBuilder sb = new StringBuilder();
-	  sb.append("len: " + fa.getLength());
-	  sb.append("data: ");
-	  for (int i = 0; i < Math.min(fa.getLength(), 10); i++) {
-		  sb.append(fa.get(i) + ",");
-	  }
-	  return sb.toString();
+    StringBuilder sb = new StringBuilder();
+    sb.append("len: " + fa.getLength());
+    sb.append("data: ");
+    for (int i = 0; i < Math.min(fa.getLength(), 10); i++) {
+      sb.append(fa.get(i) + ",");
+    }
+    return sb.toString();
   }
 
   @Override
   public void glActiveTexture(int texture) {
-  	gl.glActiveTexture(texture);
-  	activeTexture = texture - GL_TEXTURE0;
-  	checkError("glActiveTexture");
+    gl.activeTexture(texture);
+    activeTexture = texture - GL_TEXTURE0;
+    checkError("glActiveTexture");
   }
 
   @Override
   public void glAlphaFunc(int i, float j) {
-  	// TODO: Remove this. Alpha text/func are unsupported in ES.
+    // TODO: Remove this. Alpha text/func are unsupported in ES.
   }
 
   @Override
   public void glClientActiveTexture(int texture) {
-	  clientActiveTexture = texture - GL_TEXTURE0;
+    clientActiveTexture = texture - GL_TEXTURE0;
   }
 
   @Override
   public void glColorPointer(int size, int stride, FloatBuffer colorArrayBuf) {
-	  glColorPointer(size, WebGL.GL_FLOAT, stride, colorArrayBuf);
+    glColorPointer(size, FLOAT, stride, colorArrayBuf);
   }
 
   @Override
-  public void glColorPointer(int size, boolean unsigned, int stride, ByteBuffer colorAsByteBuffer) {
-  	glColorPointer(size, unsigned ? WebGL.GL_UNSIGNED_BYTE : WebGL.GL_BYTE, stride, colorAsByteBuffer);
+  public void glColorPointer(int size, boolean unsigned, int stride,
+      ByteBuffer colorAsByteBuffer) {
+    glColorPointer(size, unsigned ? UNSIGNED_BYTE : BYTE, stride,
+        colorAsByteBuffer);
   }
-  
+
   private final void glColorPointer(int size, int type, int stride, Buffer buf) {
     glVertexAttribPointer(GLAdapter.ARRAY_COLOR, size, type, true, stride, buf);
     checkError("glColorPointer");
@@ -338,228 +336,230 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
 
   @Override
   public void glDeleteTextures(IntBuffer texnumBuffer) {
-	  for (int i = 0; i < texnumBuffer.remaining(); i++) {
-		  int tid = texnumBuffer.get(texnumBuffer.position() + i);
-	      gl.glDeleteTexture(textures.get(tid));
-	      textures.set(tid, null);
-	      checkError("glDeleteTexture");
-	  }
+    for (int i = 0; i < texnumBuffer.remaining(); i++) {
+      int tid = texnumBuffer.get(texnumBuffer.position() + i);
+      gl.deleteTexture(textures.get(tid));
+      textures.set(tid, null);
+      checkError("glDeleteTexture");
+    }
   }
-  
-  
+
   @Override
   public void glDepthFunc(int func) {
-  	gl.glDepthFunc(func);
-  	checkError("glDepthFunc");
+    gl.depthFunc(func);
+    checkError("glDepthFunc");
   }
 
   @Override
   public void glDepthMask(boolean b) {
-	  gl.glDepthMask(b);
-	  	checkError("glDepthMask");
+    gl.depthMask(b);
+    checkError("glDepthMask");
   }
 
   @Override
   public void glDepthRange(float gldepthmin, float gldepthmax) {
-	  gl.glDepthRange(gldepthmin, gldepthmax);
-	  	checkError("glDepthRange");
-  	
+    gl.depthRange(gldepthmin, gldepthmax);
+    checkError("glDepthRange");
   }
 
   @Override
   public void glDrawBuffer(int buf) {
-  	// specify which color buffers are to be drawn into
-  	
+    // specify which color buffers are to be drawn into
   }
 
   @Override
   public void glDrawElements(int mode, ShortBuffer srcIndexBuf) {
-	  prepareDraw();
-	  
-	  gl.glBindBuffer(WebGL.GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
-	  checkError("bindBuffer(el)");
-	  gl.glBufferData(WebGL.GL_ELEMENT_ARRAY_BUFFER, 
-			  getTypedArray(srcIndexBuf, WebGL.GL_UNSIGNED_SHORT), 
-			  WebGL.GL_DYNAMIC_DRAW);
-	  checkError("bufferData(el)");
+    prepareDraw();
 
-	  int count = srcIndexBuf.remaining();
-	  gl.glDrawElements(mode, count, WebGL.GL_UNSIGNED_SHORT, 0);
-	  checkError("drawElements");
+    gl.bindBuffer(ELEMENT_ARRAY_BUFFER, elementBuffer);
+    checkError("bindBuffer(el)");
+    gl.bufferData(ELEMENT_ARRAY_BUFFER, getTypedArray(srcIndexBuf,
+        UNSIGNED_SHORT), DYNAMIC_DRAW);
+    checkError("bufferData(el)");
+
+    int count = srcIndexBuf.remaining();
+    gl.drawElements(mode, count, UNSIGNED_SHORT, 0);
+    checkError("drawElements");
   }
 
   @Override
   public void glFinish() {
-  	gl.glFinish();
+    gl.finish();
   }
 
   @Override
   public String glGetString(int id) {
-	  // Hack to meet more desktop GL expectations to some extent
-	  String s = gl.glGetParameter(id);
-	  return s == null ? "" : s;
+    // TODO: Where is getParameter()?
+    // String s = gl.getParameter(id);
+    //return s == null ? "" : s;
+    return "glGetString not implemented";
   }
 
   @Override
   public void glPixelStorei(int i, int j) {
-  	gl.glPixelStorei(i, j);
+    gl.pixelStorei(i, j);
   }
 
   @Override
   public void glPointParameterf(int id, float value) {
-  	// TODO Auto-generated method stub
-  	
+    // TODO Auto-generated method stub
   }
 
   @Override
   public void glPointSize(float value) {
-  	// TODO Auto-generated method stub
-  	
+    // TODO Auto-generated method stub
   }
 
   @Override
   public void glPolygonMode(int i, int j) {
-  	// TODO Auto-generated method stub
-  	
+    // TODO Auto-generated method stub
   }
 
   @Override
   public void glReadPixels(int x, int y, int width, int height, int glBgr,
-  		int glUnsignedByte, ByteBuffer image) {
-  	// TODO Auto-generated method stub
-  	
+      int glUnsignedByte, ByteBuffer image) {
+    // TODO Auto-generated method stub
   }
 
   @Override
   public void glTexCoordPointer(int size, int byteStride, FloatBuffer buf) {
-	  glVertexAttribPointer(GLAdapter.ARRAY_TEXCOORD_0 + clientActiveTexture, size, 
-			  GL_FLOAT, false, byteStride, buf);
-	  checkError("texCoordPointer");
+    glVertexAttribPointer(GLAdapter.ARRAY_TEXCOORD_0 + clientActiveTexture,
+        size, GL_FLOAT, false, byteStride, buf);
+    checkError("texCoordPointer");
   }
 
-  
   @Override
   public void glTexEnvi(int target, int pid, int value) {
- 		texEnvMode[activeTexture] = value;
- }
-
-  @Override
-  public void glTexImage2D(int target, int level, int internalformat, int width,
-  		int height, int border, int format, int type, ByteBuffer pixels) {
-	  
-	textureFormat.set(boundTextureId[activeTexture], internalformat);
-	TypedArray<?> array = getTypedArray(pixels, type);
-  	gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, array);
-  	checkError("glTexImage2D");
+    texEnvMode[activeTexture] = value;
   }
 
   @Override
-  public void glTexImage2D(int target, int level, int internalformat, int width,
-  		int height, int border, int format, int type, IntBuffer pixels) {
-	  
-	textureFormat.set(boundTextureId[activeTexture], internalformat);
-	TypedArray<?> array = getTypedArray(pixels, type);
-	gl.glTexImage2D(target, level, internalformat, width, height, border, format, type, array);
-	checkError("glTexImage2D");
+  public void glTexImage2D(int target, int level, int internalformat,
+      int width, int height, int border, int format, int type, ByteBuffer pixels) {
+
+    textureFormat.set(boundTextureId[activeTexture], internalformat);
+    ArrayBufferView array = getTypedArray(pixels, type);
+    gl.texImage2D(target, level, internalformat, width, height, border,
+        format, type, array);
+    checkError("glTexImage2D");
+  }
+
+  @Override
+  public void glTexImage2D(int target, int level, int internalformat,
+      int width, int height, int border, int format, int type, IntBuffer pixels) {
+
+    textureFormat.set(boundTextureId[activeTexture], internalformat);
+    ArrayBufferView array = getTypedArray(pixels, type);
+    gl.texImage2D(target, level, internalformat, width, height, border,
+        format, type, array);
+    checkError("glTexImage2D");
   }
 
   @Override
   public void glTexParameteri(int glTexture2d, int glTextureMinFilter,
-  		int glFilterMin) {
-  	gl.glTexParameteri(glTexture2d, glTextureMinFilter, glFilterMin);
-  	checkError("glTexParameteri");
+      int glFilterMin) {
+    gl.texParameteri(glTexture2d, glTextureMinFilter, glFilterMin);
+    checkError("glTexParameteri");
   }
 
   @Override
   public void glTexSubImage2D(int target, int level, int xoffset, int yoffset,
-  		int width, int height, int format, int type, ByteBuffer pixels) {
-	  TypedArray<?> array = getTypedArray(pixels, type);
-	  gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, array);
-	  checkError("glTexSubImage2D");
+      int width, int height, int format, int type, ByteBuffer pixels) {
+    ArrayBufferView array = getTypedArray(pixels, type);
+    gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format,
+        type, array);
+    checkError("glTexSubImage2D");
   }
 
   @Override
   public void glTexSubImage2D(int target, int level, int xoffset, int yoffset,
-  		int width, int height, int format, int type, IntBuffer pixels) {
-	  TypedArray<?> array = getTypedArray(pixels, type);
-	  gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, array);
-	  checkError("glTexSubImage2D");
+      int width, int height, int format, int type, IntBuffer pixels) {
+    ArrayBufferView array = getTypedArray(pixels, type);
+    gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format,
+        type, array);
+    checkError("glTexSubImage2D");
   }
 
   @Override
   public void glVertexPointer(int size, int byteStride, FloatBuffer buf) {
-	    glVertexAttribPointer(GLAdapter.ARRAY_POSITION, size, 
-	    		GL_FLOAT, false, byteStride, buf);
-	    checkError("glVertexPointer");
-  	
+    glVertexAttribPointer(GLAdapter.ARRAY_POSITION, size, GL_FLOAT, false,
+        byteStride, buf);
+    checkError("glVertexPointer");
+
   }
-  
+
   @Override
   public void setDisplayMode(DisplayMode displayMode) {
-  	canvas.setWidth(displayMode.width);
-  	canvas.setHeight(displayMode.height);
+    canvas.setWidth(displayMode.width);
+    canvas.setHeight(displayMode.height);
   }
 
   public DisplayMode[] getAvailableDisplayModes() {
-		return new DisplayMode[] {getDisplayMode(), 
-				new DisplayMode(Window.getClientWidth(), Window.getClientHeight(), 32, 60)};
-	}
-  
-  
+    return new DisplayMode[]{
+        getDisplayMode(),
+        new DisplayMode(Window.getClientWidth(), Window.getClientHeight(), 32,
+            60)};
+  }
+
   @Override
   public void shutdow() {
-  	// TODO Auto-generated method stub
-  	
+    // TODO Auto-generated method stub
   }
 
   @Override
   public void swapBuffers() {
-  	// TODO Auto-generated method stub
-  	
-  }  
+    // TODO Auto-generated method stub
+  }
+
   @Override
   public final void glBindTexture(int target, int textureId) {
-    Texture texture = textures.get(textureId);
+    WebGLTexture texture = textures.get(textureId);
     if (texture == null) {
-      texture = gl.glCreateTexture();
+      texture = gl.createTexture();
       textures.set(textureId, texture);
     }
-	  
-//    log ("binding texture " + texture + " id " + textureId + " for activeTexture: " + (activeTexture-GL_TEXTURE0));
-    gl.glBindTexture(target, texture);
+
+    // log ("binding texture " + texture + " id " + textureId +
+    // " for activeTexture: " + (activeTexture-GL_TEXTURE0));
+    gl.bindTexture(target, texture);
     checkError("glBindTexture");
-    
+
     boundTextureId[activeTexture] = textureId;
-    
-   // glColor3f((float)Math.random(), (float)Math.random(), (float)Math.random());
+
+    // glColor3f((float)Math.random(), (float)Math.random(),
+    // (float)Math.random());
   }
 
   @Override
   public final void glBlendFunc(int a, int b) {
-    gl.glBlendFunc(a, b);
-  	checkError("glBlendFunc");
-
+    gl.blendFunc(a, b);
+    checkError("glBlendFunc");
   }
 
   @Override
   public final void glClear(int mask) {
-    gl.glClear(mask);  	
+    gl.clear(mask);
     checkError("glClear");
-
   }
-
 
   @Override
   public final void glColor4f(float red, float green, float blue, float alpha) {
-    gl.glVertexAttrib4f(GLAdapter.ARRAY_COLOR, red, green, blue, alpha);
+    gl.vertexAttrib4f(GLAdapter.ARRAY_COLOR, red, green, blue, alpha);
     checkError("glColor4f");
   }
 
-  public void glTexImage2d(int target, int level, int internalformat, int format, int type, Element image) {
-//		log("setting texImage2d; image: " + image.getSrc());
+  public void glTexImage2d(int target, int level, int internalformat,
+      int format, int type, ImageElement image) {
+    // log("setting texImage2d; image: " + image.getSrc());
+    gl.texImage2D(target, level, internalformat, format, type, image);
+    checkError("texImage2D");
+  }
 
-	  gl.glTexImage2D(target, level, internalformat, format, type, image);
-	  checkError("texImage2D");
+  public void glTexImage2d(int target, int level, int internalformat,
+      int format, int type, CanvasElement image) {
+    // log("setting texImage2d; image: " + image.getSrc());
+    gl.texImage2D(target, level, internalformat, format, type, image);
+    checkError("texImage2D");
   }
 
   @Override
@@ -567,180 +567,172 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
     // In ES, you don't enable/disable TEXTURE_2D. We use it this call to
     // enable one of the two active textures supported by the shader.
     if (i == GL_TEXTURE_2D) {
-    	switch (activeTexture) {
-    	case 0:
-    		gl.glUniform1i(uEnableTexture0, 1);
-    		break;
-    	case 1:
-    		gl.glUniform1i(uEnableTexture1, 1);
-    		break;
-    	default:
-    		throw new RuntimeException();
-    	}
-    	return;
+      switch (activeTexture) {
+        case 0:
+          gl.uniform1i(uEnableTexture0, 1);
+          break;
+        case 1:
+          gl.uniform1i(uEnableTexture1, 1);
+          break;
+        default:
+          throw new RuntimeException();
+      }
+      return;
     }
 
-    gl.glEnable(i);
+    gl.enable(i);
     checkError("glEnable");
   }
 
   @Override
   public final int glGetError() {
-    return gl.glGetError();
+    return gl.getError();
   }
 
   @Override
   public final void glClearColor(float f, float g, float h, float i) {
-    gl.glClearColor(f, g, h, i);
+    gl.clearColor(f, g, h, i);
     checkError("glClearColor");
   }
 
   @Override
   public void glDrawArrays(int mode, int first, int count) {
     prepareDraw();
-//    log("drawArrays mode:" + mode + " first:" + first + " count:" +count);
-    gl.glDrawArrays(mode, first, count);
+    // log("drawArrays mode:" + mode + " first:" + first + " count:" +count);
+    gl.drawArrays(mode, first, count);
     checkError("drawArrays");
   }
 
-
   public void checkError(String string) {
-//	  int err = gl.glGetError();
-//	if (err != GL_NO_ERROR) {
-//		log("GL_ERROR in " + string + "(): " + err);
-//		//throw new RuntimeException("GL_ERROR in " + string + "(): " + err);
-//	}
+    // int err = gl.glGetError();
+    // if (err != GL_NO_ERROR) {
+    // log("GL_ERROR in " + string + "(): " + err);
+    // //throw new RuntimeException("GL_ERROR in " + string + "(): " + err);
+    // }
   }
-  
-  
+
   public void updatTCBuffer(FloatBuffer buf, int offset, int count) {
-	  BufferData bd = bufferData[GLAdapter.ARRAY_TEXCOORD_0];
-	  gl.glBindBuffer(WebGL.GL_ARRAY_BUFFER, bd.buffer);
-	  
-	  int pos = buf.position();
-	  int limit = buf.limit();
-	  
-	  buf.position(pos + offset);
-	  buf.limit(pos + offset + count);
-	  
-	  TypedArray<?> data = getTypedArray(buf, GL_FLOAT);
-	  
-	  gl.glBufferSubData(WebGL.GL_ARRAY_BUFFER, offset * 4, data);
-	  
-	  buf.position(pos);
-	  buf.limit(limit);
-  }		
+    BufferData bd = bufferData[GLAdapter.ARRAY_TEXCOORD_0];
+    gl.bindBuffer(ARRAY_BUFFER, bd.buffer);
+
+    int pos = buf.position();
+    int limit = buf.limit();
+
+    buf.position(pos + offset);
+    buf.limit(pos + offset + count);
+
+    ArrayBufferView data = getTypedArray(buf, GL_FLOAT);
+
+    gl.bufferSubData(ARRAY_BUFFER, offset * 4, data);
+
+    buf.position(pos);
+    buf.limit(limit);
+  }
 
   private void prepareDraw() {
     if (updateMvpMatrix()) {
-      gl.glUniformMatrix4fv(uMvpMatrix, false, Float32Array.create(mvpMatrix));
+      gl.uniformMatrix4fv(uMvpMatrix, false, Float32Array.create(mvpMatrix));
       checkError("prepareDraw");
     }
-    
-    gl.glUniform1i(uTexEnv0, getTextureMode(0));
-    gl.glUniform1i(uTexEnv1, getTextureMode(1));
 
-//    StringBuilder sizes = new StringBuilder();
-    
+    gl.uniform1i(uTexEnv0, getTextureMode(0));
+    gl.uniform1i(uTexEnv1, getTextureMode(1));
+
+    // StringBuilder sizes = new StringBuilder();
+
     for (int i = 0; i < SMALL_BUF_COUNT; i++) {
-    	BufferData bd = bufferData[i];
-    	if(bd.toBind != null) {
-  	          gl.glBindBuffer(WebGL.GL_ARRAY_BUFFER, bd.buffer);
-  	          checkError("bindBuffer"+ i);
-  	          
-//  	          int len = bd.toBind.getByteLength();
-//  	          if (len < bd.byteSize) {
-//  	        	  gl.glBufferSubData(WebGL.GL_ARRAY_BUFFER, 0, bd.toBind);
-//  	          } else {
-//  	        	  bd.byteSize = len;
-  	        	  gl.glBufferData(WebGL.GL_ARRAY_BUFFER, bd.toBind, 
-    	    		  WebGL.GL_STREAM_DRAW); 
-//  	          }
-  	          checkError("bufferData" + i);
+      BufferData bd = bufferData[i];
+      if (bd.toBind != null) {
+        gl.bindBuffer(ARRAY_BUFFER, bd.buffer);
+        checkError("bindBuffer" + i);
 
-    	      gl.glVertexAttribPointer(i, bd.size, bd.type, bd.normalize, bd.byteStride, 0);
-  	          checkError("vertexAttribPointer");
-  	          
-  	          bd.toBind = null;
-    	} 
+        // int len = bd.toBind.getByteLength();
+        // if (len < bd.byteSize) {
+        // gl.glBufferSubData(WebGL.GL_ARRAY_BUFFER, 0, bd.toBind);
+        // } else {
+        // bd.byteSize = len;
+        gl.bufferData(ARRAY_BUFFER, bd.toBind, STREAM_DRAW);
+        // }
+        checkError("bufferData" + i);
+
+        gl.vertexAttribPointer(i, bd.size, bd.type, bd.normalize,
+            bd.byteStride, 0);
+        checkError("vertexAttribPointer");
+
+        bd.toBind = null;
+      }
     }
-    
-//    log ("prepDraw: " + sizes);
+
+    // log ("prepDraw: " + sizes);
   }
 
-
-
   private int getTextureMode(int i) {
-	return texEnvMode[i] == GL_REPLACE ? 0 : 
-		(textureFormats.get(boundTextureId[i]) == 3 ? 2 : 1);
-}
-
+    return texEnvMode[i] == GL_REPLACE ? 0
+        : (textureFormats.get(boundTextureId[i]) == 3 ? 2 : 1);
+  }
 
   @Override
   public final void glScissor(int i, int j, int width, int height) {
-    gl.glScissor(i, j, width, height);
+    gl.scissor(i, j, width, height);
     checkError("glScissor");
   }
 
   @Override
   public void glTexParameterf(int target, int pname, float param) {
-    gl.glTexParameterf(target, pname, param);
+    gl.texParameterf(target, pname, param);
     checkError("glTexParameterf");
   }
 
-
-
   @Override
   public final void glEnableClientState(int i) {
-    switch(i) {
+    switch (i) {
       case GL_COLOR_ARRAY:
-        gl.glEnableVertexAttribArray(GLAdapter.ARRAY_COLOR);
-	    checkError("enableClientState colorArr");
+        gl.enableVertexAttribArray(GLAdapter.ARRAY_COLOR);
+        checkError("enableClientState colorArr");
         break;
       case GL_VERTEX_ARRAY:
-        gl.glEnableVertexAttribArray(GLAdapter.ARRAY_POSITION);
-	    checkError("enableClientState vertexArrr");
+        gl.enableVertexAttribArray(GLAdapter.ARRAY_POSITION);
+        checkError("enableClientState vertexArrr");
         break;
       case GL_TEXTURE_COORD_ARRAY:
-    	switch (clientActiveTexture) {
-    	case 0:
-    		gl.glEnableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_0);
-    	    checkError("enableClientState texCoord0");
-    		break;    		
-    	case 1:
-    		gl.glEnableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_1);
-    	    checkError("enableClientState texCoord1");
-    		break;
-    	default:
-    		throw new RuntimeException();
-    	}
+        switch (clientActiveTexture) {
+          case 0:
+            gl.enableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_0);
+            checkError("enableClientState texCoord0");
+            break;
+          case 1:
+            gl.enableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_1);
+            checkError("enableClientState texCoord1");
+            break;
+          default:
+            throw new RuntimeException();
+        }
         break;
       default:
-        log("unsupported / unrecogized client state "+ i);
+        log("unsupported / unrecogized client state " + i);
     }
   }
 
-
   @Override
   public final void glDisableClientState(int i) {
-    switch(i) {
+    switch (i) {
       case GL_COLOR_ARRAY:
-        gl.glDisableVertexAttribArray(GLAdapter.ARRAY_COLOR);
+        gl.disableVertexAttribArray(GLAdapter.ARRAY_COLOR);
         break;
       case GL_VERTEX_ARRAY:
-        gl.glDisableVertexAttribArray(GLAdapter.ARRAY_POSITION);
+        gl.disableVertexAttribArray(GLAdapter.ARRAY_POSITION);
         break;
       case GL_TEXTURE_COORD_ARRAY:
-      	switch (clientActiveTexture) {
-    	case 0:
-    		gl.glDisableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_0);
-    		break;
-    	case 1:
-    		gl.glDisableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_1);
-    		break;
-    	default:
-    		throw new RuntimeException();
-    	}
+        switch (clientActiveTexture) {
+          case 0:
+            gl.disableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_0);
+            break;
+          case 1:
+            gl.disableVertexAttribArray(GLAdapter.ARRAY_TEXCOORD_1);
+            break;
+          default:
+            throw new RuntimeException();
+        }
         break;
       default:
         log("unsupported / unrecogized client state");
@@ -748,134 +740,133 @@ private WebGL.Shader loadShader(int shaderType, String shaderSource) {
     checkError("DisableClientState");
   }
 
-
   @Override
   public final void glDisable(int i) {
     // In ES, you don't enable/disable TEXTURE_2D. We use it this call to
     // disable one of the two active textures supported by the shader.
     if (i == GL_TEXTURE_2D) {
-    	switch (activeTexture) {
-    	case 0:
-    		gl.glUniform1i(uEnableTexture0, 0);
-    		break;
-       	case 1:
-    		gl.glUniform1i(uEnableTexture1, 0);
-    		break;
-    	default:
-    		throw new RuntimeException();
-    	}
-    	return;
-    } 
+      switch (activeTexture) {
+        case 0:
+          gl.uniform1i(uEnableTexture0, 0);
+          break;
+        case 1:
+          gl.uniform1i(uEnableTexture1, 0);
+          break;
+        default:
+          throw new RuntimeException();
+      }
+      return;
+    }
 
-    gl.glDisable(i);
+    gl.disable(i);
     checkError("glDisable");
   }
 
   @Override
   public final void glCullFace(int c) {
-    gl.glCullFace(c);
+    gl.cullFace(c);
     checkError("glCullFace");
   }
-
-
 
   @Override
   public final void glShadeModel(int s) {
   }
 
-
   @Override
   public final void glViewport(int x, int y, int w, int h) {
-	  super.glViewport(x, y, w, h);
-    gl.glViewport(x, y, w, h);
+    super.glViewport(x, y, w, h);
+    gl.viewport(x, y, w, h);
     checkError("glViewport");
   }
-  
-  public void glVertexAttribPointer(int arrayId, int size, 
-		  int type, boolean normalize, int byteStride, Buffer nioBuffer) {
-	  BufferData bd= bufferData[arrayId];
-	  bd.byteStride = byteStride;
-	  bd.size = size;
-	  bd.normalize = normalize;
-	  bd.type = type;
-      TypedArray<?> webGLArray = getTypedArray(nioBuffer, type);
-	  bd.toBind = webGLArray;		  
-  }
-  
-  public void glVertexAttribPointer(int arrayId, int size, 
-		  int type, boolean normalize, int byteStride, int offset, Buffer nioBuffer,
-		  int staticDrawId) {
-	  WebGL.Buffer buffer = staticBuffers.get(staticDrawId);
-	  if (buffer == null) {
-		  buffer = gl.glCreateBuffer();
-		  staticBuffers.set(staticDrawId, buffer);
-		  gl.glBindBuffer(WebGL.GL_ARRAY_BUFFER, buffer);
-		  TypedArray<?> webGLArray = getTypedArray(nioBuffer, type);
-		  gl.glBufferData(WebGL.GL_ARRAY_BUFFER, webGLArray, WebGL.GL_STATIC_DRAW); 
-		  checkError("bufferData");
-		  log("static buffer created; id: " + staticDrawId + " remaining: " + nioBuffer.remaining());
-	  } 
-	  gl.glBindBuffer(WebGL.GL_ARRAY_BUFFER, buffer);
-	  gl.glVertexAttribPointer(arrayId, size, type, normalize, byteStride, offset);
-	  bufferData[arrayId].toBind = null;
-	  checkError("vertexAttribPointer");	
+
+  public void glVertexAttribPointer(int arrayId, int size, int type,
+      boolean normalize, int byteStride, Buffer nioBuffer) {
+    BufferData bd = bufferData[arrayId];
+    bd.byteStride = byteStride;
+    bd.size = size;
+    bd.normalize = normalize;
+    bd.type = type;
+    ArrayBufferView webGLArray = getTypedArray(nioBuffer, type);
+    bd.toBind = webGLArray;
   }
 
-
-  private TypedArray<?> getTypedArray(Buffer buffer, int type) {
-
-	  int elementSize;
-	  HasTypedArray arrayHolder;
-	  
-	  if (!(buffer instanceof HasTypedArray)) {
-		  if (type != GL_BYTE && type != GL_UNSIGNED_BYTE) {
-			  log("buffer byte order problem");
-			  throw new RuntimeException("Buffer byte order problem");
-		  }
-		  if (buffer instanceof IntBuffer) {
-			  elementSize = 4;
-		  } else {
-			  throw new RuntimeException("NYI");
-		  }
-		  arrayHolder = (HasTypedArray) ((ByteBufferWrapper) buffer).getByteBuffer();
-	  } else {
-		  arrayHolder = (HasTypedArray) buffer;
-		  elementSize = arrayHolder.getElementSize();
-	  }
-	  
-	  TypedArray<?> webGLArray = arrayHolder.getTypedArray();
-	  int remainingBytes = buffer.remaining() * elementSize;
-
-	  int byteOffset = webGLArray.getByteOffset() + buffer.position() * elementSize;
-	  
-	  switch (type) {
-	  case WebGL.GL_FLOAT: 
-		  return Float32Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 4);
-		  
-	  case WebGL.GL_UNSIGNED_BYTE: 
-		  return Uint8Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes);
-		  
-	  case WebGL.GL_UNSIGNED_SHORT: 
-		  return Uint16Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 2);
-
-	  case WebGL.GL_INT: 
-		  return Int32Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 4);
-
-	  case WebGL.GL_SHORT: 
-		  return Int16Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes / 2);
-  
-	  case WebGL.GL_BYTE: 
-		  return Int8Array.create(webGLArray.getBuffer(), byteOffset, remainingBytes);
-	  }
-	  
-	  throw new IllegalArgumentException();
+  public void glVertexAttribPointer(int arrayId, int size, int type,
+      boolean normalize, int byteStride, int offset, Buffer nioBuffer,
+      int staticDrawId) {
+    WebGLBuffer buffer = staticBuffers.get(staticDrawId);
+    if (buffer == null) {
+      buffer = gl.createBuffer();
+      staticBuffers.set(staticDrawId, buffer);
+      gl.bindBuffer(ARRAY_BUFFER, buffer);
+      ArrayBufferView webGLArray = getTypedArray(nioBuffer, type);
+      gl.bufferData(ARRAY_BUFFER, webGLArray, STATIC_DRAW);
+      checkError("bufferData");
+      log("static buffer created; id: " + staticDrawId + " remaining: "
+          + nioBuffer.remaining());
+    }
+    gl.bindBuffer(ARRAY_BUFFER, buffer);
+    gl.vertexAttribPointer(arrayId, size, type, normalize, byteStride, offset);
+    bufferData[arrayId].toBind = null;
+    checkError("vertexAttribPointer");
   }
 
-public void glGenerateMipmap(int t) {
-	gl.glGenerateMipmap(t);
-	checkError("genMipmap");
+  private ArrayBufferView getTypedArray(Buffer buffer, int type) {
+    int elementSize;
+    HasArrayBufferView arrayHolder;
+
+    if (!(buffer instanceof HasArrayBufferView)) {
+      if (type != GL_BYTE && type != GL_UNSIGNED_BYTE) {
+        log("buffer byte order problem");
+        throw new RuntimeException("Buffer byte order problem");
+      }
+      if (buffer instanceof IntBuffer) {
+        elementSize = 4;
+      } else {
+        throw new RuntimeException("NYI");
+      }
+      arrayHolder = (HasArrayBufferView) ((ByteBufferWrapper) buffer).getByteBuffer();
+    } else {
+      arrayHolder = (HasArrayBufferView) buffer;
+      elementSize = arrayHolder.getElementSize();
+    }
+
+    ArrayBufferView webGLArray = arrayHolder.getTypedArray();
+    int remainingBytes = buffer.remaining() * elementSize;
+
+    int byteOffset = webGLArray.getByteOffset() + buffer.position()
+        * elementSize;
+
+    switch (type) {
+      case FLOAT:
+        return Float32Array.create(webGLArray.getBuffer(), byteOffset,
+            remainingBytes / 4);
+
+      case UNSIGNED_BYTE:
+        return Uint8Array.create(webGLArray.getBuffer(), byteOffset,
+            remainingBytes);
+
+      case UNSIGNED_SHORT:
+        return Uint16Array.create(webGLArray.getBuffer(), byteOffset,
+            remainingBytes / 2);
+
+      case INT:
+        return Int32Array.create(webGLArray.getBuffer(), byteOffset,
+            remainingBytes / 4);
+
+      case SHORT:
+        return Int16Array.create(webGLArray.getBuffer(), byteOffset,
+            remainingBytes / 2);
+
+      case BYTE:
+        return Int8Array.create(webGLArray.getBuffer(), byteOffset,
+            remainingBytes);
+    }
+
+    throw new IllegalArgumentException();
+  }
+
+  public void glGenerateMipmap(int t) {
+    gl.generateMipmap(t);
+    checkError("genMipmap");
+  }
 }
-
-  
-}
-
