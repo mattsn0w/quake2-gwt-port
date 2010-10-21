@@ -43,7 +43,7 @@ public class ResourceLoader {
 	  }
 
 	public static void fail(Exception e) {
-		Compatibility.printStackTrace(e);
+	  System.err.println(e.getMessage());
 	}
 	
 	public static void reset() {

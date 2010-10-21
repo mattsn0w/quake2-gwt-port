@@ -18,9 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.tools;
 
-import jake2.desktop.CompatibilityImpl;
-import jake2.qcommon.Compatibility;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,7 +52,6 @@ public class Unpak {
   }
 
   static {
-    Compatibility.impl = new CompatibilityImpl();
     new WALConverter();
     new PCXConverter();
     new TGAConverter();

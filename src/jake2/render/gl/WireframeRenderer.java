@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.gl;
 
 import jake2.render.DisplayMode;
-import jake2.render.LineDrawing;
-import jake2.render.LineDrawing.SwapBuffersCallback;
 import jake2.util.CanvasHelper;
 
 import java.nio.Buffer;
@@ -32,6 +30,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+
+import com.google.gwt.html5.client.CanvasElement;
+import com.google.gwt.html5.client.CanvasRenderingContext2D;
 
 /**
  * Crude attempt at showing some of the output on a regular 2D canvas for
@@ -56,18 +57,16 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	private String uniformColor;
 	private boolean colorArrayEnabled;
 
-
-	private LineDrawing ctx;
-	private SwapBuffersCallback swapBuffersCallback;
-
+	private CanvasRenderingContext2D ctx;
 	private int vertexPointerPosition;
-
 	private boolean debugHighlight;
 	
-	public WireframeRenderer(SwapBuffersCallback finishCallback, int w, int h) {
+	private final CanvasElement canvas;
+	
+	public WireframeRenderer(CanvasElement canvas, int w, int h) {
 		super(w, h);
-		ctx = finishCallback.glSwapBuffers();
-		this.swapBuffersCallback = finishCallback;
+		this.canvas = canvas;
+		swapBuffers();
 	}
 	
 	@Override
@@ -278,7 +277,10 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 
 	@Override
 	public final void swapBuffers() {
-		ctx = swapBuffersCallback.glSwapBuffers();
+		ctx = canvas.getContext2D();
+		ctx.setFont("8px Courier");
+		ctx.setStrokeStyleColor("#00ff00");
+		ctx.setFillStyleColor("#00ff00");
 	}
 
 
@@ -498,7 +500,7 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 		
 	}
 	
-	public LineDrawing get2dContext() {
+	public CanvasRenderingContext2D get2dContext() {
 		return ctx;
 	}
 

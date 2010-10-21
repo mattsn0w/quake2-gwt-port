@@ -17,7 +17,7 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.ArrayBuffer;
+import com.google.gwt.typedarrays.client.ArrayBuffer;
 
 /**
  * HeapByteBuffer, ReadWriteHeapByteBuffer and ReadOnlyHeapByteBuffer compose
