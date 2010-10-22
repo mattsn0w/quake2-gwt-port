@@ -23,7 +23,6 @@
 */
 package jake2.sys;
 
-
 import jake2.game.cvar_t;
 import jake2.qcommon.Com;
 import jake2.qcommon.Compatibility;
@@ -35,12 +34,7 @@ import jake2.qcommon.sizebuf_t;
 import jake2.util.Lib;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 
 public final class NET {
 

@@ -16,12 +16,10 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.HasTypedArray;
-import com.google.gwt.corp.webgl.client.TypedArray;
-import com.google.gwt.corp.webgl.client.Float32Array;
+import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.google.gwt.typedarrays.client.Float32Array;
 
-//import org.apache.harmony.nio.internal.DirectBuffer;
-//import org.apache.harmony.luni.platform.PlatformAddress;
+import jake2.gwt.client.HasArrayBufferView;
 
 /**
  * This class wraps a byte buffer to be a float buffer.
@@ -36,7 +34,7 @@ import com.google.gwt.corp.webgl.client.Float32Array;
  * </p>
  * 
  */
-final class DirectReadOnlyFloatBufferAdapter extends FloatBuffer implements HasTypedArray {
+final class DirectReadOnlyFloatBufferAdapter extends FloatBuffer implements HasArrayBufferView {
 //implements DirectBuffer {
 
     static FloatBuffer wrap(DirectByteBuffer byteBuffer) {
@@ -111,17 +109,16 @@ final class DirectReadOnlyFloatBufferAdapter extends FloatBuffer implements HasT
     }
 
     @Override
-    protected float[] protectedArray() {
+    float[] protectedArray() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected int protectedArrayOffset() {
+    int protectedArrayOffset() {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    protected boolean protectedHasArray() {
+    @Override boolean protectedHasArray() {
         return false;
     }
 
@@ -144,7 +141,7 @@ final class DirectReadOnlyFloatBufferAdapter extends FloatBuffer implements HasT
         return result;
     }
 
-	public TypedArray<?> getTypedArray() {
+	public ArrayBufferView getTypedArray() {
 		return floatArray;
 	}
 

@@ -16,8 +16,8 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.ArrayBuffer;
 import com.google.gwt.corp.compatibility.Numbers;
+import com.google.gwt.typedarrays.client.ArrayBuffer;
 
 /**
  * DirectByteBuffer, DirectReadWriteByteBuffer and DirectReadOnlyByteBuffer compose

@@ -250,9 +250,7 @@ public class GwtSound implements Sound {
       Console.Print("Creating audio element " + namebuffer + "\r");
       
       sc.soundUrl = "baseq2/" + namebuffer;
-	  System.out.println("before initbuffer");
       initBuffer(sc.soundUrl, sc.data, s.bufferId, sc.speed);
-	  System.out.println("after initbuffer");
       s.isCached = true;
       // free samples for GC
       s.cache.data = null;

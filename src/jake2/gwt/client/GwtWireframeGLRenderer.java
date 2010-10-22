@@ -19,37 +19,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.gwt.client;
 
 import jake2.client.refexport_t;
-import jake2.render.LineDrawing;
 import jake2.render.image_t;
-import jake2.render.gl.GLRenderer;
 import jake2.render.gl.WireframeRenderer;
 import jake2.sys.KBD;
 
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.corp.compatibility.Numbers;
-import com.google.gwt.corp.gfx.client.canvas.CanvasElement;
-import com.google.gwt.corp.gfx.client.canvas.CanvasRenderingContext2D;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.html5.client.CanvasElement;
+import com.google.gwt.html5.client.CanvasRenderingContext2D;
 
 public class GwtWireframeGLRenderer extends AbstractGwtGLRenderer implements refexport_t {
 	KBD kbd = new GwtKBD();
-	private final CanvasElement canvas;
 	private CanvasRenderingContext2D ctx;
 
 	public GwtWireframeGLRenderer(final CanvasElement canvas) {
-		this.canvas = canvas;
-
-		this.gl = new WireframeRenderer(new LineDrawing.SwapBuffersCallback() {
-			public LineDrawing glSwapBuffers() {
-				ctx = canvas.getContext2D();
-				ctx.setFont("8px Courier");
-				ctx.setStrokeStyleColor("#00ff00");
-				ctx.setFillStyleColor("#00ff00");
-				return ctx;
-			}
-		}, canvas.getWidth(), canvas.getHeight());
+		this.gl = new WireframeRenderer(canvas, canvas.getWidth(), canvas.getHeight());
 		init();
 	}
 
