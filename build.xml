@@ -68,6 +68,7 @@
         <pathelement location="src"/>
         <path refid="project.class.path"/>
       </classpath>
+      <arg value="hires"/>
     </java>
   </target>
 

@@ -33,7 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class GwtQuakeServlet extends HttpServlet {
 
-  @Override
+    private String cachedImageSizes;
+
+    @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse rsp)
       throws ServletException, IOException {
     File f = new File("war/GwtQuake.html");
@@ -46,13 +48,20 @@ public class GwtQuakeServlet extends HttpServlet {
     html = html.replace(
         "<!--SERVER_ADDRESS_PLACEHOLDER-->",
         "<script>var __serverAddress = '" + InetAddress.getLocalHost().getHostAddress() + "';</script>");
+      StringBuilder sb = new StringBuilder();
+      scanImageSizes(new File("raw"),sb);
+      if (cachedImageSizes == null) {
+        cachedImageSizes = sb.toString(); 
+      }
+            
+    html = html.replace("<!--IMAGE_SIZE_PLACEHOLDER-->", cachedImageSizes);
     rsp.getWriter().print(html);
     rsp.flushBuffer();
     rsp.setStatus(200);
   }
 
   private String scanImageSizes(File dir, StringBuilder sb) throws IOException {
-    StringBuilder imageSizes = new StringBuilder();
+    StringBuilder imageSizes = sb;
     for (File f: dir.listFiles()) {
       if (f.isDirectory()) {
         scanImageSizes(f, sb);

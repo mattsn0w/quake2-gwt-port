@@ -26,6 +26,14 @@ import java.io.File;
 public class Installer {
   public static void main(String args[]) throws Throwable {
     Downloader.main(args);
+    if (args[0].equals("hires") && !new File("raw", "baseq2").exists()) {
+        Downloader hirezTextureDl = new Downloader("http://www-personal.umich.edu/~jimw/q2/Quake2_tga_textures/q2_textures.zip");
+        hirezTextureDl.setHiresPak(true);
+        hirezTextureDl.run();
+        Downloader hirezMdlDl = new Downloader("http://www-personal.umich.edu/~jimw/q2/aq2_install/models.zip");
+        hirezMdlDl.setHiresPak(true);
+        hirezMdlDl.run();
+    }
     Unpak.main(new String[] {
         "raw" + File.separator + "baseq2",
         "war" + File.separator + "baseq2"
