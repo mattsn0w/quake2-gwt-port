@@ -16,12 +16,10 @@
 
 package java.nio;
 
-import com.google.gwt.corp.webgl.client.HasTypedArray;
-import com.google.gwt.corp.webgl.client.TypedArray;
-import com.google.gwt.corp.webgl.client.Int32Array;
+import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.google.gwt.typedarrays.client.Int32Array;
 
-//import org.apache.harmony.nio.internal.DirectBuffer;
-//import org.apache.harmony.luni.platform.PlatformAddress;
+import jake2.gwt.client.HasArrayBufferView;
 
 /**
  * This class wraps a byte buffer to be a int buffer.
@@ -36,7 +34,7 @@ import com.google.gwt.corp.webgl.client.Int32Array;
  * </p>
  * 
  */
-final class DirectReadOnlyIntBufferAdapter extends IntBuffer implements HasTypedArray {
+final class DirectReadOnlyIntBufferAdapter extends IntBuffer implements HasArrayBufferView {
 //implements DirectBuffer {
 
     static IntBuffer wrap(DirectByteBuffer byteBuffer) {
@@ -144,10 +142,9 @@ final class DirectReadOnlyIntBufferAdapter extends IntBuffer implements HasTyped
         return result;
     }
 
-	public TypedArray<?> getTypedArray() {
+	public ArrayBufferView getTypedArray() {
 		return intArray;
 	}
-
 
 	public int getElementSize() {
 		return 4;

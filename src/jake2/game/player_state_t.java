@@ -25,10 +25,7 @@ package jake2.game;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 
-import jake2.*;
-import jake2.*;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.util.Lib;
