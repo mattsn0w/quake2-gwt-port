@@ -40,8 +40,9 @@ public class Downloader implements Runnable {
 		"ftp://ftp.idsoftware.com/idstuff/quake2/q2-314-demo-x86.exe",
 		"ftp://ftp.gamers.org/pub/games/idgames2/idstuff/quake2/q2-314-demo-x86.exe"
 	};
-	
-	public static void main(String[] args) throws MalformedURLException, InterruptedException {
+    private boolean hiresPak;
+
+    public static void main(String[] args) throws MalformedURLException, InterruptedException {
 		if (new File("raw", "baseq2").exists()) {
 			System.out.println("raw/baseq2 already exists; no need to download");
 			return;
@@ -123,8 +124,12 @@ public class Downloader implements Runnable {
 			while (e.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry)e.nextElement();
 				String name = entry.getName();
-				int i;
-				if ((i = name.indexOf("/baseq2")) > -1 && name.indexOf(".dll") == -1) {
+				int i = 0;
+				if (hiresPak || (i = name.indexOf("/baseq2")) > -1 && name.indexOf(".dll") == -1) {
+                    // hiresPak is rooted beneath baseq2
+                    if (hiresPak)  {
+                        name = "/baseq2/" + name;
+                    }
 					File outFile = new File("raw", name.substring(i));
 					if (entry.isDirectory()) {
 						outFile.mkdirs();
@@ -142,4 +147,8 @@ public class Downloader implements Runnable {
 			System.out.println("Donwload Failed");
 		}
 	}
+
+    public void setHiresPak(boolean hiresPak) {
+        this.hiresPak = hiresPak;
+    }
 }
