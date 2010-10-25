@@ -30,16 +30,14 @@ import jake2.game.entity_state_t;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
-import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
 
 /**
  * Channel
@@ -52,12 +50,12 @@ public class Channel {
 	final static int FIXED = 1;
 	final static int DYNAMIC = 2;
 	final static int MAX_CHANNELS = 32;
-	private final static FloatBuffer NULLVECTOR = Lib.newFloatBuffer(3);
+	private final static Float32Array NULLVECTOR = Float32Array.create(3);
 	
 	private static Channel[] channels = new Channel[MAX_CHANNELS];
-	private static IntBuffer sources = Lib.newIntBuffer(MAX_CHANNELS);
+	private static Int32Array sources = Int32Array.create(MAX_CHANNELS);
 	// a reference of L:WJGLSoundImpl.buffers 
-	private static IntBuffer buffers;
+	private static Int32Array buffers;
 	private static Map looptable = new HashMap(MAX_CHANNELS);
 
 	private static boolean isInitialized = false;
@@ -100,9 +98,9 @@ public class Channel {
 		modified = false;
 	}
 	
-	private static IntBuffer tmp = Lib.newIntBuffer(1);
+	private static Int32Array tmp = Int32Array.create(1);
 
-	public static int init(IntBuffer buffers) {
+	public static int init(Int32Array buffers) {
 		Channel.buffers = buffers;
 	    // create channels
 		int sourceId;
@@ -114,7 +112,7 @@ public class Channel {
             // can't generate more sources 
 			if (sourceId <= 0) break;
 			
-			sources.put(i, sourceId);
+			sources.set(i, sourceId);
 
 			channels[i] = new Channel(sourceId);
 			numChannels++;
@@ -189,39 +187,39 @@ public class Channel {
         streamQueue = 0;
     }
 
-    public static void updateStream(ByteBuffer samples, int count, int format, int rate) {
-        enableStreaming();
-        int source = channels[numChannels].sourceId;
-        int processed = ALAdapter.impl.alGetSourcei(source, ALAdapter.AL_BUFFERS_PROCESSED);
-        
-        boolean playing = (ALAdapter.impl.alGetSourcei(source, ALAdapter.AL_SOURCE_STATE) == ALAdapter.AL_PLAYING);
-        boolean interupted = !playing && streamQueue > 2;
-        
-        IntBuffer buffer = tmp;
-        if (interupted) {
-            unqueueStreams();
-            buffer.put(0, buffers.get(Sound.MAX_SFX + streamQueue++));
-            Com.DPrintf("queue " + (streamQueue - 1) + '\n');
-        } else if (processed < 2) {
-            // check queue overrun
-            if (streamQueue >= Sound.STREAM_QUEUE) return;
-            buffer.put(0, buffers.get(Sound.MAX_SFX + streamQueue++));
-            Com.DPrintf("queue " + (streamQueue - 1) + '\n');
-        } else {
-            // reuse the buffer
-            ALAdapter.impl.alSourceUnqueueBuffers(source, buffer);
-        }
-
-        samples.position(0);
-        samples.limit(count);
-        ALAdapter.impl.alBufferData(buffer.get(0), format, samples, rate);
-        ALAdapter.impl.alSourceQueueBuffers(source, buffer);
-        
-        if (streamQueue > 1 && !playing) {
-            Com.DPrintf("start sound\n");
-            ALAdapter.impl.alSourcePlay(source);
-        }
-    }
+//    public static void updateStream(Uint8Array samples, int count, int format, int rate) {
+//        enableStreaming();
+//        int source = channels[numChannels].sourceId;
+//        int processed = ALAdapter.impl.alGetSourcei(source, ALAdapter.AL_BUFFERS_PROCESSED);
+//        
+//        boolean playing = (ALAdapter.impl.alGetSourcei(source, ALAdapter.AL_SOURCE_STATE) == ALAdapter.AL_PLAYING);
+//        boolean interupted = !playing && streamQueue > 2;
+//        
+//        Int32Array buffer = tmp;
+//        if (interupted) {
+//            unqueueStreams();
+//            buffer.put(0, buffers.get(Sound.MAX_SFX + streamQueue++));
+//            Com.DPrintf("queue " + (streamQueue - 1) + '\n');
+//        } else if (processed < 2) {
+//            // check queue overrun
+//            if (streamQueue >= Sound.STREAM_QUEUE) return;
+//            buffer.put(0, buffers.get(Sound.MAX_SFX + streamQueue++));
+//            Com.DPrintf("queue " + (streamQueue - 1) + '\n');
+//        } else {
+//            // reuse the buffer
+//            ALAdapter.impl.alSourceUnqueueBuffers(source, buffer);
+//        }
+//
+//        samples.position(0);
+//        samples.limit(count);
+//        ALAdapter.impl.alBufferData(buffer.get(0), format, samples, rate);
+//        ALAdapter.impl.alSourceQueueBuffers(source, buffer);
+//        
+//        if (streamQueue > 1 && !playing) {
+//            Com.DPrintf("start sound\n");
+//            ALAdapter.impl.alSourcePlay(source);
+//        }
+//    }
     
 	public static void addPlaySounds() {
 		while (Channel.assign(PlaySound.nextPlayableSound()));
@@ -291,13 +289,13 @@ public class Channel {
         return null;
     }
 	
-	private static FloatBuffer sourceOriginBuffer = Lib.newFloatBuffer(3);
+	private static Float32Array sourceOriginBuffer = Float32Array.create(3);
 
 	//stack variable
 	private static float[] entityOrigin = {0, 0, 0};
  
-	public static void playAllSounds(FloatBuffer listenerOrigin) {
-		FloatBuffer sourceOrigin = sourceOriginBuffer;
+	public static void playAllSounds(Float32Array listenerOrigin) {
+		Float32Array sourceOrigin = sourceOriginBuffer;
 		Channel ch;
 		int sourceId;
 		int state;
@@ -308,9 +306,9 @@ public class Channel {
 				sourceId = ch.sourceId;
 				switch (ch.type) {
 					case Channel.LISTENER:
-					    sourceOrigin.put(0, listenerOrigin.get(0));
-						sourceOrigin.put(1, listenerOrigin.get(1));
-						sourceOrigin.put(2, listenerOrigin.get(2));
+			      sourceOrigin.set(0, listenerOrigin.get(0));
+						sourceOrigin.set(1, listenerOrigin.get(1));
+						sourceOrigin.set(2, listenerOrigin.get(2));
 						break;
 					case Channel.DYNAMIC:
 						CL_ents.GetEntitySoundOrigin(ch.entnum, entityOrigin);
@@ -422,19 +420,18 @@ public class Channel {
 		}
 	}
 
-	public static void convertVector(float[] from, FloatBuffer to) {
-		to.put(0, from[0]);
-		to.put(1, from[2]);
-		to.put(2, -from[1]);
+	public static void convertVector(float[] from, Float32Array to) {
+		to.set(0, from[0]);
+		to.set(1, from[2]);
+		to.set(2, -from[1]);
 	}
 
-	public static void convertOrientation(float[] forward, float[] up, FloatBuffer orientation) {
-		orientation.put(0, forward[0]);
-		orientation.put(1, forward[2]);
-		orientation.put(2, -forward[1]);
-		orientation.put(3, up[0]);
-		orientation.put(4, up[2]);
-		orientation.put(5, -up[1]);
+	public static void convertOrientation(float[] forward, float[] up, Float32Array orientation) {
+		orientation.set(0, forward[0]);
+		orientation.set(1, forward[2]);
+		orientation.set(2, -forward[1]);
+		orientation.set(3, up[0]);
+		orientation.set(4, up[2]);
+		orientation.set(5, -up[1]);
 	}
-
 }

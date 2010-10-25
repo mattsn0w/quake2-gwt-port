@@ -23,7 +23,7 @@
 */
 package jake2.qcommon;
 
-
+import jake2.buf.DataReader;
 import jake2.game.cmodel_t;
 import jake2.game.cplane_t;
 import jake2.game.cvar_t;
@@ -35,9 +35,6 @@ import jake2.util.Vargs;
 import jake2.util.Vec3Cache;
 
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.Arrays;
 
 public class CM {
@@ -164,8 +161,7 @@ public class CM {
     public static byte map_visibility[] = new byte[Defines.MAX_MAP_VISIBILITY];
 
     /** Main visibility data. */
-    public static qfiles.dvis_t map_vis = new qfiles.dvis_t(ByteBuffer
-            .wrap(map_visibility));
+    public static qfiles.dvis_t map_vis = new qfiles.dvis_t(DataReader.wrap(map_visibility));
 
     public static int numentitychars;
 
@@ -200,7 +196,7 @@ public class CM {
 
     public static cvar_t map_noareas;
 
-    public static ByteBuffer cmod_base;
+    public static DataReader cmod_base;
 
     public static int checksum;
 
@@ -285,10 +281,7 @@ public class CM {
         
         ResourceLoader.loadResourceAsync(name, new ResourceLoader.Callback() {
 			
-			public void onSuccess(ByteBuffer bbuf) {
-       
-        int i;
-
+			public void onSuccess(DataReader bbuf) {
         last_checksum++; // = MD4.Com_BlockChecksum(buf, length);
         checksum[0] = last_checksum;
 
@@ -299,7 +292,7 @@ public class CM {
                     + " has wrong version number (" + header.version
                     + " should be " + Defines.BSPVERSION + ")");
 
-        cmod_base = bbuf.order(ByteOrder.LITTLE_ENDIAN);
+        cmod_base = bbuf/*.order(ByteOrder.LITTLE_ENDIAN)*/;
 
         // load into heap
         CMod_LoadSurfaces(header.lumps[Defines.LUMP_TEXINFO]); // ok        
@@ -661,7 +654,7 @@ public class CM {
 
 //        ByteBuffer bb = ByteBuffer.wrap(cmod_base, l.fileofs, count * 2).order(
 //                ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer bb = cmod_base;
+        DataReader bb = cmod_base;
         cmod_base.position(l.fileofs);
 
         if (debugloadmap) {
@@ -831,8 +824,8 @@ public class CM {
         cmod_base.get(map_visibility, 0, l.filelen);
 
         // TODO(jgw): can we avoid the extra ByteBuffer here? Seems kind of silly.
-        ByteBuffer bb = ByteBuffer.wrap(map_visibility, 0, l.filelen);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
+        DataReader bb = DataReader.wrap(map_visibility, 0, l.filelen);
+//        bb.order(ByteOrder.LITTLE_ENDIAN);
         map_vis = new qfiles.dvis_t(bb);
     }
 
@@ -1848,7 +1841,6 @@ public class CM {
      * connections ===================
      */
     public static void CM_ReadPortalState(RandomAccessFile f) {
-
         //was: FS_Read(portalopen, sizeof(portalopen), f);
         int len = portalopen.length * 4;
 
@@ -1856,11 +1848,9 @@ public class CM {
 
         FS.Read(buf, len, f);
 
-        ByteBuffer bb = ByteBuffer.wrap(buf);
-        IntBuffer ib = bb.asIntBuffer();
-
+        DataReader bb = DataReader.wrap(buf);
         for (int n = 0; n < portalopen.length; n++)
-            portalopen[n] = ib.get() != 0;
+            portalopen[n] = bb.getInt() != 0;
 
         FloodAreaConnections();
     }

@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.tools;
 
+import jake2.buf.DataReader;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.qfiles;
@@ -25,7 +26,6 @@ import jake2.qcommon.qfiles;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
@@ -44,7 +44,7 @@ public class TGAConverter extends Converter {
     int columns, rows, numPixels;
     int pixbuf; // index into pic
     int row, column;
-    ByteBuffer buf_p;
+    DataReader buf_p;
     // int length;
     qfiles.tga_t targa_header;
     image_t img = new image_t();

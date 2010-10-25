@@ -31,10 +31,8 @@ import jake2.qcommon.Defines;
 import jake2.qcommon.QuakeImage;
 import jake2.render.GLAdapter;
 import jake2.render.image_t;
-import jake2.util.Lib;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import com.google.gwt.typedarrays.client.Int32Array;
 
 /**
  * Draw
@@ -296,9 +294,7 @@ public abstract class Draw extends Image {
 // ====================================================================
 
     // allocate a 256 * 256 texture buffer
-    private ByteBuffer image8 = Lib.newByteBuffer(256 * 256 * Defines.SIZE_OF_INT);
-    // share the buffer
-    private IntBuffer image32 = image8.asIntBuffer();
+    private Int32Array image32 = Int32Array.create(256 * 256);
 
 	/*
 	=============
@@ -331,7 +327,6 @@ public abstract class Draw extends Image {
 //		if ( !qglColorTableEXT )
 //		{
 			//int[] image32 = new int[256*256];
-			image32.clear();
 			int destIndex = 0;
 
 			for (i=0 ; i<trows ; i++)
@@ -345,7 +340,7 @@ public abstract class Draw extends Image {
 				frac = fracstep >> 1;
 				for (j=0 ; j<256 ; j++)
 				{
-					image32.put(destIndex + j, r_rawpalette[data[sourceIndex + (frac>>16)] & 0xff]);
+					image32.set(destIndex + j, r_rawpalette[data[sourceIndex + (frac>>16)] & 0xff]);
 					frac += fracstep;
 				}
 			}

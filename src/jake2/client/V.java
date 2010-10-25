@@ -23,6 +23,8 @@
 */
 package jake2.client;
 
+import com.google.gwt.typedarrays.client.Float32Array;
+
 import static jake2.qcommon.Defines.CVAR_ARCHIVE;
 import static jake2.qcommon.Defines.ERR_DROP;
 import static jake2.qcommon.Defines.MAX_DLIGHTS;
@@ -55,8 +57,6 @@ import jake2.render.model_t;
 import jake2.sys.Timer;
 import jake2.util.Math3D;
 import jake2.util.Vargs;
-
-import java.nio.FloatBuffer;
 
 /**
  * V
@@ -130,13 +130,13 @@ public final class V {
 
         int c = particle_t.colorTable[color];
         c |= (int) (alpha * 255) << 24;
-        particle_t.colorArray.put(i, c);
+        particle_t.colorArray.set(i, c);
 
         i *= 3;
-        FloatBuffer vertexBuf = particle_t.vertexArray;
-        vertexBuf.put(i++, org[0]);
-        vertexBuf.put(i++, org[1]);
-        vertexBuf.put(i++, org[2]);
+        Float32Array vertexBuf = particle_t.vertexArray;
+        vertexBuf.set(i++, org[0]);
+        vertexBuf.set(i++, org[1]);
+        vertexBuf.set(i++, org[2]);
     }
 
     /*

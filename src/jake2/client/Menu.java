@@ -3634,6 +3634,7 @@ public final class Menu {
 	}
 
   private static boolean isMultiplayerEnabled() {
-    return !LOCALHOST .equals(Compatibility.getOriginatingServerAddress());
+    // TODO(jgw): change this back.
+    return true;//!LOCALHOST.equals(Compatibility.getOriginatingServerAddress());
   }
 }

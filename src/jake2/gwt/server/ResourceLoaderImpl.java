@@ -18,6 +18,7 @@
  */
 package jake2.gwt.server;
 
+import jake2.buf.DataReader;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.ResourceLoader;
@@ -26,7 +27,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class ResourceLoaderImpl implements ResourceLoader.Impl {
@@ -60,7 +60,7 @@ public class ResourceLoaderImpl implements ResourceLoader.Impl {
       Pending p = pending.get(i);
       pending.remove(i);
       if (p.bytes != null) {
-        p.callback.onSuccess(ByteBuffer.wrap(p.bytes));
+        p.callback.onSuccess(DataReader.wrap(p.bytes));
       } else {
         ResourceLoader.fail(new FileNotFoundException(p.path));
       }

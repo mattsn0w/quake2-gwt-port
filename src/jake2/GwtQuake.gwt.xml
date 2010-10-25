@@ -5,6 +5,7 @@
 
   <source path='Globals.java'/>
 
+  <source path='buf'/>
   <source path='client'/>
   <source path='game'/>
   <source path='gwt/client'/>

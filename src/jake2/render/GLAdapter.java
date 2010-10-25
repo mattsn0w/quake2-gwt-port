@@ -23,13 +23,10 @@
 */
 package jake2.render;
 
-
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
 
 /** 
  * Common interface for a WebGL and LWJGL based implementation. 
@@ -290,30 +287,19 @@ public abstract class GLAdapter {
 	public static final int ARRAY_COLOR = 1;
 	public static final int ARRAY_POSITION = 0;
 	
-    private int mode;
+  private int mode;
 	private int staticBufferId = 0;
     
-	//private ShortBuffer shortBuffer = createShortBuffer(64);
-	private FloatBuffer texCoordBuf = createFloatBuffer(BEGIN_END_MAX_VERTICES * 2);
-	private FloatBuffer vertexBuf = createFloatBuffer(BEGIN_END_MAX_VERTICES * 3);
-	private FloatBuffer st0011 = createFloatBuffer(8);
-    private int st0011BufferId = generateStaticBufferId();
+	private Float32Array texCoordBuf = createFloatBuffer(BEGIN_END_MAX_VERTICES * 2);
+	private Float32Array vertexBuf = createFloatBuffer(BEGIN_END_MAX_VERTICES * 3);
+	private int texCoordIdx, vertexIdx;
+
+	private Float32Array st0011 = createFloatBuffer(8);
+  private int st0011BufferId = generateStaticBufferId();
 	
 	
 	protected GLAdapter() {
-		st0011.put(0);
-		st0011.put(0);
-
-		st0011.put(1);
-		st0011.put(0);
-
-		st0011.put(1);
-		st0011.put(1);
-
-		st0011.put(0);
-		st0011.put(1);
-		
-		st0011.flip();
+	  st0011.set(new float[] { 0, 0, 1, 0, 1, 1, 0, 1 });
 	}
 	
 	public void glColor3f(float r, float g, float b) {
@@ -325,8 +311,9 @@ public abstract class GLAdapter {
 	}
 	
 	
-	public abstract FloatBuffer createFloatBuffer(int size);
-	public abstract ShortBuffer createShortBuffer(int size);
+	
+	public abstract Uint16Array createShortBuffer(int size);
+	public abstract Float32Array createFloatBuffer(int size);
 
 	public abstract void glColor4f(float r, float g, float b, float a);
 
@@ -337,12 +324,12 @@ public abstract class GLAdapter {
 	public abstract void glEnable(int name);
 	public abstract void glEnableClientState(int state);
 
-	public abstract void glLoadMatrix(java.nio.FloatBuffer m);
+	public abstract void glLoadMatrix(Float32Array m);
 
 	public abstract void glPopMatrix();
 	public abstract void glPushMatrix();
 
-	public abstract void glTexCoordPointer(int size, int byteStride, FloatBuffer buf);
+	public abstract void glTexCoordPointer(int size, int byteStride, Float32Array buf);
 
 	public abstract void glTexImage2D(
 	        int target,
@@ -353,7 +340,7 @@ public abstract class GLAdapter {
 	        int border,
 	        int format,
 	        int type,
-	        ByteBuffer pixels
+	        Uint8Array pixels
 	);
 
 	public abstract void glTexImage2D(
@@ -365,7 +352,7 @@ public abstract class GLAdapter {
 			int border,
 			int format,
 			int type,
-			IntBuffer pixels
+			Int32Array pixels
 	);
 
 	public abstract void glTexParameterf(
@@ -383,7 +370,7 @@ public abstract class GLAdapter {
 	        int height,
 	        int format,
 	        int type,
-	        ByteBuffer pixels
+	        Uint8Array pixels
 	);
 
 	public abstract void glTexSubImage2D(
@@ -395,24 +382,20 @@ public abstract class GLAdapter {
 	        int height,
 	        int format,
 	        int type,
-	        IntBuffer pixels
+	        Int32Array pixels
 	);
 	
-	public abstract void glVertexPointer(int size, int byteStride, FloatBuffer buf);
+	public abstract void glVertexPointer(int size, int byteStride, Float32Array buf);
 	public abstract void swapBuffers();
-	
-	
 	
 	public void glBegin(int mode) {
 		this.mode = mode;
-		vertexBuf.clear();
-		texCoordBuf.clear();
+		vertexIdx = texCoordIdx = 0;
 	}
-
 	
 	public void glTexCoord2f(float x, float y) {
-		texCoordBuf.put(x);
-		texCoordBuf.put(y);
+	  texCoordBuf.set(texCoordIdx++, x);
+	  texCoordBuf.set(texCoordIdx++, y);
 	}
 	
 	public void glVertex2f(int x, int y) {
@@ -420,15 +403,13 @@ public abstract class GLAdapter {
 	}
 	
 	public void glVertex3f(float x, float y, float z) {
-		vertexBuf.put(x);
-		vertexBuf.put(y);
-		vertexBuf.put(z);
+	  vertexBuf.set(vertexIdx++, x);
+	  vertexBuf.set(vertexIdx++, y);
+	  vertexBuf.set(vertexIdx++, z);
 	}
 	
 	public void glEnd() {
-		int count = vertexBuf.position() / 3;
-		
-		vertexBuf.flip();
+		int count = vertexIdx / 3;
 		
 		// TODO: Save & restore state!!!
 		
@@ -441,8 +422,7 @@ public abstract class GLAdapter {
 			glTexCoordPointer(2, 0, st0011);
 			glDrawArrays(GLAdapter.GL_TRIANGLE_FAN, 0, 4);
 		} else {
-			if (texCoordBuf.position() > 0) {
-				texCoordBuf.flip();
+			if (texCoordIdx > 0) {
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glTexCoordPointer(2, 0, texCoordBuf);
 			}
@@ -469,8 +449,7 @@ public abstract class GLAdapter {
 	}
 	
 	
-	public abstract void glGetInteger(int what, IntBuffer params);
-	public abstract void glDeleteTextures(IntBuffer texnumBuffer);
+	public abstract void glDeleteTextures(Int32Array texnumBuffer);
 	public abstract void glTexEnvi(int glTextureEnv, int glTextureEnvMode, int mode);
 	public abstract void glTexParameteri(int glTexture2d, int glTextureMinFilter,
 			int glFilterMin);
@@ -483,7 +462,7 @@ public abstract class GLAdapter {
 	public abstract void glCullFace(int face);
 	public abstract void glMatrixMode(int mode);
 	public abstract void glLoadIdentity();
-	public abstract void glGetFloat(int name, FloatBuffer result);
+	public abstract void glGetFloat(int name, Float32Array result);
 	public abstract void glTranslatef(float f, float g, float h);
 	public abstract void glClear(int bits);
 	public abstract void glDepthFunc(int func);
@@ -494,11 +473,11 @@ public abstract class GLAdapter {
 	public abstract void glClearColor(float r, float g, float b, float a);
 	public abstract void glPixelStorei(int i, int j);
 	public abstract void glReadPixels(int x, int y, int width, int height, int glBgr,
-			int glUnsignedByte, ByteBuffer image);
+			int glUnsignedByte, Uint8Array image);
 	public abstract void glScalef(float x, float y, float z);
-	public abstract void glDrawElements(int mode, ShortBuffer srcIndexBuf);
-	public abstract void glColorPointer(int size, int j, FloatBuffer colorArrayBuf);
-	public abstract void glColorPointer(int i, boolean b, int j, ByteBuffer colorAsByteBuffer);
+	public abstract void glDrawElements(int mode, Uint16Array srcIndexBuf);
+	public abstract void glColorPointer(int size, int j, Float32Array colorArrayBuf);
+	public abstract void glColorPointer(int i, boolean b, int j, Int32Array colorArrayBuf);
 	public abstract void glScissor(int x, int i, int width, int height);
 	public abstract void glFrustum(double xmin, double xmax, double ymin, double ymax,
 			double zNear, double zFar);
@@ -527,18 +506,17 @@ public abstract class GLAdapter {
 		
 	}
 	
-	public abstract ByteBuffer createByteBuffer(int size);
+	public abstract Uint8Array createByteBuffer(int size);
 
-	public abstract IntBuffer createIntBuffer(int i);
+	public abstract Int32Array createIntBuffer(int i);
 	
 	public abstract void glPointParameterf(int id, float value);
 
-	public void updatTCBuffer(FloatBuffer dstTextureCoords, int minIdx, int i) {
+	public void updatTCBuffer(Float32Array dstTextureCoords, int minIdx, int i) {
 		// TODO Auto-generated method stub
-		
 	}
 
-	public void logBuffer(String string, FloatBuffer buf, int ofs, int count) {
+	public void logBuffer(String string, Float32Array buf, int ofs, int count) {
 		StringBuilder sb = new StringBuilder(string);
 		for (int i = 0; i< count; i++) {
 			sb.append(buf.get(i+ofs));
@@ -547,39 +525,35 @@ public abstract class GLAdapter {
 		log(sb.toString());
 	} 
 
-	public void glVertexAttribPointer(int bufIndex, int size, 
-			int type, boolean normalize, int byteStride, int byteOffset, Buffer nioBuffer,
-			int staticDrawId) {
-		if(nioBuffer instanceof ByteBuffer) {
-			ByteBuffer bb = (ByteBuffer) nioBuffer;
-			int pos = bb.position();
-			bb.position(pos+ byteOffset);
-			if (bufIndex != ARRAY_COLOR) {
-				throw new UnsupportedOperationException();
-			}
-			glColorPointer(size, type == GL_UNSIGNED_BYTE, byteStride, bb);
-			bb.position(pos);
-		} else {
-			FloatBuffer fb = (FloatBuffer) nioBuffer;
-			int pos = fb.position();
-			fb.position(pos+ byteOffset / 4);
-			switch(bufIndex) {
-			case ARRAY_COLOR:
-				glColorPointer(size, byteStride, fb);
-				break;
-			case ARRAY_POSITION:
-				glVertexPointer(size, byteStride, fb);
-				break;
-
-			case ARRAY_TEXCOORD_0:
-			case ARRAY_TEXCOORD_1:
-				glTexCoordPointer(size, byteStride, fb);
-				break;
-
-			default:
-				throw new IllegalArgumentException();
-			}
-			fb.position(pos);
-		}
-	}
+	/*
+  public void glVertexAttribPointer(int bufIndex, int size, int type,
+      boolean normalize, int byteStride, int byteOffset, Uint8Array bb,
+      int staticDrawId) {
+    if (bufIndex != ARRAY_COLOR) {
+      throw new UnsupportedOperationException();
+    }
+    glColorPointer(size, type == GL_UNSIGNED_BYTE, byteStride, bb.slice(byteOffset, size));
+  }
+  */
+	
+  public void glVertexAttribPointer(int bufIndex, int size, int type,
+      boolean normalize, int byteStride, int byteOffset,
+      Float32Array fb, int staticDrawId) {
+    // TODO(jgw): Is size in bytes or sizeof(float)s?
+    fb = fb.slice(byteOffset / 4, size);
+    switch (bufIndex) {
+      case ARRAY_COLOR:
+        glColorPointer(size, byteStride, fb);
+        break;
+      case ARRAY_POSITION:
+        glVertexPointer(size, byteStride, fb);
+        break;
+      case ARRAY_TEXCOORD_0:
+      case ARRAY_TEXCOORD_1:
+        glTexCoordPointer(size, byteStride, fb);
+        break;
+      default:
+        throw new IllegalArgumentException();
+    }
+  }
 }

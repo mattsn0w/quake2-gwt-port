@@ -23,6 +23,7 @@
 */
 package jake2.server;
 
+import jake2.buf.DataReader;
 import jake2.game.Cmd;
 import jake2.game.GameBase;
 import jake2.game.Info;
@@ -40,8 +41,6 @@ import jake2.qcommon.MSG;
 import jake2.qcommon.ResourceLoader;
 import jake2.qcommon.SZ;
 import jake2.util.Lib;
-
-import java.nio.ByteBuffer;
 
 public class SV_USER {
 
@@ -127,12 +126,10 @@ public class SV_USER {
         name = "demos/" + SV_INIT.sv.name;
         
         ResourceLoader.loadResourceAsync(name, new ResourceLoader.Callback() {
-			
-			public void onSuccess(ByteBuffer result) {
-				SV_INIT.sv.demofile = result;	
-			}
-		});
-        
+    			public void onSuccess(DataReader result) {
+    				SV_INIT.sv.demofile = result;	
+    			}
+    		});
     }
 
     /*

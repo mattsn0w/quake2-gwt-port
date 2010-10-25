@@ -18,12 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.qcommon;
 
-import java.nio.ByteBuffer;
+import jake2.buf.DataReader;
 
 public class ResourceLoader {
 
 	public interface Callback {
-		public void onSuccess(ByteBuffer result);
+		public void onSuccess(DataReader result);
 	}
 	
 	public interface Impl {

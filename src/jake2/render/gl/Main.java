@@ -48,9 +48,8 @@ import jake2.render.model_t;
 import jake2.util.Math3D;
 import jake2.util.Vargs;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
 
 /**
  * Main
@@ -148,11 +147,11 @@ public abstract class Main extends Base {
 	float[] r_origin = { 0, 0, 0 };
 
 	//float r_world_matrix[] = new float[16];
-	FloatBuffer r_world_matrix;
+	Float32Array r_world_matrix;
 	
 	protected void init() {
 		super.init();
-		r_world_matrix =gl.createFloatBuffer(16);
+		r_world_matrix = gl.createFloatBuffer(16);
 	}
 	
 	float r_base_world_matrix[] = new float[16];
@@ -481,8 +480,8 @@ public abstract class Main extends Base {
 		
 		gl.glBegin(GLAdapter.GL_TRIANGLES);
 
-		FloatBuffer sourceVertices = particle_t.vertexArray;
-		IntBuffer sourceColors = particle_t.colorArray;
+		Float32Array sourceVertices = particle_t.vertexArray;
+		Int32Array sourceColors = particle_t.colorArray;
 		float scale;
 		int color;
 		for (int j = 0, i = 0; i < num_particles; i++) {
@@ -534,7 +533,7 @@ public abstract class Main extends Base {
 			//gl.glEnableClientState(GLAdapter.GL_VERTEX_ARRAY);
 		  gl.glVertexPointer(3, 0, particle_t.vertexArray);
 		  gl.glEnableClientState(GLAdapter.GL_COLOR_ARRAY);
-		  gl.glColorPointer(4, true, 0, particle_t.getColorAsByteBuffer());
+		  gl.glColorPointer(4, true, 0, particle_t.colorArray);
 			
 		  gl.glDepthMask(false);
 		  gl.glEnable(GLAdapter.GL_BLEND);
@@ -755,7 +754,7 @@ public abstract class Main extends Base {
 		gl.glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
 		gl.glGetFloat(GLAdapter._GL_MODELVIEW_MATRIX, r_world_matrix);
-		r_world_matrix.clear();
+//		r_world_matrix.clear();
 
 		//
 		// set drawing parms

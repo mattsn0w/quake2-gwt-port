@@ -23,28 +23,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.client;
 
-import jake2.qcommon.Defines;
-import jake2.util.Lib;
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
 
-import java.nio.*;
+import jake2.qcommon.Defines;
 
 public class particle_t {
-	
-	// lwjgl renderer needs a ByteBuffer
-	private static ByteBuffer colorByteArray = Lib.newByteBuffer(Defines.MAX_PARTICLES * Lib.SIZEOF_INT, ByteOrder.LITTLE_ENDIAN);
 
-	public static FloatBuffer vertexArray = Lib.newFloatBuffer(Defines.MAX_PARTICLES * 3);
+	public static Float32Array vertexArray = Float32Array.create(Defines.MAX_PARTICLES * 3);
+	public static Int32Array colorArray = Int32Array.create(Defines.MAX_PARTICLES);
 	public static int[] colorTable = new int[256];
-	public static IntBuffer colorArray = colorByteArray.asIntBuffer();  
-	
-	
+
 	public static void setColorPalette(int[] palette) {
 		for (int i=0; i < 256; i++) {
 			colorTable[i] = palette[i] & 0x00FFFFFF;
 		}
-	}
-	
-	public static ByteBuffer getColorAsByteBuffer() {
-		return colorByteArray;
 	}
 }

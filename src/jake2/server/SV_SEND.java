@@ -23,13 +23,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.server;
 
-import java.nio.BufferUnderflowException;
-import java.nio.ByteOrder;
-
-import jake2.game.*;
-import jake2.qcommon.*;
+import jake2.game.edict_t;
+import jake2.qcommon.CM;
+import jake2.qcommon.Com;
+import jake2.qcommon.Defines;
+import jake2.qcommon.Globals;
+import jake2.qcommon.MSG;
+import jake2.qcommon.Netchan;
+import jake2.qcommon.SZ;
+import jake2.qcommon.sizebuf_t;
 import jake2.util.Lib;
 import jake2.util.Math3D;
+
+import java.nio.BufferUnderflowException;
 
 public class SV_SEND {
 	/*
@@ -437,6 +443,7 @@ public class SV_SEND {
 
 	private static final byte msgbuf[] = new byte[Defines.MAX_MSGLEN];
 	private static final byte[] NULLBYTE = {0};
+
 	/*
 	=======================
 	SV_SendClientMessages
@@ -446,7 +453,6 @@ public class SV_SEND {
 		int i;
 		client_t c;
 		int msglen;
-		int r;
 
 		msglen = 0;
 
@@ -460,7 +466,10 @@ public class SV_SEND {
 				try {
 					int rawLen = SV_INIT.sv.demofile.getInt();
 //					System.out.println("rawLen: " + rawLen + " swapped: " + EndianHandler.swapInt(rawLen) + " endianess: " + SV_INIT.sv.demofile.order());
-					msglen = SV_INIT.sv.demofile.order() == ByteOrder.BIG_ENDIAN  ? EndianHandler.swapInt(rawLen) : rawLen;
+
+					// TODO(jgw): byte order
+					msglen = /*SV_INIT.sv.demofile.order() == ByteOrder.BIG_ENDIAN  ? EndianHandler.swapInt(rawLen) :*/
+					    rawLen;
 				}
 				catch (Exception e) {
 					SV_DemoCompleted();

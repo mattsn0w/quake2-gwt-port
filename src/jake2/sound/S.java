@@ -28,7 +28,7 @@ import jake2.game.cvar_t;
 import jake2.qcommon.Com;
 import jake2.qcommon.Cvar;
 
-import java.nio.ByteBuffer;
+import com.google.gwt.typedarrays.client.ArrayBuffer;
 
 /**
  * S
@@ -105,7 +105,7 @@ public class S {
 	/**
 	 * Cinematic streaming and voice over network.
 	 */
-	public static void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data) {
+	public static void RawSamples(int samples, int rate, int width, int channels, ArrayBuffer data) {
 		impl.RawSamples(samples, rate, width, channels, data);
 	}
     

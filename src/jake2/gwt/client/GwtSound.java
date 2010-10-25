@@ -18,13 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.gwt.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
+import static jake2.qcommon.Defines.CS_PLAYERSKINS;
 
 import jake2.client.Console;
 import jake2.game.Cmd;
@@ -42,10 +36,11 @@ import jake2.sound.PlaySound;
 import jake2.sound.Sound;
 import jake2.sound.sfx_t;
 import jake2.sound.sfxcache_t;
-import jake2.util.Lib;
 import jake2.util.Vargs;
 
-import static jake2.qcommon.Defines.CS_PLAYERSKINS;
+import com.google.gwt.typedarrays.client.ArrayBuffer;
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
 
 public class GwtSound implements Sound {
 
@@ -82,25 +77,18 @@ public class GwtSound implements Sound {
 
   boolean s_registering;
 
-  private boolean hasEAX;
-
   private cvar_t s_volume;
 
   // the last 4 buffers are used for cinematics streaming
-  private IntBuffer buffers = Lib.newIntBuffer(MAX_SFX + STREAM_QUEUE);
+  private Int32Array buffers = Int32Array.create(MAX_SFX + STREAM_QUEUE);
 
   // TODO check the sfx direct buffer size
   // 2MB sfx buffer
-  private ByteBuffer sfxDataBuffer = Lib.newByteBuffer(2 * 1024 * 1024);
-
-  private FloatBuffer listenerOrigin = Lib.newFloatBuffer(3);
-
-  private FloatBuffer listenerOrientation = Lib.newFloatBuffer(6);
-
-  private IntBuffer eaxEnv = Lib.newIntBuffer(1);
-
-  private ShortBuffer streamBuffer = sfxDataBuffer.slice()
-      .order(ByteOrder.BIG_ENDIAN).asShortBuffer();
+//  private ByteBuffer sfxDataBuffer = Lib.newByteBuffer(2 * 1024 * 1024);
+  private Float32Array listenerOrigin = Float32Array.create(3);
+//  private Float32Array listenerOrientation = Lib.newFloatBuffer(6);
+//  private ShortBuffer streamBuffer = sfxDataBuffer.slice()
+//      .order(ByteOrder.BIG_ENDIAN).asShortBuffer();
 
   public GwtSound() {
     Init();
@@ -262,9 +250,7 @@ public class GwtSound implements Sound {
   /* (non-Javadoc)
          * @see jake2.sound.Sound#RawSamples(int, int, int, int, byte[])
          */
-  public void RawSamples(int samples, int rate, int width, int channels,
-      ByteBuffer data) {
-    int format;
+  public void RawSamples(int samples, int rate, int width, int channels, ArrayBuffer data) {
   }
 
   /* (non-Javadoc)
@@ -353,7 +339,7 @@ public class GwtSound implements Sound {
          * @see jake2.sound.SoundImpl#StopAllSounds()
          */
   public void StopAllSounds() {
-    ALAdapter.impl.alListenerf(ALAdapter.impl.AL_GAIN, 0);
+    ALAdapter.impl.alListenerf(ALAdapter.AL_GAIN, 0);
     PlaySound.reset();
     Channel.reset();
   }
@@ -364,16 +350,16 @@ public class GwtSound implements Sound {
   public void Update(float[] origin, float[] forward, float[] right,
       float[] up) {
 
-    Channel.convertVector(origin, listenerOrigin);
-    ALAdapter.impl
-        .alListener3f(ALAdapter.impl.AL_POSITION, listenerOrigin.get(0),
-            listenerOrigin.get(1), listenerOrigin.get(2)); // TODO(jgw)
+//    Channel.convertVector(origin, listenerOrigin);
+//    ALAdapter.impl
+//        .alListener3f(ALAdapter.impl.AL_POSITION, listenerOrigin.get(0),
+//            listenerOrigin.get(1), listenerOrigin.get(2)); // TODO(jgw)
 
 //    Channel.convertOrientation(forward, up, listenerOrientation);
 //		ALAdapter.impl.nalListenerfv(ALAdapter.impl.AL_ORIENTATION, listenerOrientation, 0); // TODO(jgw)
 
     // set the master volume
-    ALAdapter.impl.alListenerf(ALAdapter.impl.AL_GAIN, s_volume.value);
+    ALAdapter.impl.alListenerf(ALAdapter.AL_GAIN, s_volume.value);
 
 // TODO(jgw)
 //		if (hasEAX){
@@ -392,7 +378,6 @@ public class GwtSound implements Sound {
   /*
         ==================
         S_AliasName
-
         ==================
         */
   sfx_t AliasName(String aliasname, String truename) {
@@ -630,10 +615,6 @@ public class GwtSound implements Sound {
     return message;
   }
 
-  private void changeEnvironment(int env) {
-
-  }
-
   private void checkError() {
     Com.DPrintf("AL Error: " + alErrorString() + '\n');
   }
@@ -681,9 +662,9 @@ public class GwtSound implements Sound {
 //			}
 //		} 
 //		else 
-    {
-      Com.Printf("... EAX2.0 not found\n");
-      hasEAX = false;
-    }
+//    {
+//      Com.Printf("... EAX2.0 not found\n");
+//      hasEAX = false;
+//    }
   }
 }

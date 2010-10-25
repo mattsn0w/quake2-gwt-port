@@ -23,14 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.gl;
 
-
-import jake2.client.VID;
-import jake2.qcommon.Defines;
 import jake2.qcommon.QuakeImage;
 import jake2.render.GLAdapter;
 
-import java.nio.FloatBuffer;
-
+import com.google.gwt.typedarrays.client.Float32Array;
 
 /**
  * Misc
@@ -238,10 +234,10 @@ public abstract class Misc extends Mesh {
 		if ( qglPointParameterfEXT )
 		{
 			// float[] attenuations = { gl_particle_att_a.value, gl_particle_att_b.value, gl_particle_att_c.value };
-			FloatBuffer att_buffer=gl.createFloatBuffer(4);
-			att_buffer.put(0,gl_particle_att_a.value);
-			att_buffer.put(1,gl_particle_att_b.value);
-			att_buffer.put(2,gl_particle_att_c.value);
+			Float32Array att_buffer=gl.createFloatBuffer(4);
+			att_buffer.set(0,gl_particle_att_a.value);
+			att_buffer.set(1,gl_particle_att_b.value);
+			att_buffer.set(2,gl_particle_att_c.value);
 			
 			gl.glEnable( GLAdapter.GL_POINT_SMOOTH );
 			gl.glPointParameterf(GLAdapter.GL_POINT_SIZE_MIN, gl_particle_min_size.value );

@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.gl;
 
-
 import jake2.client.dlight_t;
 import jake2.client.entity_t;
 import jake2.client.lightstyle_t;
@@ -39,14 +38,12 @@ import jake2.render.mnode_t;
 import jake2.render.model_t;
 import jake2.render.msurface_t;
 import jake2.render.mtexinfo_t;
-import jake2.util.Lib;
 import jake2.util.Math3D;
 
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.Arrays;
 
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
 
 /**
  * Surf
@@ -88,7 +85,7 @@ public abstract class Surf extends Draw {
 		// the lightmap texture data needs to be kept in
 		// main memory so texsubimage can update properly
 		//byte[] lightmap_buffer = new byte[4 * BLOCK_WIDTH * BLOCK_HEIGHT];
-		IntBuffer lightmap_buffer = Lib.newIntBuffer(BLOCK_WIDTH * BLOCK_HEIGHT, ByteOrder.LITTLE_ENDIAN);
+		Int32Array lightmap_buffer = Int32Array.create(BLOCK_WIDTH * BLOCK_HEIGHT);
 				
 		public gllightmapstate_t() {
 			for (int i = 0; i < MAX_LIGHTMAPS; i++)
@@ -115,7 +112,7 @@ public abstract class Surf extends Draw {
 	// Light.java
 	abstract void R_MarkLights (dlight_t light, int bit, mnode_t node);
 	abstract void R_SetCacheState( msurface_t surf );
-	abstract void R_BuildLightMap(msurface_t surf, IntBuffer dest, int stride);
+	abstract void R_BuildLightMap(msurface_t surf, Int32Array dest, int stride);
 
 	/*
 	=============================================================
@@ -200,7 +197,7 @@ public abstract class Surf extends Draw {
         gl.glEnable(GLAdapter.GL_TEXTURE_2D);
 	}
 
-	private final IntBuffer temp2 = Lib.newIntBuffer(34 * 34, ByteOrder.LITTLE_ENDIAN);
+	private final Int32Array temp2 = Int32Array.create(34 * 34);
 
 	/**
 	 * R_RenderBrushPoly
@@ -318,7 +315,8 @@ public abstract class Surf extends Draw {
 	 */
 	void R_DrawAlphaSurfaces()
 	{
-		r_world_matrix.clear();
+//		r_world_matrix.clear();
+
 		//
 		// go back to the world matrix
 		//
@@ -359,7 +357,8 @@ public abstract class Surf extends Draw {
 		r_alpha_surfaces = null;
 	}
 
-	private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf) {
+	/*
+	private void glInterleavedArraysT2F_V3F(int byteStride, Float32Array buf) {
 	  int pos = buf.position();
 	  gl.glTexCoordPointer(2, byteStride, buf);
 	  gl.glEnableClientState(GLAdapter.GL_TEXTURE_COORD_ARRAY);
@@ -370,8 +369,9 @@ public abstract class Surf extends Draw {
 	        
 	  buf.position(pos);
 	}
-
-	private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf, int staticDrawIdV) {
+  */
+	
+	private void glInterleavedArraysT2F_V3F(int byteStride, Float32Array buf, int staticDrawIdV) {
 		gl.glEnableClientState(GLAdapter.GL_TEXTURE_COORD_ARRAY);
 		gl.glVertexAttribPointer(GLAdapter.ARRAY_TEXCOORD_0, 2, GLAdapter.GL_FLOAT, 
 		    false, byteStride, 0, buf, staticDrawIdV);
@@ -432,7 +432,7 @@ public abstract class Surf extends Draw {
 	}
 
 	// direct buffer
-	private final IntBuffer temp = Lib.newIntBuffer(128 * 128, ByteOrder.LITTLE_ENDIAN);
+	private final Int32Array temp = Int32Array.create(128 * 128);
 	
 	/**
 	 * GL_RenderLightmappedPoly
@@ -1023,7 +1023,7 @@ public abstract class Surf extends Draw {
 		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, GLAdapter.GL_LINEAR);
 		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, GLAdapter.GL_LINEAR);
 
-		gl_lms.lightmap_buffer.rewind();
+//		gl_lms.lightmap_buffer.rewind();
 		if ( dynamic )
 		{
 			int height = 0;
@@ -1196,22 +1196,24 @@ public abstract class Surf extends Draw {
 				Com.Error( Defines.ERR_FATAL, "Consecutive calls to LM_AllocBlock(" + smax +"," + tmax +") failed\n");
 			}
 		}
-		
+
 		// kopiere die koordinaten zurueck
 		surf.light_s = lightPos.x;
 		surf.light_t = lightPos.y;
 
 		surf.lightmaptexturenum = gl_lms.current_lightmap_texture;
-		
-		IntBuffer base = gl_lms.lightmap_buffer;
-		base.position(surf.light_t * BLOCK_WIDTH + surf.light_s);
 
-		R_SetCacheState( surf );
-		R_BuildLightMap(surf, base.slice(), BLOCK_WIDTH);
+//		Int32Array base = gl_lms.lightmap_buffer;
+//		Int32Array newArray = Int32Array.create(base.getBuffer(), surf.light_t * BLOCK_WIDTH + surf.light_s);
+		int pos = surf.light_t * BLOCK_WIDTH + surf.light_s;
+		Int32Array newArray = gl_lms.lightmap_buffer.slice(pos, gl_lms.lightmap_buffer.getLength() - pos);
+
+		R_SetCacheState(surf);
+		R_BuildLightMap(surf, newArray, BLOCK_WIDTH);
 	}
 
 	lightstyle_t[] lightstyles;
-	private IntBuffer dummy;
+	private Int32Array dummy;
 
 	/**
 	 * GL_BeginBuildingLightmaps
@@ -1219,7 +1221,7 @@ public abstract class Surf extends Draw {
 	void GL_BeginBuildingLightmaps(model_t m)
 	{
 		gl.log("BeginBuildingLightmaps!");
-		
+
 		// static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
 
 		// init lightstyles
@@ -1304,7 +1306,7 @@ public abstract class Surf extends Draw {
 		if (dummy == null) {
 			dummy = gl.createIntBuffer(128*128);
 			for (int p = 0; p < 128 * 128; p++) {
-				dummy.put(p, 0x0ffffffff);
+				dummy.set(p, 0x0ffffffff);
 			}
 		}
 		
@@ -1332,21 +1334,22 @@ public abstract class Surf extends Draw {
 		LM_UploadBlock( false );
 		GL_EnableMultitexture( false );
 	}
-	
+
 	/*
 	 * new buffers for vertex array handling
 	 */
-	static FloatBuffer globalPolygonInterleavedBuf = Polygon.getInterleavedBuffer();
-	static FloatBuffer globalPolygonTexCoord1Buf = null;
+	static Float32Array globalPolygonInterleavedBuf = Polygon.getInterleavedBuffer();
+//	static Float32Array globalPolygonTexCoord1Buf = null;
 
 	static {
-	 	globalPolygonInterleavedBuf.position(Polygon.STRIDE - 2);
-	 	globalPolygonTexCoord1Buf = globalPolygonInterleavedBuf.slice();
-		globalPolygonInterleavedBuf.position(0);
-	 };
+// TODO(jgw): Really unsure about this.
+//	 	globalPolygonInterleavedBuf.position(Polygon.STRIDE - 2);
+//	 	globalPolygonTexCoord1Buf = globalPolygonInterleavedBuf.slice();
+//		globalPolygonInterleavedBuf.position(0);
+ };
 
 	//ImageFrame frame;
-	
+
 //	void debugLightmap(byte[] buf, int w, int h, float scale) {
 //		IntBuffer pix = ByteBuffer.wrap(buf).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 //		
@@ -1367,8 +1370,7 @@ public abstract class Surf extends Draw {
 //		
 //	}
 
-	protected void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {
+	protected void debugLightmap(Int32Array lightmapBuffer, int w, int h, float scale) {
 		gl.log("debuglightmap");
-	 }
-	 
+  }
 }

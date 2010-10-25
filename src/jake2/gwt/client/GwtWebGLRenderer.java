@@ -23,8 +23,6 @@ import jake2.qcommon.Com;
 import jake2.qcommon.ResourceLoader;
 import jake2.render.image_t;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.JavaScriptObject;
@@ -41,6 +39,7 @@ import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.html5.client.CanvasPixelArray;
 import com.google.gwt.html5.client.CanvasRenderingContext2D;
 import com.google.gwt.html5.client.ImageData;
+import com.google.gwt.typedarrays.client.Int32Array;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Image;
 
@@ -91,8 +90,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 	static int HOLODECK_TEXTURE_SIZE = 128;
 	static int MASK = 15;
 	static int HIT = MASK/2;
-	ByteBuffer holoDeckTexture = ByteBuffer.allocateDirect(HOLODECK_TEXTURE_SIZE * 
-			HOLODECK_TEXTURE_SIZE * 4);
+	Int32Array holoDeckTexture = Int32Array.create(HOLODECK_TEXTURE_SIZE * HOLODECK_TEXTURE_SIZE);
 
 	WebGLAdapter webGL;
 	CanvasElement canvas1;
@@ -101,22 +99,19 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 	int waitingForImages;
 	VideoElement video;
 	CanvasElement canvas;
-	
+
 	public GwtWebGLRenderer(CanvasElement canvas, Element video) {
 		this.gl = this.webGL = new WebGLAdapter(canvas);
 		this.canvas = canvas;
 		this.video = (VideoElement) video;
-		
+
+		int idx = 0;
 		for (int y = 0; y < HOLODECK_TEXTURE_SIZE; y++) {
 			for (int x = 0; x < HOLODECK_TEXTURE_SIZE; x++) {
-				holoDeckTexture.put((byte) 0);
-				holoDeckTexture.put((byte) (((x & MASK) == HIT) || ((y & MASK) == HIT) ? 255 : 0));
-				holoDeckTexture.put((byte) 0);
-				holoDeckTexture.put((byte) 0xff);
+			  holoDeckTexture.set(idx++, (((x & MASK) == HIT) || ((y & MASK) == HIT) ? 0x00ff00ff : 0));
 			}
 		}
-		holoDeckTexture.rewind();
-		
+
 		canvas1 = (CanvasElement) Document.get().createElement("canvas");
 		canvas1.getStyle().setDisplay(Display.NONE);
 		canvas1.setWidth(128);
@@ -280,8 +275,6 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 	//	setPicDataLowLevel(image, img);
 	}
 		
-	ByteBuffer bb = ByteBuffer.allocateDirect(128*128*4);
-	
 	public void setPicDataHighLevel(image_t image, ImageElement img) {
 		image.has_alpha = true;
 		image.complete = true;
@@ -362,7 +355,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 		GL_SetPicData(image, pic, w, h, 32);
 	}
 	
-	 protected void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {
+	 protected void debugLightmap(Int32Array lightmapBuffer, int w, int h, float scale) {
 		 CanvasElement canvas = (CanvasElement) Document.get().createElement("canvas");
 		 canvas.setWidth(w);
 		 canvas.setHeight(h);

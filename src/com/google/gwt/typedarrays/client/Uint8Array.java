@@ -74,6 +74,21 @@ public class Uint8Array extends ArrayBufferView {
    * given typed array or sequence, with each element converted to the
    * appropriate typed array type.
    */
+  public static final Uint8Array create(byte[] data) {
+    return create(ArrayUtils.toJsArray(data));
+  }
+
+  /**
+   * Create a new ArrayBuffer with enough bytes to hold length elements of this
+   * typed array, then creates a typed array view referring to the full buffer.
+   */
+  public static final native Uint8Array create(int size) /*-{
+    return new Uint8Array(size);
+  }-*/;
+
+  /**
+   * @see #create(byte[])
+   */
   public static final Uint8Array create(int[] data) {
     return create(ArrayUtils.toJsArray(data));
   }
@@ -85,16 +100,8 @@ public class Uint8Array extends ArrayBufferView {
    * given typed array or sequence, with each element converted to the
    * appropriate typed array type.
    */
-  public static final native Uint8Array create(Uint8Array array) /*-{
-    return new Uint8Array(array);
-  }-*/;
-
-  /**
-   * Create a new ArrayBuffer with enough bytes to hold length elements of this
-   * typed array, then creates a typed array view referring to the full buffer.
-   */
-  public static final native Uint8Array create(int size) /*-{
-    return new Uint8Array(size);
+  public static final native Uint8Array create(JsArrayInteger data) /*-{
+    return new Uint8Array(data);
   }-*/;
 
   /**
@@ -104,8 +111,8 @@ public class Uint8Array extends ArrayBufferView {
    * given typed array or sequence, with each element converted to the
    * appropriate typed array type.
    */
-  public static final native Uint8Array create(JsArrayInteger data) /*-{
-    return new Uint8Array(data);
+  public static final native Uint8Array create(Uint8Array array) /*-{
+    return new Uint8Array(array);
   }-*/;
 
   protected Uint8Array() {
@@ -126,6 +133,13 @@ public class Uint8Array extends ArrayBufferView {
   }-*/;
 
   /**
+   * Sets the element at the given numeric index to the given value.
+   */
+  public native final void set(int index, int value) /*-{
+    this[index] = value;
+  }-*/;
+
+  /**
    * @see #set(int[], int)
    */
   public final void set(int[] array) {
@@ -143,6 +157,20 @@ public class Uint8Array extends ArrayBufferView {
   public final void set(int[] array, int offset) {
     set(ArrayUtils.toJsArray(array), offset);
   }
+
+  /**
+   * @see #set(int[], int)
+   */
+  public native final void set(JsArrayInteger array) /*-{
+    this.set(array);
+  }-*/;
+
+  /**
+   * @see #set(int[], int)
+   */
+  public native final void set(JsArrayInteger array, int offset) /*-{
+    this.set(array, offset);
+  }-*/;
 
   /**
    * @see #set(Uint8Array, int)
@@ -166,27 +194,6 @@ public class Uint8Array extends ArrayBufferView {
    * current TypedArray, an INDEX_SIZE_ERR exception is raised.
    */
   public native final void set(Uint8Array array, int offset) /*-{
-    this.set(array, offset);
-  }-*/;
-
-  /**
-   * Sets the element at the given numeric index to the given value.
-   */
-  public native final void set(int index, int value) /*-{
-    this[index] = value;
-  }-*/;
-
-  /**
-   * @see #set(int[], int)
-   */
-  public native final void set(JsArrayInteger array) /*-{
-    this.set(array);
-  }-*/;
-
-  /**
-   * @see #set(int[], int)
-   */
-  public native final void set(JsArrayInteger array, int offset) /*-{
     this.set(array, offset);
   }-*/;
 

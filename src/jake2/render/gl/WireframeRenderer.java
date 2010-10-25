@@ -23,16 +23,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.gl;
 
 import jake2.render.DisplayMode;
-import jake2.util.CanvasHelper;
-
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
 import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.html5.client.CanvasRenderingContext2D;
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
 
 /**
  * Crude attempt at showing some of the output on a regular 2D canvas for
@@ -42,33 +39,22 @@ import com.google.gwt.html5.client.CanvasRenderingContext2D;
  */
 public class WireframeRenderer extends AbstractGL20Adapter {
 
-	FloatBuffer colorBuffer;
-
 	private int vertexPointerSize;
-	private int vertexPointerType;
 	private int vertexPointerStride;
-	private Buffer vertexPointerData;
-
-	private int colorPointerSize;
-	private int colorPointerType;
-	private int colorPointerStride;
-	private Buffer colorPointerBuffer;
-
-	private String uniformColor;
-	private boolean colorArrayEnabled;
+	private Float32Array vertexPointerData;
 
 	private CanvasRenderingContext2D ctx;
 	private int vertexPointerPosition;
 	private boolean debugHighlight;
-	
+
 	private final CanvasElement canvas;
-	
+
 	public WireframeRenderer(CanvasElement canvas, int w, int h) {
 		super(w, h);
 		this.canvas = canvas;
 		swapBuffers();
 	}
-	
+
 	@Override
 	public final void glBindTexture(int t, int i) {
 	}
@@ -84,14 +70,11 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 
 	@Override
 	public final void glColor4f(float red, float green, float blue, float alpha) {
-		uniformColor = CanvasHelper.getCssColor(red, green, blue, alpha);
 	}
 
-
 	@Override
-	public void glDrawElements(int mode, ShortBuffer indices) {
-		debugDraw(mode, indices.position(),
-				indices.limit(), indices);
+	public void glDrawElements(int mode, Uint16Array indices) {
+		debugDraw(mode, 0, indices.getLength(), indices);
 	}
 
 	@Override
@@ -107,12 +90,8 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	public final void glClearColor(float f, float g, float h, float i) {
 	}
 
-	private void debugDraw(int mode, int first, int count, Buffer indices) {
-		
+	private void debugDraw(int mode, int first, int count, Uint16Array indices) {
 		updateMvpMatrix();
-		
-		float[] v = new float[4];
-		float[] result = new float[4];
 
 		float x0 = 0;
 		float x1 = 0;
@@ -132,11 +111,11 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 //			vertexPointerData.rewind();
 //		}
 
-		if (!(vertexPointerData instanceof FloatBuffer)) {
+		if (!(vertexPointerData instanceof Float32Array)) {
 			throw new RuntimeException("float coordinates only!");
 		}
 		
-		FloatBuffer vertexBuf = (FloatBuffer) vertexPointerData;
+		Float32Array vertexBuf = (Float32Array) vertexPointerData;
 		int stride = vertexPointerStride == 0 ? vertexPointerSize : vertexPointerStride / 4;
 			
 		if (vertexPointerSize != 3 || vertexPointerStride % 4 != 0) {
@@ -149,25 +128,21 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 //		System.out.println("VertexPointerType: " + GLDebugWrapper.c(vertexPointerType));
 
 		int p = vertexPointerPosition;
-		
+
 		boolean v2 = false;
 		boolean v1 = false;
 		boolean v0 = false;
-		
+
 		if(debugHighlight) {
 			System.out.println("going to draw "+ count + " points");
 		}
-		
+
 		for (int j = 0; j < count; j++) {
 			int i;
 			if (indices == null) {
 				i = first + j;
-			} else if (indices instanceof ShortBuffer) {
-				i = ((ShortBuffer) indices).get(j);
-			} else if (indices instanceof IntBuffer) {
-				i = ((IntBuffer) indices).get(j);
 			} else {
-				throw new RuntimeException("Unsupported: " + indices.getClass());
+				i = ((Uint16Array) indices).get(j);
 			}
 
 			// TODO(Haustein) use MVP matrix here...
@@ -200,8 +175,6 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 
 //			v2 &= x2 > viewportX && x2 < viewportX + viewportW;
 //			v2 &= y2 > viewportY && y2 < viewportY + viewportH;
-			
-			int k = i * 4;
 
 			boolean fill = false;
 			boolean draw = false;
@@ -258,7 +231,6 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	@Override
 	public void glDrawArrays(int mode, int first, int count) {
 		// mv-matrix
-//		
 		debugDraw(mode, first, count, null);
 	}
 
@@ -272,7 +244,7 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	}
 
 	public final void glReadPixels(int i, int j, int width, int height,
-			int format, int type, IntBuffer buffer) {
+			int format, int type, Int32Array buffer) {
 	}
 
 	@Override
@@ -287,7 +259,6 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	public final void glEnableClientState(int i) {
 		switch (i) {
 		case GL_COLOR_ARRAY:
-			colorArrayEnabled = true;
 			break;
 		case GL_VERTEX_ARRAY:
 			break;
@@ -301,7 +272,6 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	public final void glDisableClientState(int i) {
 		switch (i) {
 		case GL_COLOR_ARRAY:
-			colorArrayEnabled = false;
 			break;
 		case GL_VERTEX_ARRAY:
 			break;
@@ -312,33 +282,16 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 		}
 	}
 
-
-
 	@Override
-	public void glColorPointer(int size, int stride, FloatBuffer buf) {
-		colorPointerSize = size;
-		colorPointerType = GL_FLOAT;
-		colorPointerStride = stride;
-		colorPointerBuffer = buf;
+	public void glColorPointer(int size, int stride, Float32Array buf) {
 	}
 
 	@Override
-	public void glColorPointer(int size, boolean b, int stride, ByteBuffer buf) {
-		colorPointerSize = size;
-		colorPointerType = GL_UNSIGNED_BYTE;
-		colorPointerStride = stride;
-		colorPointerBuffer = buf;
-	}
-
-	@Override
-	public void glVertexPointer(int size, int byteStride, FloatBuffer buf) {
+	public void glVertexPointer(int size, int byteStride, Float32Array buf) {
 		vertexPointerSize = size;
-		vertexPointerType = GL_FLOAT;
 		vertexPointerStride = byteStride;
 		vertexPointerData = buf;
-		vertexPointerPosition = buf.position();
 	}
-
 
 	public final void glScissor(int i, int j, int width, int height) {
 	}
@@ -354,10 +307,6 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	}
 
 	public final void glGenTextures(int n, int[] result, int offset) {
-	}
-	
-	public final void glTexCoordPointer(int size, int type, int stride,
-			Buffer buf) {
 	}
 
 	public final void glDisable(int i) {
@@ -379,7 +328,7 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 
 	
 	@Override
-	public void glDeleteTextures(IntBuffer texnumBuffer) {
+	public void glDeleteTextures(Int32Array texnumBuffer) {
 	}
 
 	@Override
@@ -398,7 +347,6 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	public void glDrawBuffer(int buf) {
 		// selects front or back buffer (???)
 	}
-
 
 	@Override
 	public void glFinish() {
@@ -430,12 +378,7 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	}
 
 	@Override
-	public void glReadPixels(int x, int y, int width, int height, int glBgr,
-			int glUnsignedByte, ByteBuffer image) {
-	}
-
-	@Override
-	public void glTexCoordPointer(int size, int byteStride, FloatBuffer buf) {
+	public void glTexCoordPointer(int size, int byteStride, Float32Array buf) {
 	}
 
 	@Override
@@ -445,13 +388,7 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	@Override
 	public void glTexImage2D(int target, int level, int internalformat,
 			int width, int height, int border, int format, int type,
-			ByteBuffer pixels) {
-	}
-
-	@Override
-	public void glTexImage2D(int target, int level, int internalformat,
-			int width, int height, int border, int format, int type,
-			IntBuffer pixels) {
+			Int32Array pixels) {
 	}
 
 	@Override
@@ -462,13 +399,7 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	@Override
 	public void glTexSubImage2D(int target, int level, int xoffset,
 			int yoffset, int width, int height, int format, int type,
-			ByteBuffer pixels) {
-	}
-
-	@Override
-	public void glTexSubImage2D(int target, int level, int xoffset,
-			int yoffset, int width, int height, int format, int type,
-			IntBuffer pixels) {
+			Int32Array pixels) {
 	}
 
 
@@ -510,4 +441,23 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 		debugHighlight = on;
 		ctx.setStrokeStyleColor(on ? "#ff8888" : "#0000ff");
 	}
+
+	@Override
+	public void glColorPointer(int i, boolean b, int j, Int32Array colorArrayBuf) {
+	}
+
+  @Override
+  public void glReadPixels(int x, int y, int width, int height, int glBgr,
+      int glUnsignedByte, Uint8Array image) {
+  }
+
+  @Override
+  public void glTexImage2D(int target, int level, int internalformat,
+      int width, int height, int border, int format, int type, Uint8Array pixels) {
+  }
+
+  @Override
+  public void glTexSubImage2D(int target, int level, int xoffset, int yoffset,
+      int width, int height, int format, int type, Uint8Array pixels) {
+  }
 }

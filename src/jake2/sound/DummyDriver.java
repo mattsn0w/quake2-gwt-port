@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.sound;
 
-import java.nio.ByteBuffer;
+import com.google.gwt.typedarrays.client.ArrayBuffer;
 
 /**
  * DummyDriver
@@ -85,7 +85,7 @@ public final class DummyDriver implements Sound {
 	/* (non-Javadoc)
 	 * @see jake2.sound.Sound#RawSamples(int, int, int, int, byte[])
 	 */
-	public void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data) {
+	public void RawSamples(int samples, int rate, int width, int channels, ArrayBuffer data) {
 	}
 
     public void disableStreaming() {

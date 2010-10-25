@@ -18,13 +18,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.gwt.client;
 
+import jake2.buf.StringDataReader;
 import jake2.qcommon.Com;
-import jake2.qcommon.Compatibility;
 import jake2.qcommon.ResourceLoader;
-import jake2.util.StringToByteBuffer;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.Duration;
@@ -53,8 +51,6 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
     }
   }
   
-  private static StringToByteBuffer sbb = (StringToByteBuffer) (Object) ByteBuffer.allocate(1);
-  
   public boolean pump() {
     return currentSequenceNumber != freeSequenceNumber;
   }
@@ -67,7 +63,6 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
   public void loadResourceAsync(final String path, final ResourceLoader.Callback callback) {
     XMLHttpRequest req = XMLHttpRequest.create();
     
-    final Exception e = new Exception();
     final int mySequenceNumber = freeSequenceNumber++;
     
     req.setOnReadyStateChange(new ReadyStateChangeHandler() {
@@ -119,7 +114,7 @@ public class GwtResourceLoaderImpl implements ResourceLoader.Impl {
           if (handler.sequenceNumber == currentSequenceNumber) {
             if (handler.response != null) {
               double t0 = Duration.currentTimeMillis();
-              handler.callback.onSuccess(sbb.stringToByteBuffer(handler.response));
+              handler.callback.onSuccess(new StringDataReader(handler.response));
               Com.Printf("Processed #" + currentSequenceNumber + " in " + (Duration.currentTimeMillis() - t0) / 1000.0 + "s\r");
             }
             readyList.remove(i);
