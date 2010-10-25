@@ -23,10 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.qcommon;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
+import jake2.buf.DataReader;
+
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
 
 /**
  * qfiles
@@ -72,16 +72,13 @@ public class qfiles {
 		public int bytes_per_line; // unsigned short
 		public int palette_type; // unsigned short
 		public byte[] filler; // size 58
-		public ByteBuffer data; //unbounded data
+		public DataReader data; //unbounded data
 
 		public pcx_t(byte[] dataBytes) {
-			this(ByteBuffer.wrap(dataBytes));
+			this(DataReader.wrap(dataBytes));
 		}
 
-		public pcx_t(ByteBuffer b) {
-			// is stored as little endian
-			b.order(ByteOrder.LITTLE_ENDIAN);
-
+		public pcx_t(DataReader b) {
 			// fill header
 			manufacturer = b.get();
 			version = b.get();
@@ -121,15 +118,15 @@ public class qfiles {
 		public int x_origin, y_origin, width, height; // unsigned short
 		public int pixel_size, attributes; // unsigned char
 
-		public ByteBuffer data; // (un)compressed data
+		public DataReader data; // (un)compressed data
 
 		public tga_t(byte[] dataBytes) {
-			this(ByteBuffer.wrap(dataBytes));
+			this(DataReader.wrap(dataBytes));
 		}
 
-		public tga_t(ByteBuffer b) {
+		public tga_t(DataReader b) {
 			// is stored as little endian
-			b.order(ByteOrder.LITTLE_ENDIAN);
+//			b.order(ByteOrder.LITTLE_ENDIAN);
 
 			// fill header
 			id_length = b.get() & 0xFF;
@@ -172,7 +169,7 @@ public class qfiles {
 		public short s;
 		public short t;
 		
-		public dstvert_t(ByteBuffer b) {
+		public dstvert_t(DataReader b) {
 			s = b.getShort();
 			t = b.getShort();
 		}
@@ -182,7 +179,7 @@ public class qfiles {
 		public short index_xyz[] = { 0, 0, 0 };
 		public short index_st[] = { 0, 0, 0 };
 		
-		public dtriangle_t(ByteBuffer b) {
+		public dtriangle_t(DataReader b) {
 			index_xyz[0] = b.getShort();
 			index_xyz[1] = b.getShort();
 			index_xyz[2] = b.getShort();
@@ -205,7 +202,7 @@ public class qfiles {
 		public String name; // frame name from grabbing (size 16)
 		public int[] verts;	// variable sized
 		
-		public daliasframe_t(ByteBuffer b) {
+		public daliasframe_t(DataReader b) {
 			scale[0] = b.getFloat();	scale[1] = b.getFloat();	scale[2] = b.getFloat();
 			translate[0] = b.getFloat(); translate[1] = b.getFloat(); translate[2] = b.getFloat();
 			byte[] nameBuf = new byte[16];
@@ -252,7 +249,7 @@ public class qfiles {
 		public daliasframe_t[] aliasFrames;
 		
 		
-		public dmdl_t(ByteBuffer b) {
+		public dmdl_t(DataReader b) {
 			ident = b.getInt();
 			version = b.getInt();
 
@@ -278,11 +275,10 @@ public class qfiles {
 		/*
 		 * new members for vertex array handling
 		 */
-		public FloatBuffer textureCoordBuf = null;
-		public ShortBuffer vertexIndexBuf = null;
+		public Float32Array textureCoordBuf = null;
+		public Uint16Array vertexIndexBuf = null;
 		public int[] counts = null;
-		public ShortBuffer[] indexElements = null;
-		
+		public Uint16Array[] indexElements = null;
 		public int staticTextureBufId = -1;
 	}
 	
@@ -302,7 +298,7 @@ public class qfiles {
 		public int origin_x, origin_y; // raster coordinates inside pic
 		public String name; // name of pcx file (MAX_SKINNAME)
 		
-		public dsprframe_t(ByteBuffer b) {
+		public dsprframe_t(DataReader b) {
 			width = b.getInt();
 			height = b.getInt();
 			origin_x = b.getInt();
@@ -320,7 +316,7 @@ public class qfiles {
 		public int numframes;
 		public dsprframe_t frames[]; // variable sized
 		
-		public dsprite_t(ByteBuffer b) {
+		public dsprite_t(DataReader b) {
 			ident = b.getInt();
 			version = b.getInt();
 			numframes = b.getInt();
@@ -354,12 +350,12 @@ public class qfiles {
 		public int value;
 
 		public miptex_t(byte[] dataBytes) {
-			this(ByteBuffer.wrap(dataBytes));
+			this(DataReader.wrap(dataBytes));
 		}
 
-		public miptex_t(ByteBuffer b) {
+		public miptex_t(DataReader b) {
 			// is stored as little endian
-			b.order(ByteOrder.LITTLE_ENDIAN);
+//			b.order(ByteOrder.LITTLE_ENDIAN);
 
 			byte[] nameBuf = new byte[NAME_SIZE];
 			// fill header
@@ -394,8 +390,8 @@ public class qfiles {
 
 	public static class dheader_t {
 
-		public dheader_t(ByteBuffer bb) {
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+		public dheader_t(DataReader bb) {
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 			this.ident = bb.getInt();
 			this.version = bb.getInt();
 
@@ -411,8 +407,8 @@ public class qfiles {
 
 	public static class dmodel_t {
 
-		public dmodel_t(ByteBuffer bb) {
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+		public dmodel_t(DataReader bb) {
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 
 			for (int j = 0; j < 3; j++)
 				mins[j] = bb.getFloat();
@@ -443,7 +439,7 @@ public class qfiles {
 		
 		public float[] point = { 0, 0, 0 };
 		
-		public dvertex_t(ByteBuffer b) {
+		public dvertex_t(DataReader b) {
 			point[0] = b.getFloat();
 			point[1] = b.getFloat();
 			point[2] = b.getFloat();
@@ -454,8 +450,8 @@ public class qfiles {
 	// planes (x&~1) and (x&~1)+1 are always opposites
 	public static class dplane_t {
 
-		public dplane_t(ByteBuffer bb) {
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+		public dplane_t(DataReader bb) {
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 
 			normal[0] = (bb.getFloat());
 			normal[1] = (bb.getFloat());
@@ -474,9 +470,9 @@ public class qfiles {
 
 	public static class dnode_t {
 
-		public dnode_t(ByteBuffer bb) {
+		public dnode_t(DataReader bb) {
 
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 			planenum = bb.getInt();
 
 			children[0] = bb.getInt();
@@ -539,7 +535,7 @@ public class qfiles {
 		public byte styles[] = new byte[Defines.MAXLIGHTMAPS];
 		public int lightofs; // start of [numstyles*surfsize] samples
 		
-		public dface_t(ByteBuffer b) {
+		public dface_t(DataReader b) {
 			planenum = b.getShort() & 0xFFFF;
 			side = b.getShort();
 			firstedge = b.getInt();
@@ -554,10 +550,10 @@ public class qfiles {
 	public static class dleaf_t {
 
 		public dleaf_t(byte[] cmod_base, int i, int j) {
-			this(ByteBuffer.wrap(cmod_base, i, j).order(ByteOrder.LITTLE_ENDIAN));
+			this(DataReader.wrap(cmod_base, i, j)/*.order(ByteOrder.LITTLE_ENDIAN)*/);
 		}
 
-		public dleaf_t(ByteBuffer bb) {
+		public dleaf_t(DataReader bb) {
 			contents = bb.getInt();
 			cluster = bb.getShort();
 			area = bb.getShort();
@@ -596,8 +592,8 @@ public class qfiles {
 	
 	public static class dbrushside_t {
 
-		public dbrushside_t(ByteBuffer bb) {
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+		public dbrushside_t(DataReader bb) {
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 
 			planenum = bb.getShort() & 0xffff;
 			texinfo = bb.getShort();
@@ -613,8 +609,8 @@ public class qfiles {
 	
 	public static class dbrush_t {
 
-		public dbrush_t(ByteBuffer bb) {
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+		public dbrush_t(DataReader bb) {
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 			firstside = bb.getInt();
 			numsides = bb.getInt();
 			contents = bb.getInt();
@@ -638,7 +634,7 @@ public class qfiles {
 
 	public static class dvis_t {
 
-		public dvis_t(ByteBuffer bb) {
+		public dvis_t(DataReader bb) {
 			numclusters = bb.getInt();
 			bitofs = new int[numclusters][2];
 
@@ -661,8 +657,8 @@ public class qfiles {
 		public dareaportal_t() {
 		}
 
-		public dareaportal_t(ByteBuffer bb) {
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+		public dareaportal_t(DataReader bb) {
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 			portalnum = bb.getInt();
 			otherarea = bb.getInt();
 		}
@@ -674,9 +670,8 @@ public class qfiles {
 
 	public static class darea_t {
 
-		public darea_t(ByteBuffer bb) {
-
-			bb.order(ByteOrder.LITTLE_ENDIAN);
+		public darea_t(DataReader bb) {
+//			bb.order(ByteOrder.LITTLE_ENDIAN);
 
 			numareaportals = bb.getInt();
 			firstareaportal = bb.getInt();

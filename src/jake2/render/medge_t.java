@@ -23,9 +23,8 @@
 */
 package jake2.render;
 
+import jake2.buf.DataReader;
 import jake2.qcommon.Defines;
-
-import java.nio.ByteBuffer;
 
 public class medge_t {
 
@@ -38,7 +37,7 @@ public class medge_t {
 
     public int cachededgeoffset;
 
-    public medge_t(ByteBuffer b) {
+    public medge_t(DataReader b) {
         v[0] = b.getShort() & 0xFFFF;
         v[1] = b.getShort() & 0xFFFF;
     }

@@ -23,12 +23,11 @@
 */
 package jake2.server;
 
+import jake2.buf.DataReader;
 import jake2.game.cmodel_t;
 import jake2.game.entity_state_t;
 import jake2.qcommon.Defines;
 import jake2.qcommon.sizebuf_t;
-
-import java.nio.ByteBuffer;
 
 public class server_t {
 
@@ -67,7 +66,7 @@ public class server_t {
     byte multicast_buf[] = new byte[Defines.MAX_MSGLEN];
 
     // demo server information
-    ByteBuffer demofile;
+    DataReader demofile;
 
     boolean timedemo; // don't time sync
 }

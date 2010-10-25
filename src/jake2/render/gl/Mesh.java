@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.gl;
 
 
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+
 import jake2.client.VID;
 import jake2.client.entity_t;
 import jake2.qcommon.Defines;
@@ -31,10 +34,6 @@ import jake2.qcommon.qfiles;
 import jake2.render.GLAdapter;
 import jake2.render.image_t;
 import jake2.util.Math3D;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 
 /**
  * Mesh
@@ -74,10 +73,10 @@ public abstract class Mesh extends Light {
 	 * @param frontv
 	 * @param backv
 	 */
-	void GL_LerpVerts(int nverts, int[] ov, int[] v, float[] move, float[] frontv, float[] backv )
+	void GL_LerpVerts(int nverts, int[] ov, int[] v, float[] move, float[] frontv, float[] backv)
 	{
-		FloatBuffer lerp = vertexArrayBuf;
-		lerp.limit((nverts << 2) - nverts); // nverts * 3
+		Float32Array lerp = vertexArrayBuf;
+//		lerp.limit((nverts << 2) - nverts); // nverts * 3
 
 		int ovv, vv;
 			//PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
@@ -90,9 +89,9 @@ public abstract class Mesh extends Light {
 				vv = v[i];
 				normal = r_avertexnormals[(vv >>> 24 ) & 0xFF];
 				ovv = ov[i];
-				lerp.put(j, move[0] + (ovv & 0xFF)* backv[0] + (vv & 0xFF) * frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
-				lerp.put(j + 1, move[1] + ((ovv >>> 8) & 0xFF) * backv[1] + ((vv >>> 8) & 0xFF) * frontv[1] + normal[1] * Defines.POWERSUIT_SCALE);
-				lerp.put(j + 2, move[2] + ((ovv >>> 16) & 0xFF) * backv[2] + ((vv >>> 16) & 0xFF) * frontv[2] + normal[2] * Defines.POWERSUIT_SCALE); 
+				lerp.set(j, move[0] + (ovv & 0xFF)* backv[0] + (vv & 0xFF) * frontv[0] + normal[0] * Defines.POWERSUIT_SCALE);
+				lerp.set(j + 1, move[1] + ((ovv >>> 8) & 0xFF) * backv[1] + ((vv >>> 8) & 0xFF) * frontv[1] + normal[1] * Defines.POWERSUIT_SCALE);
+				lerp.set(j + 2, move[2] + ((ovv >>> 16) & 0xFF) * backv[2] + ((vv >>> 16) & 0xFF) * frontv[2] + normal[2] * Defines.POWERSUIT_SCALE); 
 				j += 3;
 			}
 		}
@@ -104,38 +103,34 @@ public abstract class Mesh extends Light {
 				ovv = ov[i];
 				vv = v[i];
 				
-				lerp.put(j, move[0] + (ovv & 0xFF)* backv[0] + (vv & 0xFF)*frontv[0]);
-				lerp.put(j + 1, move[1] + ((ovv >>> 8) & 0xFF)* backv[1] + ((vv >>> 8) & 0xFF)*frontv[1]);
-				lerp.put(j + 2, move[2] + ((ovv >>> 16) & 0xFF)* backv[2] + ((vv >>> 16) & 0xFF)*frontv[2]);
+				lerp.set(j, move[0] + (ovv & 0xFF)* backv[0] + (vv & 0xFF)*frontv[0]);
+				lerp.set(j + 1, move[1] + ((ovv >>> 8) & 0xFF)* backv[1] + ((vv >>> 8) & 0xFF)*frontv[1]);
+				lerp.set(j + 2, move[2] + ((ovv >>> 16) & 0xFF)* backv[2] + ((vv >>> 16) & 0xFF)*frontv[2]);
 				j += 3;
 			}
 		}
 	}
-	
 
-	FloatBuffer colorArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 4);
-	FloatBuffer vertexArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 3);
-	FloatBuffer textureArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 2);
+	Float32Array colorArrayBuf;
+	Float32Array vertexArrayBuf;
+	Float32Array textureArrayBuf;
 
-	FloatBuffer colorArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 4);
-	FloatBuffer vertexArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 3);
-	FloatBuffer textureArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 2);
+	Float32Array colorArrayBuf2;
+	Float32Array vertexArrayBuf2;
+	Float32Array textureArrayBuf2;
 
-	
 	@Override
 	public void init() {
 		super.init();
 		colorArrayBuf = gl.createFloatBuffer(qfiles.MAX_VERTS * 4);
 		vertexArrayBuf = gl.createFloatBuffer(qfiles.MAX_VERTS * 3);
 		textureArrayBuf = gl.createFloatBuffer(qfiles.MAX_VERTS * 2);
-		
 
 		int FACTOR = 4;
 		
 		colorArrayBuf2 = gl.createFloatBuffer(qfiles.MAX_VERTS * 4 *FACTOR);
 		vertexArrayBuf2 = gl.createFloatBuffer(qfiles.MAX_VERTS * 3 * FACTOR);
 		textureArrayBuf2 = gl.createFloatBuffer(qfiles.MAX_VERTS * 2 * FACTOR);
-
 	}
 
 	boolean isFilled = false;
@@ -148,6 +143,7 @@ public abstract class Mesh extends Light {
 	private final float[] move = {0, 0, 0}; // vec3_t		
 	private final float[] frontv = {0, 0, 0}; // vec3_t
 	private final float[] backv = {0, 0, 0}; // vec3_t
+
 	/**
 	 * GL_DrawAliasFrameLerp
 	 * 
@@ -198,7 +194,7 @@ public abstract class Mesh extends Light {
 		GL_LerpVerts( paliashdr.num_xyz, ov, verts, move, frontv, backv );
 
 		int num_xyz = paliashdr.num_xyz;
-		vertexArrayBuf.limit(num_xyz * 3);
+//		vertexArrayBuf.limit(num_xyz * 3);
 		
 		//gl.glEnableClientState( GLAdapter.GL_VERTEX_ARRAY );
 		gl.glVertexPointer( 3, 0, vertexArrayBuf );
@@ -212,8 +208,8 @@ public abstract class Mesh extends Light {
 		{
 		  gl.glEnableClientState( GLAdapter.GL_COLOR_ARRAY );
 
-			FloatBuffer color = colorArrayBuf;
-			color.limit(num_xyz * 4);
+			Float32Array color = colorArrayBuf;
+//			color.limit(num_xyz * 4);
 
 		  gl.glColorPointer( 4, 0, color );
 
@@ -225,16 +221,16 @@ public abstract class Mesh extends Light {
 			for (int i = 0; i < num_xyz; i++ )
 			{
 				l = shadedots[(verts[i] >>> 24) & 0xFF];
-				color.put(j,  l * shadelight[0]);
-				color.put(j + 1, l * shadelight[1]);
-				color.put(j + 2, l * shadelight[2]);
-				color.put(j + 3, alpha);
+				color.set(j,  l * shadelight[0]);
+				color.set(j + 1, l * shadelight[1]);
+				color.set(j + 2, l * shadelight[2]);
+				color.set(j + 3, alpha);
 				j += 4;
 			}
 		}
 
 		gl.glClientActiveTexture(GL_TEXTURE0);
-		FloatBuffer dstTextureCoords = textureArrayBuf;
+		Float32Array dstTextureCoords = textureArrayBuf;
 		
 		gl.glTexCoordPointer( 2, 0, dstTextureCoords);
 		gl.glEnableClientState( GLAdapter.GL_TEXTURE_COORD_ARRAY);
@@ -242,9 +238,9 @@ public abstract class Mesh extends Light {
 		int pos = 0;
 		int[] counts = paliashdr.counts;
 		
-		ShortBuffer srcIndexBuf = null;
+		Uint16Array srcIndexBuf = null;
 
-		FloatBuffer srcTextureCoords = paliashdr.textureCoordBuf;
+		Float32Array srcTextureCoords = paliashdr.textureCoordBuf;
 
 		int dstIndex = 0;
 		int srcIndex = 0;
@@ -252,7 +248,7 @@ public abstract class Mesh extends Light {
 		int mode;
 		int size = counts.length;
 		for (int j = 0; j < size; j++) {
-			dstTextureCoords.limit(num_xyz * 2);
+//			dstTextureCoords.limit(num_xyz * 2);
 
 			// get the vertex count and primitive type
 			count = counts[j];
@@ -280,13 +276,13 @@ public abstract class Mesh extends Light {
 				if (dstIndex > maxIdx) {
 					maxIdx = dstIndex;
 				}
-				dstTextureCoords.put(dstIndex, srcTextureCoords.get(++srcIndex));
-				dstTextureCoords.put(++dstIndex, srcTextureCoords.get(++srcIndex));
+				dstTextureCoords.set(dstIndex, srcTextureCoords.get(++srcIndex));
+				dstTextureCoords.set(++dstIndex, srcTextureCoords.get(++srcIndex));
 			}
 				
 			//gl.updatTCBuffer(dstTextureCoords, minIdx, maxIdx - minIdx + 2);
 
-			dstTextureCoords.limit(maxIdx + 2);
+//			dstTextureCoords.limit(maxIdx + 2);
 			gl.glTexCoordPointer( 2, 0, dstTextureCoords);
 			
 			gl.glDrawElements(mode, srcIndexBuf);
@@ -348,11 +344,11 @@ public abstract class Mesh extends Light {
 		GL_LerpVerts( paliashdr.num_xyz, ov, verts, move, frontv, backv );
 
 		int num_xyz = paliashdr.num_xyz;
-		FloatBuffer vertices = vertexArrayBuf;
+		Float32Array vertices = vertexArrayBuf;
 
 		// PMM - added double damage shell
 		boolean hasColorArray;
-		FloatBuffer color = colorArrayBuf;
+		Float32Array color = colorArrayBuf;
 		hasColorArray = (currententity.flags & ( Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) == 0;
 		if (hasColorArray) {
 			//
@@ -363,10 +359,10 @@ public abstract class Mesh extends Light {
 			for (int i = 0; i < num_xyz; i++ )
 			{
 				l = shadedots[(verts[i] >>> 24) & 0xFF];
-				color.put(j,  l * shadelight[0]);
-				color.put(j + 1, l * shadelight[1]);
-				color.put(j + 2, l * shadelight[2]);
-				color.put(j + 3, alpha);
+				color.set(j,  l * shadelight[0]);
+				color.set(j + 1, l * shadelight[1]);
+				color.set(j + 2, l * shadelight[2]);
+				color.set(j + 3, alpha);
 				j += 4;
 			} 
 		} else {
@@ -376,22 +372,21 @@ public abstract class Mesh extends Light {
 		int pos = 0;
 		int[] counts = paliashdr.counts;
 		
-		FloatBuffer dstVertexCoords = vertexArrayBuf2;
-		FloatBuffer dstColors = colorArrayBuf2;
+		Float32Array dstVertexCoords = vertexArrayBuf2;
+		Float32Array dstColors = colorArrayBuf2;
 
-		dstVertexCoords.clear();
-		dstColors.clear();
+//		dstVertexCoords.clear();
+//		dstColors.clear();
+		int dstVertexIdx = 0, dstColorIdx = 0;
 		
-		int count;
-		int mode;
-		int size = counts.length;
+		int count, mode, size = counts.length;
 		for (int j = 0; j < size; j++) {
 			// get the vertex count and primitive type
 			count = counts[j];
 			if (count == 0)
 				break;		// done
 				
-			ShortBuffer srcIndexBuf = paliashdr.indexElements[j];
+  		Uint16Array srcIndexBuf = paliashdr.indexElements[j];
 			
 			if (count < 0) {
 				count = -count;
@@ -401,15 +396,15 @@ public abstract class Mesh extends Light {
 				int srcIndex = srcIndexBuf.get(k);
 				if (hasColorArray) {
 					int cSrcIndex = srcIndex * 4;
-					dstColors.put(color.get(cSrcIndex));
-					dstColors.put(color.get(cSrcIndex+1));
-					dstColors.put(color.get(cSrcIndex+2));
-					dstColors.put(color.get(cSrcIndex+3));
+					dstColors.set(dstColorIdx++, color.get(cSrcIndex));
+					dstColors.set(dstColorIdx++, color.get(cSrcIndex+1));
+					dstColors.set(dstColorIdx++, color.get(cSrcIndex+2));
+					dstColors.set(dstColorIdx++, color.get(cSrcIndex+3));
 				}
 				int vSrcIndex = srcIndex * 3;
-				dstVertexCoords.put(vertices.get(vSrcIndex));
-				dstVertexCoords.put(vertices.get(vSrcIndex+1));
-				dstVertexCoords.put(vertices.get(vSrcIndex+2));
+				dstVertexCoords.set(dstVertexIdx++, vertices.get(vSrcIndex));
+				dstVertexCoords.set(dstVertexIdx++, vertices.get(vSrcIndex+1));
+				dstVertexCoords.set(dstVertexIdx++, vertices.get(vSrcIndex+2));
 			}
 				
 			//gl.updatTCBuffer(dstTextureCoords, minIdx, maxIdx - minIdx + 2);
@@ -418,21 +413,21 @@ public abstract class Mesh extends Light {
 
 		if (hasColorArray) {
 			gl.glEnableClientState( GLAdapter.GL_COLOR_ARRAY );
-			dstColors.flip();
+//			dstColors.flip();
 			gl.glColorPointer(4, 0, dstColors);
 		}
 		
 		gl.glClientActiveTexture(GL_TEXTURE0);	
 		gl.glEnableClientState( GLAdapter.GL_TEXTURE_COORD_ARRAY);
 
-		FloatBuffer tc0 = paliashdr.textureCoordBuf;
-		int limit = tc0.limit();
-		tc0.limit(tc0.position() + pos * 2);
+//		Float32Array tc0 = paliashdr.textureCoordBuf;
+//		int limit = tc0.getLength();
+//		tc0.limit(tc0.position() + pos * 2);
 		gl.glVertexAttribPointer(GLAdapter.ARRAY_TEXCOORD_0, 2, GLAdapter.GL_FLOAT, false, 0, 0,
 				paliashdr.textureCoordBuf, paliashdr.staticTextureBufId);
-		tc0.limit(limit);
+//		tc0.limit(limit);
 		
-		dstVertexCoords.flip();
+//		dstVertexCoords.flip();
 		gl.glVertexPointer(3, 0, dstVertexCoords);
 
 		pos = 0;

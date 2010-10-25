@@ -32,6 +32,8 @@ import jake2.util.Math3D;
 
 import java.util.Arrays;
 
+import com.google.gwt.typedarrays.client.Uint8Array;
+
 public class model_t implements Cloneable {
 	
 	public String name = "";
@@ -95,7 +97,7 @@ public class model_t implements Cloneable {
 
 	public qfiles.dvis_t vis;
 
-	public byte lightdata[];
+	public Uint8Array lightdata;
 
 	// for alias models and skins
 	// was image_t *skins[]; (array of pointers)

@@ -25,7 +25,7 @@ package jake2.sound;
 
 import jake2.qcommon.Defines;
 
-import java.nio.ByteBuffer;
+import com.google.gwt.typedarrays.client.ArrayBuffer;
 
 /**
  * Sound
@@ -96,14 +96,13 @@ public interface Sound {
 	Cinematic streaming and voice over network
 	============
 	*/
-	void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data);
+	void RawSamples(int samples, int rate, int width, int channels, ArrayBuffer data);
 
-    void disableStreaming();
+  void disableStreaming();
 	/*
 	==================
 	S_StopAllSounds
 	==================
 	*/
 	void StopAllSounds();
-
 }

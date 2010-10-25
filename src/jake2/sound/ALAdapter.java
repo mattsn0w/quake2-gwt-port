@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.sound;
 
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
+
 /**
  * Refactored version of LWJGL AL/AL10 interface that supports multiple
  * implementations.
@@ -147,17 +152,17 @@ public abstract class ALAdapter {
   private boolean created;
 
   public abstract void alBufferData(int buffer, int format,
-      java.nio.ByteBuffer data, int freq);
+      Uint8Array data, int freq);
 
   public abstract void alBufferData(int buffer, int format,
-      java.nio.IntBuffer data, int freq);
+      Int32Array data, int freq);
 
   public abstract void alBufferData(int buffer, int format,
-      java.nio.ShortBuffer data, int freq);
+      Uint16Array data, int freq);
 
-  public abstract void alDeleteBuffers(java.nio.IntBuffer buffers);
+  public abstract void alDeleteBuffers(Int32Array buffers);
 
-  public abstract void alDeleteSources(java.nio.IntBuffer sources);
+  public abstract void alDeleteSources(Int32Array sources);
 
   public abstract void alDisable(int capability);
 
@@ -169,9 +174,9 @@ public abstract class ALAdapter {
 
   public abstract void alEnable(int capability);
 
-  public abstract void alGenBuffers(java.nio.IntBuffer buffers);
+  public abstract void alGenBuffers(Int32Array buffers);
 
-  public abstract void alGenSources(java.nio.IntBuffer sources);
+  public abstract void alGenSources(Int32Array sources);
 
   public abstract boolean alGetBoolean(int pname);
 
@@ -179,30 +184,26 @@ public abstract class ALAdapter {
 
   public abstract int alGetBufferi(int buffer, int pname);
 
-  public abstract double alGetDouble(int pname);
-
-  public abstract void alGetDouble(int pname, java.nio.DoubleBuffer data);
-
   public abstract int alGetEnumValue(java.lang.String ename);
 
   public abstract int alGetError();
 
   public abstract float alGetFloat(int pname);
 
-  public abstract void alGetFloat(int pname, java.nio.FloatBuffer data);
+  public abstract void alGetFloat(int pname, Float32Array data);
 
   public abstract int alGetInteger(int pname);
 
-  public abstract void alGetInteger(int pname, java.nio.IntBuffer data);
+  public abstract void alGetInteger(int pname, Int32Array data);
 
-  public abstract void alGetListener(int pname, java.nio.FloatBuffer floatdata);
+  public abstract void alGetListener(int pname, Float32Array floatdata);
 
   public abstract float alGetListenerf(int pname);
 
   public abstract int alGetListeneri(int pname);
 
   public abstract void alGetSource(int source, int pname,
-      java.nio.FloatBuffer floatdata);
+      Float32Array floatdata);
 
   public abstract float alGetSourcef(int source, int pname);
 
@@ -218,7 +219,7 @@ public abstract class ALAdapter {
 
   public abstract boolean alIsSource(int id);
 
-  public abstract void alListener(int pname, java.nio.FloatBuffer value);
+  public abstract void alListener(int pname, Float32Array value);
 
   public abstract void alListener3f(int pname, float v1, float v2, float v3);
 
@@ -227,7 +228,7 @@ public abstract class ALAdapter {
   public abstract void alListeneri(int pname, int value);
 
   public abstract void alSource(int source, int pname,
-      java.nio.FloatBuffer value);
+      Float32Array value);
 
   public abstract void alSource3f(int source, int pname, float v1, float v2,
       float v3);
@@ -236,27 +237,27 @@ public abstract class ALAdapter {
 
   public abstract void alSourcei(int source, int pname, int value);
 
-  public abstract void alSourcePause(java.nio.IntBuffer sources);
+  public abstract void alSourcePause(Int32Array sources);
 
   public abstract void alSourcePause(int source);
 
-  public abstract void alSourcePlay(java.nio.IntBuffer sources);
+  public abstract void alSourcePlay(Int32Array sources);
 
   public abstract void alSourcePlay(int source);
 
   public abstract void alSourceQueueBuffers(int source,
-      java.nio.IntBuffer buffers);
+      Int32Array buffers);
 
-  public abstract void alSourceRewind(java.nio.IntBuffer sources);
+  public abstract void alSourceRewind(Int32Array sources);
 
   public abstract void alSourceRewind(int source);
 
-  public abstract void alSourceStop(java.nio.IntBuffer sources);
+  public abstract void alSourceStop(Int32Array sources);
 
   public abstract void alSourceStop(int source);
 
   public abstract void alSourceUnqueueBuffers(int source,
-      java.nio.IntBuffer buffers);
+      Int32Array buffers);
 
   public abstract void create(java.lang.String deviceArguments,
       int contextFrequency, int contextRefresh, boolean contextSynchronized);

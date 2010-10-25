@@ -23,11 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.qcommon;
 
+import jake2.buf.DataReader;
 import jake2.client.Dimension;
-
-import java.nio.ByteBuffer;
-
-
 
 public class QuakeImage {
 	/*
@@ -269,7 +266,7 @@ public class QuakeImage {
 			int columns, rows, numPixels;
 			int pixbuf; // index into pic
 			int row, column;
-			ByteBuffer buf_p;
+			DataReader buf_p;
 	//		int length;
 			qfiles.tga_t targa_header;
 			byte[] pic = null;
@@ -298,7 +295,7 @@ public class QuakeImage {
 				targa_header.data.position(targa_header.id_length);  // skip TARGA image comment
 			
 			buf_p = targa_header.data;
-				
+
 			byte red,green,blue,alphabyte;
 			red = green = blue = alphabyte = 0;
 			int packetHeader, packetSize, j;

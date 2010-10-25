@@ -23,9 +23,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.gl;
 
-
+import com.google.gwt.typedarrays.client.ArrayBuffer;
+import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
 import com.google.gwt.user.client.Command;
 
+import jake2.buf.DataReader;
 import jake2.client.VID;
 import jake2.game.cplane_t;
 import jake2.game.cvar_t;
@@ -50,17 +55,10 @@ import jake2.render.mvertex_t;
 import jake2.util.Math3D;
 import jake2.util.Vargs;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
-
-//import com.google.gwt.user.client.Timer;
-
 
 /**
  * Model
@@ -198,8 +196,6 @@ public abstract class Model extends Surf {
 	*/
 	void Mod_Modellist_f()
 	{
-		int i;
-		model_t	mod;
 		int total;
 
 		total = 0;
@@ -236,7 +232,7 @@ public abstract class Model extends Surf {
 		Arrays.fill(mod_novis, (byte)0xff);
 	}
 
-	ByteBuffer fileBuffer;
+	DataReader fileBuffer;
 
 	/*
 	==================
@@ -286,7 +282,7 @@ public abstract class Model extends Surf {
 		//
 		final model_t model = modelReq.model;
 		ResourceLoader.loadResourceAsync(name, new ResourceLoader.Callback() {
-      public void onSuccess(final ByteBuffer bb) {
+      public void onSuccess(final DataReader bb) {
 //    	if (waitingForImages > 0) {
 //    		gl.log ("still waiting for textures: "+waitingForImages);
 //    		new Timer(){
@@ -308,10 +304,9 @@ public abstract class Model extends Surf {
         //
         // fill it in
         //
-        bb.order(ByteOrder.LITTLE_ENDIAN);
+//        bb.order(ByteOrder.LITTLE_ENDIAN);
 
         // call the apropriate loader
-      
         bb.mark();
         int ident = bb.getInt();
         
@@ -352,7 +347,7 @@ public abstract class Model extends Surf {
 	===============================================================================
 	*/
 
-	ByteBuffer mod_base;
+	DataReader mod_base;
 
 
 	/*
@@ -368,12 +363,12 @@ public abstract class Model extends Surf {
 			return;
 		}
 		// memcpy (loadmodel.lightdata, mod_base + l.fileofs, l.filelen);
-		loadmodel.lightdata = new byte[l.filelen];
+		byte[] lightdata = new byte[l.filelen];
 //		System.arraycopy(mod_base, l.fileofs, loadmodel.lightdata, 0, l.filelen);
 		mod_base.position(l.fileofs);
-		mod_base.get(loadmodel.lightdata, 0, l.filelen);
+		mod_base.get(lightdata, 0, l.filelen);
+		loadmodel.lightdata = Uint8Array.create(lightdata);
 	}
-
 
 	/*
 	=================
@@ -394,9 +389,9 @@ public abstract class Model extends Surf {
     mod_base.position(l.fileofs);
 		mod_base.get(model_visibility, 0, l.filelen);
 		
-		ByteBuffer bb = ByteBuffer.wrap(model_visibility, 0, l.filelen);
+		DataReader bb = DataReader.wrap(model_visibility, 0, l.filelen);
 		
-		loadmodel.vis = new qfiles.dvis_t(bb.order(ByteOrder.LITTLE_ENDIAN));
+		loadmodel.vis = new qfiles.dvis_t(bb/*.order(ByteOrder.LITTLE_ENDIAN)*/);
 		
 		/* done:
 		memcpy (loadmodel.vis, mod_base + l.fileofs, l.filelen);
@@ -431,8 +426,10 @@ public abstract class Model extends Surf {
 		loadmodel.vertexes = vertexes;
 		loadmodel.numvertexes = count;
 
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++)
 		{
@@ -481,8 +478,10 @@ public abstract class Model extends Surf {
 	    loadmodel.submodels = outs;
 	    loadmodel.numsubmodels = count;
 	    
-	    ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-	    bb.order(ByteOrder.LITTLE_ENDIAN);
+	    DataReader bb = mod_base;
+	    mod_base.position(l.fileofs);
+	    //ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+	    //bb.order(ByteOrder.LITTLE_ENDIAN);
 	    
 	    qfiles.dmodel_t in;
 	    
@@ -522,8 +521,10 @@ public abstract class Model extends Surf {
 		loadmodel.edges = edges;
 		loadmodel.numedges = count;
 		
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++)
 		{
@@ -558,11 +559,12 @@ public abstract class Model extends Surf {
 		loadmodel.texinfo = out;
 		loadmodel.numtexinfo = count;
 		
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++) {
-			
 			in = new texinfo_t(bb);			
 			out[i].vecs = in.vecs;
 			out[i].flags = in.flags;
@@ -669,8 +671,10 @@ public abstract class Model extends Surf {
 	    loadmodel.surfaces = outs;
 	    loadmodel.numsurfaces = count;
 	    
-	    ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-	    bb.order(ByteOrder.LITTLE_ENDIAN);
+	    DataReader bb = mod_base;
+	    mod_base.position(l.fileofs);
+	    //ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+	    //bb.order(ByteOrder.LITTLE_ENDIAN);
 	    
 	    currentmodel = loadmodel;
 	    
@@ -707,16 +711,21 @@ public abstract class Model extends Surf {
 	        
 	        for (i = 0; i < Defines.MAXLIGHTMAPS; i++)
 	            out.styles[i] = in.styles[i];
-	        
+
 	        i = in.lightofs;
-	        if (i == -1)
-	            out.samples = null;
-	        else {
-	            ByteBuffer pointer = ByteBuffer.wrap(loadmodel.lightdata);
+	        if (i == -1) {
+            out.samples = null;
+	        } else {
+	          /*
+  	          ByteBuffer pointer = ByteBuffer.wrap(loadmodel.lightdata);
 	            pointer.position(i);
 	            pointer = pointer.slice();
 	            pointer.mark();
 	            out.samples = pointer; // subarray
+	          */
+	          // TODO(jgw): Seems weird to slice out the full length here, but that's
+	          // what it seems to be doing above.
+	          out.samples = loadmodel.lightdata.slice(i, loadmodel.lightdata.getLength() - i);
 	        }
 	        
 	        // set the drawing flags
@@ -777,8 +786,10 @@ public abstract class Model extends Surf {
 		loadmodel.nodes = out;
 		loadmodel.numnodes = count;
 		
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 		
 		// initialize the tree array
 		for ( i=0 ; i<count ; i++) out[i] = new mnode_t(); // do first before linking 
@@ -834,8 +845,10 @@ public abstract class Model extends Surf {
 		loadmodel.leafs = out;
 		loadmodel.numleafs = count;
 		
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++)
 		{
@@ -878,8 +891,10 @@ public abstract class Model extends Surf {
 		loadmodel.marksurfaces = out;
 		loadmodel.nummarksurfaces = count;
 
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++)
 		{
@@ -914,8 +929,10 @@ public abstract class Model extends Surf {
 		loadmodel.surfedges = offsets;
 		loadmodel.numsurfedges = count;
 
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++) offsets[i] = bb.getInt();
 	}
@@ -947,8 +964,10 @@ public abstract class Model extends Surf {
 		loadmodel.planes = out;
 		loadmodel.numplanes = count;
 		
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
+		DataReader bb = mod_base;
+		mod_base.position(l.fileofs);
+		//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		//bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++)
 		{
@@ -972,7 +991,7 @@ public abstract class Model extends Surf {
 	Mod_LoadBrushModel
 	=================
 	*/
-	void Mod_LoadBrushModel(model_t mod, ByteBuffer buffer)
+	void Mod_LoadBrushModel(model_t mod, DataReader buffer)
 	{
 		int i;
 		qfiles.dheader_t	header;
@@ -988,7 +1007,7 @@ public abstract class Model extends Surf {
 			Com.Error (Defines.ERR_DROP, "Mod_LoadBrushModel: " + mod.name + " has wrong version number (" + i + " should be " + Defines.BSPVERSION + ")");
 
 		mod_base = fileBuffer; //(byte *)header;
-		mod_base.order(ByteOrder.LITTLE_ENDIAN);
+		//mod_base.order(ByteOrder.LITTLE_ENDIAN);
 
 		// load into heap
 		Mod_LoadVertexes(header.lumps[Defines.LUMP_VERTEXES]); // ok
@@ -1048,7 +1067,7 @@ public abstract class Model extends Surf {
 	Mod_LoadAliasModel
 	=================
 	*/
-	void Mod_LoadAliasModel (model_t mod, ByteBuffer buffer)
+	void Mod_LoadAliasModel (model_t mod, DataReader buffer)
 	{
 		qfiles.dmdl_t pheader;
 		qfiles.dstvert_t[] poutst;
@@ -1172,7 +1191,7 @@ public abstract class Model extends Surf {
 	Mod_LoadSpriteModel
 	=================
 	*/
-	void Mod_LoadSpriteModel(model_t mod, ByteBuffer buffer)
+	void Mod_LoadSpriteModel(model_t mod, DataReader buffer)
 	{
 		qfiles.dsprite_t sprout = new qfiles.dsprite_t(buffer);
 		
@@ -1368,23 +1387,25 @@ public abstract class Model extends Surf {
 	 * new functions for vertex array handling
 	 */
 	static final int MODEL_BUFFER_SIZE = 50000;
-	static FloatBuffer globalModelTextureCoordBuf; 
-	static ShortBuffer globalModelVertexIndexBuf; 
-	
+	static Float32Array globalModelTextureCoordBuf; 
+	static Uint16Array globalModelVertexIndexBuf; 
+	static int globalModelVertexIdx, globalModelTextureIdx;
+
 	protected void init() {
 		super.init();
 		globalModelTextureCoordBuf = gl.createFloatBuffer(MODEL_BUFFER_SIZE * 2);
 		globalModelVertexIndexBuf = gl.createShortBuffer(MODEL_BUFFER_SIZE);
 	}
-	
+
 	protected abstract float intBitsToFloat(int i); 
-	
-	
+
 	void precompileGLCmds(qfiles.dmdl_t model) {
-		model.textureCoordBuf = globalModelTextureCoordBuf.slice();
-		model.vertexIndexBuf = globalModelVertexIndexBuf.slice();
+//		model.textureCoordBuf = globalModelTextureCoordBuf.slice();
+//		model.vertexIndexBuf = globalModelVertexIndexBuf.slice();
+		model.textureCoordBuf = Float32Array.create(globalModelTextureCoordBuf.getBuffer(), globalModelTextureCoordBuf.getByteOffset());
+		model.vertexIndexBuf = Uint16Array.create(globalModelVertexIndexBuf.getBuffer(), globalModelVertexIndexBuf.getByteOffset());
 		Vector<Integer> tmp = new Vector<Integer>();
-			
+
 		int count = 0;
 		int[] order = model.glCmds;
 		int orderIndex = 0;
@@ -1409,41 +1430,37 @@ public abstract class Model extends Surf {
 
 			do {
 				// texture coordinates come from the draw list
-				globalModelTextureCoordBuf.put(intBitsToFloat(order[orderIndex + 0]));
-				globalModelTextureCoordBuf.put(intBitsToFloat(order[orderIndex + 1]));
-				globalModelVertexIndexBuf.put((short) order[orderIndex + 2]);
+				globalModelTextureCoordBuf.set(globalModelTextureIdx++, intBitsToFloat(order[orderIndex + 0]));
+				globalModelTextureCoordBuf.set(globalModelTextureIdx++, intBitsToFloat(order[orderIndex + 1]));
+				globalModelVertexIndexBuf.set(globalModelVertexIdx++, (short) order[orderIndex + 2]);
 
 				orderIndex += 3;
 			} while (--count != 0);
 		}
-			
+
 		int size = tmp.size();
-			
+
 		model.counts = new int[size];
-		model.indexElements = new ShortBuffer[size];
-			
+		model.indexElements = new Uint16Array[size];
+
 		count = 0;
 		int pos = 0;
 		for (int i = 0; i < model.counts.length; i++) {
 			count = ((Integer)tmp.get(i)).intValue();
 			model.counts[i] = count;
-				
+
 			count = (count < 0) ? -count : count;
-			model.vertexIndexBuf.position(pos);
-			model.indexElements[i] = model.vertexIndexBuf.slice();
-			model.indexElements[i].limit(count);
+//			model.vertexIndexBuf.position(pos);
+//			model.indexElements[i] = model.vertexIndexBuf.slice();
+//			model.indexElements[i].limit(count);
+			model.indexElements[i] = Uint16Array.create(model.vertexIndexBuf.getBuffer(), pos * 2, count * 2);
 			pos += count;
 		}
-		
+
 		model.staticTextureBufId = gl.generateStaticBufferId();
 	}
-		
+
 	static void resetModelArrays() {
-		globalModelTextureCoordBuf.rewind();
-		globalModelVertexIndexBuf.rewind();
-	}
-		
-	static void modelMemoryUsage() {
-		System.out.println("AliasModels: globalVertexBuffer size " + globalModelVertexIndexBuf.position());
+	  globalModelVertexIdx = globalModelTextureIdx = 0;
 	}
 }

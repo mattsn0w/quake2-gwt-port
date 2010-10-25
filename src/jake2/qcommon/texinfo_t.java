@@ -24,19 +24,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.qcommon;
 
 
+import jake2.buf.DataReader;
 import jake2.util.Lib;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 public class texinfo_t {
 
 	// works fine.
 	public texinfo_t(byte[] cmod_base, int o, int len) {
-		this(ByteBuffer.wrap(cmod_base, o, len).order(ByteOrder.LITTLE_ENDIAN));
+		this(DataReader.wrap(cmod_base, o, len)/*.order(ByteOrder.LITTLE_ENDIAN)*/);
 	}
 
-	public texinfo_t(ByteBuffer bb) {
+	public texinfo_t(DataReader bb) {
 		byte str[] = new byte[32];
 
 		vecs[0] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};

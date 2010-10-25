@@ -23,13 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render;
 
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
-import jake2.game.*;
+import jake2.game.cplane_t;
 import jake2.qcommon.Defines;
-import jake2.qcommon.texinfo_t;
-import jake2.*;
+
+import com.google.gwt.typedarrays.client.Uint8Array;
 
 public class msurface_t
 {
@@ -65,7 +62,7 @@ public class msurface_t
 	public float cached_light[] = new float[Defines.MAXLIGHTMAPS];
 	// values currently used in lightmap
 	//public byte samples[]; // [numstyles*surfsize]
-	public ByteBuffer samples; // [numstyles*surfsize]
+	public Uint8Array samples; // [numstyles*surfsize]
 	
 	public void clear() {
 		visframe = 0;
@@ -101,6 +98,7 @@ public class msurface_t
 		{
 			cached_light[i] = 0;
 		}
-		if (samples != null) samples.clear();
+//		if (samples != null)
+//		  samples.clear();
 	}
 }

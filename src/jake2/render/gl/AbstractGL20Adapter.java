@@ -23,18 +23,15 @@
 */
 package jake2.render.gl;
 
-
 import jake2.render.DisplayMode;
 import jake2.render.GLAdapter;
-import jake2.render.GLDebugWrapper;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
 
 /**
  * Abstract adapter implementing some of the OpenGL ES 1.x matrix operations.
@@ -104,10 +101,10 @@ public abstract class AbstractGL20Adapter extends GLAdapter {
     this.matrixMode = mm;
   }
 
-  public void glGetInteger(int what, IntBuffer params) {
+  public void glGetInteger(int what, Int32Array params) {
 	  switch(what) {
 	  case GL_MATRIX_MODE: 
-		  params.put(matrixMode);
+		  params.set(0, matrixMode);
 		  break;
 	  default:
 		  throw new IllegalArgumentException();
@@ -198,15 +195,13 @@ public abstract class AbstractGL20Adapter extends GLAdapter {
   }
   
   @Override
-  public FloatBuffer createFloatBuffer(int size) {
-//	  return FloatBuffer.allocate(size);
-	  return createByteBuffer(size * 4).asFloatBuffer();
+  public Float32Array createFloatBuffer(int size) {
+    return Float32Array.create(size);
   }
 
   @Override
-  public ShortBuffer createShortBuffer(int size) {
-  //	return ShortBuffer.allocate(size);
-	  return createByteBuffer(size * 2).asShortBuffer();
+  public Uint16Array createShortBuffer(int size) {
+    return Uint16Array.create(size);
   }
   
   @Override
@@ -267,52 +262,36 @@ public abstract class AbstractGL20Adapter extends GLAdapter {
       return true;
   }
 
-  
-
   @Override
-  public void glGetFloat(int name, FloatBuffer result) {
+  public void glGetFloat(int name, Float32Array result) {
 	  switch (name) {
 	  case GL_MODELVIEW:
 	  case _GL_MODELVIEW_MATRIX:
-//		  if (AUTO_REWIND) {
-//			  result.rewind();
-//		  }
-		  int p = result.position();
-		  result.put(modelViewMatrix);
-		  result.position(p);
+		  result.set(modelViewMatrix);
 		  break;
 	default:
-		throw new IllegalArgumentException("glGetFloat("+GLDebugWrapper.c(name)+")");
+		throw new IllegalArgumentException("glGetFloat("+name+")");
 	  }
-
   }
 
 	@Override
-	public void glLoadMatrix(FloatBuffer m) {
-//		if (AUTO_REWIND) {
-//				m.rewind();
-//		}
-		int p = m.position();
-		m.get(currentMatrix);
-		m.position(p);
+	public void glLoadMatrix(Float32Array m) {
+	  for (int i = 0; i < 16; ++i) {
+	    currentMatrix[i] = m.get(i);
+	  }
 		mvpDirty = true;
 	}
 
-
 	@Override
-	public ByteBuffer createByteBuffer(int size) {
-		ByteBuffer bb =  ByteBuffer.allocateDirect(size);
-		bb.order(ByteOrder.nativeOrder());
-		return bb;
+	public Uint8Array createByteBuffer(int size) {
+	  return Uint8Array.create(size);
 	}
 
 	@Override
-	public IntBuffer createIntBuffer(int size) {
-//		return IntBuffer.allocate(size);
-		return createByteBuffer(size * 4).asIntBuffer();
+	public Int32Array createIntBuffer(int size) {
+	  return Int32Array.create(size);
 	}
 	
-
 	@Override
 	public DisplayMode getDisplayMode() {
 		return new DisplayMode(width, height, 24, 60);

@@ -25,10 +25,8 @@ import static com.google.gwt.webgl.client.WebGLRenderingContext.DYNAMIC_DRAW;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.ELEMENT_ARRAY_BUFFER;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.FLOAT;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.FRAGMENT_SHADER;
-import static com.google.gwt.webgl.client.WebGLRenderingContext.INT;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.LINK_STATUS;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.NO_ERROR;
-import static com.google.gwt.webgl.client.WebGLRenderingContext.SHORT;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.STATIC_DRAW;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.STREAM_DRAW;
 import static com.google.gwt.webgl.client.WebGLRenderingContext.UNSIGNED_BYTE;
@@ -39,12 +37,6 @@ import jake2.render.DisplayMode;
 import jake2.render.GLAdapter;
 import jake2.render.gl.AbstractGL20Adapter;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsArrayInteger;
@@ -52,9 +44,7 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.typedarrays.client.ArrayBufferView;
 import com.google.gwt.typedarrays.client.Float32Array;
-import com.google.gwt.typedarrays.client.Int16Array;
 import com.google.gwt.typedarrays.client.Int32Array;
-import com.google.gwt.typedarrays.client.Int8Array;
 import com.google.gwt.typedarrays.client.Uint16Array;
 import com.google.gwt.typedarrays.client.Uint8Array;
 import com.google.gwt.user.client.Window;
@@ -108,7 +98,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
     System.out.println((logCount++) + ": " + msg);
   };
 
-  FloatBuffer colorBuffer;
+  Float32Array colorBuffer;
   private CanvasElement canvas;
 
   JsArray<WebGLTexture> textures = (JsArray<WebGLTexture>) JsArray.createArray();
@@ -318,26 +308,24 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   }
 
   @Override
-  public void glColorPointer(int size, int stride, FloatBuffer colorArrayBuf) {
-    glColorPointer(size, FLOAT, stride, colorArrayBuf);
-  }
-
-  @Override
-  public void glColorPointer(int size, boolean unsigned, int stride,
-      ByteBuffer colorAsByteBuffer) {
-    glColorPointer(size, unsigned ? UNSIGNED_BYTE : BYTE, stride,
-        colorAsByteBuffer);
-  }
-
-  private final void glColorPointer(int size, int type, int stride, Buffer buf) {
-    glVertexAttribPointer(GLAdapter.ARRAY_COLOR, size, type, true, stride, buf);
+  public void glColorPointer(int size, int stride, Float32Array array) {
+    glVertexAttribPointer(GLAdapter.ARRAY_COLOR, size, FLOAT, true, stride,
+        array);
     checkError("glColorPointer");
   }
 
   @Override
-  public void glDeleteTextures(IntBuffer texnumBuffer) {
-    for (int i = 0; i < texnumBuffer.remaining(); i++) {
-      int tid = texnumBuffer.get(texnumBuffer.position() + i);
+  public void glColorPointer(int size, boolean unsigned, int stride,
+      Int32Array array) {
+    glVertexAttribPointer(GLAdapter.ARRAY_COLOR, size, unsigned ? UNSIGNED_BYTE
+        : BYTE, true, stride, array);
+    checkError("glColorPointer");
+  }
+
+  @Override
+  public void glDeleteTextures(Int32Array texnumBuffer) {
+    for (int i = 0; i < texnumBuffer.getLength(); i++) {
+      int tid = texnumBuffer.get(i);
       gl.deleteTexture(textures.get(tid));
       textures.set(tid, null);
       checkError("glDeleteTexture");
@@ -368,17 +356,15 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   }
 
   @Override
-  public void glDrawElements(int mode, ShortBuffer srcIndexBuf) {
+  public void glDrawElements(int mode, Uint16Array srcIndexBuf) {
     prepareDraw();
 
     gl.bindBuffer(ELEMENT_ARRAY_BUFFER, elementBuffer);
     checkError("bindBuffer(el)");
-    gl.bufferData(ELEMENT_ARRAY_BUFFER, getTypedArray(srcIndexBuf,
-        UNSIGNED_SHORT), DYNAMIC_DRAW);
+    gl.bufferData(ELEMENT_ARRAY_BUFFER, srcIndexBuf, DYNAMIC_DRAW);
     checkError("bufferData(el)");
 
-    int count = srcIndexBuf.remaining();
-    gl.drawElements(mode, count, UNSIGNED_SHORT, 0);
+    gl.drawElements(mode, srcIndexBuf.getLength(), UNSIGNED_SHORT, 0);
     checkError("drawElements");
   }
 
@@ -417,12 +403,12 @@ public class WebGLAdapter extends AbstractGL20Adapter {
 
   @Override
   public void glReadPixels(int x, int y, int width, int height, int glBgr,
-      int glUnsignedByte, ByteBuffer image) {
+      int glUnsignedByte, Uint8Array image) {
     // TODO Auto-generated method stub
   }
 
   @Override
-  public void glTexCoordPointer(int size, int byteStride, FloatBuffer buf) {
+  public void glTexCoordPointer(int size, int byteStride, Float32Array buf) {
     glVertexAttribPointer(GLAdapter.ARRAY_TEXCOORD_0 + clientActiveTexture,
         size, GL_FLOAT, false, byteStride, buf);
     checkError("texCoordPointer");
@@ -435,23 +421,20 @@ public class WebGLAdapter extends AbstractGL20Adapter {
 
   @Override
   public void glTexImage2D(int target, int level, int internalformat,
-      int width, int height, int border, int format, int type, ByteBuffer pixels) {
-
+      int width, int height, int border, int format, int type, Uint8Array pixels) {
     textureFormat.set(boundTextureId[activeTexture], internalformat);
-    ArrayBufferView array = getTypedArray(pixels, type);
     gl.texImage2D(target, level, internalformat, width, height, border,
-        format, type, array);
+        format, type, pixels);
     checkError("glTexImage2D");
   }
 
   @Override
   public void glTexImage2D(int target, int level, int internalformat,
-      int width, int height, int border, int format, int type, IntBuffer pixels) {
+      int width, int height, int border, int format, int type, Int32Array pixels) {
 
     textureFormat.set(boundTextureId[activeTexture], internalformat);
-    ArrayBufferView array = getTypedArray(pixels, type);
     gl.texImage2D(target, level, internalformat, width, height, border,
-        format, type, array);
+        format, type, pixels);
     checkError("glTexImage2D");
   }
 
@@ -464,24 +447,22 @@ public class WebGLAdapter extends AbstractGL20Adapter {
 
   @Override
   public void glTexSubImage2D(int target, int level, int xoffset, int yoffset,
-      int width, int height, int format, int type, ByteBuffer pixels) {
-    ArrayBufferView array = getTypedArray(pixels, type);
+      int width, int height, int format, int type, Uint8Array pixels) {
     gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format,
-        type, array);
+        type, pixels);
     checkError("glTexSubImage2D");
   }
 
   @Override
   public void glTexSubImage2D(int target, int level, int xoffset, int yoffset,
-      int width, int height, int format, int type, IntBuffer pixels) {
-    ArrayBufferView array = getTypedArray(pixels, type);
+      int width, int height, int format, int type, Int32Array pixels) {
     gl.texSubImage2D(target, level, xoffset, yoffset, width, height, format,
-        type, array);
+        type, pixels);
     checkError("glTexSubImage2D");
   }
 
   @Override
-  public void glVertexPointer(int size, int byteStride, FloatBuffer buf) {
+  public void glVertexPointer(int size, int byteStride, Float32Array buf) {
     glVertexAttribPointer(GLAdapter.ARRAY_POSITION, size, GL_FLOAT, false,
         byteStride, buf);
     checkError("glVertexPointer");
@@ -611,7 +592,8 @@ public class WebGLAdapter extends AbstractGL20Adapter {
     // }
   }
 
-  public void updatTCBuffer(FloatBuffer buf, int offset, int count) {
+  /*
+  public void updatTCBuffer(Float32Array buf, int offset, int count) {
     BufferData bd = bufferData[GLAdapter.ARRAY_TEXCOORD_0];
     gl.bindBuffer(ARRAY_BUFFER, bd.buffer);
 
@@ -628,6 +610,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
     buf.position(pos);
     buf.limit(limit);
   }
+  */
 
   private void prepareDraw() {
     if (updateMvpMatrix()) {
@@ -780,29 +763,25 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   }
 
   public void glVertexAttribPointer(int arrayId, int size, int type,
-      boolean normalize, int byteStride, Buffer nioBuffer) {
+      boolean normalize, int byteStride, ArrayBufferView buf) {
     BufferData bd = bufferData[arrayId];
     bd.byteStride = byteStride;
     bd.size = size;
     bd.normalize = normalize;
     bd.type = type;
-    ArrayBufferView webGLArray = getTypedArray(nioBuffer, type);
-    bd.toBind = webGLArray;
+    bd.toBind = buf;
   }
 
   public void glVertexAttribPointer(int arrayId, int size, int type,
-      boolean normalize, int byteStride, int offset, Buffer nioBuffer,
+      boolean normalize, int byteStride, int offset, ArrayBufferView buf,
       int staticDrawId) {
     WebGLBuffer buffer = staticBuffers.get(staticDrawId);
     if (buffer == null) {
       buffer = gl.createBuffer();
       staticBuffers.set(staticDrawId, buffer);
       gl.bindBuffer(ARRAY_BUFFER, buffer);
-      ArrayBufferView webGLArray = getTypedArray(nioBuffer, type);
-      gl.bufferData(ARRAY_BUFFER, webGLArray, STATIC_DRAW);
+      gl.bufferData(ARRAY_BUFFER, buf, STATIC_DRAW);
       checkError("bufferData");
-      log("static buffer created; id: " + staticDrawId + " remaining: "
-          + nioBuffer.remaining());
     }
     gl.bindBuffer(ARRAY_BUFFER, buffer);
     gl.vertexAttribPointer(arrayId, size, type, normalize, byteStride, offset);
@@ -810,6 +789,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
     checkError("vertexAttribPointer");
   }
 
+/*
   private ArrayBufferView getTypedArray(Buffer buffer, int type) {
     int elementSize;
     HasArrayBufferView arrayHolder;
@@ -819,7 +799,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
         log("buffer byte order problem");
         throw new RuntimeException("Buffer byte order problem");
       }
-      if (buffer instanceof IntBuffer) {
+      if (buffer instanceof Int32Array) {
         elementSize = 4;
       } else {
         throw new RuntimeException("NYI");
@@ -864,6 +844,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
 
     throw new IllegalArgumentException();
   }
+*/
 
   public void glGenerateMipmap(int t) {
     gl.generateMipmap(t);

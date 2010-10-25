@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.gl;
 
-
 import jake2.client.dlight_t;
 import jake2.game.cplane_t;
 import jake2.qcommon.Com;
@@ -36,9 +35,10 @@ import jake2.render.mtexinfo_t;
 import jake2.util.Math3D;
 import jake2.util.Vec3Cache;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Arrays;
+
+import com.google.gwt.typedarrays.client.Int32Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
 
 /**
  * Light
@@ -264,7 +264,7 @@ public abstract class Light extends Warp {
 		msurface_t surf;
 		int s, t, ds, dt;
 		mtexinfo_t tex;
-		ByteBuffer lightmap;
+		Uint8Array lightmap;
 		int maps;
 		for (int i=0 ; i<node.numsurfaces ; i++, surfIndex++)
 		{
@@ -476,7 +476,7 @@ public abstract class Light extends Warp {
 	 * 
 	 * Combine and scale multiple lightmaps into the floating format in blocklights
 	 */
-	void R_BuildLightMap(msurface_t surf, IntBuffer dest, int stride)
+	void R_BuildLightMap(msurface_t surf, Int32Array dest, int stride)
 	{
         int r, g, b, a, max;
         int i, j;
@@ -518,7 +518,7 @@ public abstract class Light extends Warp {
         	&& surf.styles[nummaps] != (byte) 255; nummaps++)
         		;
 
-        	ByteBuffer lightmap = surf.samples;
+        	Uint8Array lightmap = surf.samples;
         	int lightmapIndex = 0;
 
         	// add all the lightmaps
@@ -675,7 +675,7 @@ public abstract class Light extends Warp {
 //        				r = g = b = a = 0;
 //        			}
         			//                    r &= 0xFF; g &= 0xFF; b &= 0xFF; a &= 0xFF;
-        			dest.put(destp++, (a << 24) | (b << 16) | (g << 8) | r);
+        			dest.set(destp++, (a << 24) | (b << 16) | (g << 8) | r);
         		}
         	}
         } else {
@@ -754,7 +754,7 @@ public abstract class Light extends Warp {
         				break;
         			}
 //        			r &= 0xFF; g &= 0xFF; b &= 0xFF; a &= 0xFF;
-        			dest.put(destp++, (a << 24) | (b << 16) | (g << 8) | r);
+        			dest.set(destp++, (a << 24) | (b << 16) | (g << 8) | r);
         		}
         	}
         }

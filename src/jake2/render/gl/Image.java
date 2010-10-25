@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.gl;
 
-
 import jake2.client.Dimension;
 import jake2.client.VID;
 import jake2.client.particle_t;
@@ -35,14 +34,12 @@ import jake2.qcommon.FS;
 import jake2.qcommon.QuakeImage;
 import jake2.render.GLAdapter;
 import jake2.render.image_t;
-import jake2.util.Lib;
 import jake2.util.Vargs;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import com.google.gwt.typedarrays.client.Int32Array;
 
 /**
  * Image
@@ -636,12 +633,10 @@ public abstract class Image extends Main {
 	int[] scaled = new int[256 * 256];
 	//byte[] paletted_texture = new byte[256 * 256];
 //	ByteBuffer paletted_texture;
-	IntBuffer tex = Lib.newIntBuffer(512 * 256, ByteOrder.LITTLE_ENDIAN);
+	Int32Array tex = Int32Array.create(512 * 256);
 
 	private HashMap<String,image_t> imageMap = new HashMap<String,image_t>();
 
-	
-	
 	boolean GL_Upload32(int[] data, int width, int height, boolean mipmap) {
 		int samples;
 		int scaled_width, scaled_height;
@@ -722,7 +717,7 @@ public abstract class Image extends Main {
 //							paletted_texture);
 //					}
 //					else {
-						tex.rewind(); tex.put(data); tex.rewind();
+						tex.set(data);
 						gl.glTexImage2D(
 							GLAdapter.GL_TEXTURE_2D,
 							0,
@@ -760,7 +755,7 @@ public abstract class Image extends Main {
 //					paletted_texture);
 //			}
 //			else {
-				tex.rewind(); tex.put(scaled); tex.rewind();
+				tex.set(scaled);
 				gl.glTexImage2D(GLAdapter.GL_TEXTURE_2D, 0, GLAdapter.GL_RGBA/*comp*/, scaled_width, scaled_height, 0, GLAdapter.GL_RGBA, GLAdapter.GL_UNSIGNED_BYTE, tex);
 //			}
 
@@ -792,7 +787,7 @@ public abstract class Image extends Main {
 //							paletted_texture);
 //					}
 //					else {
-						tex.rewind(); tex.put(scaled); tex.rewind();
+						tex.set(scaled);
 						gl.glTexImage2D(
 							GLAdapter.GL_TEXTURE_2D,
 							miplevel,
@@ -987,13 +982,12 @@ public abstract class Image extends Main {
 		return GL_FindImage(name, QuakeImage.it_skin);
 	}
 
-	
-	IntBuffer texnumBuffer;
+	Int32Array texnumBuffer;
 	
 	protected void init() {
 		super.init();
 //		paletted_texture = gl.createByteBuffer(256*256);
-		texnumBuffer=gl.createIntBuffer(1);
+		texnumBuffer = Int32Array.create(1);
 	}
 	
 	/*
@@ -1026,8 +1020,7 @@ public abstract class Image extends Main {
 
 			// free it
 			// TODO jogl bug
-			texnumBuffer.clear();
-			texnumBuffer.put(0,image.texnum);
+			texnumBuffer.set(0, image.texnum);
 			gl.glDeleteTextures(texnumBuffer);
 			image.clear();
 		}
@@ -1106,8 +1099,7 @@ public abstract class Image extends Main {
 	   			continue; // free image_t slot
 			// free it
 			// TODO jogl bug
-			texnumBuffer.clear();
-			texnumBuffer.put(0,image.texnum);
+			texnumBuffer.set(0, image.texnum);
 			gl.glDeleteTextures(texnumBuffer);
 	  		image.clear();
 		}

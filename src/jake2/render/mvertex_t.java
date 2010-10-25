@@ -23,9 +23,8 @@
 */
 package jake2.render;
 
+import jake2.buf.DataReader;
 import jake2.qcommon.Defines;
-
-import java.nio.ByteBuffer;
 
 public class mvertex_t {
     public static final int DISK_SIZE = 3 * Defines.SIZE_OF_FLOAT;
@@ -34,7 +33,7 @@ public class mvertex_t {
 
     public float[] position = { 0, 0, 0 };
 
-    public mvertex_t(ByteBuffer b) {
+    public mvertex_t(DataReader b) {
         position[0] = b.getFloat();
         position[1] = b.getFloat();
         position[2] = b.getFloat();

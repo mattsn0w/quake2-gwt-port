@@ -23,12 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.render.gl;
 
-
 import jake2.client.Dimension;
 import jake2.client.VID;
 import jake2.client.viddef_t;
 import jake2.game.cvar_t;
-import jake2.qcommon.Defines;
 import jake2.qcommon.xcommand_t;
 import jake2.render.DisplayMode;
 import jake2.render.GLAdapter;

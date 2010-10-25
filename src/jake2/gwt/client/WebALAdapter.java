@@ -18,18 +18,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.gwt.client;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import jake2.sound.ALAdapter;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import jake2.sound.ALAdapter;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.google.gwt.typedarrays.client.Float32Array;
+import com.google.gwt.typedarrays.client.Int32Array;
+import com.google.gwt.typedarrays.client.Uint16Array;
+import com.google.gwt.typedarrays.client.Uint8Array;
 
 /**
  * Absolutely minimal implementation of AL API using HTML5 audio.
@@ -145,7 +144,7 @@ public class WebALAdapter extends ALAdapter {
 
   static class BufferData {
 
-    Buffer data;
+    ArrayBufferView data;
 
     int freq;
 
@@ -177,29 +176,30 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alBufferData(int buffer, int format, ByteBuffer data, int freq) {
+  public void alBufferData(int buffer, int format, Uint8Array data, int freq) {
     // TODO(cromwellian)
   }
 
   @Override
-  public void alBufferData(int buffer, int format, IntBuffer data, int freq) {
+  public void alBufferData(int buffer, int format, Int32Array data, int freq) {
     // TODO(cromwellian)
   }
 
   @Override
-  public void alBufferData(int buffer, int format, ShortBuffer data, int freq) {
+  public void alBufferData(int buffer, int format, Uint16Array data, int freq) {
     // TODO(cromwellian)
   }
 
   @Override
-  public void alDeleteBuffers(IntBuffer buffers) {
-    for (int bid : buffers.array()) {
+  public void alDeleteBuffers(Int32Array buffers) {
+    for (int i = 0; i < buffers.getLength(); ++i) {
+      int bid = buffers.get(i);
       bufferData.remove(bid);
     }
   }
 
   @Override
-  public void alDeleteSources(IntBuffer sources) {
+  public void alDeleteSources(Int32Array sources) {
     // TODO(cromwellian)
   }
 
@@ -229,19 +229,17 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alGenBuffers(IntBuffer buffers) {
-    int len = buffers.capacity();
-    for (int i = 0; i < buffers.capacity(); i++) {
-      buffers.put(nextBufferId++);
+  public void alGenBuffers(Int32Array buffers) {
+    for (int i = 0; i < buffers.getLength(); i++) {
+      buffers.set(i, nextBufferId++);
     }
   }
 
   @Override
-  public void alGenSources(IntBuffer sources) {
-    int len = sources.capacity();
-    for (int i = 0; i < sources.capacity(); i++) {
+  public void alGenSources(Int32Array sources) {
+    for (int i = 0; i < sources.getLength(); i++) {
       int sid = nextSourceId++;
-      sources.put(sid);
+      sources.set(i, sid);
       sourceData.put(sid, new SourceData());
     }
   }
@@ -262,16 +260,6 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public double alGetDouble(int pname) {
-    return 0;  // TODO(cromwellian)
-  }
-
-  @Override
-  public void alGetDouble(int pname, DoubleBuffer data) {
-    // TODO(cromwellian)
-  }
-
-  @Override
   public int alGetEnumValue(String ename) {
     return 0;  // TODO(cromwellian)
   }
@@ -287,7 +275,7 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alGetFloat(int pname, FloatBuffer data) {
+  public void alGetFloat(int pname, Float32Array data) {
     // TODO(cromwellian)
   }
 
@@ -297,12 +285,12 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alGetInteger(int pname, IntBuffer data) {
+  public void alGetInteger(int pname, Int32Array data) {
     // TODO(cromwellian)
   }
 
   @Override
-  public void alGetListener(int pname, FloatBuffer floatdata) {
+  public void alGetListener(int pname, Float32Array floatdata) {
     // TODO(cromwellian)
   }
 
@@ -317,7 +305,7 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alGetSource(int source, int pname, FloatBuffer floatdata) {
+  public void alGetSource(int source, int pname, Float32Array floatdata) {
     // TODO(cromwellian)
   }
 
@@ -372,7 +360,7 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alListener(int pname, FloatBuffer value) {
+  public void alListener(int pname, Float32Array value) {
     // TODO(cromwellian)
   }
 
@@ -404,7 +392,7 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alSource(int source, int pname, FloatBuffer value) {
+  public void alSource(int source, int pname, Float32Array value) {
     SourceData sd = sourceData.get(source);
     if (sd != null) {
       switch (pname) {
@@ -477,7 +465,7 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alSourcePause(IntBuffer sources) {
+  public void alSourcePause(Int32Array sources) {
     // TODO(cromwellian)
   }
 
@@ -487,10 +475,10 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alSourcePlay(IntBuffer sources) {
-    for (int i = sources.position(); i < sources.limit(); i++) {
-      alSourcePlay(sources.get(i));
-    }
+  public void alSourcePlay(Int32Array sources) {
+//    for (int i = sources.position(); i < sources.limit(); i++) {
+//      alSourcePlay(sources.get(i));
+//    }
   }
 
   @Override
@@ -504,12 +492,12 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alSourceQueueBuffers(int source, IntBuffer buffers) {
+  public void alSourceQueueBuffers(int source, Int32Array buffers) {
     // TODO(cromwellian)
   }
 
   @Override
-  public void alSourceRewind(IntBuffer sources) {
+  public void alSourceRewind(Int32Array sources) {
     // TODO(cromwellian)
   }
 
@@ -519,10 +507,10 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alSourceStop(IntBuffer sources) {
-    for (int i = sources.position(); i < sources.limit(); i++) {
-      alSourceStop(sources.get(i));
-    }
+  public void alSourceStop(Int32Array sources) {
+//    for (int i = sources.position(); i < sources.limit(); i++) {
+//      alSourceStop(sources.get(i));
+//    }
   }
 
   @Override
@@ -536,19 +524,19 @@ public class WebALAdapter extends ALAdapter {
   }
 
   @Override
-  public void alSourceUnqueueBuffers(int source, IntBuffer buffers) {
-    // TODO(cromwellian)
+  public void alSourceUnqueueBuffers(int source, Int32Array buffers) {
+    // TODO Auto-generated method stub
   }
 
   @Override
   public void create(String deviceArguments, int contextFrequency,
       int contextRefresh, boolean contextSynchronized) {
-    // TODO(cromwellian)
+    // TODO Auto-generated method stub
   }
 
   @Override
   public void create(String deviceArguments, int contextFrequency,
       int contextRefresh, boolean contextSynchronized, boolean openDevice) {
-    // TODO(cromwellian)
+    // TODO Auto-generated method stub
   }
 }
