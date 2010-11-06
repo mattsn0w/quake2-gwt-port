@@ -145,7 +145,7 @@ public class Unpak {
   }
 
   private static void createPath(String path) {
-    int index = path.lastIndexOf('/');
+    int index = path.lastIndexOf(File.separatorChar);
     // -1 if not found and 0 means write to root
     if (index > 0) {
       File f = new File(path.substring(0, index));
