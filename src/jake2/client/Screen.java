@@ -53,7 +53,7 @@ import static jake2.qcommon.Globals.crosshair;
 import static jake2.qcommon.Globals.re;
 import static jake2.qcommon.Globals.scr_vrect;
 import static jake2.qcommon.Globals.viddef;
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.ConsoleVariable;
 import jake2.qcommon.Com;
 import jake2.qcommon.Compatibility;
@@ -421,25 +421,25 @@ public final class Screen {
         float rotate;
         float[] axis = { 0, 0, 0 };
 
-        if (Cmd.Argc() < 2) {
+        if (Commands.Argc() < 2) {
             Com.Printf("Usage: sky <basename> <rotate> <axis x y z>\n");
             return;
         }
-        if (Cmd.Argc() > 2)
-            rotate = Float.parseFloat(Cmd.Argv(2));
+        if (Commands.Argc() > 2)
+            rotate = Float.parseFloat(Commands.Argv(2));
         else
             rotate = 0;
-        if (Cmd.Argc() == 6) {
-            axis[0] = Float.parseFloat(Cmd.Argv(3));
-            axis[1] = Float.parseFloat(Cmd.Argv(4));
-            axis[2] = Float.parseFloat(Cmd.Argv(5));
+        if (Commands.Argc() == 6) {
+            axis[0] = Float.parseFloat(Commands.Argv(3));
+            axis[1] = Float.parseFloat(Commands.Argv(4));
+            axis[2] = Float.parseFloat(Commands.Argv(5));
         } else {
             axis[0] = 0;
             axis[1] = 0;
             axis[2] = 1;
         }
 
-        re.SetSky(Cmd.Argv(1), rotate, axis);
+        re.SetSky(Commands.Argv(1), rotate, axis);
     }
 
     // ============================================================================
@@ -466,27 +466,27 @@ public final class Screen {
         //
         // register our commands
         //
-        Cmd.AddCommand("timerefresh", new ExecutableCommand() {
+        Commands.addCommand("timerefresh", new ExecutableCommand() {
             public void execute() {
                 TimeRefresh_f();
             }
         });
-        Cmd.AddCommand("loading", new ExecutableCommand() {
+        Commands.addCommand("loading", new ExecutableCommand() {
             public void execute() {
                 Loading_f();
             }
         });
-        Cmd.AddCommand("sizeup", new ExecutableCommand() {
+        Commands.addCommand("sizeup", new ExecutableCommand() {
             public void execute() {
                 SizeUp_f();
             }
         });
-        Cmd.AddCommand("sizedown", new ExecutableCommand() {
+        Commands.addCommand("sizedown", new ExecutableCommand() {
             public void execute() {
                 SizeDown_f();
             }
         });
-        Cmd.AddCommand("sky", new ExecutableCommand() {
+        Commands.addCommand("sky", new ExecutableCommand() {
             public void execute() {
                 Sky_f();
             }
@@ -649,7 +649,7 @@ public final class Screen {
 
         start = Timer.Milliseconds();
 
-        if (Cmd.Argc() == 2) { // run without page flipping
+        if (Commands.Argc() == 2) { // run without page flipping
             re.BeginFrame(0);
             for (i = 0; i < 128; i++) {
                 cl.refdef.viewangles[1] = i / 128.0f * 360.0f;

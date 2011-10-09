@@ -23,7 +23,7 @@
 */
 package jake2.client;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.ConsoleVariable;
 import jake2.game.UserCommand;
 import jake2.qcommon.*;
@@ -102,7 +102,7 @@ public class ClientInput {
 		int k;
 		String c;
 
-		c = Cmd.Argv(1);
+		c = Commands.Argv(1);
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else
@@ -124,7 +124,7 @@ public class ClientInput {
 			return; // still down
 
 		// save timestamp
-		c = Cmd.Argv(2);
+		c = Commands.Argv(2);
 		b.downtime = Lib.atoi(c);
 		if (b.downtime == 0)
 			b.downtime = Globals.sys_frame_time - 100;
@@ -137,7 +137,7 @@ public class ClientInput {
 		String c;
 		int uptime;
 
-		c = Cmd.Argv(1);
+		c = Commands.Argv(1);
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else {
@@ -161,7 +161,7 @@ public class ClientInput {
 			return; // still up (this should not happen)
 
 		// save timestamp
-		c = Cmd.Argv(2);
+		c = Commands.Argv(2);
 		uptime = Lib.atoi(c);
 		if (uptime != 0)
 			b.msec += uptime - b.downtime;
@@ -293,7 +293,7 @@ public class ClientInput {
 	}
 
 	static void IN_Impulse() {
-		in_impulse = Lib.atoi(Cmd.Argv(1));
+		in_impulse = Lib.atoi(Commands.Argv(1));
 	}
 
 	/*
@@ -482,163 +482,163 @@ public class ClientInput {
 	 * ============ CL_InitInput ============
 	 */
 	static void InitInput() {
-		Cmd.AddCommand("centerview", new ExecutableCommand() {
+		Commands.addCommand("centerview", new ExecutableCommand() {
 			public void execute() {
 				IN.CenterView();
 			}
 		});
 
-		Cmd.AddCommand("+moveup", new ExecutableCommand() {
+		Commands.addCommand("+moveup", new ExecutableCommand() {
 			public void execute() {
 				IN_UpDown();
 			}
 		});
-		Cmd.AddCommand("-moveup", new ExecutableCommand() {
+		Commands.addCommand("-moveup", new ExecutableCommand() {
 			public void execute() {
 				IN_UpUp();
 			}
 		});
-		Cmd.AddCommand("+movedown", new ExecutableCommand() {
+		Commands.addCommand("+movedown", new ExecutableCommand() {
 			public void execute() {
 				IN_DownDown();
 			}
 		});
-		Cmd.AddCommand("-movedown", new ExecutableCommand() {
+		Commands.addCommand("-movedown", new ExecutableCommand() {
 			public void execute() {
 				IN_DownUp();
 			}
 		});
-		Cmd.AddCommand("+left", new ExecutableCommand() {
+		Commands.addCommand("+left", new ExecutableCommand() {
 			public void execute() {
 				IN_LeftDown();
 			}
 		});
-		Cmd.AddCommand("-left", new ExecutableCommand() {
+		Commands.addCommand("-left", new ExecutableCommand() {
 			public void execute() {
 				IN_LeftUp();
 			}
 		});
-		Cmd.AddCommand("+right", new ExecutableCommand() {
+		Commands.addCommand("+right", new ExecutableCommand() {
 			public void execute() {
 				IN_RightDown();
 			}
 		});
-		Cmd.AddCommand("-right", new ExecutableCommand() {
+		Commands.addCommand("-right", new ExecutableCommand() {
 			public void execute() {
 				IN_RightUp();
 			}
 		});
-		Cmd.AddCommand("+forward", new ExecutableCommand() {
+		Commands.addCommand("+forward", new ExecutableCommand() {
 			public void execute() {
 				IN_ForwardDown();
 			}
 		});
-		Cmd.AddCommand("-forward", new ExecutableCommand() {
+		Commands.addCommand("-forward", new ExecutableCommand() {
 			public void execute() {
 				IN_ForwardUp();
 			}
 		});
-		Cmd.AddCommand("+back", new ExecutableCommand() {
+		Commands.addCommand("+back", new ExecutableCommand() {
 			public void execute() {
 				IN_BackDown();
 			}
 		});
-		Cmd.AddCommand("-back", new ExecutableCommand() {
+		Commands.addCommand("-back", new ExecutableCommand() {
 			public void execute() {
 				IN_BackUp();
 			}
 		});
-		Cmd.AddCommand("+lookup", new ExecutableCommand() {
+		Commands.addCommand("+lookup", new ExecutableCommand() {
 			public void execute() {
 				IN_LookupDown();
 			}
 		});
-		Cmd.AddCommand("-lookup", new ExecutableCommand() {
+		Commands.addCommand("-lookup", new ExecutableCommand() {
 			public void execute() {
 				IN_LookupUp();
 			}
 		});
-		Cmd.AddCommand("+lookdown", new ExecutableCommand() {
+		Commands.addCommand("+lookdown", new ExecutableCommand() {
 			public void execute() {
 				IN_LookdownDown();
 			}
 		});
-		Cmd.AddCommand("-lookdown", new ExecutableCommand() {
+		Commands.addCommand("-lookdown", new ExecutableCommand() {
 			public void execute() {
 				IN_LookdownUp();
 			}
 		});
-		Cmd.AddCommand("+strafe", new ExecutableCommand() {
+		Commands.addCommand("+strafe", new ExecutableCommand() {
 			public void execute() {
 				IN_StrafeDown();
 			}
 		});
-		Cmd.AddCommand("-strafe", new ExecutableCommand() {
+		Commands.addCommand("-strafe", new ExecutableCommand() {
 			public void execute() {
 				IN_StrafeUp();
 			}
 		});
-		Cmd.AddCommand("+moveleft", new ExecutableCommand() {
+		Commands.addCommand("+moveleft", new ExecutableCommand() {
 			public void execute() {
 				IN_MoveleftDown();
 			}
 		});
-		Cmd.AddCommand("-moveleft", new ExecutableCommand() {
+		Commands.addCommand("-moveleft", new ExecutableCommand() {
 			public void execute() {
 				IN_MoveleftUp();
 			}
 		});
-		Cmd.AddCommand("+moveright", new ExecutableCommand() {
+		Commands.addCommand("+moveright", new ExecutableCommand() {
 			public void execute() {
 				IN_MoverightDown();
 			}
 		});
-		Cmd.AddCommand("-moveright", new ExecutableCommand() {
+		Commands.addCommand("-moveright", new ExecutableCommand() {
 			public void execute() {
 				IN_MoverightUp();
 			}
 		});
-		Cmd.AddCommand("+speed", new ExecutableCommand() {
+		Commands.addCommand("+speed", new ExecutableCommand() {
 			public void execute() {
 				IN_SpeedDown();
 			}
 		});
-		Cmd.AddCommand("-speed", new ExecutableCommand() {
+		Commands.addCommand("-speed", new ExecutableCommand() {
 			public void execute() {
 				IN_SpeedUp();
 			}
 		});
-		Cmd.AddCommand("+attack", new ExecutableCommand() {
+		Commands.addCommand("+attack", new ExecutableCommand() {
 			public void execute() {
 				IN_AttackDown();
 			}
 		});
-		Cmd.AddCommand("-attack", new ExecutableCommand() {
+		Commands.addCommand("-attack", new ExecutableCommand() {
 			public void execute() {
 				IN_AttackUp();
 			}
 		});
-		Cmd.AddCommand("+use", new ExecutableCommand() {
+		Commands.addCommand("+use", new ExecutableCommand() {
 			public void execute() {
 				IN_UseDown();
 			}
 		});
-		Cmd.AddCommand("-use", new ExecutableCommand() {
+		Commands.addCommand("-use", new ExecutableCommand() {
 			public void execute() {
 				IN_UseUp();
 			}
 		});
-		Cmd.AddCommand("impulse", new ExecutableCommand() {
+		Commands.addCommand("impulse", new ExecutableCommand() {
 			public void execute() {
 				IN_Impulse();
 			}
 		});
-		Cmd.AddCommand("+klook", new ExecutableCommand() {
+		Commands.addCommand("+klook", new ExecutableCommand() {
 			public void execute() {
 				IN_KLookDown();
 			}
 		});
-		Cmd.AddCommand("-klook", new ExecutableCommand() {
+		Commands.addCommand("-klook", new ExecutableCommand() {
 			public void execute() {
 				IN_KLookUp();
 			}
@@ -682,7 +682,7 @@ public class ClientInput {
 
 		// send a userinfo update if needed
 		if (Globals.userinfo_modified) {
-			CL.FixUpGender();
+			Client.fixUpGender();
 			Globals.userinfo_modified = false;
 			Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_userinfo);
 			Messages.WriteString(Globals.cls.netchan.message, ConsoleVariables.Userinfo());

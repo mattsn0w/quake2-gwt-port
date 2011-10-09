@@ -123,41 +123,41 @@ public class Messages extends Globals {
         //
         bits = 0;
         if (cmd.angles[0] != from.angles[0])
-            bits |= CM_ANGLE1;
+            bits |= Defines.CM_ANGLE1;
         if (cmd.angles[1] != from.angles[1])
-            bits |= CM_ANGLE2;
+            bits |= Defines.CM_ANGLE2;
         if (cmd.angles[2] != from.angles[2])
-            bits |= CM_ANGLE3;
+            bits |= Defines.CM_ANGLE3;
         if (cmd.forwardmove != from.forwardmove)
-            bits |= CM_FORWARD;
+            bits |= Defines.CM_FORWARD;
         if (cmd.sidemove != from.sidemove)
-            bits |= CM_SIDE;
+            bits |= Defines.CM_SIDE;
         if (cmd.upmove != from.upmove)
-            bits |= CM_UP;
+            bits |= Defines.CM_UP;
         if (cmd.buttons != from.buttons)
-            bits |= CM_BUTTONS;
+            bits |= Defines.CM_BUTTONS;
         if (cmd.impulse != from.impulse)
-            bits |= CM_IMPULSE;
+            bits |= Defines.CM_IMPULSE;
 
         WriteByte(buf, bits);
 
-        if ((bits & CM_ANGLE1) != 0)
+        if ((bits & Defines.CM_ANGLE1) != 0)
             WriteShort(buf, cmd.angles[0]);
-        if ((bits & CM_ANGLE2) != 0)
+        if ((bits & Defines.CM_ANGLE2) != 0)
             WriteShort(buf, cmd.angles[1]);
-        if ((bits & CM_ANGLE3) != 0)
+        if ((bits & Defines.CM_ANGLE3) != 0)
             WriteShort(buf, cmd.angles[2]);
 
-        if ((bits & CM_FORWARD) != 0)
+        if ((bits & Defines.CM_FORWARD) != 0)
             WriteShort(buf, cmd.forwardmove);
-        if ((bits & CM_SIDE) != 0)
+        if ((bits & Defines.CM_SIDE) != 0)
             WriteShort(buf, cmd.sidemove);
-        if ((bits & CM_UP) != 0)
+        if ((bits & Defines.CM_UP) != 0)
             WriteShort(buf, cmd.upmove);
 
-        if ((bits & CM_BUTTONS) != 0)
+        if ((bits & Defines.CM_BUTTONS) != 0)
             WriteByte(buf, cmd.buttons);
-        if ((bits & CM_IMPULSE) != 0)
+        if ((bits & Defines.CM_IMPULSE) != 0)
             WriteByte(buf, cmd.impulse);
 
         WriteByte(buf, cmd.msec);
@@ -176,7 +176,7 @@ public class Messages extends Globals {
 
         bestd = 0;
         best = 0;
-        for (i = 0; i < NUMVERTEXNORMALS; i++) {
+        for (i = 0; i < Defines.NUMVERTEXNORMALS; i++) {
             d = Math3D.DotProduct(dir, bytedirs[i]);
             if (d > bestd) {
                 bestd = d;
@@ -191,8 +191,8 @@ public class Messages extends Globals {
         int b;
 
         b = ReadByte(sb);
-        if (b >= NUMVERTEXNORMALS)
-            Com.Error(ERR_DROP, "MSF_ReadDir: out of range");
+        if (b >= Defines.NUMVERTEXNORMALS)
+            Com.Error(Defines.ERR_DROP, "MSF_ReadDir: out of range");
         Math3D.VectorCopy(bytedirs[b], dir);
     }
 
@@ -207,85 +207,85 @@ public class Messages extends Globals {
         int bits;
 
         if (0 == to.number)
-            Com.Error(ERR_FATAL, "Unset entity number");
-        if (to.number >= MAX_EDICTS)
-            Com.Error(ERR_FATAL, "Entity number >= MAX_EDICTS");
+            Com.Error(Defines.ERR_FATAL, "Unset entity number");
+        if (to.number >= Defines.MAX_EDICTS)
+            Com.Error(Defines.ERR_FATAL, "Entity number >= MAX_EDICTS");
 
         // send an update
         bits = 0;
 
         if (to.number >= 256)
-            bits |= U_NUMBER16; // number8 is implicit otherwise
+            bits |= Defines.U_NUMBER16; // number8 is implicit otherwise
 
         if (to.origin[0] != from.origin[0])
-            bits |= U_ORIGIN1;
+            bits |= Defines.U_ORIGIN1;
         if (to.origin[1] != from.origin[1])
-            bits |= U_ORIGIN2;
+            bits |= Defines.U_ORIGIN2;
         if (to.origin[2] != from.origin[2])
-            bits |= U_ORIGIN3;
+            bits |= Defines.U_ORIGIN3;
 
         if (to.angles[0] != from.angles[0])
-            bits |= U_ANGLE1;
+            bits |= Defines.U_ANGLE1;
         if (to.angles[1] != from.angles[1])
-            bits |= U_ANGLE2;
+            bits |= Defines.U_ANGLE2;
         if (to.angles[2] != from.angles[2])
-            bits |= U_ANGLE3;
+            bits |= Defines.U_ANGLE3;
 
         if (to.skinnum != from.skinnum) {
             if (to.skinnum < 256)
-                bits |= U_SKIN8;
+                bits |= Defines.U_SKIN8;
             else if (to.skinnum < 0x10000)
-                bits |= U_SKIN16;
+                bits |= Defines.U_SKIN16;
             else
-                bits |= (U_SKIN8 | U_SKIN16);
+                bits |= (Defines.U_SKIN8 | Defines.U_SKIN16);
         }
 
         if (to.frame != from.frame) {
             if (to.frame < 256)
-                bits |= U_FRAME8;
+                bits |= Defines.U_FRAME8;
             else
-                bits |= U_FRAME16;
+                bits |= Defines.U_FRAME16;
         }
 
         if (to.effects != from.effects) {
             if (to.effects < 256)
-                bits |= U_EFFECTS8;
+                bits |= Defines.U_EFFECTS8;
             else if (to.effects < 0x8000)
-                bits |= U_EFFECTS16;
+                bits |= Defines.U_EFFECTS16;
             else
-                bits |= U_EFFECTS8 | U_EFFECTS16;
+                bits |= Defines.U_EFFECTS8 | Defines.U_EFFECTS16;
         }
 
         if (to.renderfx != from.renderfx) {
             if (to.renderfx < 256)
-                bits |= U_RENDERFX8;
+                bits |= Defines.U_RENDERFX8;
             else if (to.renderfx < 0x8000)
-                bits |= U_RENDERFX16;
+                bits |= Defines.U_RENDERFX16;
             else
-                bits |= U_RENDERFX8 | U_RENDERFX16;
+                bits |= Defines.U_RENDERFX8 | Defines.U_RENDERFX16;
         }
 
         if (to.solid != from.solid)
-            bits |= U_SOLID;
+            bits |= Defines.U_SOLID;
 
         // event is not delta compressed, just 0 compressed
         if (to.event != 0)
-            bits |= U_EVENT;
+            bits |= Defines.U_EVENT;
 
         if (to.modelindex != from.modelindex)
-            bits |= U_MODEL;
+            bits |= Defines.U_MODEL;
         if (to.modelindex2 != from.modelindex2)
-            bits |= U_MODEL2;
+            bits |= Defines.U_MODEL2;
         if (to.modelindex3 != from.modelindex3)
-            bits |= U_MODEL3;
+            bits |= Defines.U_MODEL3;
         if (to.modelindex4 != from.modelindex4)
-            bits |= U_MODEL4;
+            bits |= Defines.U_MODEL4;
 
         if (to.sound != from.sound)
-            bits |= U_SOUND;
+            bits |= Defines.U_SOUND;
 
-        if (newentity || (to.renderfx & RF_BEAM) != 0)
-            bits |= U_OLDORIGIN;
+        if (newentity || (to.renderfx & Defines.RF_BEAM) != 0)
+            bits |= Defines.U_OLDORIGIN;
 
         //
         // write the message
@@ -296,11 +296,11 @@ public class Messages extends Globals {
         //----------
 
         if ((bits & 0xff000000) != 0)
-            bits |= U_MOREBITS3 | U_MOREBITS2 | U_MOREBITS1;
+            bits |= Defines.U_MOREBITS3 | Defines.U_MOREBITS2 | Defines.U_MOREBITS1;
         else if ((bits & 0x00ff0000) != 0)
-            bits |= U_MOREBITS2 | U_MOREBITS1;
+            bits |= Defines.U_MOREBITS2 | Defines.U_MOREBITS1;
         else if ((bits & 0x0000ff00) != 0)
-            bits |= U_MOREBITS1;
+            bits |= Defines.U_MOREBITS1;
 
         WriteByte(msg, bits & 255);
 
@@ -317,72 +317,72 @@ public class Messages extends Globals {
 
         //----------
 
-        if ((bits & U_NUMBER16) != 0)
+        if ((bits & Defines.U_NUMBER16) != 0)
             WriteShort(msg, to.number);
         else
             WriteByte(msg, to.number);
 
-        if ((bits & U_MODEL) != 0)
+        if ((bits & Defines.U_MODEL) != 0)
             WriteByte(msg, to.modelindex);
-        if ((bits & U_MODEL2) != 0)
+        if ((bits & Defines.U_MODEL2) != 0)
             WriteByte(msg, to.modelindex2);
-        if ((bits & U_MODEL3) != 0)
+        if ((bits & Defines.U_MODEL3) != 0)
             WriteByte(msg, to.modelindex3);
-        if ((bits & U_MODEL4) != 0)
+        if ((bits & Defines.U_MODEL4) != 0)
             WriteByte(msg, to.modelindex4);
 
-        if ((bits & U_FRAME8) != 0)
+        if ((bits & Defines.U_FRAME8) != 0)
             WriteByte(msg, to.frame);
-        if ((bits & U_FRAME16) != 0)
+        if ((bits & Defines.U_FRAME16) != 0)
             WriteShort(msg, to.frame);
 
-        if ((bits & U_SKIN8) != 0 && (bits & U_SKIN16) != 0) //used for laser
+        if ((bits & Defines.U_SKIN8) != 0 && (bits & Defines.U_SKIN16) != 0) //used for laser
                                                              // colors
             WriteInt(msg, to.skinnum);
-        else if ((bits & U_SKIN8) != 0)
+        else if ((bits & Defines.U_SKIN8) != 0)
             WriteByte(msg, to.skinnum);
-        else if ((bits & U_SKIN16) != 0)
+        else if ((bits & Defines.U_SKIN16) != 0)
             WriteShort(msg, to.skinnum);
 
-        if ((bits & (U_EFFECTS8 | U_EFFECTS16)) == (U_EFFECTS8 | U_EFFECTS16))
+        if ((bits & (Defines.U_EFFECTS8 | Defines.U_EFFECTS16)) == (Defines.U_EFFECTS8 | Defines.U_EFFECTS16))
             WriteInt(msg, to.effects);
-        else if ((bits & U_EFFECTS8) != 0)
+        else if ((bits & Defines.U_EFFECTS8) != 0)
             WriteByte(msg, to.effects);
-        else if ((bits & U_EFFECTS16) != 0)
+        else if ((bits & Defines.U_EFFECTS16) != 0)
             WriteShort(msg, to.effects);
 
-        if ((bits & (U_RENDERFX8 | U_RENDERFX16)) == (U_RENDERFX8 | U_RENDERFX16))
+        if ((bits & (Defines.U_RENDERFX8 | Defines.U_RENDERFX16)) == (Defines.U_RENDERFX8 | Defines.U_RENDERFX16))
             WriteInt(msg, to.renderfx);
-        else if ((bits & U_RENDERFX8) != 0)
+        else if ((bits & Defines.U_RENDERFX8) != 0)
             WriteByte(msg, to.renderfx);
-        else if ((bits & U_RENDERFX16) != 0)
+        else if ((bits & Defines.U_RENDERFX16) != 0)
             WriteShort(msg, to.renderfx);
 
-        if ((bits & U_ORIGIN1) != 0)
+        if ((bits & Defines.U_ORIGIN1) != 0)
             WriteCoord(msg, to.origin[0]);
-        if ((bits & U_ORIGIN2) != 0)
+        if ((bits & Defines.U_ORIGIN2) != 0)
             WriteCoord(msg, to.origin[1]);
-        if ((bits & U_ORIGIN3) != 0)
+        if ((bits & Defines.U_ORIGIN3) != 0)
             WriteCoord(msg, to.origin[2]);
 
-        if ((bits & U_ANGLE1) != 0)
+        if ((bits & Defines.U_ANGLE1) != 0)
             WriteAngle(msg, to.angles[0]);
-        if ((bits & U_ANGLE2) != 0)
+        if ((bits & Defines.U_ANGLE2) != 0)
             WriteAngle(msg, to.angles[1]);
-        if ((bits & U_ANGLE3) != 0)
+        if ((bits & Defines.U_ANGLE3) != 0)
             WriteAngle(msg, to.angles[2]);
 
-        if ((bits & U_OLDORIGIN) != 0) {
+        if ((bits & Defines.U_OLDORIGIN) != 0) {
             WriteCoord(msg, to.old_origin[0]);
             WriteCoord(msg, to.old_origin[1]);
             WriteCoord(msg, to.old_origin[2]);
         }
 
-        if ((bits & U_SOUND) != 0)
+        if ((bits & Defines.U_SOUND) != 0)
             WriteByte(msg, to.sound);
-        if ((bits & U_EVENT) != 0)
+        if ((bits & Defines.U_EVENT) != 0)
             WriteByte(msg, to.event);
-        if ((bits & U_SOLID) != 0)
+        if ((bits & Defines.U_SOLID) != 0)
             WriteShort(msg, to.solid);
     }
 
@@ -528,26 +528,26 @@ public class Messages extends Globals {
         bits = ReadByte(msg_read);
 
         // read current angles
-        if ((bits & CM_ANGLE1) != 0)
+        if ((bits & Defines.CM_ANGLE1) != 0)
             move.angles[0] = ReadShort(msg_read);
-        if ((bits & CM_ANGLE2) != 0)
+        if ((bits & Defines.CM_ANGLE2) != 0)
             move.angles[1] = ReadShort(msg_read);
-        if ((bits & CM_ANGLE3) != 0)
+        if ((bits & Defines.CM_ANGLE3) != 0)
             move.angles[2] = ReadShort(msg_read);
 
         // read movement
-        if ((bits & CM_FORWARD) != 0)
+        if ((bits & Defines.CM_FORWARD) != 0)
             move.forwardmove = ReadShort(msg_read);
-        if ((bits & CM_SIDE) != 0)
+        if ((bits & Defines.CM_SIDE) != 0)
             move.sidemove = ReadShort(msg_read);
-        if ((bits & CM_UP) != 0)
+        if ((bits & Defines.CM_UP) != 0)
             move.upmove = ReadShort(msg_read);
 
         // read buttons
-        if ((bits & CM_BUTTONS) != 0)
+        if ((bits & Defines.CM_BUTTONS) != 0)
             move.buttons = (byte) ReadByte(msg_read);
 
-        if ((bits & CM_IMPULSE) != 0)
+        if ((bits & Defines.CM_IMPULSE) != 0)
             move.impulse = (byte) ReadByte(msg_read);
 
         // read time to run command

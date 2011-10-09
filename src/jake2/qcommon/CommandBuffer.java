@@ -23,7 +23,7 @@
 */
 package jake2.qcommon;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.util.Lib;
 
 /**
@@ -200,7 +200,7 @@ public final class CommandBuffer {
             int len = Lib.strlen(line);
 
             String cmd = Compatibility.newString(line, 0, len);
-            Cmd.ExecuteString(cmd);
+            Commands.ExecuteString(cmd);
 
             if (Globals.cmd_wait) {
                 // skip out while text still remains in buffer, leaving it
@@ -214,7 +214,7 @@ public final class CommandBuffer {
     public static void ExecuteText(int exec_when, String text) {
         switch (exec_when) {
         case Defines.EXEC_NOW:
-            Cmd.ExecuteString(text);
+            Commands.ExecuteString(text);
             break;
         case Defines.EXEC_INSERT:
             CommandBuffer.InsertText(text);

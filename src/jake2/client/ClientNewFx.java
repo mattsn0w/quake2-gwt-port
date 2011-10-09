@@ -34,7 +34,7 @@ import jake2.util.Math3D;
 public class ClientNewFx {
 
     static void flashlight(int ent, float[] pos) {
-        ClientEffects.cdlight_t dl;
+        ClientEffects.DynamicLight dl;
 
         dl = ClientEffects.AllocDlight(ent);
         Math3D.VectorCopy(pos, dl.origin);
@@ -51,7 +51,7 @@ public class ClientNewFx {
      */
     static void colorFlash(float[] pos, int ent, int intensity, float r,
             float g, float b) {
-        ClientEffects.cdlight_t dl;
+        ClientEffects.DynamicLight dl;
 
         if ((Globals.vidref_val == Defines.VIDREF_SOFT)
                 && ((r < 0) || (g < 0) || (b < 0))) {

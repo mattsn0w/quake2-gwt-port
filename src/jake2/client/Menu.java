@@ -95,7 +95,7 @@ import static jake2.qcommon.Globals.sensitivity;
 import static jake2.qcommon.Globals.skin;
 import static jake2.qcommon.Globals.viddef;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.ConsoleVariable;
 import jake2.qcommon.AsyncCallback;
 import jake2.qcommon.CommandBuffer;
@@ -306,7 +306,7 @@ public final class Menu {
         m_menudepth = 0;
         Key.ClearStates();
         ConsoleVariables.Set("paused", "0");
-        CL.WriteConfiguration();
+        Client.writeConfiguration();
     }
 
     static void PopMenu() {
@@ -2971,7 +2971,7 @@ public final class Menu {
         case 'Y':
         case 'y':
             cls.key_dest = key_console;
-            CL.Quit_f.execute();
+            Client.quitCommand.execute();
             break;
 
         default:
@@ -3016,22 +3016,22 @@ public final class Menu {
      * Init
      */
     public static void Init() {
-        Cmd.AddCommand("menu_main", Menu_Main);
-        Cmd.AddCommand("menu_game", Menu_Game);
+        Commands.addCommand("menu_main", Menu_Main);
+        Commands.addCommand("menu_game", Menu_Game);
 //        Cmd.AddCommand("menu_loadgame", Menu_LoadGame);
 //        Cmd.AddCommand("menu_savegame", Menu_SaveGame);
 //        Cmd.AddCommand("menu_joinserver", Menu_JoinServer);
 //        Cmd.AddCommand("menu_addressbook", Menu_AddressBook);
 //        Cmd.AddCommand("menu_startserver", Menu_StartServer);
 //        Cmd.AddCommand("menu_dmoptions", Menu_DMOptions);
-        Cmd.AddCommand("menu_playerconfig", Menu_PlayerConfig);
+        Commands.addCommand("menu_playerconfig", Menu_PlayerConfig);
 //        Cmd.AddCommand("menu_downloadoptions", Menu_DownloadOptions);
-        Cmd.AddCommand("menu_credits", Menu_Credits);
-        Cmd.AddCommand("menu_multiplayer", Menu_Multiplayer);
+        Commands.addCommand("menu_credits", Menu_Credits);
+        Commands.addCommand("menu_multiplayer", Menu_Multiplayer);
 //        Cmd.AddCommand("menu_video", Menu_Video);
-        Cmd.AddCommand("menu_options", Menu_Options);
-        Cmd.AddCommand("menu_keys", Menu_Keys);
-        Cmd.AddCommand("menu_quit", Menu_Quit);
+        Commands.addCommand("menu_options", Menu_Options);
+        Commands.addCommand("menu_keys", Menu_Keys);
+        Commands.addCommand("menu_quit", Menu_Quit);
 
         for (int i = 0; i < m_layers.length; i++) {
             m_layers[i] = new menulayer_t();

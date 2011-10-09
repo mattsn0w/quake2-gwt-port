@@ -27,7 +27,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import jake2.client.Console;
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.ConsoleVariable;
 import jake2.game.EntityState;
 import jake2.gwt.client.GwtQuake.BrowserType;
@@ -175,22 +175,22 @@ public class GwtSound implements SoundImpl {
     int count = Channel.init(buffers);
     Com.Printf("... using " + count + " channels\n");
     ALAdapter.impl.alDistanceModel(ALAdapter.AL_INVERSE_DISTANCE_CLAMPED);
-    Cmd.AddCommand("play", new ExecutableCommand() {
+    Commands.addCommand("play", new ExecutableCommand() {
       public void execute() {
         Play();
       }
     });
-    Cmd.AddCommand("stopsound", new ExecutableCommand() {
+    Commands.addCommand("stopsound", new ExecutableCommand() {
       public void execute() {
         StopAllSounds();
       }
     });
-    Cmd.AddCommand("soundlist", new ExecutableCommand() {
+    Commands.addCommand("soundlist", new ExecutableCommand() {
       public void execute() {
         SoundList();
       }
     });
-    Cmd.AddCommand("soundinfo", new ExecutableCommand() {
+    Commands.addCommand("soundinfo", new ExecutableCommand() {
       public void execute() {
         SoundInfo_f();
       }
@@ -292,10 +292,10 @@ public class GwtSound implements SoundImpl {
     ALAdapter.impl.alDeleteBuffers(buffers);
     exitOpenAL();
 
-    Cmd.RemoveCommand("play");
-    Cmd.RemoveCommand("stopsound");
-    Cmd.RemoveCommand("soundlist");
-    Cmd.RemoveCommand("soundinfo");
+    Commands.RemoveCommand("play");
+    Commands.RemoveCommand("stopsound");
+    Commands.RemoveCommand("soundlist");
+    Commands.RemoveCommand("soundinfo");
 
     // free all sounds
     for (int i = 0; i < num_sfx; i++) {
@@ -500,8 +500,8 @@ public class GwtSound implements SoundImpl {
     Sfx sfx;
 
     i = 1;
-    while (i < Cmd.Argc()) {
-      name = new String(Cmd.Argv(i));
+    while (i < Commands.Argc()) {
+      name = new String(Commands.Argv(i));
       if (name.indexOf('.') == -1) {
         name += ".wav";
       }

@@ -25,9 +25,10 @@ package jake2.sys;
 
 import jake2.client.ClientInput;
 import jake2.client.Key;
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.UserCommand;
 import jake2.qcommon.ConsoleVariables;
+import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
 import jake2.qcommon.ExecutableCommand;
 import jake2.util.Math3D;
@@ -91,8 +92,8 @@ public final class IN extends Globals {
     }
 
     public static void Init() {
-        in_mouse = ConsoleVariables.Get("in_mouse", "1", CVAR_ARCHIVE);
-        in_joystick = ConsoleVariables.Get("in_joystick", "0", CVAR_ARCHIVE);
+        in_mouse = ConsoleVariables.Get("in_mouse", "1", Defines.CVAR_ARCHIVE);
+        in_joystick = ConsoleVariables.Get("in_joystick", "0", Defines.CVAR_ARCHIVE);
     }
 
     public static void Shutdown() {
@@ -102,7 +103,7 @@ public final class IN extends Globals {
     public static void Real_IN_Init() {
         // mouse variables
         Globals.m_filter = ConsoleVariables.Get("m_filter", "0", 0);
-        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", CVAR_ARCHIVE);
+        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", Defines.CVAR_ARCHIVE);
         Globals.freelook = ConsoleVariables.Get("freelook", "1", 0);
         Globals.lookstrafe = ConsoleVariables.Get("lookstrafe", "0", 0);
         Globals.sensitivity = ConsoleVariables.Get("sensitivity", "3", 0);
@@ -111,24 +112,24 @@ public final class IN extends Globals {
         Globals.m_forward = ConsoleVariables.Get("m_forward", "1", 0);
         Globals.m_side = ConsoleVariables.Get("m_side", "0.8", 0);
 
-        Cmd.AddCommand("+mlook", new ExecutableCommand() {
+        Commands.addCommand("+mlook", new ExecutableCommand() {
             public void execute() {
                 MLookDown();
             }
         });
-        Cmd.AddCommand("-mlook", new ExecutableCommand() {
+        Commands.addCommand("-mlook", new ExecutableCommand() {
             public void execute() {
                 MLookUp();
             }
         });
 
-        Cmd.AddCommand("force_centerview", new ExecutableCommand() {
+        Commands.addCommand("force_centerview", new ExecutableCommand() {
             public void execute() {
                 Force_CenterView_f();
             }
         });
 
-        Cmd.AddCommand("togglemouse", new ExecutableCommand() {
+        Commands.addCommand("togglemouse", new ExecutableCommand() {
             public void execute() {
                 toggleMouse();
             }
@@ -156,16 +157,16 @@ public final class IN extends Globals {
 
     public static void Frame() {
 
-        if (!cl.refresh_prepped || cls.key_dest == key_console
-                || cls.key_dest == key_menu)
+        if (!cl.refresh_prepped || cls.key_dest == Defines.key_console
+                || cls.key_dest == Defines.key_menu)
             DeactivateMouse();
         else
             ActivateMouse();
     }
 
     public static void CenterView() {
-        cl.viewangles[PITCH] = -Math3D
-                .SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
+        cl.viewangles[Defines.PITCH] = -Math3D
+                .SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
     }
 
     public static void Move(UserCommand cmd) {
@@ -188,12 +189,12 @@ public final class IN extends Globals {
                 || ((Globals.lookstrafe.value != 0) && IN.mlooking)) {
             cmd.sidemove += Globals.m_side.value * KBD.mx;
         } else {
-            Globals.cl.viewangles[YAW] -= Globals.m_yaw.value * KBD.mx;
+            Globals.cl.viewangles[Defines.YAW] -= Globals.m_yaw.value * KBD.mx;
         }
 
         if ((IN.mlooking || Globals.freelook.value != 0.0f)
                 && (ClientInput.in_strafe.state & 1) == 0) {
-            Globals.cl.viewangles[PITCH] += Globals.m_pitch.value * KBD.my;
+            Globals.cl.viewangles[Defines.PITCH] += Globals.m_pitch.value * KBD.my;
         } else {
             cmd.forwardmove -= Globals.m_forward.value * KBD.my;
         }
@@ -210,6 +211,6 @@ public final class IN extends Globals {
     }
 
     static void Force_CenterView_f() {
-        Globals.cl.viewangles[PITCH] = 0;
+        Globals.cl.viewangles[Defines.PITCH] = 0;
     }
 }

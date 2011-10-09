@@ -23,7 +23,7 @@
 */
 package jake2.sys;
 
-import jake2.client.CL;
+import jake2.client.Client;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
@@ -40,14 +40,14 @@ public final class Sys extends Defines {
 
     public static void Error(String error) {
 
-        CL.Shutdown();
+        Client.shutdown();
         //StackTrace();
         new Exception(error).printStackTrace();
         System.exit(1);
     }
 
     public static void Quit() {
-        CL.Shutdown();
+        Client.shutdown();
 
         System.exit(0);
     }

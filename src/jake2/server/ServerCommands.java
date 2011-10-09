@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.server;
 
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.EndianHandler;
 import jake2.game.GameSVCmds;
 import jake2.game.GameSave;
@@ -96,12 +96,12 @@ public class ServerCommands {
 			ServerMain.master_adr[i] = new NetworkAddress();
 
 		slot = 1; // slot 0 will always contain the id master
-		for (i = 1; i < Cmd.Argc(); i++) {
+		for (i = 1; i < Commands.Argc(); i++) {
 			if (slot == Defines.MAX_MASTERS)
 				break;
 
-			if (!NET.StringToAdr(Cmd.Argv(i), ServerMain.master_adr[i])) {
-				Com.Printf("Bad address: " + Cmd.Argv(i) + "\n");
+			if (!NET.StringToAdr(Commands.Argv(i), ServerMain.master_adr[i])) {
+				Com.Printf("Bad address: " + Commands.Argv(i) + "\n");
 				continue;
 			}
 			if (ServerMain.master_adr[slot].port == 0)
@@ -130,14 +130,14 @@ public class ServerCommands {
 		int idnum;
 		String s;
 
-		if (Cmd.Argc() < 2)
+		if (Commands.Argc() < 2)
 			return false;
 
-		s = Cmd.Argv(1);
+		s = Commands.Argv(1);
 
 		// numeric values are just slot numbers
 		if (s.charAt(0) >= '0' && s.charAt(0) <= '9') {
-			idnum = Lib.atoi(Cmd.Argv(1));
+			idnum = Lib.atoi(Commands.Argv(1));
 			if (idnum < 0 || idnum >= ServerMain.maxclients.value) {
 				Com.Printf("Bad client slot: " + idnum + "\n");
 				return false;
@@ -529,7 +529,7 @@ public class ServerCommands {
 	==================
 	*/
 	public static void SV_DemoMap_f() {
-		ServerInit.SV_Map(true, Cmd.Argv(1), false, EMPTY_COMMAND);
+		ServerInit.SV_Map(true, Commands.Argv(1), false, EMPTY_COMMAND);
 	}
 	/*
 	==================
@@ -555,17 +555,17 @@ public class ServerCommands {
 		ClientData cl;
 		boolean savedInuse[];
 
-		if (Cmd.Argc() != 2) {
+		if (Commands.Argc() != 2) {
 			Com.Printf("USAGE: gamemap <map>\n");
 			return;
 		}
 
-		Com.DPrintf("SV_GameMap(" + Cmd.Argv(1) + ")\n");
+		Com.DPrintf("SV_GameMap(" + Commands.Argv(1) + ")\n");
 
 		QuakeFileSystem.CreatePath(QuakeFileSystem.Gamedir() + "/save/current/");
 
 		// check for clearing the current savegame
-		map = Cmd.Argv(1);
+		map = Commands.Argv(1);
 		if (map.charAt(0) == '*') {
 			// wipe all the *.sav files
 			SV_WipeSavegame("current");
@@ -598,7 +598,7 @@ public class ServerCommands {
 
 			public void execute() {
 				// archive server state
-				ServerInit.svs.mapcmd = Cmd.Argv(1);
+				ServerInit.svs.mapcmd = Commands.Argv(1);
 
 				// copy off the level to the autosave slot
 				if (0 == Globals.dedicated.value) {
@@ -609,7 +609,7 @@ public class ServerCommands {
 		};
 		
 		// start up the next map
-		ServerInit.SV_Map(false, Cmd.Argv(1), false, continueCmd);
+		ServerInit.SV_Map(false, Commands.Argv(1), false, continueCmd);
 
 		
 	}
@@ -627,7 +627,7 @@ public class ServerCommands {
 		String expanded;
 
 		// if not a pcx, demo, or cinematic, check to make sure the level exists
-		map = Cmd.Argv(1);
+		map = Commands.Argv(1);
 //		if (map.indexOf(".") < 0) {
 //			expanded = "maps/" + map + ".bsp";
 //			if (FS.LoadFile(expanded) == null) {
@@ -662,20 +662,20 @@ public class ServerCommands {
 		RandomAccessFile f;
 		String dir;
 
-		if (Cmd.Argc() != 2) {
+		if (Commands.Argc() != 2) {
 			Com.Printf("USAGE: loadgame <directory>\n");
 			return;
 		}
 
 		Com.Printf("Loading game...\n");
 
-		dir = Cmd.Argv(1);
+		dir = Commands.Argv(1);
 		if ( (dir.indexOf("..") > -1) || (dir.indexOf("/") > -1) || (dir.indexOf("\\") > -1)) {
 			Com.Printf("Bad savedir.\n");
 		}
 
 		// make sure the server.ssv file exists
-		name = QuakeFileSystem.Gamedir() + "/save/" + Cmd.Argv(1) + "/server.ssv";
+		name = QuakeFileSystem.Gamedir() + "/save/" + Commands.Argv(1) + "/server.ssv";
 		try {
 			f = new RandomAccessFile(name, "r");
 		}
@@ -694,7 +694,7 @@ public class ServerCommands {
 			Compatibility.printStackTrace(e1);
 		}
 
-		SV_CopySaveGame(Cmd.Argv(1), "current");
+		SV_CopySaveGame(Commands.Argv(1), "current");
 		SV_ReadServerFile();
 
 		// go to the map
@@ -715,7 +715,7 @@ public class ServerCommands {
 			return;
 		}
 
-		if (Cmd.Argc() != 2) {
+		if (Commands.Argc() != 2) {
 			Com.Printf("USAGE: savegame <directory>\n");
 			return;
 		}
@@ -725,7 +725,7 @@ public class ServerCommands {
 			return;
 		}
 
-		if (0 == Lib.strcmp(Cmd.Argv(1), "current")) {
+		if (0 == Lib.strcmp(Commands.Argv(1), "current")) {
 			Com.Printf("Can't save to 'current'\n");
 			return;
 		}
@@ -735,7 +735,7 @@ public class ServerCommands {
 			return;
 		}
 
-		dir = Cmd.Argv(1);
+		dir = Commands.Argv(1);
 		if ( (dir.indexOf("..") > -1) || (dir.indexOf("/") > -1) || (dir.indexOf("\\") > -1)) {
 			Com.Printf("Bad savedir.\n");
 		}
@@ -774,7 +774,7 @@ public class ServerCommands {
 			return;
 		}
 
-		if (Cmd.Argc() != 2) {
+		if (Commands.Argc() != 2) {
 			Com.Printf("Usage: kick <userid>\n");
 			return;
 		}
@@ -854,11 +854,11 @@ public class ServerCommands {
 		String p;
 		String text; // char[1024];
 
-		if (Cmd.Argc() < 2)
+		if (Commands.Argc() < 2)
 			return;
 
 		text = "console: ";
-		p = Cmd.Args();
+		p = Commands.Args();
 
 		if (p.charAt(0) == '"') {
 			p = p.substring(1, p.length() - 1);
@@ -900,7 +900,7 @@ public class ServerCommands {
 	===========
 	*/
 	public static void SV_DumpUser_f() {
-		if (Cmd.Argc() != 2) {
+		if (Commands.Argc() != 2) {
 			Com.Printf("Usage: info <userid>\n");
 			return;
 		}
@@ -929,7 +929,7 @@ public class ServerCommands {
 		int len;
 		int i;
 
-		if (Cmd.Argc() != 2) {
+		if (Commands.Argc() != 2) {
 			Com.Printf("serverrecord <demoname>\n");
 			return;
 		}
@@ -947,7 +947,7 @@ public class ServerCommands {
 		//
 		// open the demo file
 		//
-		name = QuakeFileSystem.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
+		name = QuakeFileSystem.Gamedir() + "/demos/" + Commands.Argv(1) + ".dm2";
 
 		Com.Printf("recording to " + name + ".\n");
 		QuakeFileSystem.CreatePath(name);
@@ -1060,89 +1060,89 @@ public class ServerCommands {
 	==================
 	*/
 	public static void SV_InitOperatorCommands() {
-		Cmd.AddCommand("heartbeat", new ExecutableCommand() {
+		Commands.addCommand("heartbeat", new ExecutableCommand() {
 			public void execute() {
 				SV_Heartbeat_f();
 			}
 		});
-		Cmd.AddCommand("kick", new ExecutableCommand() {
+		Commands.addCommand("kick", new ExecutableCommand() {
 			public void execute() {
 				SV_Kick_f();
 			}
 		});
-		Cmd.AddCommand("status", new ExecutableCommand() {
+		Commands.addCommand("status", new ExecutableCommand() {
 			public void execute() {
 				SV_Status_f();
 			}
 		});
-		Cmd.AddCommand("serverinfo", new ExecutableCommand() {
+		Commands.addCommand("serverinfo", new ExecutableCommand() {
 			public void execute() {
 				SV_Serverinfo_f();
 			}
 		});
-		Cmd.AddCommand("dumpuser", new ExecutableCommand() {
+		Commands.addCommand("dumpuser", new ExecutableCommand() {
 			public void execute() {
 				SV_DumpUser_f();
 			}
 		});
 
-		Cmd.AddCommand("map", new ExecutableCommand() {
+		Commands.addCommand("map", new ExecutableCommand() {
 			public void execute() {
 				SV_Map_f();
 			}
 		});
-		Cmd.AddCommand("demomap", new ExecutableCommand() {
+		Commands.addCommand("demomap", new ExecutableCommand() {
 			public void execute() {
 				SV_DemoMap_f();
 			}
 		});
-		Cmd.AddCommand("gamemap", new ExecutableCommand() {
+		Commands.addCommand("gamemap", new ExecutableCommand() {
 			public void execute() {
 				SV_GameMap_f();
 			}
 		});
-		Cmd.AddCommand("setmaster", new ExecutableCommand() {
+		Commands.addCommand("setmaster", new ExecutableCommand() {
 			public void execute() {
 				SV_SetMaster_f();
 			}
 		});
 
 		if (Globals.dedicated.value != 0)
-			Cmd.AddCommand("say", new ExecutableCommand() {
+			Commands.addCommand("say", new ExecutableCommand() {
 			public void execute() {
 				SV_ConSay_f();
 			}
 		});
 
-		Cmd.AddCommand("serverrecord", new ExecutableCommand() {
+		Commands.addCommand("serverrecord", new ExecutableCommand() {
 			public void execute() {
 				SV_ServerRecord_f();
 			}
 		});
-		Cmd.AddCommand("serverstop", new ExecutableCommand() {
+		Commands.addCommand("serverstop", new ExecutableCommand() {
 			public void execute() {
 				SV_ServerStop_f();
 			}
 		});
 
-		Cmd.AddCommand("save", new ExecutableCommand() {
+		Commands.addCommand("save", new ExecutableCommand() {
 			public void execute() {
 				SV_Savegame_f();
 			}
 		});
-		Cmd.AddCommand("load", new ExecutableCommand() {
+		Commands.addCommand("load", new ExecutableCommand() {
 			public void execute() {
 				SV_Loadgame_f();
 			}
 		});
 
-		Cmd.AddCommand("killserver", new ExecutableCommand() {
+		Commands.addCommand("killserver", new ExecutableCommand() {
 			public void execute() {
 				SV_KillServer_f();
 			}
 		});
 
-		Cmd.AddCommand("sv", new ExecutableCommand() {
+		Commands.addCommand("sv", new ExecutableCommand() {
 			public void execute() {
 				SV_ServerCommand_f();
 			}

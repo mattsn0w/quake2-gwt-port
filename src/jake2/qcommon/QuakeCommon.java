@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.qcommon;
 
 import jake2.client.*;
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.server.ServerMain;
 import jake2.sys.*;
 import jake2.util.Vargs;
@@ -58,7 +58,7 @@ public final class QuakeCommon extends Globals {
 
 			CommandBuffer.Init();
 			
-			Cmd.Init();
+			Commands.Init();
 			ConsoleVariables.Init();
 
 	  Key.Init();
@@ -91,16 +91,16 @@ public final class QuakeCommon extends Globals {
 			//
 			// init commands and vars
 			//
-			Cmd.AddCommand("error", Com.Error_f);
+			Commands.addCommand("error", Com.Error_f);
 
 			Globals.host_speeds= ConsoleVariables.Get("host_speeds", "0", 0);
 			Globals.log_stats= ConsoleVariables.Get("log_stats", "0", 0);
-			Globals.developer= ConsoleVariables.Get("developer", "0", CVAR_ARCHIVE);
+			Globals.developer= ConsoleVariables.Get("developer", "0", Defines.CVAR_ARCHIVE);
 			Globals.timescale= ConsoleVariables.Get("timescale", "0", 0);
 			Globals.fixedtime= ConsoleVariables.Get("fixedtime", "0", 0);
 			Globals.logfile_active= ConsoleVariables.Get("logfile", "0", 0);
 			Globals.showtrace= ConsoleVariables.Get("showtrace", "0", 0);
-			Globals.dedicated= ConsoleVariables.Get("dedicated", "0", CVAR_NOSET);
+			Globals.dedicated= ConsoleVariables.Get("dedicated", "0", Defines.CVAR_NOSET);
 			String s = Com.sprintf("%4.2f %s %s %s",
 					new Vargs(4)
 						.add(Globals.VERSION)
@@ -108,7 +108,7 @@ public final class QuakeCommon extends Globals {
 						.add(Globals.__DATE__)
 						.add(BUILDSTRING));
 
-			ConsoleVariables.Get("version", s, CVAR_SERVERINFO | CVAR_NOSET);
+			ConsoleVariables.Get("version", s, Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
 
 			if (q2Dialog != null)
 				q2Dialog.setStatus("initializing network subsystem...");
@@ -123,7 +123,7 @@ public final class QuakeCommon extends Globals {
 			if (q2Dialog != null)
 				q2Dialog.setStatus("initializing client subsystem...");
 			
-			CL.Init();
+			Client.init();
 
 			// add + commands from command line
 			if (!CommandBuffer.AddLateCommands()) {
@@ -146,7 +146,7 @@ public final class QuakeCommon extends Globals {
 			Com.Printf("====== Quake2 Initialized ======\n\n");
 
 			// save config when configuration is completed
-			CL.WriteConfiguration();
+			Client.writeConfiguration();
 			
 			if (q2Dialog != null)
 				q2Dialog.dispose();
@@ -236,7 +236,7 @@ public final class QuakeCommon extends Globals {
 				time_between= Timer.Milliseconds();
 			
 			Com.debugContext = "CL:";
-			CL.Frame(msec);
+			Client.frame(msec);
 
 			if (Globals.host_speeds.value != 0.0f) {
 				time_after= Timer.Milliseconds();
@@ -259,7 +259,7 @@ public final class QuakeCommon extends Globals {
 	}
 
 	static void reconfigure(boolean clear) {
-		String dir = ConsoleVariables.Get("cddir", "", CVAR_ARCHIVE).string;
+		String dir = ConsoleVariables.Get("cddir", "", Defines.CVAR_ARCHIVE).string;
 		
 		CommandBuffer.AddText(DefaultCfg.DEFAULT_CFG);
 

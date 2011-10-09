@@ -23,7 +23,7 @@
 */
 package jake2.qcommon;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.Info;
 import jake2.game.ConsoleVariable;
 import jake2.util.Lib;
@@ -46,7 +46,7 @@ public class ConsoleVariables extends Globals {
     public static ConsoleVariable Get(String var_name, String var_value, int flags) {
         ConsoleVariable var;
 
-        if ((flags & (CVAR_USERINFO | CVAR_SERVERINFO)) != 0) {
+        if ((flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
             if (!InfoValidate(var_name)) {
                 Com.Printf("invalid info cvar name\n");
                 return null;
@@ -62,7 +62,7 @@ public class ConsoleVariables extends Globals {
         if (var_value == null)
             return null;
 
-        if ((flags & (CVAR_USERINFO | CVAR_SERVERINFO)) != 0) {
+        if ((flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
             if (!InfoValidate(var_value)) {
                 Com.Printf("invalid info cvar value\n");
                 return null;
@@ -88,8 +88,8 @@ public class ConsoleVariables extends Globals {
     }
 
     static void Init() {
-        Cmd.AddCommand("set", Set_f);
-        Cmd.AddCommand("cvarlist", List_f);
+        Commands.addCommand("set", Set_f);
+        Commands.addCommand("cvarlist", List_f);
     }
 
     public static String VariableString(String var_name) {
@@ -122,7 +122,7 @@ public class ConsoleVariables extends Globals {
 
         var.modified = true;
 
-        if ((var.flags & CVAR_USERINFO) != 0)
+        if ((var.flags & Defines.CVAR_USERINFO) != 0)
             Globals.userinfo_modified = true; // transmit at next oportunity
 
         var.string = value;
@@ -163,7 +163,7 @@ public class ConsoleVariables extends Globals {
             return ConsoleVariables.Get(var_name, value, 0);
         }
 
-        if ((var.flags & (CVAR_USERINFO | CVAR_SERVERINFO)) != 0) {
+        if ((var.flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
             if (!InfoValidate(value)) {
                 Com.Printf("invalid info cvar value\n");
                 return var;
@@ -171,12 +171,12 @@ public class ConsoleVariables extends Globals {
         }
 
         if (!force) {
-            if ((var.flags & CVAR_NOSET) != 0) {
+            if ((var.flags & Defines.CVAR_NOSET) != 0) {
                 Com.Printf(var_name + " is write protected.\n");
                 return var;
             }
 
-            if ((var.flags & CVAR_LATCH) != 0) {
+            if ((var.flags & Defines.CVAR_LATCH) != 0) {
                 if (var.latched_string != null) {
                     if (value.equals(var.latched_string))
                         return var;
@@ -214,7 +214,7 @@ public class ConsoleVariables extends Globals {
 
         var.modified = true;
 
-        if ((var.flags & CVAR_USERINFO) != 0)
+        if ((var.flags & Defines.CVAR_USERINFO) != 0)
             Globals.userinfo_modified = true; // transmit at next oportunity
 
         var.string = value;
@@ -236,24 +236,24 @@ public class ConsoleVariables extends Globals {
             int c;
             int flags;
 
-            c = Cmd.Argc();
+            c = Commands.Argc();
             if (c != 3 && c != 4) {
                 Com.Printf("usage: set <variable> <value> [u / s]\n");
                 return;
             }
 
             if (c == 4) {
-                if (Cmd.Argv(3).equals("u"))
-                    flags = CVAR_USERINFO;
-                else if (Cmd.Argv(3).equals("s"))
-                    flags = CVAR_SERVERINFO;
+                if (Commands.Argv(3).equals("u"))
+                    flags = Defines.CVAR_USERINFO;
+                else if (Commands.Argv(3).equals("s"))
+                    flags = Defines.CVAR_SERVERINFO;
                 else {
                     Com.Printf("flags can only be 'u' or 's'\n");
                     return;
                 }
-                ConsoleVariables.FullSet(Cmd.Argv(1), Cmd.Argv(2), flags);
+                ConsoleVariables.FullSet(Commands.Argv(1), Commands.Argv(2), flags);
             } else
-                ConsoleVariables.Set(Cmd.Argv(1), Cmd.Argv(2));
+                ConsoleVariables.Set(Commands.Argv(1), Commands.Argv(2));
 
         }
 
@@ -269,21 +269,21 @@ public class ConsoleVariables extends Globals {
 
             i = 0;
             for (var = Globals.cvar_vars; var != null; var = var.next, i++) {
-                if ((var.flags & CVAR_ARCHIVE) != 0)
+                if ((var.flags & Defines.CVAR_ARCHIVE) != 0)
                     Com.Printf("*");
                 else
                     Com.Printf(" ");
-                if ((var.flags & CVAR_USERINFO) != 0)
+                if ((var.flags & Defines.CVAR_USERINFO) != 0)
                     Com.Printf("U");
                 else
                     Com.Printf(" ");
-                if ((var.flags & CVAR_SERVERINFO) != 0)
+                if ((var.flags & Defines.CVAR_SERVERINFO) != 0)
                     Com.Printf("S");
                 else
                     Com.Printf(" ");
-                if ((var.flags & CVAR_NOSET) != 0)
+                if ((var.flags & Defines.CVAR_NOSET) != 0)
                     Com.Printf("-");
-                else if ((var.flags & CVAR_LATCH) != 0)
+                else if ((var.flags & Defines.CVAR_LATCH) != 0)
                     Com.Printf("L");
                 else
                     Com.Printf(" ");
@@ -335,17 +335,17 @@ public class ConsoleVariables extends Globals {
         ConsoleVariable v;
 
         // check variables
-        v = ConsoleVariables.FindVar(Cmd.Argv(0));
+        v = ConsoleVariables.FindVar(Commands.Argv(0));
         if (v == null)
             return false;
 
         // perform a variable print or set
-        if (Cmd.Argc() == 1) {
+        if (Commands.Argc() == 1) {
             Com.Printf("\"" + v.name + "\" is \"" + v.string + "\"\n");
             return true;
         }
 
-        ConsoleVariables.Set(v.name, Cmd.Argv(1));
+        ConsoleVariables.Set(v.name, Commands.Argv(1));
         return true;
     }
 
@@ -397,7 +397,7 @@ public class ConsoleVariables extends Globals {
      * Returns an info string containing all the CVAR_USERINFO cvars.
      */
     public static String Userinfo() {
-        return BitInfo(CVAR_USERINFO);
+        return BitInfo(Defines.CVAR_USERINFO);
     }
     
     /**
@@ -421,7 +421,7 @@ public class ConsoleVariables extends Globals {
             return;
         }
         for (var = cvar_vars; var != null; var = var.next) {
-            if ((var.flags & CVAR_ARCHIVE) != 0) {
+            if ((var.flags & Defines.CVAR_ARCHIVE) != 0) {
                 buffer = "set " + var.name + " \"" + var.string + "\"\n";
                 try {
                     f.writeBytes(buffer);
