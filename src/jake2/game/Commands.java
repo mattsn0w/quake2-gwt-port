@@ -33,10 +33,10 @@ import java.util.*;
 /**
  * Cmd
  */
-public final class Cmd {
+public final class Commands {
     static ExecutableCommand List_f = new ExecutableCommand() {
         public void execute() {
-            CommandFunction cmd = Cmd.cmd_functions;
+            CommandFunction cmd = Commands.cmd_functions;
             int i = 0;
 
             while (cmd != null) {
@@ -50,18 +50,18 @@ public final class Cmd {
 
     static ExecutableCommand Exec_f = new ExecutableCommand() {
         public void execute() {
-            if (Cmd.Argc() != 2) {
+            if (Commands.Argc() != 2) {
                 Com.Printf("exec <filename> : execute a script file\n");
                 return;
             }
 
             byte[] f = null;
-            f = QuakeFileSystem.LoadFile(Cmd.Argv(1));
+            f = QuakeFileSystem.LoadFile(Commands.Argv(1));
             if (f == null) {
-                Com.Printf("couldn't exec " + Cmd.Argv(1) + "\n");
+                Com.Printf("couldn't exec " + Commands.Argv(1) + "\n");
                 return;
             }
-            Com.Printf("execing " + Cmd.Argv(1) + "\n");
+            Com.Printf("execing " + Commands.Argv(1) + "\n");
 
             CommandBuffer.InsertText(Compatibility.newString(f));
 
@@ -71,8 +71,8 @@ public final class Cmd {
 
     static ExecutableCommand Echo_f = new ExecutableCommand() {
         public void execute() {
-            for (int i = 1; i < Cmd.Argc(); i++) {
-                Com.Printf(Cmd.Argv(i) + " ");
+            for (int i = 1; i < Commands.Argc(); i++) {
+                Com.Printf(Commands.Argv(i) + " ");
             }
             Com.Printf("'\n");
         }
@@ -81,7 +81,7 @@ public final class Cmd {
     static ExecutableCommand Alias_f = new ExecutableCommand() {
         public void execute() {
             CommandAlias a = null;
-            if (Cmd.Argc() == 1) {
+            if (Commands.Argc() == 1) {
                 Com.Printf("Current alias commands:\n");
                 for (a = Globals.cmd_alias; a != null; a = a.next) {
                     Com.Printf(a.name + " : " + a.value);
@@ -89,7 +89,7 @@ public final class Cmd {
                 return;
             }
 
-            String s = Cmd.Argv(1);
+            String s = Commands.Argv(1);
             if (s.length() > Defines.MAX_ALIAS_NAME) {
                 Com.Printf("Alias name is too long\n");
                 return;
@@ -112,9 +112,9 @@ public final class Cmd {
 
             // copy the rest of the command line
             String cmd = "";
-            int c = Cmd.Argc();
+            int c = Commands.Argc();
             for (int i = 2; i < c; i++) {
-                cmd = cmd + Cmd.Argv(i);
+                cmd = cmd + Commands.Argv(i);
                 if (i != (c - 1))
                     cmd = cmd + " ";
             }
@@ -145,11 +145,11 @@ public final class Cmd {
      */
     public static void Init() {
 
-        Cmd.AddCommand("exec", Exec_f);
-        Cmd.AddCommand("echo", Echo_f);
-        Cmd.AddCommand("cmdlist", List_f);
-        Cmd.AddCommand("alias", Alias_f);
-        Cmd.AddCommand("wait", Wait_f);
+        Commands.addCommand("exec", Exec_f);
+        Commands.addCommand("echo", Echo_f);
+        Commands.addCommand("cmdlist", List_f);
+        Commands.addCommand("alias", Alias_f);
+        Commands.addCommand("wait", Wait_f);
     }
 
     private static char expanded[] = new char[Defines.MAX_STRING_CHARS];
@@ -300,7 +300,7 @@ public final class Cmd {
         }
     }
 
-    public static void AddCommand(String cmd_name, ExecutableCommand function) {
+    public static void addCommand(String cmd_name, ExecutableCommand function) {
         CommandFunction cmd;
         //Com.DPrintf("Cmd_AddCommand: " + cmd_name + "\n");
         // fail if the command is a variable name
@@ -403,7 +403,7 @@ public final class Cmd {
         for (cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd_argv[0].equalsIgnoreCase(cmd.name)) {
                 if (null == cmd.function) { // forward to server command
-                    Cmd.ExecuteString("cmd " + text);
+                    Commands.ExecuteString("cmd " + text);
                 } else {
                     cmd.function.execute();
                 }
@@ -430,7 +430,7 @@ public final class Cmd {
             return;
 
         // send it as a server command if we are connected
-        Cmd.ForwardToServer();
+        Commands.ForwardToServer();
     }
 
     /**
@@ -452,16 +452,16 @@ public final class Cmd {
             return;
         }
 
-        name = Cmd.Args();
+        name = Commands.Args();
 
         if (0 == Lib.Q_stricmp(name, "all"))
             give_all = true;
         else
             give_all = false;
 
-        if (give_all || 0 == Lib.Q_stricmp(Cmd.Argv(1), "health")) {
-            if (Cmd.Argc() == 3)
-                ent.health = Lib.atoi(Cmd.Argv(2));
+        if (give_all || 0 == Lib.Q_stricmp(Commands.Argv(1), "health")) {
+            if (Commands.Argc() == 3)
+                ent.health = Lib.atoi(Commands.Argv(2));
             else
                 ent.health = ent.max_health;
             if (!give_all)
@@ -538,7 +538,7 @@ public final class Cmd {
 
         it = GameItems.FindItem(name);
         if (it == null) {
-            name = Cmd.Argv(1);
+            name = Commands.Argv(1);
             it = GameItems.FindItem(name);
             if (it == null) {
                 ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH, "unknown item\n");
@@ -554,8 +554,8 @@ public final class Cmd {
         index = GameItems.ITEM_INDEX(it);
 
         if ((it.flags & Defines.IT_AMMO) != 0) {
-            if (Cmd.Argc() == 3)
-                ent.client.pers.inventory[index] = Lib.atoi(Cmd.Argv(2));
+            if (Commands.Argc() == 3)
+                ent.client.pers.inventory[index] = Lib.atoi(Commands.Argv(2));
             else
                 ent.client.pers.inventory[index] += it.quantity;
         } else {
@@ -653,7 +653,7 @@ public final class Cmd {
         GameItem it;
         String s;
 
-        s = Cmd.Args();
+        s = Commands.Args();
 
         it = GameItems.FindItem(s);
         Com.dprintln("using:" + s);
@@ -684,7 +684,7 @@ public final class Cmd {
         GameItem it;
         String s;
 
-        s = Cmd.Args();
+        s = Commands.Args();
         it = GameItems.FindItem(s);
         if (it == null) {
             ServerGame.PF_cprintfhigh(ent, "unknown item: " + s + "\n");
@@ -736,7 +736,7 @@ public final class Cmd {
     public static void InvUse_f(Entity ent) {
         GameItem it;
 
-        Cmd.ValidateSelectedItem(ent);
+        Commands.ValidateSelectedItem(ent);
 
         if (ent.client.pers.selected_item == -1) {
             ServerGame.PF_cprintfhigh(ent, "No item to use.\n");
@@ -851,7 +851,7 @@ public final class Cmd {
     public static void InvDrop_f(Entity ent) {
         GameItem it;
 
-        Cmd.ValidateSelectedItem(ent);
+        Commands.ValidateSelectedItem(ent);
 
         if (ent.client.pers.selected_item == -1) {
             ServerGame.PF_cprintfhigh(ent, "No item to drop.\n");
@@ -956,7 +956,7 @@ public final class Cmd {
         }
 
         // sort by frags
-        Arrays.sort(index, 0, count - 1, Cmd.PlayerSort);
+        Arrays.sort(index, 0, count - 1, Commands.PlayerSort);
 
         // print information
         large = "";
@@ -984,7 +984,7 @@ public final class Cmd {
     public static void Wave_f(Entity ent) {
         int i;
 
-        i = Lib.atoi(Cmd.Argv(1));
+        i = Lib.atoi(Commands.Argv(1));
 
         // can't wave when ducked
         if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
@@ -1042,7 +1042,7 @@ public final class Cmd {
         String text;
         GameClient cl;
 
-        if (Cmd.Argc() < 2 && !arg0)
+        if (Commands.Argc() < 2 && !arg0)
             return;
 
         if (0 == ((int) (GameBase.dmflags.value) & (Defines.DF_MODELTEAMS | Defines.DF_SKINTEAMS)))
@@ -1054,14 +1054,14 @@ public final class Cmd {
             text = "" + ent.client.pers.netname + ": ";
 
         if (arg0) {
-            text += Cmd.Argv(0);
+            text += Commands.Argv(0);
             text += " ";
-            text += Cmd.Args();
+            text += Commands.Args();
         } else {
-            if (Cmd.Args().startsWith("\""))
-                text += Cmd.Args().substring(1, Cmd.Args().length() - 1);
+            if (Commands.Args().startsWith("\""))
+                text += Commands.Args().substring(1, Commands.Args().length() - 1);
             else
-                text += Cmd.Args();
+                text += Commands.Args();
         }
 
         // don't let text be too long for malicious reasons
@@ -1159,7 +1159,7 @@ public final class Cmd {
     public static void ForwardToServer() {
         String cmd;
 
-        cmd = Cmd.Argv(0);
+        cmd = Commands.Argv(0);
         if (Globals.cls.state <= Defines.ca_connected || cmd.charAt(0) == '-'
                 || cmd.charAt(0) == '+') {
             Com.Printf("Unknown command \"" + cmd + "\"\n");
@@ -1168,9 +1168,9 @@ public final class Cmd {
 
         Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
         SZ.Print(Globals.cls.netchan.message, cmd);
-        if (Cmd.Argc() > 1) {
+        if (Commands.Argc() > 1) {
             SZ.Print(Globals.cls.netchan.message, " ");
-            SZ.Print(Globals.cls.netchan.message, Cmd.Args());
+            SZ.Print(Globals.cls.netchan.message, Commands.Args());
         }
     }
 

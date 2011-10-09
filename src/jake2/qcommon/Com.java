@@ -23,9 +23,9 @@
 */
 package jake2.qcommon;
 
-import jake2.client.CL;
+import jake2.client.Client;
 import jake2.client.Console;
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.server.ServerMain;
 import jake2.sys.Sys;
 import jake2.util.*;
@@ -245,7 +245,7 @@ public final class Com
 	{
 		public void execute() throws LongJmpException
 		{
-			Error(Defines.ERR_FATAL, Cmd.Argv(1));
+			Error(Defines.ERR_FATAL, Commands.Argv(1));
 		}
 	};
 
@@ -269,7 +269,7 @@ public final class Com
 
 		if (code == Defines.ERR_DISCONNECT)
 		{
-			CL.Drop();
+			Client.drop();
       recursive = false;
       throw new LongJmpException();
 		}
@@ -277,14 +277,14 @@ public final class Com
 		{
 			Com.Printf("********************\nERROR: " + msg + "\n********************\n");
 			ServerMain.SV_Shutdown("Server crashed: " + msg + "\n", false);
-			CL.Drop();
+			Client.drop();
       recursive = false;
       throw new LongJmpException();
     }
 		else
 		{
 			ServerMain.SV_Shutdown("Server fatal crashed: %s" + msg + "\n", false);
-			CL.Shutdown();
+			Client.shutdown();
 		}
 
 		Sys.Error(msg);
@@ -444,7 +444,7 @@ public final class Com
 	public static void Quit()
 	{
 		ServerMain.SV_Shutdown("Server quit\n", false);
-		CL.Shutdown();
+		Client.shutdown();
 
 		if (Globals.logfile != null)
 		{

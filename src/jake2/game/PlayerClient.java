@@ -70,7 +70,7 @@ public class PlayerClient {
                 ClientObituary(self, inflictor, attacker);
                 PlayerClient.TossClientWeapon(self);
                 if (GameBase.deathmatch.value != 0)
-                    Cmd.Help_f(self); // show scores
+                    Commands.Help_f(self); // show scores
     
                 // clear inventory
                 // this is kind of ugly, but it's how we want to handle keys in

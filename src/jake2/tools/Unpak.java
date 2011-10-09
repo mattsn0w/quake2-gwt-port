@@ -88,6 +88,7 @@ public class Unpak {
       System.exit(-1);
     }
 
+    createPath(imageSizesFile.getAbsolutePath());
     Writer imageSizes = new FileWriter(imageSizesFile);
     imageSizes.write("var __imageSizes = {\n");
     convertDir(indir, "", imageSizes);

@@ -26,7 +26,7 @@ package jake2.client;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.EntityState;
 import jake2.qcommon.AsyncCallback;
 import jake2.qcommon.CM;
@@ -136,16 +136,16 @@ public class ClientParser {
      * 
      * Request a download from the server ===============
      */
-    public static ExecutableCommand Download_f = new ExecutableCommand() {
+    public static ExecutableCommand downloadCommand = new ExecutableCommand() {
         public void execute() {
             String filename;
 
-            if (Cmd.Argc() != 2) {
+            if (Commands.Argc() != 2) {
                 Com.Printf("Usage: download <filename>\n");
                 return;
             }
 
-            filename = Cmd.Argv(1);
+            filename = Commands.Argv(1);
 
             if (filename.indexOf("..") != -1) {
                 Com.Printf("Refusing to download a path with ..\n");
@@ -218,7 +218,7 @@ public class ClientParser {
                 }
                 Globals.cls.download = null;
             }
-            CL.RequestNextDownload();
+            Client.requestNextDownload();
             return;
         }
 
@@ -233,7 +233,7 @@ public class ClientParser {
                 Globals.net_message.readcount += size;
                 Com.Printf("Failed to open " + Globals.cls.downloadtempname
                         + "\n");
-                CL.RequestNextDownload();
+                Client.requestNextDownload();
                 return;
             }
         }
@@ -277,7 +277,7 @@ public class ClientParser {
 
             // get another file if needed
 
-            CL.RequestNextDownload();
+            Client.requestNextDownload();
         }
     }
 
@@ -301,7 +301,7 @@ public class ClientParser {
         //
         //	   wipe the client_state_t struct
         //
-        CL.ClearState();
+        Client.clearState();
         Globals.cls.state = Defines.ca_connected;
 
         //	   parse protocol version number
@@ -811,6 +811,6 @@ public class ClientParser {
         // after we have parsed the frame
         //
         if (Globals.cls.demorecording && !Globals.cls.demowaiting)
-            CL.WriteDemoMessage();
+            Client.writeDemoMessage();
     }
 }

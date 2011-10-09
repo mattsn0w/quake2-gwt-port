@@ -45,7 +45,7 @@ import static jake2.qcommon.Globals.gun_model;
 import static jake2.qcommon.Globals.re;
 import static jake2.qcommon.Globals.scr_vrect;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.ConsoleVariable;
 import jake2.qcommon.AsyncCallback;
 import jake2.qcommon.Com;
@@ -280,11 +280,11 @@ public final class Video {
 
     static ExecutableCommand Gun_Model_f = new ExecutableCommand() {
         public void execute() {
-            if (Cmd.Argc() != 2) {
+            if (Commands.Argc() != 2) {
                 gun_model = null;
                 return;
             }
-            String name = "models/" + Cmd.Argv(1) + "/tris.md2";
+            String name = "models/" + Commands.Argv(1) + "/tris.md2";
             re.RegisterModel(name, new AsyncCallback<RendererModel>() {
               public void onSuccess(RendererModel response) {
                 gun_model = response;
@@ -417,11 +417,11 @@ public final class Video {
     };
 
     public static void Init() {
-        Cmd.AddCommand("gun_next", Gun_Next_f);
-        Cmd.AddCommand("gun_prev", Gun_Prev_f);
-        Cmd.AddCommand("gun_model", Gun_Model_f);
+        Commands.addCommand("gun_next", Gun_Next_f);
+        Commands.addCommand("gun_prev", Gun_Prev_f);
+        Commands.addCommand("gun_model", Gun_Model_f);
 
-        Cmd.AddCommand("viewpos", Viewpos_f);
+        Commands.addCommand("viewpos", Viewpos_f);
 
         crosshair = ConsoleVariables.Get("crosshair", "0", CVAR_ARCHIVE);
 

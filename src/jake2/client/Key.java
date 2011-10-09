@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.client;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.qcommon.*;
 import jake2.util.Lib;
 
@@ -269,10 +269,10 @@ public class Key extends Globals {
 		//
 		// register our functions
 		//
-		Cmd.AddCommand("bind", Key.Bind_f);
-		Cmd.AddCommand("unbind", Key.Unbind_f);
-		Cmd.AddCommand("unbindall", Key.Unbindall_f);
-		Cmd.AddCommand("bindlist", Key.Bindlist_f);
+		Commands.addCommand("bind", Key.Bind_f);
+		Commands.addCommand("unbind", Key.Unbind_f);
+		Commands.addCommand("unbindall", Key.Unbindall_f);
+		Commands.addCommand("bindlist", Key.Bindlist_f);
 	}
 
 	public static void ClearTyping() {
@@ -682,7 +682,7 @@ public class Key extends Globals {
 
 		String s = Compatibility.newString(key_lines[edit_line], start, end-start);
 		
-		Vector cmds = Cmd.CompleteCommand(s);
+		Vector cmds = Commands.CompleteCommand(s);
 		Vector vars = ConsoleVariables.CompleteVariable(s);
 		
 		int c = cmds.size();
@@ -715,30 +715,30 @@ public class Key extends Globals {
 	};
 
 	static void Key_Bind_f() {
-		int c = Cmd.Argc();
+		int c = Commands.Argc();
 
 		if (c < 2) {
 			Com.Printf("bind <key> [command] : attach a command to a key\n");
 			return;
 		}
-		int b = StringToKeynum(Cmd.Argv(1));
+		int b = StringToKeynum(Commands.Argv(1));
 		if (b == -1) {
-			Com.Printf("\"" + Cmd.Argv(1) + "\" isn't a valid key\n");
+			Com.Printf("\"" + Commands.Argv(1) + "\" isn't a valid key\n");
 			return;
 		}
 
 		if (c == 2) {
 			if (Globals.keybindings[b] != null)
-				Com.Printf("\"" + Cmd.Argv(1) + "\" = \"" + Globals.keybindings[b] + "\"\n");
+				Com.Printf("\"" + Commands.Argv(1) + "\" = \"" + Globals.keybindings[b] + "\"\n");
 			else
-				Com.Printf("\"" + Cmd.Argv(1) + "\" is not bound\n");
+				Com.Printf("\"" + Commands.Argv(1) + "\" is not bound\n");
 			return;
 		}
 
 		// copy the rest of the command line
 		String cmd = ""; // start out with a null string
 		for (int i = 2; i < c; i++) {
-			cmd += Cmd.Argv(i);
+			cmd += Commands.Argv(i);
 			if (i != (c - 1))
 				cmd += " ";
 		}
@@ -764,14 +764,14 @@ public class Key extends Globals {
 
 	static void Key_Unbind_f() {
 
-		if (Cmd.Argc() != 2) {
+		if (Commands.Argc() != 2) {
 			Com.Printf("unbind <key> : remove commands from a key\n");
 			return;
 		}
 
-		int b = Key.StringToKeynum(Cmd.Argv(1));
+		int b = Key.StringToKeynum(Commands.Argv(1));
 		if (b == -1) {
-			Com.Printf("\"" + Cmd.Argv(1) + "\" isn't a valid key\n");
+			Com.Printf("\"" + Commands.Argv(1) + "\" isn't a valid key\n");
 			return;
 		}
 

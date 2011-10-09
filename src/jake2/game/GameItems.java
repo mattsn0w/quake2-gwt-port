@@ -648,7 +648,7 @@ public class GameItems {
             }
     
             ent.client.pers.inventory[index] -= dropped.count;
-            Cmd.ValidateSelectedItem(ent);
+            Commands.ValidateSelectedItem(ent);
         }
     };
     public static ItemDropAdapter Drop_General = new ItemDropAdapter() {
@@ -656,7 +656,7 @@ public class GameItems {
         public void drop(Entity ent, GameItem item) {
             Drop_Item(ent, item);
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
-            Cmd.ValidateSelectedItem(ent);
+            Commands.ValidateSelectedItem(ent);
         }
     };
     

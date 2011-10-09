@@ -187,17 +187,17 @@ public class GameEngine {
 
     // ClientCommand and ServerCommand parameter access
     public int argc() {
-        return Cmd.Argc();
+        return Commands.Argc();
     }
 
 
     public String argv(int n) {
-        return Cmd.Argv(n);
+        return Commands.Argv(n);
     }
 
     // concatenation of all argv >= 1
     public String args() {
-        return Cmd.Args();
+        return Commands.Args();
     }
 
     // add commands to the server console as if they were typed in

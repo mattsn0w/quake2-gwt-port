@@ -23,7 +23,7 @@
 */
 package jake2.server;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.GameBase;
 import jake2.game.Info;
 import jake2.game.PlayerClient;
@@ -224,13 +224,13 @@ public class User {
         }
 
         // handle the case of a level changing while a client was connecting
-        if (Lib.atoi(Cmd.Argv(1)) != ServerInit.svs.spawncount) {
+        if (Lib.atoi(Commands.Argv(1)) != ServerInit.svs.spawncount) {
             Com.Printf("SV_Configstrings_f from different level\n");
             SV_New_f();
             return;
         }
 
-        start = Lib.atoi(Cmd.Argv(2));
+        start = Lib.atoi(Commands.Argv(2));
 
         // write a packet full of data
 
@@ -279,13 +279,13 @@ public class User {
         }
 
         // handle the case of a level changing while a client was connecting
-        if (Lib.atoi(Cmd.Argv(1)) != ServerInit.svs.spawncount) {
+        if (Lib.atoi(Commands.Argv(1)) != ServerInit.svs.spawncount) {
             Com.Printf("SV_Baselines_f from different level\n");
             SV_New_f();
             return;
         }
 
-        start = Lib.atoi(Cmd.Argv(2));
+        start = Lib.atoi(Commands.Argv(2));
 
         //memset (&nullstate, 0, sizeof(nullstate));
         nullstate = new EntityState(null);
@@ -326,7 +326,7 @@ public class User {
         Com.DPrintf("Begin() from " + ServerMain.sv_client.name + "\n");
 
         // handle the case of a level changing while a client was connecting
-        if (Lib.atoi(Cmd.Argv(1)) != ServerInit.svs.spawncount) {
+        if (Lib.atoi(Commands.Argv(1)) != ServerInit.svs.spawncount) {
             Com.Printf("SV_Begin_f from different level\n");
             SV_New_f();
             return;
@@ -383,10 +383,10 @@ public class User {
         String name;
         int offset = 0;
 
-        name = Cmd.Argv(1);
+        name = Commands.Argv(1);
 
-        if (Cmd.Argc() > 2)
-            offset = Lib.atoi(Cmd.Argv(2)); // downloaded offset
+        if (Commands.Argc() > 2)
+            offset = Lib.atoi(Commands.Argv(2)); // downloaded offset
 
         // hacked by zoid to allow more conrol over download
         // first off, no .. or global allow check
@@ -506,7 +506,7 @@ public class User {
      * next server, ==================
      */
     public static void SV_Nextserver_f() {
-        if (Lib.atoi(Cmd.Argv(1)) != ServerInit.svs.spawncount) {
+        if (Lib.atoi(Commands.Argv(1)) != ServerInit.svs.spawncount) {
             Com.DPrintf("Nextserver() from wrong level, from "
                     + ServerMain.sv_client.name + "\n");
             return; // leftover from last server
@@ -525,7 +525,7 @@ public class User {
         Com.dprintln("SV_ExecuteUserCommand:" + s );
         User.ucmd_t u = null;
 
-        Cmd.TokenizeString(s.toCharArray(), true);
+        Commands.TokenizeString(s.toCharArray(), true);
         User.sv_player = ServerMain.sv_client.edict;
 
         //	SV_BeginRedirect (RD_CLIENT);
@@ -533,14 +533,14 @@ public class User {
         int i = 0;
         for (; i < User.ucmds.length; i++) {
             u = User.ucmds[i];
-            if (Cmd.Argv(0).equals(u.name)) {
+            if (Commands.Argv(0).equals(u.name)) {
                 u.r.run();
                 break;
             }
         }
 
         if (i == User.ucmds.length && ServerInit.sv.state == Defines.ss_game)
-            Cmd.ClientCommand(User.sv_player);
+            Commands.ClientCommand(User.sv_player);
 
         //	SV_EndRedirect ();
     }

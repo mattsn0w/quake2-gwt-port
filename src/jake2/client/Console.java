@@ -41,7 +41,7 @@ import static jake2.qcommon.Globals.key_lines;
 import static jake2.qcommon.Globals.re;
 import static jake2.qcommon.Globals.viddef;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.qcommon.CommandBuffer;
 import jake2.qcommon.Com;
 import jake2.qcommon.ConsoleVariables;
@@ -110,11 +110,11 @@ public final class Console {
         //
         Globals.con_notifytime = ConsoleVariables.Get("con_notifytime", "3", 0);
 
-        Cmd.AddCommand("toggleconsole", ToggleConsole_f);
-        Cmd.AddCommand("togglechat", ToggleChat_f);
-        Cmd.AddCommand("messagemode", MessageMode_f);
-        Cmd.AddCommand("messagemode2", MessageMode2_f);
-        Cmd.AddCommand("clear", Clear_f);
+        Commands.addCommand("toggleconsole", ToggleConsole_f);
+        Commands.addCommand("togglechat", ToggleChat_f);
+        Commands.addCommand("messagemode", MessageMode_f);
+        Commands.addCommand("messagemode2", MessageMode2_f);
+        Commands.addCommand("clear", Clear_f);
         Globals.con.initialized = true;
     }
 

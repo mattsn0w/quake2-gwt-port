@@ -183,7 +183,7 @@ public class ServerMain {
         if (ServerMain.maxclients.value == 1)
             return; // ignore in single player
 
-        version = Lib.atoi(Cmd.Argv(1));
+        version = Lib.atoi(Commands.Argv(1));
 
         if (version != Defines.PROTOCOL_VERSION)
             string = ServerMain.hostname.string + ": wrong version\n";
@@ -262,7 +262,7 @@ public class ServerMain {
 
         Com.DPrintf("SVC_DirectConnect ()\n");
 
-        version = Lib.atoi(Cmd.Argv(1));
+        version = Lib.atoi(Commands.Argv(1));
         if (version != Defines.PROTOCOL_VERSION) {
             NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr,
                     "print\nServer is version " + Globals.VERSION + "\n");
@@ -270,9 +270,9 @@ public class ServerMain {
             return;
         }
 
-        qport = Lib.atoi(Cmd.Argv(2));
-        int challenge = Lib.atoi(Cmd.Argv(3));
-        userinfo = Cmd.Argv(4);
+        qport = Lib.atoi(Commands.Argv(2));
+        int challenge = Lib.atoi(Commands.Argv(3));
+        userinfo = Commands.Argv(4);
 
         // force the IP key/value pair so the game can filter based on ip
         userinfo = Info.Info_SetValueForKey(userinfo, "ip", NET.AdrToString(Globals.net_from));
@@ -410,7 +410,7 @@ public class ServerMain {
         if (0 == ServerMain.rcon_password.string.length())
             return 0;
 
-        if (0 != Lib.strcmp(Cmd.Argv(1), ServerMain.rcon_password.string))
+        if (0 != Lib.strcmp(Commands.Argv(1), ServerMain.rcon_password.string))
             return 0;
 
         return 1;
@@ -447,12 +447,12 @@ public class ServerMain {
         } else {
             remaining = "";
 
-            for (i = 2; i < Cmd.Argc(); i++) {
-                remaining += Cmd.Argv(i);
+            for (i = 2; i < Commands.Argc(); i++) {
+                remaining += Commands.Argv(i);
                 remaining += " ";
             }
 
-            Cmd.ExecuteString(remaining);
+            Commands.ExecuteString(remaining);
         }
 
         Com.EndRedirect();
@@ -472,9 +472,9 @@ public class ServerMain {
 
         s = Messages.ReadStringLine(Globals.net_message);
 
-        Cmd.TokenizeString(s.toCharArray(), false);
+        Commands.TokenizeString(s.toCharArray(), false);
 
-        c = Cmd.Argv(0);
+        c = Commands.Argv(0);
         
         //for debugging purposes 
         //Com.Printf("Packet " + NET.AdrToString(Netchan.net_from) + " : " + c + "\n");

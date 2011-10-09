@@ -39,7 +39,7 @@ import java.util.Random;
  * 
  * As consequence you dont have to touch that much code this time. 
  */
-public class Globals extends Defines {
+public class Globals {
 
 	public static final String __DATE__ = "2003";
 
@@ -116,7 +116,7 @@ public class Globals extends Defines {
 
 	//=============================================================================
 
-	public static byte[] net_message_buffer = new byte[MAX_MSGLEN];
+	public static byte[] net_message_buffer = new byte[Defines.MAX_MSGLEN];
 
 	public static int time_before_game;
 	public static int time_after_game;
@@ -148,7 +148,7 @@ public class Globals extends Defines {
 
 	public static ConsoleVariable cl_vwep;
 
-	public static client_static_t cls = new client_static_t();
+	public static ClientStatic cls = new ClientStatic();
 	public static ClientState cl = new ClientState();
 
 	public static ClientEntity cl_entities[] = new ClientEntity[Defines.MAX_EDICTS];
@@ -378,7 +378,7 @@ public class Globals extends Defines {
 	public static float vec3_origin[] = { 0.0f, 0.0f, 0.0f };
 
 	public static ConsoleVariable m_filter;
-	public static int vidref_val = VIDREF_GL;
+	public static int vidref_val = Defines.VIDREF_GL;
 	
 	public static Random rnd = new Random();
 }

@@ -23,7 +23,7 @@
 */
 package jake2.qcommon;
 
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.ConsoleVariable;
 import jake2.sys.Sys;
 
@@ -717,10 +717,10 @@ public final class QuakeFileSystem extends Globals {
         fs_gamedir = fs_basedir.string + '/' + dir;
 
         if (dir.equals(Globals.BASEDIRNAME) || (dir.length() == 0)) {
-            ConsoleVariables.FullSet("gamedir", "", CVAR_SERVERINFO | CVAR_NOSET);
-            ConsoleVariables.FullSet("game", "", CVAR_LATCH | CVAR_SERVERINFO);
+            ConsoleVariables.FullSet("gamedir", "", Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
+            ConsoleVariables.FullSet("game", "", Defines.CVAR_LATCH | Defines.CVAR_SERVERINFO);
         } else {
-            ConsoleVariables.FullSet("gamedir", dir, CVAR_SERVERINFO | CVAR_NOSET);
+            ConsoleVariables.FullSet("gamedir", dir, Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
             if (fs_cddir.string != null && fs_cddir.string.length() > 0)
                 AddGameDirectory(fs_cddir.string + '/' + dir);
 
@@ -736,7 +736,7 @@ public final class QuakeFileSystem extends Globals {
     public static void Link_f() {
         filelink_t entry = null;
 
-        if (Cmd.Argc() != 3) {
+        if (Commands.Argc() != 3) {
             Com.Printf("USAGE: link <from> <to>\n");
             return;
         }
@@ -745,23 +745,23 @@ public final class QuakeFileSystem extends Globals {
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
             entry = (filelink_t) it.next();
 
-            if (entry.from.equals(Cmd.Argv(1))) {
-                if (Cmd.Argv(2).length() < 1) {
+            if (entry.from.equals(Commands.Argv(1))) {
+                if (Commands.Argv(2).length() < 1) {
                     // delete it
                     it.remove();
                     return;
                 }
-                entry.to = new String(Cmd.Argv(2));
+                entry.to = new String(Commands.Argv(2));
                 return;
             }
         }
 
         // create a new link if the <to> is not empty
-        if (Cmd.Argv(2).length() > 0) {
+        if (Commands.Argv(2).length() > 0) {
             entry = new filelink_t();
-            entry.from = new String(Cmd.Argv(1));
+            entry.from = new String(Commands.Argv(1));
             entry.fromlength = entry.from.length();
-            entry.to = new String(Cmd.Argv(2));
+            entry.to = new String(Commands.Argv(2));
             fs_links.add(entry);
         }
     }
@@ -793,8 +793,8 @@ public final class QuakeFileSystem extends Globals {
         String wildcard = "*.*";
         String[] dirnames;
 
-        if (Cmd.Argc() != 1) {
-            wildcard = Cmd.Argv(1);
+        if (Commands.Argc() != 1) {
+            wildcard = Commands.Argv(1);
         }
 
         while ((path = NextPath(path)) != null) {
@@ -882,17 +882,17 @@ public final class QuakeFileSystem extends Globals {
      * InitFilesystem
      */
     public static void InitFilesystem() {
-        Cmd.AddCommand("path", new ExecutableCommand() {
+        Commands.addCommand("path", new ExecutableCommand() {
             public void execute() {
                 Path_f();
             }
         });
-        Cmd.AddCommand("link", new ExecutableCommand() {
+        Commands.addCommand("link", new ExecutableCommand() {
             public void execute() {
                 Link_f();
             }
         });
-        Cmd.AddCommand("dir", new ExecutableCommand() {
+        Commands.addCommand("dir", new ExecutableCommand() {
             public void execute() {
                 Dir_f();
             }
@@ -906,7 +906,7 @@ public final class QuakeFileSystem extends Globals {
         // basedir <path>
         // allows the game to run from outside the data tree
         //
-        fs_basedir = ConsoleVariables.Get("basedir", ".", CVAR_NOSET);
+        fs_basedir = ConsoleVariables.Get("basedir", ".", Defines.CVAR_NOSET);
 
         //
         // cddir <path>
@@ -925,7 +925,7 @@ public final class QuakeFileSystem extends Globals {
         markBaseSearchPaths();
 
         // check for game override
-        fs_gamedirvar = ConsoleVariables.Get("game", "", CVAR_LATCH | CVAR_SERVERINFO);
+        fs_gamedirvar = ConsoleVariables.Get("game", "", Defines.CVAR_LATCH | Defines.CVAR_SERVERINFO);
 
         if (fs_gamedirvar.string.length() > 0)
             SetGamedir(fs_gamedirvar.string);
@@ -935,7 +935,7 @@ public final class QuakeFileSystem extends Globals {
      * set baseq2 directory
      */
     static void setCDDir() {
-        fs_cddir = ConsoleVariables.Get("cddir", "", CVAR_ARCHIVE);
+        fs_cddir = ConsoleVariables.Get("cddir", "", Defines.CVAR_ARCHIVE);
         if (fs_cddir.string.length() > 0)
             AddGameDirectory(fs_cddir.string);
     }

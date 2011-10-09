@@ -31,7 +31,7 @@ import jake2.client.Window;
 import jake2.client.EntityType;
 import jake2.client.Particles;
 import jake2.client.RendererState;
-import jake2.game.Cmd;
+import jake2.game.Commands;
 import jake2.game.Plane;
 import jake2.game.ConsoleVariable;
 import jake2.qcommon.Com;
@@ -998,23 +998,23 @@ public abstract class Main extends Base {
 		vid_gamma = ConsoleVariables.Get("vid_gamma", "1.0", CVAR_ARCHIVE);
 		vid_ref = ConsoleVariables.Get("vid_ref", "lwjgl", CVAR_ARCHIVE);
 
-		Cmd.AddCommand("imagelist", new ExecutableCommand() {
+		Commands.addCommand("imagelist", new ExecutableCommand() {
 			public void execute() {
 				GL_ImageList_f();
 			}
 		});
 
-		Cmd.AddCommand("screenshot", new ExecutableCommand() {
+		Commands.addCommand("screenshot", new ExecutableCommand() {
 			public void execute() {
 				GL_ScreenShot_f();
 			}
 		});
-		Cmd.AddCommand("modellist", new ExecutableCommand() {
+		Commands.addCommand("modellist", new ExecutableCommand() {
 			public void execute() {
 				Mod_Modellist_f();
 			}
 		});
-		Cmd.AddCommand("gl_strings", new ExecutableCommand() {
+		Commands.addCommand("gl_strings", new ExecutableCommand() {
 			public void execute() {
 				GL_Strings_f();
 			}
@@ -1123,10 +1123,10 @@ public abstract class Main extends Base {
 	 * R_Shutdown
 	 */
 	protected void R_Shutdown() {
-		Cmd.RemoveCommand("modellist");
-		Cmd.RemoveCommand("screenshot");
-		Cmd.RemoveCommand("imagelist");
-		Cmd.RemoveCommand("gl_strings");
+		Commands.RemoveCommand("modellist");
+		Commands.RemoveCommand("screenshot");
+		Commands.RemoveCommand("imagelist");
+		Commands.RemoveCommand("gl_strings");
 
 		Mod_FreeAll();
 

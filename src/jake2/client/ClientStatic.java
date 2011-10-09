@@ -26,7 +26,7 @@ package jake2.client;
 import jake2.qcommon.NetworkChannel;
 import java.io.*;
 
-public class client_static_t {
+public class ClientStatic {
 
 	// was enum connstate_t 
 	public int state;
