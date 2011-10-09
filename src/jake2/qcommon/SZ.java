@@ -30,13 +30,13 @@ import jake2.util.Lib;
  */
 public final class SZ {
 
-	public static void Clear(sizebuf_t buf) {
+	public static void Clear(Buffer buf) {
 		buf.clear();
 	}
 
 	//===========================================================================
 	
-	public static void Init(sizebuf_t buf, byte data[], int length) {
+	public static void Init(Buffer buf, byte data[], int length) {
 	  // TODO check this. cwei
 	  buf.readcount = 0;
 
@@ -48,7 +48,7 @@ public final class SZ {
 
 
 	/** Ask for the pointer using sizebuf_t.cursize (RST) */
-	public static int GetSpace(sizebuf_t buf, int length) {
+	public static int GetSpace(Buffer buf, int length) {
 		int oldsize;
 	
 		if (buf.cursize + length > buf.maxsize) {
@@ -69,23 +69,23 @@ public final class SZ {
 		return oldsize;
 	}
 
-	public static void Write(sizebuf_t buf, byte data[], int length) {
+	public static void Write(Buffer buf, byte data[], int length) {
 		//memcpy(SZ_GetSpace(buf, length), data, length);
 		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
 	}
 
-	public static void Write(sizebuf_t buf, byte data[], int offset, int length) {
+	public static void Write(Buffer buf, byte data[], int offset, int length) {
 		System.arraycopy(data, offset, buf.data, GetSpace(buf, length), length);
 	}
 
-	public static void Write(sizebuf_t buf, byte data[]) {
+	public static void Write(Buffer buf, byte data[]) {
 		int length = data.length;
 		//memcpy(SZ_GetSpace(buf, length), data, length);
 		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
 	}
 
 	// 
-	public static void Print(sizebuf_t buf, String data) {
+	public static void Print(Buffer buf, String data) {
 	    Com.dprintln("SZ.print():<" + data + ">" );
 		int length = data.length();
 		byte str[] = Lib.stringToBytes(data);

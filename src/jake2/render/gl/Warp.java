@@ -27,10 +27,10 @@ import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
 import jake2.qcommon.QuakeImage;
-import jake2.render.GLAdapter;
-import jake2.render.glpoly_t;
-import jake2.render.image_t;
-import jake2.render.msurface_t;
+import jake2.render.GlAdapter;
+import jake2.render.GlPolygon;
+import jake2.render.ModelImage;
+import jake2.render.ModelSurface;
 import jake2.util.Math3D;
 import jake2.util.Vec3Cache;
 
@@ -40,7 +40,7 @@ import jake2.util.Vec3Cache;
  *  
  * @author cwei
  */
-public abstract class Warp extends Model {
+public abstract class Warp extends Models {
 	// warpsin.h
 	public static final float[] SIN = {
 		0f, 0.19633f, 0.392541f, 0.588517f, 0.784137f, 0.979285f, 1.17384f, 1.3677f,
@@ -80,9 +80,9 @@ public abstract class Warp extends Model {
 	String skyname;
 	float	skyrotate;
 	float[] skyaxis = {0, 0, 0};
-	image_t[] sky_images = new image_t[6];
+	ModelImage[] sky_images = new ModelImage[6];
 
-	msurface_t	warpface;
+	ModelSurface	warpface;
 
 	static final int SUBDIVIDE_SIZE = 64;
 
@@ -197,7 +197,7 @@ public abstract class Warp extends Model {
 		// poly = Hunk_Alloc (sizeof(glpoly_t) + ((numverts-4)+2) * VERTEXSIZE*sizeof(float));
 
 		// init polys
-		glpoly_t poly = Polygon.create(numverts + 2);
+		GlPolygon poly = Polygon.create(numverts + 2);
 
 		poly.next = warpface.polys;
 		warpface.polys = poly;
@@ -248,7 +248,7 @@ public abstract class Warp extends Model {
 	 * boundaries so that turbulent and sky warps
 	 * can be done reasonably.
 	 */
-    void GL_SubdivideSurface(msurface_t fa) {
+    void GL_SubdivideSurface(ModelSurface fa) {
         float[][] verts = tmpVerts;
         float[] vec;
         warpface = fa;
@@ -276,7 +276,7 @@ public abstract class Warp extends Model {
 	 * EmitWaterPolys
 	 * Does a water warp on the pre-fragmented glpoly_t chain
 	 */
-	void EmitWaterPolys(msurface_t fa)
+	void EmitWaterPolys(ModelSurface fa)
 	{
 		float rdt = r_newrefdef.time;
 
@@ -288,11 +288,11 @@ public abstract class Warp extends Model {
 		
 		int i;
 		float s, t, os, ot;
-		glpoly_t p, bp;
+		GlPolygon p, bp;
         for (bp = fa.polys; bp != null; bp = bp.next) {
             p = bp;
 
-            gl.glBegin(GLAdapter.GL_TRIANGLE_FAN);
+            gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
             for (i = 0; i < p.numverts; i++) {
                 os = p.s1(i);
                 ot = p.t1(i);
@@ -545,10 +545,10 @@ public abstract class Warp extends Model {
 	/**
 	 * R_AddSkySurface
 	 */
-	void R_AddSkySurface(msurface_t fa)
+	void R_AddSkySurface(ModelSurface fa)
 	{
 	    // calculate vertex values for sky box
-        for (glpoly_t p = fa.polys; p != null; p = p.next) {
+        for (GlPolygon p = fa.polys; p != null; p = p.next) {
             for (int i = 0; i < p.numverts; i++) {
                 verts[i][0] = p.x(i) - r_origin[0];
                 verts[i][1] = p.y(i) - r_origin[1];
@@ -659,7 +659,7 @@ public abstract class Warp extends Model {
 
 			GL_Bind(sky_images[skytexorder[i]].texnum);
 			
-			gl.glBegin(GLAdapter._GL_QUADS);
+			gl.glBegin(GlAdapter._GL_QUADS);
 			MakeSkyVec(skymins[0][i], skymins[1][i], i);
 			MakeSkyVec(skymins[0][i], skymaxs[1][i], i);
 			MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i);

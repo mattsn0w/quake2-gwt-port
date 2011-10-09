@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.client;
 
-import jake2.qcommon.netchan_t;
+import jake2.qcommon.NetworkChannel;
 import java.io.*;
 
 public class client_static_t {
@@ -51,7 +51,7 @@ public class client_static_t {
 
 	int quakePort; // a 16 bit value that allows quake servers
 	// to work around address translating routers
-	public netchan_t netchan = new netchan_t();
+	public NetworkChannel netchan = new NetworkChannel();
 	public int serverProtocol; // in case we are doing some kind of version hack
 
 	public int challenge; // from the server to use for connecting

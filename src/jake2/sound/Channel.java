@@ -25,8 +25,8 @@ package jake2.sound;
 
 import static jake2.qcommon.Defines.ca_active;
 
-import jake2.client.CL_ents;
-import jake2.game.entity_state_t;
+import jake2.client.ClientEntities;
+import jake2.game.EntityState;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
@@ -200,12 +200,12 @@ public class Channel {
         IntBuffer buffer = tmp;
         if (interupted) {
             unqueueStreams();
-            buffer.put(0, buffers.get(Sound.MAX_SFX + streamQueue++));
+            buffer.put(0, buffers.get(SoundImpl.MAX_SFX + streamQueue++));
             Com.DPrintf("queue " + (streamQueue - 1) + '\n');
         } else if (processed < 2) {
             // check queue overrun
-            if (streamQueue >= Sound.STREAM_QUEUE) return;
-            buffer.put(0, buffers.get(Sound.MAX_SFX + streamQueue++));
+            if (streamQueue >= SoundImpl.STREAM_QUEUE) return;
+            buffer.put(0, buffers.get(SoundImpl.MAX_SFX + streamQueue++));
             Com.DPrintf("queue " + (streamQueue - 1) + '\n');
         } else {
             // reuse the buffer
@@ -313,7 +313,7 @@ public class Channel {
 						sourceOrigin.put(2, listenerOrigin.get(2));
 						break;
 					case Channel.DYNAMIC:
-						CL_ents.GetEntitySoundOrigin(ch.entnum, entityOrigin);
+						ClientEntities.GetEntitySoundOrigin(ch.entnum, entityOrigin);
 						convertVector(entityOrigin, sourceOrigin);
 						break;
 					case Channel.FIXED:
@@ -359,10 +359,10 @@ public class Channel {
 		}
 		
 		Channel ch;
-		sfx_t	sfx;
-		sfxcache_t sc;
+		Sfx	sfx;
+		SfxCache sc;
 		int num;
-		entity_state_t ent;
+		EntityState ent;
 		Object key;
 		int sound = 0;
 

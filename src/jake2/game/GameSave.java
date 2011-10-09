@@ -32,16 +32,16 @@ import jake2.util.QuakeFile;
 public class GameSave {
 
     public static void CreateEdicts() {
-        GameBase.g_edicts = new edict_t[GameBase.game.maxentities];
+        GameBase.g_edicts = new Entity[GameBase.game.maxentities];
         for (int i = 0; i < GameBase.game.maxentities; i++)
-            GameBase.g_edicts[i] = new edict_t(i);
+            GameBase.g_edicts[i] = new Entity(i);
         GameBase.g_edicts = GameBase.g_edicts;
     }
 
     public static void CreateClients() {
-        GameBase.game.clients = new gclient_t[GameBase.game.maxclients];
+        GameBase.game.clients = new GameClient[GameBase.game.maxclients];
         for (int i = 0; i < GameBase.game.maxclients; i++)
-            GameBase.game.clients[i] = new gclient_t(i);
+            GameBase.game.clients[i] = new GameClient(i);
 
     }
 
@@ -268,7 +268,7 @@ public class GameSave {
             GameBase.game.load(f);
 
             for (int i = 0; i < GameBase.game.maxclients; i++) {
-                GameBase.game.clients[i] = new gclient_t(i);
+                GameBase.game.clients[i] = new GameClient(i);
                 GameBase.game.clients[i].read(f);
             }
 
@@ -286,7 +286,7 @@ public class GameSave {
     public static void WriteLevel(String filename) {
         try {
             int i;
-            edict_t ent;
+            Entity ent;
             QuakeFile f;
 
             f = new QuakeFile(filename, "rw");
@@ -329,7 +329,7 @@ public class GameSave {
      */
     public static void ReadLevel(String filename) {
         try {
-            edict_t ent;
+            Entity ent;
 
             QuakeFile f = new QuakeFile(filename, "r");
 

@@ -185,14 +185,14 @@ public class QuakeImage {
 	==============
 	*/
 	public static byte[] LoadPCX(byte[] raw, byte[][] palette, Dimension dim) {
-		qfiles.pcx_t pcx;
+		QuakeFiles.pcx_t pcx;
 	
 		
 	
 		//
 		// parse the PCX file
 		//
-		pcx = new qfiles.pcx_t(raw);
+		pcx = new QuakeFiles.pcx_t(raw);
 	
 		if (pcx.manufacturer != 0x0a
 			|| pcx.version != 5
@@ -271,11 +271,11 @@ public class QuakeImage {
 			int row, column;
 			ByteBuffer buf_p;
 	//		int length;
-			qfiles.tga_t targa_header;
+			QuakeFiles.tga_t targa_header;
 			byte[] pic = null;
 	
 			
-			targa_header = new qfiles.tga_t(raw);
+			targa_header = new QuakeFiles.tga_t(raw);
 			
 			if (targa_header.image_type != 2 && targa_header.image_type != 10) 
 				Com.Error(Defines.ERR_DROP, "LoadTGA: Only type 2 and 10 targa RGB images supported\n");
@@ -429,7 +429,7 @@ public class QuakeImage {
 		*/
 		public static byte[] GL_LoadWal(byte[] raw, Dimension dim) {
 		
-			qfiles.miptex_t mt = new qfiles.miptex_t(raw);
+			QuakeFiles.miptex_t mt = new QuakeFiles.miptex_t(raw);
 		
 			byte[] pix = new byte[mt.width * mt.height];
 			System.arraycopy(raw, mt.offsets[0], pix, 0, pix.length);

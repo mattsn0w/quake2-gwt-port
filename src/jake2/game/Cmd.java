@@ -23,9 +23,9 @@
 */
 package jake2.game;
 
-import jake2.game.monsters.M_Player;
+import jake2.game.monsters.MonsterPlayer;
 import jake2.qcommon.*;
-import jake2.server.SV_GAME;
+import jake2.server.ServerGame;
 import jake2.util.Lib;
 
 import java.util.*;
@@ -34,9 +34,9 @@ import java.util.*;
  * Cmd
  */
 public final class Cmd {
-    static xcommand_t List_f = new xcommand_t() {
+    static ExecutableCommand List_f = new ExecutableCommand() {
         public void execute() {
-            cmd_function_t cmd = Cmd.cmd_functions;
+            CommandFunction cmd = Cmd.cmd_functions;
             int i = 0;
 
             while (cmd != null) {
@@ -48,7 +48,7 @@ public final class Cmd {
         }
     };
 
-    static xcommand_t Exec_f = new xcommand_t() {
+    static ExecutableCommand Exec_f = new ExecutableCommand() {
         public void execute() {
             if (Cmd.Argc() != 2) {
                 Com.Printf("exec <filename> : execute a script file\n");
@@ -56,20 +56,20 @@ public final class Cmd {
             }
 
             byte[] f = null;
-            f = FS.LoadFile(Cmd.Argv(1));
+            f = QuakeFileSystem.LoadFile(Cmd.Argv(1));
             if (f == null) {
                 Com.Printf("couldn't exec " + Cmd.Argv(1) + "\n");
                 return;
             }
             Com.Printf("execing " + Cmd.Argv(1) + "\n");
 
-            Cbuf.InsertText(Compatibility.newString(f));
+            CommandBuffer.InsertText(Compatibility.newString(f));
 
-            FS.FreeFile(f);
+            QuakeFileSystem.FreeFile(f);
         }
     };
 
-    static xcommand_t Echo_f = new xcommand_t() {
+    static ExecutableCommand Echo_f = new ExecutableCommand() {
         public void execute() {
             for (int i = 1; i < Cmd.Argc(); i++) {
                 Com.Printf(Cmd.Argv(i) + " ");
@@ -78,9 +78,9 @@ public final class Cmd {
         }
     };
 
-    static xcommand_t Alias_f = new xcommand_t() {
+    static ExecutableCommand Alias_f = new ExecutableCommand() {
         public void execute() {
-            cmdalias_t a = null;
+            CommandAlias a = null;
             if (Cmd.Argc() == 1) {
                 Com.Printf("Current alias commands:\n");
                 for (a = Globals.cmd_alias; a != null; a = a.next) {
@@ -104,7 +104,7 @@ public final class Cmd {
             }
 
             if (a == null) {
-                a = new cmdalias_t();
+                a = new CommandAlias();
                 a.next = Globals.cmd_alias;
                 Globals.cmd_alias = a;
             }
@@ -124,13 +124,13 @@ public final class Cmd {
         }
     };
 
-    public static xcommand_t Wait_f = new xcommand_t() {
+    public static ExecutableCommand Wait_f = new ExecutableCommand() {
         public void execute() {
             Globals.cmd_wait = true;
         }
     };
 
-    public static cmd_function_t cmd_functions = null;
+    public static CommandFunction cmd_functions = null;
 
     public static int cmd_argc;
 
@@ -211,7 +211,7 @@ public final class Cmd {
             if (ph.data == null)
                 continue;
 
-            token = Cvar.VariableString(token);
+            token = ConsoleVariables.VariableString(token);
 
             j = token.length();
 
@@ -300,11 +300,11 @@ public final class Cmd {
         }
     }
 
-    public static void AddCommand(String cmd_name, xcommand_t function) {
-        cmd_function_t cmd;
+    public static void AddCommand(String cmd_name, ExecutableCommand function) {
+        CommandFunction cmd;
         //Com.DPrintf("Cmd_AddCommand: " + cmd_name + "\n");
         // fail if the command is a variable name
-        if ((Cvar.VariableString(cmd_name)).length() > 0) {
+        if ((ConsoleVariables.VariableString(cmd_name)).length() > 0) {
             Com.Printf("Cmd_AddCommand: " + cmd_name
                     + " already defined as a var\n");
             return;
@@ -320,7 +320,7 @@ public final class Cmd {
             }
         }
 
-        cmd = new cmd_function_t();
+        cmd = new CommandFunction();
         cmd.name = cmd_name;
 
         cmd.function = function;
@@ -332,7 +332,7 @@ public final class Cmd {
      * Cmd_RemoveCommand 
      */
     public static void RemoveCommand(String cmd_name) {
-        cmd_function_t cmd, back = null;
+        CommandFunction cmd, back = null;
 
         back = cmd = cmd_functions;
 
@@ -358,7 +358,7 @@ public final class Cmd {
      * Cmd_Exists 
      */
     public static boolean Exists(String cmd_name) {
-        cmd_function_t cmd;
+        CommandFunction cmd;
 
         for (cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd.name.equals(cmd_name))
@@ -390,8 +390,8 @@ public final class Cmd {
      */
     public static void ExecuteString(String text) {
 
-        cmd_function_t cmd;
-        cmdalias_t a;
+        CommandFunction cmd;
+        CommandAlias a;
 
         TokenizeString(text.toCharArray(), true);
 
@@ -420,13 +420,13 @@ public final class Cmd {
                     Com.Printf("ALIAS_LOOP_COUNT\n");
                     return;
                 }
-                Cbuf.InsertText(a.value);
+                CommandBuffer.InsertText(a.value);
                 return;
             }
         }
 
         // check cvars
-        if (Cvar.Command())
+        if (ConsoleVariables.Command())
             return;
 
         // send it as a server command if we are connected
@@ -438,16 +438,16 @@ public final class Cmd {
      * 
      * Give items to a client.
      */
-    public static void Give_f(edict_t ent) {
+    public static void Give_f(Entity ent) {
         String name;
-        gitem_t it;
+        GameItem it;
         int index;
         int i;
         boolean give_all;
-        edict_t it_ent;
+        Entity it_ent;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
-            SV_GAME.PF_cprintfhigh(ent,
+            ServerGame.PF_cprintfhigh(ent,
             	"You must run the server with '+set cheats 1' to enable this command.\n");
             return;
         }
@@ -495,7 +495,7 @@ public final class Cmd {
         }
 
         if (give_all || Lib.Q_stricmp(name, "armor") == 0) {
-            gitem_armor_t info;
+            GameItemArmor info;
 
             it = GameItems.FindItem("Jacket Armor");
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = 0;
@@ -504,7 +504,7 @@ public final class Cmd {
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = 0;
 
             it = GameItems.FindItem("Body Armor");
-            info = (gitem_armor_t) it.info;
+            info = (GameItemArmor) it.info;
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = info.max_count;
 
             if (!give_all)
@@ -541,13 +541,13 @@ public final class Cmd {
             name = Cmd.Argv(1);
             it = GameItems.FindItem(name);
             if (it == null) {
-                SV_GAME.PF_cprintf(ent, Defines.PRINT_HIGH, "unknown item\n");
+                ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH, "unknown item\n");
                 return;
             }
         }
 
         if (it.pickup == null) {
-            SV_GAME.PF_cprintf(ent, Defines.PRINT_HIGH, "non-pickup item\n");
+            ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH, "non-pickup item\n");
             return;
         }
 
@@ -575,11 +575,11 @@ public final class Cmd {
      * 
      * argv(0) god
      */
-    public static void God_f(edict_t ent) {
+    public static void God_f(Entity ent) {
         String msg;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
-            SV_GAME.PF_cprintfhigh(ent,
+            ServerGame.PF_cprintfhigh(ent,
             		"You must run the server with '+set cheats 1' to enable this command.\n");
             return;
         }
@@ -590,7 +590,7 @@ public final class Cmd {
         else
             msg = "godmode ON\n";
 
-        SV_GAME.PF_cprintf(ent, Defines.PRINT_HIGH, msg);
+        ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH, msg);
     }
 
     /** 
@@ -600,11 +600,11 @@ public final class Cmd {
      * 
      * argv(0) notarget.
      */
-    public static void Notarget_f(edict_t ent) {
+    public static void Notarget_f(Entity ent) {
         String msg;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
-            SV_GAME.PF_cprintfhigh(ent, 
+            ServerGame.PF_cprintfhigh(ent, 
             	"You must run the server with '+set cheats 1' to enable this command.\n");
             return;
         }
@@ -615,7 +615,7 @@ public final class Cmd {
         else
             msg = "notarget ON\n";
 
-        SV_GAME.PF_cprintfhigh(ent, msg);
+        ServerGame.PF_cprintfhigh(ent, msg);
     }
 
     /**
@@ -623,11 +623,11 @@ public final class Cmd {
      * 
      * argv(0) noclip.
      */
-    public static void Noclip_f(edict_t ent) {
+    public static void Noclip_f(Entity ent) {
         String msg;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
-            SV_GAME.PF_cprintfhigh(ent, 
+            ServerGame.PF_cprintfhigh(ent, 
             	"You must run the server with '+set cheats 1' to enable this command.\n");
             return;
         }
@@ -640,7 +640,7 @@ public final class Cmd {
             msg = "noclip ON\n";
         }
 
-        SV_GAME.PF_cprintfhigh(ent, msg);
+        ServerGame.PF_cprintfhigh(ent, msg);
     }
 
     /**
@@ -648,9 +648,9 @@ public final class Cmd {
      * 
      * Use an inventory item.
      */
-    public static void Use_f(edict_t ent) {
+    public static void Use_f(Entity ent) {
         int index;
-        gitem_t it;
+        GameItem it;
         String s;
 
         s = Cmd.Args();
@@ -658,16 +658,16 @@ public final class Cmd {
         it = GameItems.FindItem(s);
         Com.dprintln("using:" + s);
         if (it == null) {
-            SV_GAME.PF_cprintfhigh(ent, "unknown item: " + s + "\n");
+            ServerGame.PF_cprintfhigh(ent, "unknown item: " + s + "\n");
             return;
         }
         if (it.use == null) {
-            SV_GAME.PF_cprintfhigh(ent, "Item is not usable.\n");
+            ServerGame.PF_cprintfhigh(ent, "Item is not usable.\n");
             return;
         }
         index = GameItems.ITEM_INDEX(it);
         if (0 == ent.client.pers.inventory[index]) {
-            SV_GAME.PF_cprintfhigh(ent, "Out of item: " + s + "\n");
+            ServerGame.PF_cprintfhigh(ent, "Out of item: " + s + "\n");
             return;
         }
 
@@ -679,25 +679,25 @@ public final class Cmd {
      * 
      * Drop an inventory item.
      */
-    public static void Drop_f(edict_t ent) {
+    public static void Drop_f(Entity ent) {
         int index;
-        gitem_t it;
+        GameItem it;
         String s;
 
         s = Cmd.Args();
         it = GameItems.FindItem(s);
         if (it == null) {
-            SV_GAME.PF_cprintfhigh(ent, "unknown item: " + s + "\n");
+            ServerGame.PF_cprintfhigh(ent, "unknown item: " + s + "\n");
             return;
         }
         if (it.drop == null) {
-            SV_GAME.PF_cprintf(ent, Defines.PRINT_HIGH,
+            ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH,
                     "Item is not dropable.\n");
             return;
         }
         index = GameItems.ITEM_INDEX(it);
         if (0 == ent.client.pers.inventory[index]) {
-            SV_GAME.PF_cprintfhigh(ent, "Out of item: " + s + "\n");
+            ServerGame.PF_cprintfhigh(ent, "Out of item: " + s + "\n");
             return;
         }
 
@@ -707,9 +707,9 @@ public final class Cmd {
     /**
      * Cmd_Inven_f.
      */
-    public static void Inven_f(edict_t ent) {
+    public static void Inven_f(Entity ent) {
         int i;
-        gclient_t cl;
+        GameClient cl;
 
         cl = ent.client;
 
@@ -733,19 +733,19 @@ public final class Cmd {
     /**
      * Cmd_InvUse_f.
      */
-    public static void InvUse_f(edict_t ent) {
-        gitem_t it;
+    public static void InvUse_f(Entity ent) {
+        GameItem it;
 
         Cmd.ValidateSelectedItem(ent);
 
         if (ent.client.pers.selected_item == -1) {
-            SV_GAME.PF_cprintfhigh(ent, "No item to use.\n");
+            ServerGame.PF_cprintfhigh(ent, "No item to use.\n");
             return;
         }
 
         it = GameItemList.itemlist[ent.client.pers.selected_item];
         if (it.use == null) {
-            SV_GAME.PF_cprintfhigh(ent, "Item is not usable.\n");
+            ServerGame.PF_cprintfhigh(ent, "Item is not usable.\n");
             return;
         }
         it.use.use(ent, it);
@@ -754,10 +754,10 @@ public final class Cmd {
     /**
      * Cmd_WeapPrev_f.
      */
-    public static void WeapPrev_f(edict_t ent) {
-        gclient_t cl;
+    public static void WeapPrev_f(Entity ent) {
+        GameClient cl;
         int i, index;
-        gitem_t it;
+        GameItem it;
         int selected_weapon;
 
         cl = ent.client;
@@ -788,10 +788,10 @@ public final class Cmd {
     /**
      * Cmd_WeapNext_f.
      */
-    public static void WeapNext_f(edict_t ent) {
-        gclient_t cl;
+    public static void WeapNext_f(Entity ent) {
+        GameClient cl;
         int i, index;
-        gitem_t it;
+        GameItem it;
         int selected_weapon;
 
         cl = ent.client;
@@ -824,10 +824,10 @@ public final class Cmd {
     /** 
      * Cmd_WeapLast_f.
      */
-    public static void WeapLast_f(edict_t ent) {
-        gclient_t cl;
+    public static void WeapLast_f(Entity ent) {
+        GameClient cl;
         int index;
-        gitem_t it;
+        GameItem it;
 
         cl = ent.client;
 
@@ -848,19 +848,19 @@ public final class Cmd {
     /**
      * Cmd_InvDrop_f 
      */
-    public static void InvDrop_f(edict_t ent) {
-        gitem_t it;
+    public static void InvDrop_f(Entity ent) {
+        GameItem it;
 
         Cmd.ValidateSelectedItem(ent);
 
         if (ent.client.pers.selected_item == -1) {
-            SV_GAME.PF_cprintfhigh(ent, "No item to drop.\n");
+            ServerGame.PF_cprintfhigh(ent, "No item to drop.\n");
             return;
         }
 
         it = GameItemList.itemlist[ent.client.pers.selected_item];
         if (it.drop == null) {
-            SV_GAME.PF_cprintfhigh(ent, "Item is not dropable.\n");
+            ServerGame.PF_cprintfhigh(ent, "Item is not dropable.\n");
             return;
         }
         it.drop.drop(ent, it);
@@ -872,7 +872,7 @@ public final class Cmd {
      * Display the scoreboard.
      * 
      */
-    public static void Score_f(edict_t ent) {
+    public static void Score_f(Entity ent) {
         ent.client.showinventory = false;
         ent.client.showhelp = false;
 
@@ -894,7 +894,7 @@ public final class Cmd {
      * Display the current help message. 
      *
      */
-    public static void Help_f(edict_t ent) {
+    public static void Help_f(Entity ent) {
         // this is for backwards compatability
         if (GameBase.deathmatch.value != 0) {
             Score_f(ent);
@@ -918,7 +918,7 @@ public final class Cmd {
     /**
      * Cmd_Kill_f
      */
-    public static void Kill_f(edict_t ent) {
+    public static void Kill_f(Entity ent) {
         if ((GameBase.level.time - ent.client.respawn_time) < 5)
             return;
         ent.flags &= ~Defines.FL_GODMODE;
@@ -930,7 +930,7 @@ public final class Cmd {
     /**
      * Cmd_PutAway_f
      */
-    public static void PutAway_f(edict_t ent) {
+    public static void PutAway_f(Entity ent) {
         ent.client.showscores = false;
         ent.client.showhelp = false;
         ent.client.showinventory = false;
@@ -939,7 +939,7 @@ public final class Cmd {
     /**
      * Cmd_Players_f
      */
-    public static void Players_f(edict_t ent) {
+    public static void Players_f(Entity ent) {
         int i;
         int count;
         String small;
@@ -975,19 +975,19 @@ public final class Cmd {
             large += small;
         }
 
-        SV_GAME.PF_cprintfhigh(ent, large + "\n" + count + " players\n");
+        ServerGame.PF_cprintfhigh(ent, large + "\n" + count + " players\n");
     }
 
     /**
      * Cmd_Wave_f
      */
-    public static void Wave_f(edict_t ent) {
+    public static void Wave_f(Entity ent) {
         int i;
 
         i = Lib.atoi(Cmd.Argv(1));
 
         // can't wave when ducked
-        if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
+        if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
             return;
 
         if (ent.client.anim_priority > Defines.ANIM_WAVE)
@@ -997,30 +997,30 @@ public final class Cmd {
 
         switch (i) {
         case 0:
-            SV_GAME.PF_cprintfhigh(ent, "flipoff\n");
-            ent.s.frame = M_Player.FRAME_flip01 - 1;
-            ent.client.anim_end = M_Player.FRAME_flip12;
+            ServerGame.PF_cprintfhigh(ent, "flipoff\n");
+            ent.s.frame = MonsterPlayer.FRAME_flip01 - 1;
+            ent.client.anim_end = MonsterPlayer.FRAME_flip12;
             break;
         case 1:
-            SV_GAME.PF_cprintfhigh(ent, "salute\n");
-            ent.s.frame = M_Player.FRAME_salute01 - 1;
-            ent.client.anim_end = M_Player.FRAME_salute11;
+            ServerGame.PF_cprintfhigh(ent, "salute\n");
+            ent.s.frame = MonsterPlayer.FRAME_salute01 - 1;
+            ent.client.anim_end = MonsterPlayer.FRAME_salute11;
             break;
         case 2:
-            SV_GAME.PF_cprintfhigh(ent, "taunt\n");
-            ent.s.frame = M_Player.FRAME_taunt01 - 1;
-            ent.client.anim_end = M_Player.FRAME_taunt17;
+            ServerGame.PF_cprintfhigh(ent, "taunt\n");
+            ent.s.frame = MonsterPlayer.FRAME_taunt01 - 1;
+            ent.client.anim_end = MonsterPlayer.FRAME_taunt17;
             break;
         case 3:
-            SV_GAME.PF_cprintfhigh(ent, "wave\n");
-            ent.s.frame = M_Player.FRAME_wave01 - 1;
-            ent.client.anim_end = M_Player.FRAME_wave11;
+            ServerGame.PF_cprintfhigh(ent, "wave\n");
+            ent.s.frame = MonsterPlayer.FRAME_wave01 - 1;
+            ent.client.anim_end = MonsterPlayer.FRAME_wave11;
             break;
         case 4:
         default:
-            SV_GAME.PF_cprintfhigh(ent, "point\n");
-            ent.s.frame = M_Player.FRAME_point01 - 1;
-            ent.client.anim_end = M_Player.FRAME_point12;
+            ServerGame.PF_cprintfhigh(ent, "point\n");
+            ent.s.frame = MonsterPlayer.FRAME_point01 - 1;
+            ent.client.anim_end = MonsterPlayer.FRAME_point12;
             break;
         }
     }
@@ -1028,19 +1028,19 @@ public final class Cmd {
     /**
      * Command to print the players own position.
      */
-    public static void ShowPosition_f(edict_t ent) {
-        SV_GAME.PF_cprintfhigh(ent, "pos=" + Lib.vtofsbeaty(ent.s.origin) + "\n");
+    public static void ShowPosition_f(Entity ent) {
+        ServerGame.PF_cprintfhigh(ent, "pos=" + Lib.vtofsbeaty(ent.s.origin) + "\n");
     }
 
     /**
      * Cmd_Say_f
      */
-    public static void Say_f(edict_t ent, boolean team, boolean arg0) {
+    public static void Say_f(Entity ent, boolean team, boolean arg0) {
 
         int i, j;
-        edict_t other;
+        Entity other;
         String text;
-        gclient_t cl;
+        GameClient cl;
 
         if (Cmd.Argc() < 2 && !arg0)
             return;
@@ -1075,7 +1075,7 @@ public final class Cmd {
             cl = ent.client;
 
             if (GameBase.level.time < cl.flood_locktill) {
-                SV_GAME.PF_cprintfhigh(ent, "You can't talk for "
+                ServerGame.PF_cprintfhigh(ent, "You can't talk for "
                                         + (int) (cl.flood_locktill - GameBase.level.time)
                                         + " more seconds\n");
                 return;
@@ -1086,7 +1086,7 @@ public final class Cmd {
             if (cl.flood_when[i] != 0
                     && GameBase.level.time - cl.flood_when[i] < GameBase.flood_persecond.value) {
                 cl.flood_locktill = GameBase.level.time + GameBase.flood_waitdelay.value;
-                SV_GAME.PF_cprintf(ent, Defines.PRINT_CHAT,
+                ServerGame.PF_cprintf(ent, Defines.PRINT_CHAT,
                         "Flood protection:  You can't talk for "
                                 + (int) GameBase.flood_waitdelay.value
                                 + " seconds.\n");
@@ -1098,7 +1098,7 @@ public final class Cmd {
         }
 
         if (Globals.dedicated.value != 0)
-            SV_GAME.PF_cprintf(null, Defines.PRINT_CHAT, "" + text + "");
+            ServerGame.PF_cprintf(null, Defines.PRINT_CHAT, "" + text + "");
 
         for (j = 1; j <= GameBase.game.maxclients; j++) {
             other = GameBase.g_edicts[j];
@@ -1110,7 +1110,7 @@ public final class Cmd {
                 if (!GameUtil.OnSameTeam(ent, other))
                     continue;
             }
-            SV_GAME.PF_cprintf(other, Defines.PRINT_CHAT, "" + text + "");
+            ServerGame.PF_cprintf(other, Defines.PRINT_CHAT, "" + text + "");
         }
 
     }
@@ -1118,11 +1118,11 @@ public final class Cmd {
     /**
      * Returns the playerlist. TODO: The list is badly formatted at the moment.
      */
-    public static void PlayerList_f(edict_t ent) {
+    public static void PlayerList_f(Entity ent) {
         int i;
         String st;
         String text;
-        edict_t e2;
+        Entity e2;
 
         // connect time, ping, score, name
         text = "";
@@ -1143,12 +1143,12 @@ public final class Cmd {
 
             if (text.length() + st.length() > 1024 - 50) {
                 text += "And more...\n";
-                SV_GAME.PF_cprintfhigh(ent, "" + text + "");
+                ServerGame.PF_cprintfhigh(ent, "" + text + "");
                 return;
             }
             text += st;
         }
-        SV_GAME.PF_cprintfhigh(ent, text);
+        ServerGame.PF_cprintfhigh(ent, text);
     }
 
     /**
@@ -1166,7 +1166,7 @@ public final class Cmd {
             return;
         }
 
-        MSG.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+        Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
         SZ.Print(Globals.cls.netchan.message, cmd);
         if (Cmd.Argc() > 1) {
             SZ.Print(Globals.cls.netchan.message, " ");
@@ -1181,10 +1181,10 @@ public final class Cmd {
         Vector cmds = new Vector();
 
         // check for match
-        for (cmd_function_t cmd = cmd_functions; cmd != null; cmd = cmd.next)
+        for (CommandFunction cmd = cmd_functions; cmd != null; cmd = cmd.next)
             if (cmd.name.startsWith(partial))
                 cmds.add(cmd.name);
-        for (cmdalias_t a = Globals.cmd_alias; a != null; a = a.next)
+        for (CommandAlias a = Globals.cmd_alias; a != null; a = a.next)
             if (a.name.startsWith(partial))
                 cmds.add(a.name);
 
@@ -1194,7 +1194,7 @@ public final class Cmd {
     /**
      * Processes the commands the player enters in the quake console.
      */
-    public static void ClientCommand(edict_t ent) {
+    public static void ClientCommand(Entity ent) {
         String cmd;
     
         if (ent.client == null)
@@ -1277,8 +1277,8 @@ public final class Cmd {
             Say_f(ent, false, true);
     }
 
-    public static void ValidateSelectedItem(edict_t ent) {    	
-        gclient_t cl = ent.client;
+    public static void ValidateSelectedItem(Entity ent) {    	
+        GameClient cl = ent.client;
     
         if (cl.pers.inventory[cl.pers.selected_item] != 0)
             return; // valid

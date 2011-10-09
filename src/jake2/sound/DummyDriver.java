@@ -30,7 +30,7 @@ import java.nio.ByteBuffer;
  * 
  * @author cwei
  */
-public final class DummyDriver implements Sound {
+public final class DummyDriver implements SoundImpl {
 	
 	/* (non-Javadoc)
 	 * @see jake2.sound.Sound#Init()
@@ -54,7 +54,7 @@ public final class DummyDriver implements Sound {
 	/* (non-Javadoc)
 	 * @see jake2.sound.Sound#RegisterSound(java.lang.String)
 	 */
-	public sfx_t RegisterSound(String sample) {
+	public Sfx RegisterSound(String sample) {
 		return null;
 	}
 
@@ -73,7 +73,7 @@ public final class DummyDriver implements Sound {
 	/* (non-Javadoc)
 	 * @see jake2.sound.Sound#StartSound(float[], int, int, jake2.sound.sfx_t, float, float, float)
 	 */
-	public void StartSound(float[] origin, int entnum, int entchannel, sfx_t sfx, float fvol, float attenuation, float timeofs) {
+	public void StartSound(float[] origin, int entnum, int entchannel, Sfx sfx, float fvol, float attenuation, float timeofs) {
 	}
 
 	/* (non-Javadoc)

@@ -18,10 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.gwt.client;
 
-import jake2.client.refexport_t;
+import jake2.client.Renderer;
 import jake2.qcommon.Com;
 import jake2.qcommon.ResourceLoader;
-import jake2.render.image_t;
+import jake2.render.ModelImage;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -46,7 +46,7 @@ import com.google.gwt.user.client.ui.Image;
 
 import static com.google.gwt.webgl.client.WebGLRenderingContext.*;
 
-public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport_t {
+public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer {
 	
 	static class VideoElement extends Element {
 		protected VideoElement() {
@@ -97,7 +97,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 	WebGLAdapter webGL;
 	CanvasElement canvas1;
 	CanvasElement canvas2;
-	ArrayList<image_t> imageQueue = new ArrayList<image_t>();
+	ArrayList<ModelImage> imageQueue = new ArrayList<ModelImage>();
 	int waitingForImages;
 	VideoElement video;
 	CanvasElement canvas;
@@ -186,10 +186,12 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 		}
 	}
 	
-	protected image_t GL_LoadNewImage(final String name, int type) {
-		final image_t image = GL_Find_free_image_t(name, type);
+	protected ModelImage GL_LoadNewImage(final String name, int type) {
+		final ModelImage image = GL_Find_free_image_t(name, type);
 
-		JsArrayInteger d = getImageSize(name);
+		int cut = name.lastIndexOf('.');
+		String normalizedName = cut == -1 ? name : name.substring(0, cut);
+		JsArrayInteger d = getImageSize(normalizedName);
 		if (d == null) {
 			gl.log("Size not found for " + name);
 			image.width = 128;
@@ -221,7 +223,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 	    Document doc = Document.get();
 
 	    while(!ResourceLoader.Pump() && waitingForImages < MAX_IMAGE_REQUEST_COUNT && imageQueue.size() > 0) {
-	      final image_t image = imageQueue.remove(0);
+	      final ModelImage image = imageQueue.remove(0);
 
 	      final ImageElement img = doc.createImageElement();
               String picUrl = convertPicName(image.name, image.type);
@@ -275,14 +277,14 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 	  }
 	}
 	
-	public void loaded(image_t image, ImageElement img) {
+	public void loaded(ModelImage image, ImageElement img) {
 		setPicDataHighLevel(image, img);
 	//	setPicDataLowLevel(image, img);
 	}
 		
 	ByteBuffer bb = ByteBuffer.allocateDirect(128*128*4);
 	
-	public void setPicDataHighLevel(image_t image, ImageElement img) {
+	public void setPicDataHighLevel(ModelImage image, ImageElement img) {
 		image.has_alpha = true;
 		image.complete = true;
 		image.height = img.getHeight();
@@ -323,7 +325,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
 		gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
 	}
 
-  public void __setPicDataHighLevel(image_t image, ImageElement img) {
+  public void __setPicDataHighLevel(ModelImage image, ImageElement img) {
     image.has_alpha = true;
     image.complete = true;
     image.height = img.getHeight();
@@ -336,7 +338,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements refexport
     gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
   }
 
-	public void setPicDataLowLevel(image_t image, ImageElement img) {
+	public void setPicDataLowLevel(ModelImage image, ImageElement img) {
 		CanvasElement canvas = (CanvasElement) Document.get().createElement("canvas");
 		int w = img.getWidth();
 		int h = img.getHeight();

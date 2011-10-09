@@ -27,24 +27,24 @@ import static jake2.qcommon.Defines.CVAR_ARCHIVE;
 import static jake2.qcommon.Defines.CVAR_USERINFO;
 
 import jake2.client.Dimension;
-import jake2.client.VID;
-import jake2.client.entity_t;
-import jake2.client.particle_t;
-import jake2.client.refdef_t;
+import jake2.client.Window;
+import jake2.client.EntityType;
+import jake2.client.Particles;
+import jake2.client.RendererState;
 import jake2.game.Cmd;
-import jake2.game.cplane_t;
-import jake2.game.cvar_t;
+import jake2.game.Plane;
+import jake2.game.ConsoleVariable;
 import jake2.qcommon.Com;
-import jake2.qcommon.Cvar;
+import jake2.qcommon.ConsoleVariables;
 import jake2.qcommon.Defines;
 import jake2.qcommon.QuakeImage;
-import jake2.qcommon.qfiles;
-import jake2.qcommon.xcommand_t;
-import jake2.render.GLAdapter;
-import jake2.render.glstate_t;
-import jake2.render.image_t;
-import jake2.render.mleaf_t;
-import jake2.render.model_t;
+import jake2.qcommon.QuakeFiles;
+import jake2.qcommon.ExecutableCommand;
+import jake2.render.GlAdapter;
+import jake2.render.GlState;
+import jake2.render.ModelImage;
+import jake2.render.ModelLeaf;
+import jake2.render.RendererModel;
 import jake2.util.Math3D;
 import jake2.util.Vargs;
 
@@ -80,15 +80,15 @@ public abstract class Main extends Base {
 	abstract void GL_Strings_f();
 
 	abstract void Mod_Modellist_f();
-	abstract mleaf_t Mod_PointInLeaf(float[] point, model_t model);
+	abstract ModelLeaf Mod_PointInLeaf(float[] point, RendererModel model);
 
 	abstract void GL_SetDefaultState();
 
 	abstract void GL_InitImages();
 	abstract void Mod_Init(); // Model.java
 	abstract void R_InitParticleTexture(); // MIsc.java
-	abstract void R_DrawAliasModel(entity_t e); // Mesh.java
-	abstract void R_DrawBrushModel(entity_t e); // Surf.java
+	abstract void R_DrawAliasModel(EntityType e); // Mesh.java
+	abstract void R_DrawBrushModel(EntityType e); // Surf.java
 	abstract void Draw_InitLocal();
 	abstract void R_LightPoint(float[] p, float[] color);
 	abstract void R_PushDlights();
@@ -115,22 +115,22 @@ public abstract class Main extends Base {
 	====================================================================
 	*/
 
-	int GL_TEXTURE0 = GLAdapter.GL_TEXTURE0;
-	int GL_TEXTURE1 = GLAdapter.GL_TEXTURE1;
+	int GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
+	int GL_TEXTURE1 = GlAdapter.GL_TEXTURE1;
 
-	model_t r_worldmodel;
+	RendererModel r_worldmodel;
 
 	float gldepthmin, gldepthmax;
 
-	glstate_t gl_state = new glstate_t();
+	GlState gl_state = new GlState();
 
-	image_t r_notexture; // use for bad textures
-	image_t r_particletexture; // little dot for particles
+	ModelImage r_notexture; // use for bad textures
+	ModelImage r_particletexture; // little dot for particles
 
-	entity_t currententity;
-	model_t currentmodel;
+	EntityType currententity;
+	RendererModel currentmodel;
 
-	cplane_t frustum[] = { new cplane_t(), new cplane_t(), new cplane_t(), new cplane_t()};
+	Plane frustum[] = { new Plane(), new Plane(), new Plane(), new Plane()};
 
 	int r_visframecount; // bumped when going to a new PVS
 	int r_framecount; // used for dlight push checking
@@ -160,74 +160,74 @@ public abstract class Main extends Base {
 	//
 	//	   screen size info
 	//
-	refdef_t r_newrefdef = new refdef_t();
+	RendererState r_newrefdef = new RendererState();
 
 	int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
-	cvar_t r_norefresh;
-	cvar_t r_drawentities;
-	cvar_t r_drawworld;
-	cvar_t r_speeds;
-	cvar_t r_fullbright;
-	cvar_t r_novis;
-	cvar_t r_nocull;
-	cvar_t r_lerpmodels;
-	cvar_t r_lefthand;
+	ConsoleVariable r_norefresh;
+	ConsoleVariable r_drawentities;
+	ConsoleVariable r_drawworld;
+	ConsoleVariable r_speeds;
+	ConsoleVariable r_fullbright;
+	ConsoleVariable r_novis;
+	ConsoleVariable r_nocull;
+	ConsoleVariable r_lerpmodels;
+	ConsoleVariable r_lefthand;
 
-	cvar_t r_lightlevel;
+	ConsoleVariable r_lightlevel;
 	// FIXME: This is a HACK to get the client's light level
 
-	cvar_t gl_nosubimage;
-	cvar_t gl_allow_software;
+	ConsoleVariable gl_nosubimage;
+	ConsoleVariable gl_allow_software;
 
-	cvar_t gl_vertex_arrays;
+	ConsoleVariable gl_vertex_arrays;
 
-	cvar_t gl_particle_min_size;
-	cvar_t gl_particle_max_size;
-	cvar_t gl_particle_size;
-	cvar_t gl_particle_att_a;
-	cvar_t gl_particle_att_b;
-	cvar_t gl_particle_att_c;
+	ConsoleVariable gl_particle_min_size;
+	ConsoleVariable gl_particle_max_size;
+	ConsoleVariable gl_particle_size;
+	ConsoleVariable gl_particle_att_a;
+	ConsoleVariable gl_particle_att_b;
+	ConsoleVariable gl_particle_att_c;
 
-	cvar_t gl_ext_swapinterval;
-	cvar_t gl_ext_palettedtexture;
-	cvar_t gl_ext_multitexture;
-	cvar_t gl_ext_pointparameters;
-	cvar_t gl_ext_compiled_vertex_array;
+	ConsoleVariable gl_ext_swapinterval;
+	ConsoleVariable gl_ext_palettedtexture;
+	ConsoleVariable gl_ext_multitexture;
+	ConsoleVariable gl_ext_pointparameters;
+	ConsoleVariable gl_ext_compiled_vertex_array;
 
-	cvar_t gl_log;
-	cvar_t gl_bitdepth;
-	cvar_t gl_drawbuffer;
-	cvar_t gl_driver;
-	cvar_t gl_lightmap;
-	cvar_t gl_shadows;
-	cvar_t gl_mode;
-	cvar_t gl_dynamic;
-	cvar_t gl_monolightmap;
-	cvar_t gl_modulate;
-	cvar_t gl_nobind;
-	cvar_t gl_round_down;
-	cvar_t gl_picmip;
-	cvar_t gl_skymip;
-	cvar_t gl_showtris;
-	cvar_t gl_ztrick;
-	cvar_t gl_finish;
-	cvar_t gl_clear;
-	cvar_t gl_cull;
-	cvar_t gl_polyblend;
-	cvar_t gl_flashblend;
-	cvar_t gl_playermip;
-	cvar_t gl_saturatelighting;
-	cvar_t gl_swapinterval;
-	cvar_t gl_texturemode;
-	cvar_t gl_texturealphamode;
-	cvar_t gl_texturesolidmode;
-	cvar_t gl_lockpvs;
+	ConsoleVariable gl_log;
+	ConsoleVariable gl_bitdepth;
+	ConsoleVariable gl_drawbuffer;
+	ConsoleVariable gl_driver;
+	ConsoleVariable gl_lightmap;
+	ConsoleVariable gl_shadows;
+	ConsoleVariable gl_mode;
+	ConsoleVariable gl_dynamic;
+	ConsoleVariable gl_monolightmap;
+	ConsoleVariable gl_modulate;
+	ConsoleVariable gl_nobind;
+	ConsoleVariable gl_round_down;
+	ConsoleVariable gl_picmip;
+	ConsoleVariable gl_skymip;
+	ConsoleVariable gl_showtris;
+	ConsoleVariable gl_ztrick;
+	ConsoleVariable gl_finish;
+	ConsoleVariable gl_clear;
+	ConsoleVariable gl_cull;
+	ConsoleVariable gl_polyblend;
+	ConsoleVariable gl_flashblend;
+	ConsoleVariable gl_playermip;
+	ConsoleVariable gl_saturatelighting;
+	ConsoleVariable gl_swapinterval;
+	ConsoleVariable gl_texturemode;
+	ConsoleVariable gl_texturealphamode;
+	ConsoleVariable gl_texturesolidmode;
+	ConsoleVariable gl_lockpvs;
 
-	cvar_t gl_3dlabs_broken;
+	ConsoleVariable gl_3dlabs_broken;
 
-	cvar_t vid_gamma;
-	cvar_t vid_ref;
+	ConsoleVariable vid_gamma;
+	ConsoleVariable vid_ref;
 
 	// ============================================================================
 	// to port from gl_rmain.c, ...
@@ -253,7 +253,7 @@ public abstract class Main extends Base {
 	/**
 	 * R_RotateForEntity
 	 */
-	final void R_RotateForEntity(entity_t e) {
+	final void R_RotateForEntity(EntityType e) {
 	  gl.glTranslatef(e.origin[0], e.origin[1], e.origin[2]);
 
 	  gl.glRotatef(e.angles[1], 0, 0, 1);
@@ -274,16 +274,16 @@ public abstract class Main extends Base {
 	/**
 	 * R_DrawSpriteModel
 	 */
-	void R_DrawSpriteModel(entity_t e) {
+	void R_DrawSpriteModel(EntityType e) {
 		float alpha = 1.0F;
 
-		qfiles.dsprframe_t frame;
-		qfiles.dsprite_t psprite;
+		QuakeFiles.dsprframe_t frame;
+		QuakeFiles.dsprite_t psprite;
 
 		// don't even bother culling, because it's just a single
 		// polygon without a surface cache
 
-		psprite = (qfiles.dsprite_t) currentmodel.extradata;
+		psprite = (QuakeFiles.dsprite_t) currentmodel.extradata;
 
 		e.frame %= psprite.numframes;
 
@@ -293,20 +293,20 @@ public abstract class Main extends Base {
 			alpha = e.alpha;
 
 		if (alpha != 1.0F)
-		  gl.glEnable(GLAdapter.GL_BLEND);
+		  gl.glEnable(GlAdapter.GL_BLEND);
 
 		gl.glColor4f(1, 1, 1, alpha);
 
 		GL_Bind(currentmodel.skins[e.frame].texnum);
 
-		GL_TexEnv(GLAdapter.GL_MODULATE);
+		GL_TexEnv(GlAdapter.GL_MODULATE);
 
 //		if (alpha == 1.0)
 //		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 //		else
 //		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
-		gl.glBegin(GLAdapter._GL_QUADS);
+		gl.glBegin(GlAdapter._GL_QUADS);
 
 		gl.glTexCoord2f(0, 1);
 		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
@@ -331,10 +331,10 @@ public abstract class Main extends Base {
 		gl.glEnd();
 
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		GL_TexEnv(GLAdapter.GL_REPLACE);
+		GL_TexEnv(GlAdapter.GL_REPLACE);
 
 		if (alpha != 1.0F)
-		  gl.glDisable(GLAdapter.GL_BLEND);
+		  gl.glDisable(GlAdapter.GL_BLEND);
 
 		gl.glColor4f(1, 1, 1, 1);
 	}
@@ -359,13 +359,13 @@ public abstract class Main extends Base {
 		gl.glPushMatrix();
 		R_RotateForEntity(currententity);
 
-		gl.glDisable(GLAdapter.GL_TEXTURE_2D);
+		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
 		gl.glColor3f(shadelight[0], shadelight[1], shadelight[2]);
 
 		// this replaces the TRIANGLE_FAN
 		//glut.glutWireCube(gl, 20);
 
-		gl.glBegin(GLAdapter.GL_TRIANGLE_FAN);
+		gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
 		gl.glVertex3f(0, 0, -16);
 		int i;
 		for (i=0 ; i<=4 ; i++) {
@@ -373,7 +373,7 @@ public abstract class Main extends Base {
 		}
 		gl.glEnd();
 		
-		gl.glBegin(GLAdapter.GL_TRIANGLE_FAN);
+		gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
 		gl.glVertex3f (0, 0, 16);
 		for (i=4 ; i>=0 ; i--) {
 		  gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
@@ -383,7 +383,7 @@ public abstract class Main extends Base {
 		
 		gl.glColor3f(1, 1, 1);
 		gl.glPopMatrix();
-		gl.glEnable(GLAdapter.GL_TEXTURE_2D);
+		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 	}
 
 	/**
@@ -476,13 +476,13 @@ public abstract class Main extends Base {
 		
 		GL_Bind(r_particletexture.texnum);
 		gl.glDepthMask(false); // no z buffering
-		gl.glEnable(GLAdapter.GL_BLEND);
-		GL_TexEnv(GLAdapter.GL_MODULATE);
+		gl.glEnable(GlAdapter.GL_BLEND);
+		GL_TexEnv(GlAdapter.GL_MODULATE);
 		
-		gl.glBegin(GLAdapter.GL_TRIANGLES);
+		gl.glBegin(GlAdapter.GL_TRIANGLES);
 
-		FloatBuffer sourceVertices = particle_t.vertexArray;
-		IntBuffer sourceColors = particle_t.colorArray;
+		FloatBuffer sourceVertices = Particles.vertexArray;
+		IntBuffer sourceColors = Particles.colorArray;
 		float scale;
 		int color;
 		for (int j = 0, i = 0; i < num_particles; i++) {
@@ -518,10 +518,10 @@ public abstract class Main extends Base {
 		}
 		gl.glEnd();
 		
-		gl.glDisable(GLAdapter.GL_BLEND);
+		gl.glDisable(GlAdapter.GL_BLEND);
 		gl.glColor4f(1, 1, 1, 1);
 		gl.glDepthMask(true); // back to normal Z buffering
-		GL_TexEnv(GLAdapter.GL_REPLACE);
+		GL_TexEnv(GlAdapter.GL_REPLACE);
 	}
 
 	/**
@@ -532,24 +532,24 @@ public abstract class Main extends Base {
 		if (gl_ext_pointparameters.value != 0.0f && qglPointParameterfEXT) {
 
 			//gl.glEnableClientState(GLAdapter.GL_VERTEX_ARRAY);
-		  gl.glVertexPointer(3, 0, particle_t.vertexArray);
-		  gl.glEnableClientState(GLAdapter.GL_COLOR_ARRAY);
-		  gl.glColorPointer(4, true, 0, particle_t.getColorAsByteBuffer());
+		  gl.glVertexPointer(3, 0, Particles.vertexArray);
+		  gl.glEnableClientState(GlAdapter.GL_COLOR_ARRAY);
+		  gl.glColorPointer(4, true, 0, Particles.getColorAsByteBuffer());
 			
 		  gl.glDepthMask(false);
-		  gl.glEnable(GLAdapter.GL_BLEND);
-		  gl.glDisable(GLAdapter.GL_TEXTURE_2D);
+		  gl.glEnable(GlAdapter.GL_BLEND);
+		  gl.glDisable(GlAdapter.GL_TEXTURE_2D);
 		  gl.glPointSize(gl_particle_size.value);
 			
-		  gl.glDrawArrays(GLAdapter.GL_POINTS, 0, r_newrefdef.num_particles);
+		  gl.glDrawArrays(GlAdapter.GL_POINTS, 0, r_newrefdef.num_particles);
 			
-		  gl.glDisableClientState(GLAdapter.GL_COLOR_ARRAY);
+		  gl.glDisableClientState(GlAdapter.GL_COLOR_ARRAY);
 			//gl.glDisableClientState(GLAdapter.GL_VERTEX_ARRAY);
 
-		  gl.glDisable(GLAdapter.GL_BLEND);
+		  gl.glDisable(GlAdapter.GL_BLEND);
 		  gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		  gl.glDepthMask(true);
-		  gl.glEnable(GLAdapter.GL_TEXTURE_2D);
+		  gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 
 		}
 		else {
@@ -568,9 +568,9 @@ public abstract class Main extends Base {
 			return;
 
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		gl.glEnable(GLAdapter.GL_BLEND);
-		gl.glDisable(GLAdapter.GL_DEPTH_TEST);
-		gl.glDisable(GLAdapter.GL_TEXTURE_2D);
+		gl.glEnable(GlAdapter.GL_BLEND);
+		gl.glDisable(GlAdapter.GL_DEPTH_TEST);
+		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
 
 		gl.glLoadIdentity();
 
@@ -580,7 +580,7 @@ public abstract class Main extends Base {
 
 		gl.glColor4f(v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 
-		gl.glBegin(GLAdapter._GL_QUADS);
+		gl.glBegin(GlAdapter._GL_QUADS);
 
 		gl.glVertex3f(10, 100, 100);
 		gl.glVertex3f(10, -100, 100);
@@ -588,8 +588,8 @@ public abstract class Main extends Base {
 		gl.glVertex3f(10, 100, -100);
 		gl.glEnd();
 
-		gl.glDisable(GLAdapter.GL_BLEND);
-		gl.glEnable(GLAdapter.GL_TEXTURE_2D);
+		gl.glDisable(GlAdapter.GL_BLEND);
+		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 //		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 
 		gl.glColor4f(1, 1, 1, 1);
@@ -600,7 +600,7 @@ public abstract class Main extends Base {
 	/**
 	 * SignbitsForPlane
 	 */
-	int SignbitsForPlane(cplane_t out) {
+	int SignbitsForPlane(Plane out) {
 		// for fast box on planeside test
 		int bits = 0;
 		for (int j = 0; j < 3; j++) {
@@ -646,7 +646,7 @@ public abstract class Main extends Base {
 		Math3D.AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
 
 		//	current viewcluster
-		mleaf_t leaf;
+		ModelLeaf leaf;
 		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) == 0) {
 			r_oldviewcluster = r_viewcluster;
 			r_oldviewcluster2 = r_viewcluster2;
@@ -678,16 +678,16 @@ public abstract class Main extends Base {
 
 		// clear out the portion of the screen that the NOWORLDMODEL defines
 		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0) {
-		  gl.glEnable(GLAdapter.GL_SCISSOR_TEST);
+		  gl.glEnable(GlAdapter.GL_SCISSOR_TEST);
 		  gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		  gl.glScissor(
 				r_newrefdef.x,
 				vid.height - r_newrefdef.height - r_newrefdef.y,
 				r_newrefdef.width,
 				r_newrefdef.height);
-		  gl.glClear(GLAdapter.GL_COLOR_BUFFER_BIT | GLAdapter.GL_DEPTH_BUFFER_BIT);
+		  gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
 		  gl.glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
-		  gl.glDisable(GLAdapter.GL_SCISSOR_TEST);
+		  gl.glDisable(GlAdapter.GL_SCISSOR_TEST);
 		}
 	}
 
@@ -738,13 +738,13 @@ public abstract class Main extends Base {
 		// set up projection matrix
 		//
 		float screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
-		gl.glMatrixMode(GLAdapter.GL_PROJECTION);
+		gl.glMatrixMode(GlAdapter.GL_PROJECTION);
 		gl.glLoadIdentity();
 		MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
 
-		gl.glCullFace(GLAdapter.GL_FRONT);
+		gl.glCullFace(GlAdapter.GL_FRONT);
 
-		gl.glMatrixMode(GLAdapter.GL_MODELVIEW);
+		gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
 		gl.glRotatef(-90, 1, 0, 0); // put Z going up
@@ -754,20 +754,20 @@ public abstract class Main extends Base {
 		gl.glRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
 		gl.glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
 
-		gl.glGetFloat(GLAdapter._GL_MODELVIEW_MATRIX, r_world_matrix);
+		gl.glGetFloat(GlAdapter._GL_MODELVIEW_MATRIX, r_world_matrix);
 		r_world_matrix.clear();
 
 		//
 		// set drawing parms
 		//
 		if (gl_cull.value != 0.0f)
-		  gl.glEnable(GLAdapter.GL_CULL_FACE);
+		  gl.glEnable(GlAdapter.GL_CULL_FACE);
 		else
-		  gl.glDisable(GLAdapter.GL_CULL_FACE);
+		  gl.glDisable(GlAdapter.GL_CULL_FACE);
 
-		gl.glDisable(GLAdapter.GL_BLEND);
+		gl.glDisable(GlAdapter.GL_BLEND);
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		gl.glEnable(GLAdapter.GL_DEPTH_TEST);
+		gl.glEnable(GlAdapter.GL_DEPTH_TEST);
 	}
 
 	int trickframe = 0;
@@ -779,30 +779,30 @@ public abstract class Main extends Base {
 		if (gl_ztrick.value != 0.0f) {
 
 			if (gl_clear.value != 0.0f) {
-			  gl.glClear(GLAdapter.GL_COLOR_BUFFER_BIT);
+			  gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
 			}
 
 			trickframe++;
 			if ((trickframe & 1) != 0) {
 				gldepthmin = 0;
 				gldepthmax = 0.49999f;
-				gl.glDepthFunc(GLAdapter.GL_LEQUAL);
+				gl.glDepthFunc(GlAdapter.GL_LEQUAL);
 			}
 			else {
 				gldepthmin = 1;
 				gldepthmax = 0.5f;
-				gl.glDepthFunc(GLAdapter.GL_GEQUAL);
+				gl.glDepthFunc(GlAdapter.GL_GEQUAL);
 			}
 		}
 		else {
 			if (gl_clear.value != 0.0f)
-			  gl.glClear(GLAdapter.GL_COLOR_BUFFER_BIT | GLAdapter.GL_DEPTH_BUFFER_BIT);
+			  gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
 			else
-			  gl.glClear(GLAdapter.GL_DEPTH_BUFFER_BIT);
+			  gl.glClear(GlAdapter.GL_DEPTH_BUFFER_BIT);
 
 			gldepthmin = 0;
 			gldepthmax = 1;
-			gl.glDepthFunc(GLAdapter.GL_LEQUAL);
+			gl.glDepthFunc(GlAdapter.GL_LEQUAL);
 		}
 		gl.glDepthRange(gldepthmin, gldepthmax);
 	}
@@ -818,7 +818,7 @@ public abstract class Main extends Base {
 	 * R_RenderView
 	 * r_newrefdef must be set before the first call
 	 */
-	void R_RenderView(refdef_t fd) {
+	void R_RenderView(RendererState fd) {
 
 		if (r_norefresh.value != 0.0f)
 			return;
@@ -864,7 +864,7 @@ public abstract class Main extends Base {
 		R_Flash();
 
 		if (r_speeds.value != 0.0f) {
-			VID.Printf(
+			Window.Printf(
 				Defines.PRINT_ALL,
 				"%4i wpoly %4i epoly %i tex %i lmaps\n",
 				new Vargs(4).add(c_brush_polys).add(c_alias_polys).add(c_visible_textures).add(c_visible_lightmaps));
@@ -877,14 +877,14 @@ public abstract class Main extends Base {
 	void R_SetGL2D() {
 		// set 2D virtual screen size
 	  gl.glViewport(0, 0, vid.width, vid.height);
-	  gl.glMatrixMode(GLAdapter.GL_PROJECTION);
+	  gl.glMatrixMode(GlAdapter.GL_PROJECTION);
 	  gl.glLoadIdentity();
 	  gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-	  gl.glMatrixMode(GLAdapter.GL_MODELVIEW);
+	  gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
 	  gl.glLoadIdentity();
-	  gl.glDisable(GLAdapter.GL_DEPTH_TEST);
-	  gl.glDisable(GLAdapter.GL_CULL_FACE);
-	  gl.glDisable(GLAdapter.GL_BLEND);
+	  gl.glDisable(GlAdapter.GL_DEPTH_TEST);
+	  gl.glDisable(GlAdapter.GL_CULL_FACE);
+	  gl.glDisable(GlAdapter.GL_BLEND);
 //	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 	  gl.glColor4f(1, 1, 1, 1);
 	}
@@ -921,7 +921,7 @@ public abstract class Main extends Base {
 	/**
 	 * R_RenderFrame
 	 */
-	protected void R_RenderFrame(refdef_t fd) {
+	protected void R_RenderFrame(RendererState fd) {
 		R_RenderView(fd);
 		R_SetLightLevel();
 		R_SetGL2D();
@@ -931,90 +931,90 @@ public abstract class Main extends Base {
 	 * R_Register
 	 */
 	protected void R_Register() {
-		r_lefthand = Cvar.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
-		r_norefresh = Cvar.Get("r_norefresh", "0", 0);
-		r_fullbright = Cvar.Get("r_fullbright", "0", 0);
-		r_drawentities = Cvar.Get("r_drawentities", "1", 0);
-		r_drawworld = Cvar.Get("r_drawworld", "1", 0);
-		r_novis = Cvar.Get("r_novis", "0", 0);
-		r_nocull = Cvar.Get("r_nocull", "0", 0);
-		r_lerpmodels = Cvar.Get("r_lerpmodels", "1", 0);
-		r_speeds = Cvar.Get("r_speeds", "0", 0);
+		r_lefthand = ConsoleVariables.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+		r_norefresh = ConsoleVariables.Get("r_norefresh", "0", 0);
+		r_fullbright = ConsoleVariables.Get("r_fullbright", "0", 0);
+		r_drawentities = ConsoleVariables.Get("r_drawentities", "1", 0);
+		r_drawworld = ConsoleVariables.Get("r_drawworld", "1", 0);
+		r_novis = ConsoleVariables.Get("r_novis", "0", 0);
+		r_nocull = ConsoleVariables.Get("r_nocull", "0", 0);
+		r_lerpmodels = ConsoleVariables.Get("r_lerpmodels", "1", 0);
+		r_speeds = ConsoleVariables.Get("r_speeds", "0", 0);
 
-		r_lightlevel = Cvar.Get("r_lightlevel", "1", 0);
+		r_lightlevel = ConsoleVariables.Get("r_lightlevel", "1", 0);
 
-		gl_nosubimage = Cvar.Get("gl_nosubimage", "0", 0);
-		gl_allow_software = Cvar.Get("gl_allow_software", "0", 0);
+		gl_nosubimage = ConsoleVariables.Get("gl_nosubimage", "0", 0);
+		gl_allow_software = ConsoleVariables.Get("gl_allow_software", "0", 0);
 
-		gl_particle_min_size = Cvar.Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
-		gl_particle_max_size = Cvar.Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
-		gl_particle_size = Cvar.Get("gl_particle_size", "40", CVAR_ARCHIVE);
-		gl_particle_att_a = Cvar.Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
-		gl_particle_att_b = Cvar.Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
-		gl_particle_att_c = Cvar.Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
+		gl_particle_min_size = ConsoleVariables.Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
+		gl_particle_max_size = ConsoleVariables.Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
+		gl_particle_size = ConsoleVariables.Get("gl_particle_size", "40", CVAR_ARCHIVE);
+		gl_particle_att_a = ConsoleVariables.Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
+		gl_particle_att_b = ConsoleVariables.Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
+		gl_particle_att_c = ConsoleVariables.Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
 
-		gl_modulate = Cvar.Get("gl_modulate", "1.5", CVAR_ARCHIVE);
-		gl_log = Cvar.Get("gl_log", "0", 0);
-		gl_bitdepth = Cvar.Get("gl_bitdepth", "0", 0);
-		gl_mode = Cvar.Get("gl_mode", "3", CVAR_ARCHIVE); // 640x480
-		gl_lightmap = Cvar.Get("gl_lightmap", "0", 0);
-		gl_shadows = Cvar.Get("gl_shadows", "0", CVAR_ARCHIVE);
-		gl_dynamic = Cvar.Get("gl_dynamic", "1", 0);
-		gl_nobind = Cvar.Get("gl_nobind", "0", 0);
-		gl_round_down = Cvar.Get("gl_round_down", "1", 0);
-		gl_picmip = Cvar.Get("gl_picmip", "0", 0);
-		gl_skymip = Cvar.Get("gl_skymip", "0", 0);
-		gl_showtris = Cvar.Get("gl_showtris", "0", 0);
-		gl_ztrick = Cvar.Get("gl_ztrick", "0", 0);
-		gl_finish = Cvar.Get("gl_finish", "0", CVAR_ARCHIVE);
-		gl_clear = Cvar.Get("gl_clear", "0", 0);
-		gl_cull = Cvar.Get("gl_cull", "1", 0);
-		gl_polyblend = Cvar.Get("gl_polyblend", "1", 0);
-		gl_flashblend = Cvar.Get("gl_flashblend", "0", 0);
-		gl_playermip = Cvar.Get("gl_playermip", "0", 0);
-		gl_monolightmap = Cvar.Get("gl_monolightmap", "0", 0);
-		gl_driver = Cvar.Get("gl_driver", "opengl32", CVAR_ARCHIVE);
-		gl_texturemode = Cvar.Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
-		gl_texturealphamode = Cvar.Get("gl_texturealphamode", "default", CVAR_ARCHIVE);
-		gl_texturesolidmode = Cvar.Get("gl_texturesolidmode", "default", CVAR_ARCHIVE);
-		gl_lockpvs = Cvar.Get("gl_lockpvs", "0", 0);
+		gl_modulate = ConsoleVariables.Get("gl_modulate", "1.5", CVAR_ARCHIVE);
+		gl_log = ConsoleVariables.Get("gl_log", "0", 0);
+		gl_bitdepth = ConsoleVariables.Get("gl_bitdepth", "0", 0);
+		gl_mode = ConsoleVariables.Get("gl_mode", "3", CVAR_ARCHIVE); // 640x480
+		gl_lightmap = ConsoleVariables.Get("gl_lightmap", "0", 0);
+		gl_shadows = ConsoleVariables.Get("gl_shadows", "0", CVAR_ARCHIVE);
+		gl_dynamic = ConsoleVariables.Get("gl_dynamic", "1", 0);
+		gl_nobind = ConsoleVariables.Get("gl_nobind", "0", 0);
+		gl_round_down = ConsoleVariables.Get("gl_round_down", "1", 0);
+		gl_picmip = ConsoleVariables.Get("gl_picmip", "0", 0);
+		gl_skymip = ConsoleVariables.Get("gl_skymip", "0", 0);
+		gl_showtris = ConsoleVariables.Get("gl_showtris", "0", 0);
+		gl_ztrick = ConsoleVariables.Get("gl_ztrick", "0", 0);
+		gl_finish = ConsoleVariables.Get("gl_finish", "0", CVAR_ARCHIVE);
+		gl_clear = ConsoleVariables.Get("gl_clear", "0", 0);
+		gl_cull = ConsoleVariables.Get("gl_cull", "1", 0);
+		gl_polyblend = ConsoleVariables.Get("gl_polyblend", "1", 0);
+		gl_flashblend = ConsoleVariables.Get("gl_flashblend", "0", 0);
+		gl_playermip = ConsoleVariables.Get("gl_playermip", "0", 0);
+		gl_monolightmap = ConsoleVariables.Get("gl_monolightmap", "0", 0);
+		gl_driver = ConsoleVariables.Get("gl_driver", "opengl32", CVAR_ARCHIVE);
+		gl_texturemode = ConsoleVariables.Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
+		gl_texturealphamode = ConsoleVariables.Get("gl_texturealphamode", "default", CVAR_ARCHIVE);
+		gl_texturesolidmode = ConsoleVariables.Get("gl_texturesolidmode", "default", CVAR_ARCHIVE);
+		gl_lockpvs = ConsoleVariables.Get("gl_lockpvs", "0", 0);
 
-		gl_vertex_arrays = Cvar.Get("gl_vertex_arrays", "1", CVAR_ARCHIVE);
+		gl_vertex_arrays = ConsoleVariables.Get("gl_vertex_arrays", "1", CVAR_ARCHIVE);
 
-		gl_ext_swapinterval = Cvar.Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
-		gl_ext_palettedtexture = Cvar.Get("gl_ext_palettedtexture", "0", CVAR_ARCHIVE);
-		gl_ext_multitexture = Cvar.Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
-		gl_ext_pointparameters = Cvar.Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
-		gl_ext_compiled_vertex_array = Cvar.Get("gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE);
+		gl_ext_swapinterval = ConsoleVariables.Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
+		gl_ext_palettedtexture = ConsoleVariables.Get("gl_ext_palettedtexture", "0", CVAR_ARCHIVE);
+		gl_ext_multitexture = ConsoleVariables.Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
+		gl_ext_pointparameters = ConsoleVariables.Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
+		gl_ext_compiled_vertex_array = ConsoleVariables.Get("gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE);
 
-		gl_drawbuffer = Cvar.Get("gl_drawbuffer", "GL_BACK", 0);
-		gl_swapinterval = Cvar.Get("gl_swapinterval", "0", CVAR_ARCHIVE);
+		gl_drawbuffer = ConsoleVariables.Get("gl_drawbuffer", "GL_BACK", 0);
+		gl_swapinterval = ConsoleVariables.Get("gl_swapinterval", "0", CVAR_ARCHIVE);
 
-		gl_saturatelighting = Cvar.Get("gl_saturatelighting", "0", 0);
+		gl_saturatelighting = ConsoleVariables.Get("gl_saturatelighting", "0", 0);
 
-		gl_3dlabs_broken = Cvar.Get("gl_3dlabs_broken", "1", CVAR_ARCHIVE);
+		gl_3dlabs_broken = ConsoleVariables.Get("gl_3dlabs_broken", "1", CVAR_ARCHIVE);
 
-		vid_fullscreen = Cvar.Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-		vid_gamma = Cvar.Get("vid_gamma", "1.0", CVAR_ARCHIVE);
-		vid_ref = Cvar.Get("vid_ref", "lwjgl", CVAR_ARCHIVE);
+		vid_fullscreen = ConsoleVariables.Get("vid_fullscreen", "0", CVAR_ARCHIVE);
+		vid_gamma = ConsoleVariables.Get("vid_gamma", "1.0", CVAR_ARCHIVE);
+		vid_ref = ConsoleVariables.Get("vid_ref", "lwjgl", CVAR_ARCHIVE);
 
-		Cmd.AddCommand("imagelist", new xcommand_t() {
+		Cmd.AddCommand("imagelist", new ExecutableCommand() {
 			public void execute() {
 				GL_ImageList_f();
 			}
 		});
 
-		Cmd.AddCommand("screenshot", new xcommand_t() {
+		Cmd.AddCommand("screenshot", new ExecutableCommand() {
 			public void execute() {
 				GL_ScreenShot_f();
 			}
 		});
-		Cmd.AddCommand("modellist", new xcommand_t() {
+		Cmd.AddCommand("modellist", new ExecutableCommand() {
 			public void execute() {
 				Mod_Modellist_f();
 			}
 		});
-		Cmd.AddCommand("gl_strings", new xcommand_t() {
+		Cmd.AddCommand("gl_strings", new ExecutableCommand() {
 			public void execute() {
 				GL_Strings_f();
 			}
@@ -1038,21 +1038,21 @@ public abstract class Main extends Base {
 		}
 		else {
 			if (err == rserr_invalid_fullscreen) {
-				Cvar.SetValue("vid_fullscreen", 0);
+				ConsoleVariables.SetValue("vid_fullscreen", 0);
 				vid_fullscreen.modified = false;
-				VID.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
+				Window.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
 				if ((err = GLimp_SetMode(dim, (int) gl_mode.value, false)) == rserr_ok)
 					return true;
 			}
 			else if (err == rserr_invalid_mode) {
-				Cvar.SetValue("gl_mode", gl_state.prev_mode);
+				ConsoleVariables.SetValue("gl_mode", gl_state.prev_mode);
 				gl_mode.modified = false;
-				VID.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
+				Window.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
 			}
 
 			// try setting it back to something safe
 			if ((err = GLimp_SetMode(dim, gl_state.prev_mode, false)) != rserr_ok) {
-				VID.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
+				Window.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
 				return false;
 			}
 		}
@@ -1073,7 +1073,7 @@ public abstract class Main extends Base {
 			r_turbsin[j] = Warp.SIN[j] * 0.5f;
 		}
 
-		VID.Printf(Defines.PRINT_ALL, "ref_gl version: " + REF_VERSION + '\n');
+		Window.Printf(Defines.PRINT_ALL, "ref_gl version: " + REF_VERSION + '\n');
 
 		Draw_GetPalette();
 
@@ -1084,7 +1084,7 @@ public abstract class Main extends Base {
 
 		// create the window and set up the context
 		if (!R_SetMode()) {
-			VID.Printf(Defines.PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n");
+			Window.Printf(Defines.PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n");
 			return false;
 		}
 		return true;
@@ -1096,8 +1096,8 @@ public abstract class Main extends Base {
 	protected boolean R_Init2() {
 		qglPointParameterfEXT = true;
 		qglActiveTextureARB = true;
-		GL_TEXTURE0 = GLAdapter.GL_TEXTURE0;
-		GL_TEXTURE1 = GLAdapter.GL_TEXTURE1;
+		GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
+		GL_TEXTURE1 = GlAdapter.GL_TEXTURE1;
 
 		if (!(qglActiveTextureARB))
 			return false;
@@ -1110,8 +1110,8 @@ public abstract class Main extends Base {
 		Draw_InitLocal();
 
 		int err = gl.glGetError();
-		if (err != GLAdapter.GL_NO_ERROR)
-			VID.Printf(
+		if (err != GlAdapter.GL_NO_ERROR)
+			Window.Printf(
 				Defines.PRINT_ALL,
 				"glGetError() = 0x%x\n\t%s\n",
 				new Vargs(2).add(err).add("" + gl.glGetString(err)));
@@ -1150,9 +1150,9 @@ public abstract class Main extends Base {
 		*/
 		if (gl_mode.modified || vid_fullscreen.modified) {
 			// FIXME: only restart if CDS is required
-			cvar_t ref;
+			ConsoleVariable ref;
 
-			ref = Cvar.Get("vid_ref", "lwjgl", 0);
+			ref = ConsoleVariables.Get("vid_ref", "lwjgl", 0);
 			ref.modified = true;
 		}
 
@@ -1179,14 +1179,14 @@ public abstract class Main extends Base {
 		** go into 2D mode
 		*/
 		gl.glViewport(0, 0, vid.width, vid.height);
-		gl.glMatrixMode(GLAdapter.GL_PROJECTION);
+		gl.glMatrixMode(GlAdapter.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-		gl.glMatrixMode(GLAdapter.GL_MODELVIEW);
+		gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
 		gl.glLoadIdentity();
-		gl.glDisable(GLAdapter.GL_DEPTH_TEST);
-		gl.glDisable(GLAdapter.GL_CULL_FACE);
-		gl.glDisable(GLAdapter.GL_BLEND);
+		gl.glDisable(GlAdapter.GL_DEPTH_TEST);
+		gl.glDisable(GlAdapter.GL_CULL_FACE);
+		gl.glDisable(GlAdapter.GL_BLEND);
 //		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 		gl.glColor4f(1, 1, 1, 1);
 
@@ -1198,9 +1198,9 @@ public abstract class Main extends Base {
 
 			if (gl_state.camera_separation == 0 || !gl_state.stereo_enabled) {
 				if (gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
-				  gl.glDrawBuffer(GLAdapter.GL_FRONT);
+				  gl.glDrawBuffer(GlAdapter.GL_FRONT);
 				else
-				  gl.glDrawBuffer(GLAdapter.GL_BACK);
+				  gl.glDrawBuffer(GlAdapter.GL_BACK);
 			}
 		}
 
@@ -1262,7 +1262,7 @@ public abstract class Main extends Base {
 		GL_SetTexturePalette(r_rawpalette);
 
 		gl.glClearColor(0, 0, 0, 0);
-		gl.glClear(GLAdapter.GL_COLOR_BUFFER_BIT);
+		gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
 		gl.glClearColor(1f, 0f, 0.5f, 0.5f);
 	}
 
@@ -1280,7 +1280,7 @@ public abstract class Main extends Base {
 	/**
 	 * R_DrawBeam
 	 */
-	void R_DrawBeam(entity_t e) {
+	void R_DrawBeam(EntityType e) {
 		oldorigin[0] = e.oldorigin[0];
 		oldorigin[1] = e.oldorigin[1];
 		oldorigin[2] = e.oldorigin[2];
@@ -1310,8 +1310,8 @@ public abstract class Main extends Base {
 			Math3D.VectorAdd(start_points[i], direction, end_points[i]);
 		}
 
-		gl.glDisable(GLAdapter.GL_TEXTURE_2D);
-		gl.glEnable(GLAdapter.GL_BLEND);
+		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		gl.glEnable(GlAdapter.GL_BLEND);
 		gl.glDepthMask(false);
 
 		float r = (QuakeImage.PALETTE_ABGR[e.skinnum & 0xFF]) & 0xFF;
@@ -1324,7 +1324,7 @@ public abstract class Main extends Base {
 
 		gl.glColor4f(r, g, b, e.alpha);
 
-		gl.glBegin(GLAdapter.GL_TRIANGLE_STRIP);
+		gl.glBegin(GlAdapter.GL_TRIANGLE_STRIP);
 		
 		float[] v;
 		
@@ -1340,8 +1340,8 @@ public abstract class Main extends Base {
 		}
 		gl.glEnd();
 
-		gl.glEnable(GLAdapter.GL_TEXTURE_2D);
-		gl.glDisable(GLAdapter.GL_BLEND);
+		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		gl.glDisable(GlAdapter.GL_BLEND);
 		gl.glDepthMask(true);
 	}
 }

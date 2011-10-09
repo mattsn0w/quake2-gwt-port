@@ -33,15 +33,15 @@ public class GameItemList {
 	// because all adapters have to be created in the other 
 	// classes before this class can be loaded.
 
-	public static gitem_t itemlist[] = {
+	public static GameItem itemlist[] = {
 	//leave index 0 alone
-	new gitem_t(null, null, null, null, null, null, null, 0, null,
+	new GameItem(null, null, null, null, null, null, null, 0, null,
 	        null, null, 0, 0, null, 0, 0, null, 0, null),
 	
 	//
 	// ARMOR
 	//
-	new gitem_t(
+	new GameItem(
 			
 	/**
 	 * QUAKED item_armor_body (.3 .3 1) (-16 -16 -16) (16 16 16)
@@ -63,7 +63,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_armor_combat (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_armor_combat", GameItems.Pickup_Armor, null, null, null,
+	new GameItem("item_armor_combat", GameItems.Pickup_Armor, null, null, null,
 	        "misc/ar1_pkup.wav", "models/items/armor/combat/tris.md2",
 	        Defines.EF_ROTATE, null,
 	        /* icon */
@@ -79,7 +79,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_armor_jacket (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_armor_jacket", GameItems.Pickup_Armor, null, null, null,
+	new GameItem("item_armor_jacket", GameItems.Pickup_Armor, null, null, null,
 	        "misc/ar1_pkup.wav", "models/items/armor/jacket/tris.md2",
 	        Defines.EF_ROTATE, null,
 	        /* icon */
@@ -95,7 +95,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_armor_shard (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_armor_shard", GameItems.Pickup_Armor, null, null, null,
+	new GameItem("item_armor_shard", GameItems.Pickup_Armor, null, null, null,
 	        "misc/ar2_pkup.wav", "models/items/armor/shard/tris.md2",
 	        Defines.EF_ROTATE, null,
 	        /* icon */
@@ -110,7 +110,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_power_screen (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_power_screen", GameItems.Pickup_PowerArmor, GameItems.Use_PowerArmor,
+	new GameItem("item_power_screen", GameItems.Pickup_PowerArmor, GameItems.Use_PowerArmor,
 	        GameItems.Drop_PowerArmor, null, "misc/ar3_pkup.wav",
 	        "models/items/armor/screen/tris.md2", Defines.EF_ROTATE,
 	        null,
@@ -126,7 +126,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_power_shield (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_power_shield", GameItems.Pickup_PowerArmor, GameItems.Use_PowerArmor,
+	new GameItem("item_power_shield", GameItems.Pickup_PowerArmor, GameItems.Use_PowerArmor,
 	        GameItems.Drop_PowerArmor, null, "misc/ar3_pkup.wav",
 	        "models/items/armor/shield/tris.md2", Defines.EF_ROTATE,
 	        null,
@@ -147,7 +147,7 @@ public class GameItemList {
 	 * weapon_blaster (.3 .3 1) (-16 -16 -16) (16 16 16) always owned,
 	 * never in the world
 	 */
-	new gitem_t("weapon_blaster", null, PlayerWeapon.Use_Weapon, null,
+	new GameItem("weapon_blaster", null, PlayerWeapon.Use_Weapon, null,
 	        PlayerWeapon.Weapon_Blaster, "misc/w_pkup.wav", null, 0,
 	        "models/weapons/v_blast/tris.md2",
 	        /* icon */
@@ -162,7 +162,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_shotgun (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("weapon_shotgun", PlayerWeapon.Pickup_Weapon,
+	new GameItem("weapon_shotgun", PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon, PlayerWeapon.Drop_Weapon,
 	        PlayerWeapon.Weapon_Shotgun, "misc/w_pkup.wav",
 	        "models/weapons/g_shotg/tris.md2", Defines.EF_ROTATE,
@@ -179,7 +179,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_supershotgun (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("weapon_supershotgun", PlayerWeapon.Pickup_Weapon,
+	new GameItem("weapon_supershotgun", PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon, PlayerWeapon.Drop_Weapon,
 	        PlayerWeapon.Weapon_SuperShotgun, "misc/w_pkup.wav",
 	        "models/weapons/g_shotg2/tris.md2", Defines.EF_ROTATE,
@@ -196,7 +196,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_machinegun (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t(
+	new GameItem(
 	        "weapon_machinegun",
 	        PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon,
@@ -223,7 +223,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_chaingun (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t(
+	new GameItem(
 	        "weapon_chaingun",
 	        PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon,
@@ -250,7 +250,7 @@ public class GameItemList {
 	/*
 	 * QUAKED ammo_grenades (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t(
+	new GameItem(
 	        "ammo_grenades",
 	        GameItems.Pickup_Ammo,
 	        PlayerWeapon.Use_Weapon,
@@ -278,7 +278,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_grenadelauncher (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t(
+	new GameItem(
 	        "weapon_grenadelauncher",
 	        PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon,
@@ -305,7 +305,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_rocketlauncher (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t(
+	new GameItem(
 	        "weapon_rocketlauncher",
 	        PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon,
@@ -332,7 +332,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_hyperblaster (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t(
+	new GameItem(
 	        "weapon_hyperblaster",
 	        PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon,
@@ -359,7 +359,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_railgun (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("weapon_railgun", PlayerWeapon.Pickup_Weapon,
+	new GameItem("weapon_railgun", PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon, PlayerWeapon.Drop_Weapon,
 	        PlayerWeapon.Weapon_Railgun, "misc/w_pkup.wav",
 	        "models/weapons/g_rail/tris.md2", Defines.EF_ROTATE,
@@ -376,7 +376,7 @@ public class GameItemList {
 	/*
 	 * QUAKED weapon_bfg (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t(
+	new GameItem(
 	        "weapon_bfg",
 	        PlayerWeapon.Pickup_Weapon,
 	        PlayerWeapon.Use_Weapon,
@@ -407,7 +407,7 @@ public class GameItemList {
 	/*
 	 * QUAKED ammo_shells (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("ammo_shells", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
+	new GameItem("ammo_shells", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
 	        "misc/am_pkup.wav",
 	        "models/items/ammo/shells/medium/tris.md2", 0, null,
 	        /* icon */
@@ -422,7 +422,7 @@ public class GameItemList {
 	/*
 	 * QUAKED ammo_bullets (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("ammo_bullets", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
+	new GameItem("ammo_bullets", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
 	        "misc/am_pkup.wav",
 	        "models/items/ammo/bullets/medium/tris.md2", 0, null,
 	        /* icon */
@@ -438,7 +438,7 @@ public class GameItemList {
 	/*
 	 * QUAKED ammo_cells (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("ammo_cells", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
+	new GameItem("ammo_cells", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
 	        "misc/am_pkup.wav",
 	        "models/items/ammo/cells/medium/tris.md2", 0, null,
 	        /* icon */
@@ -453,7 +453,7 @@ public class GameItemList {
 	/*
 	 * QUAKED ammo_rockets (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("ammo_rockets", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
+	new GameItem("ammo_rockets", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
 	        "misc/am_pkup.wav",
 	        "models/items/ammo/rockets/medium/tris.md2", 0, null,
 	        /* icon */
@@ -468,7 +468,7 @@ public class GameItemList {
 	/*
 	 * QUAKED ammo_slugs (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("ammo_slugs", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
+	new GameItem("ammo_slugs", GameItems.Pickup_Ammo, null, GameItems.Drop_Ammo, null,
 	        "misc/am_pkup.wav",
 	        "models/items/ammo/slugs/medium/tris.md2", 0, null,
 	        /* icon */
@@ -486,7 +486,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_quad", GameItems.Pickup_Powerup, GameItems.Use_Quad,
+	new GameItem("item_quad", GameItems.Pickup_Powerup, GameItems.Use_Quad,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/quaddama/tris.md2", Defines.EF_ROTATE, null,
 	        /* icon */
@@ -501,7 +501,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_invulnerability (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_invulnerability", GameItems.Pickup_Powerup,
+	new GameItem("item_invulnerability", GameItems.Pickup_Powerup,
 	        GameItems.Use_Invulnerability, GameItems.Drop_General, null,
 	        "items/pkup.wav", "models/items/invulner/tris.md2",
 	        Defines.EF_ROTATE, null,
@@ -517,7 +517,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_silencer (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_silencer", GameItems.Pickup_Powerup, GameItems.Use_Silencer,
+	new GameItem("item_silencer", GameItems.Pickup_Powerup, GameItems.Use_Silencer,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/silencer/tris.md2", Defines.EF_ROTATE, null,
 	        /* icon */
@@ -532,7 +532,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_breather (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_breather", GameItems.Pickup_Powerup, GameItems.Use_Breather,
+	new GameItem("item_breather", GameItems.Pickup_Powerup, GameItems.Use_Breather,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/breather/tris.md2", Defines.EF_ROTATE, null,
 	        /* icon */
@@ -548,7 +548,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_enviro (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_enviro", GameItems.Pickup_Powerup, GameItems.Use_Envirosuit,
+	new GameItem("item_enviro", GameItems.Pickup_Powerup, GameItems.Use_Envirosuit,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/enviro/tris.md2", Defines.EF_ROTATE, null,
 	        /* icon */
@@ -565,7 +565,7 @@ public class GameItemList {
 	 * QUAKED item_ancient_head (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 * Special item that gives +2 to maximum health
 	 */
-	new gitem_t("item_ancient_head", GameItems.Pickup_AncientHead, null, null,
+	new GameItem("item_ancient_head", GameItems.Pickup_AncientHead, null, null,
 	        null, "items/pkup.wav", "models/items/c_head/tris.md2",
 	        Defines.EF_ROTATE, null,
 	        /* icon */
@@ -581,7 +581,7 @@ public class GameItemList {
 	 * QUAKED item_adrenaline (.3 .3 1) (-16 -16 -16) (16 16 16) gives
 	 * +1 to maximum health
 	 */
-	new gitem_t("item_adrenaline", GameItems.Pickup_Adrenaline, null, null, null,
+	new GameItem("item_adrenaline", GameItems.Pickup_Adrenaline, null, null, null,
 	        "items/pkup.wav", "models/items/adrenal/tris.md2",
 	        Defines.EF_ROTATE, null,
 	        /* icon */
@@ -596,7 +596,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_bandolier (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_bandolier", GameItems.Pickup_Bandolier, null, null, null,
+	new GameItem("item_bandolier", GameItems.Pickup_Bandolier, null, null, null,
 	        "items/pkup.wav", "models/items/band/tris.md2",
 	        Defines.EF_ROTATE, null,
 	        /* icon */
@@ -611,7 +611,7 @@ public class GameItemList {
 	/*
 	 * QUAKED item_pack (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
-	new gitem_t("item_pack", GameItems.Pickup_Pack, null, null, null,
+	new GameItem("item_pack", GameItems.Pickup_Pack, null, null, null,
 	        "items/pkup.wav", "models/items/pack/tris.md2",
 	        Defines.EF_ROTATE, null,
 	        /* icon */
@@ -630,7 +630,7 @@ public class GameItemList {
 	 * QUAKED key_data_cd (0 .5 .8) (-16 -16 -16) (16 16 16) key for
 	 * computer centers
 	 */
-	new gitem_t("key_data_cd", GameItems.Pickup_Key, null, GameItems.Drop_General,
+	new GameItem("key_data_cd", GameItems.Pickup_Key, null, GameItems.Drop_General,
 	        null, "items/pkup.wav",
 	        "models/items/keys/data_cd/tris.md2", Defines.EF_ROTATE,
 	        null, "k_datacd", "Data CD", 2, 0, null,
@@ -642,7 +642,7 @@ public class GameItemList {
 	 * QUAKED key_power_cube (0 .5 .8) (-16 -16 -16) (16 16 16)
 	 * TRIGGER_SPAWN NO_TOUCH warehouse circuits
 	 */
-	new gitem_t("key_power_cube", GameItems.Pickup_Key, null,
+	new GameItem("key_power_cube", GameItems.Pickup_Key, null,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/keys/power/tris.md2", Defines.EF_ROTATE,
 	        null, "k_powercube", "Power Cube", 2, 0, null,
@@ -654,7 +654,7 @@ public class GameItemList {
 	 * QUAKED key_pyramid (0 .5 .8) (-16 -16 -16) (16 16 16) key for the
 	 * entrance of jail3
 	 */
-	new gitem_t("key_pyramid", GameItems.Pickup_Key, null, GameItems.Drop_General,
+	new GameItem("key_pyramid", GameItems.Pickup_Key, null, GameItems.Drop_General,
 	        null, "items/pkup.wav",
 	        "models/items/keys/pyramid/tris.md2", Defines.EF_ROTATE,
 	        null, "k_pyramid", "Pyramid Key", 2, 0, null,
@@ -666,7 +666,7 @@ public class GameItemList {
 	 * QUAKED key_data_spinner (0 .5 .8) (-16 -16 -16) (16 16 16) key
 	 * for the city computer
 	 */
-	new gitem_t("key_data_spinner", GameItems.Pickup_Key, null,
+	new GameItem("key_data_spinner", GameItems.Pickup_Key, null,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/keys/spinner/tris.md2", Defines.EF_ROTATE,
 	        null, "k_dataspin", "Data Spinner", 2, 0, null,
@@ -678,7 +678,7 @@ public class GameItemList {
 	 * QUAKED key_pass (0 .5 .8) (-16 -16 -16) (16 16 16) security pass
 	 * for the security level
 	 */
-	new gitem_t("key_pass", GameItems.Pickup_Key, null, GameItems.Drop_General,
+	new GameItem("key_pass", GameItems.Pickup_Key, null, GameItems.Drop_General,
 	        null, "items/pkup.wav", "models/items/keys/pass/tris.md2",
 	        Defines.EF_ROTATE, null, "k_security", "Security Pass", 2,
 	        0, null, Defines.IT_STAY_COOP | Defines.IT_KEY, 0, null, 0,
@@ -689,7 +689,7 @@ public class GameItemList {
 	 * QUAKED key_blue_key (0 .5 .8) (-16 -16 -16) (16 16 16) normal
 	 * door key - blue
 	 */
-	new gitem_t("key_blue_key", GameItems.Pickup_Key, null,
+	new GameItem("key_blue_key", GameItems.Pickup_Key, null,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/keys/key/tris.md2", Defines.EF_ROTATE, null,
 	        "k_bluekey", "Blue Key", 2, 0, null, Defines.IT_STAY_COOP
@@ -701,7 +701,7 @@ public class GameItemList {
 	 * QUAKED key_red_key (0 .5 .8) (-16 -16 -16) (16 16 16) normal door
 	 * key - red
 	 */
-	new gitem_t("key_red_key", GameItems.Pickup_Key, null, GameItems.Drop_General,
+	new GameItem("key_red_key", GameItems.Pickup_Key, null, GameItems.Drop_General,
 	        null, "items/pkup.wav",
 	        "models/items/keys/red_key/tris.md2", Defines.EF_ROTATE,
 	        null, "k_redkey", "Red Key", 2, 0, null,
@@ -713,7 +713,7 @@ public class GameItemList {
 	 * QUAKED key_commander_head (0 .5 .8) (-16 -16 -16) (16 16 16) tank
 	 * commander's head
 	 */
-	new gitem_t("key_commander_head", GameItems.Pickup_Key, null,
+	new GameItem("key_commander_head", GameItems.Pickup_Key, null,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/monsters/commandr/head/tris.md2", Defines.EF_GIB,
 	        null,
@@ -731,7 +731,7 @@ public class GameItemList {
 	 * QUAKED key_airstrike_target (0 .5 .8) (-16 -16 -16) (16 16 16)
 	 * tank commander's head
 	 */
-	new gitem_t("key_airstrike_target", GameItems.Pickup_Key, null,
+	new GameItem("key_airstrike_target", GameItems.Pickup_Key, null,
 	        GameItems.Drop_General, null, "items/pkup.wav",
 	        "models/items/keys/target/tris.md2", Defines.EF_ROTATE,
 	        null,
@@ -744,7 +744,7 @@ public class GameItemList {
 	        0,
 	        /* precache */
 	        ""),
-	new gitem_t(null, GameItems.Pickup_Health, null, null, null,
+	new GameItem(null, GameItems.Pickup_Health, null, null, null,
 	        "items/pkup.wav", null, 0, null,
 	        /* icon */
 	        "i_health",

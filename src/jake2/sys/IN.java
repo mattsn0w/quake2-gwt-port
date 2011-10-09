@@ -23,13 +23,13 @@
 */
 package jake2.sys;
 
-import jake2.client.CL_input;
+import jake2.client.ClientInput;
 import jake2.client.Key;
 import jake2.game.Cmd;
-import jake2.game.usercmd_t;
-import jake2.qcommon.Cvar;
+import jake2.game.UserCommand;
+import jake2.qcommon.ConsoleVariables;
 import jake2.qcommon.Globals;
-import jake2.qcommon.xcommand_t;
+import jake2.qcommon.ExecutableCommand;
 import jake2.util.Math3D;
 
 /**
@@ -91,8 +91,8 @@ public final class IN extends Globals {
     }
 
     public static void Init() {
-        in_mouse = Cvar.Get("in_mouse", "1", CVAR_ARCHIVE);
-        in_joystick = Cvar.Get("in_joystick", "0", CVAR_ARCHIVE);
+        in_mouse = ConsoleVariables.Get("in_mouse", "1", CVAR_ARCHIVE);
+        in_joystick = ConsoleVariables.Get("in_joystick", "0", CVAR_ARCHIVE);
     }
 
     public static void Shutdown() {
@@ -101,34 +101,34 @@ public final class IN extends Globals {
 
     public static void Real_IN_Init() {
         // mouse variables
-        Globals.m_filter = Cvar.Get("m_filter", "0", 0);
-        Globals.in_mouse = Cvar.Get("in_mouse", "1", CVAR_ARCHIVE);
-        Globals.freelook = Cvar.Get("freelook", "1", 0);
-        Globals.lookstrafe = Cvar.Get("lookstrafe", "0", 0);
-        Globals.sensitivity = Cvar.Get("sensitivity", "3", 0);
-        Globals.m_pitch = Cvar.Get("m_pitch", "0.022", 0);
-        Globals.m_yaw = Cvar.Get("m_yaw", "0.022", 0);
-        Globals.m_forward = Cvar.Get("m_forward", "1", 0);
-        Globals.m_side = Cvar.Get("m_side", "0.8", 0);
+        Globals.m_filter = ConsoleVariables.Get("m_filter", "0", 0);
+        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", CVAR_ARCHIVE);
+        Globals.freelook = ConsoleVariables.Get("freelook", "1", 0);
+        Globals.lookstrafe = ConsoleVariables.Get("lookstrafe", "0", 0);
+        Globals.sensitivity = ConsoleVariables.Get("sensitivity", "3", 0);
+        Globals.m_pitch = ConsoleVariables.Get("m_pitch", "0.022", 0);
+        Globals.m_yaw = ConsoleVariables.Get("m_yaw", "0.022", 0);
+        Globals.m_forward = ConsoleVariables.Get("m_forward", "1", 0);
+        Globals.m_side = ConsoleVariables.Get("m_side", "0.8", 0);
 
-        Cmd.AddCommand("+mlook", new xcommand_t() {
+        Cmd.AddCommand("+mlook", new ExecutableCommand() {
             public void execute() {
                 MLookDown();
             }
         });
-        Cmd.AddCommand("-mlook", new xcommand_t() {
+        Cmd.AddCommand("-mlook", new ExecutableCommand() {
             public void execute() {
                 MLookUp();
             }
         });
 
-        Cmd.AddCommand("force_centerview", new xcommand_t() {
+        Cmd.AddCommand("force_centerview", new ExecutableCommand() {
             public void execute() {
                 Force_CenterView_f();
             }
         });
 
-        Cmd.AddCommand("togglemouse", new xcommand_t() {
+        Cmd.AddCommand("togglemouse", new ExecutableCommand() {
             public void execute() {
                 toggleMouse();
             }
@@ -168,7 +168,7 @@ public final class IN extends Globals {
                 .SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
     }
 
-    public static void Move(usercmd_t cmd) {
+    public static void Move(UserCommand cmd) {
         if (!IN.mouse_avail)
             return;
 
@@ -184,7 +184,7 @@ public final class IN extends Globals {
         KBD.my = (int) (KBD.my * Globals.sensitivity.value);
 
         // add mouse X/Y movement to cmd
-        if ((CL_input.in_strafe.state & 1) != 0
+        if ((ClientInput.in_strafe.state & 1) != 0
                 || ((Globals.lookstrafe.value != 0) && IN.mlooking)) {
             cmd.sidemove += Globals.m_side.value * KBD.mx;
         } else {
@@ -192,7 +192,7 @@ public final class IN extends Globals {
         }
 
         if ((IN.mlooking || Globals.freelook.value != 0.0f)
-                && (CL_input.in_strafe.state & 1) == 0) {
+                && (ClientInput.in_strafe.state & 1) == 0) {
             Globals.cl.viewangles[PITCH] += Globals.m_pitch.value * KBD.my;
         } else {
             cmd.forwardmove -= Globals.m_forward.value * KBD.my;

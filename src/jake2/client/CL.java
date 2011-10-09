@@ -25,8 +25,8 @@ package jake2.client;
 
 import jake2.game.*;
 import jake2.qcommon.*;
-import jake2.server.SV_MAIN;
-import jake2.sound.S;
+import jake2.server.ServerMain;
+import jake2.sound.Sound;
 import jake2.sys.*;
 import jake2.util.*;
 
@@ -55,7 +55,7 @@ public final class CL {
 
         String value;
 
-        cvar_t var;
+        ConsoleVariable var;
     }
 
     public static String cheatvarsinfo[][] = { { "timescale", "1" },
@@ -83,7 +83,7 @@ public final class CL {
      * 
      * Stop recording a demo.
      */
-    static xcommand_t Stop_f = new xcommand_t() {
+    static ExecutableCommand Stop_f = new ExecutableCommand() {
         public void execute() {
             try {
 
@@ -106,7 +106,7 @@ public final class CL {
         }
     };
 
-    static entity_state_t nullstate = new entity_state_t(null);
+    static EntityState nullstate = new EntityState(null);
 
     /**
      * Record_f
@@ -114,14 +114,14 @@ public final class CL {
      * record &lt;demoname&gt;
      * Begins recording a demo from the current position.
      */
-    static xcommand_t Record_f = new xcommand_t() {
+    static ExecutableCommand Record_f = new ExecutableCommand() {
         public void execute() {
             try {
                 String name;
                 byte buf_data[] = new byte[Defines.MAX_MSGLEN];
-                sizebuf_t buf = new sizebuf_t();
+                Buffer buf = new Buffer();
                 int i;
-                entity_state_t ent;
+                EntityState ent;
 
                 if (Cmd.Argc() != 2) {
                     Com.Printf("record <demoname>\n");
@@ -141,10 +141,10 @@ public final class CL {
                 //
                 // open the demo file
                 //
-                name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
+                name = QuakeFileSystem.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
 
                 Com.Printf("recording to " + name + ".\n");
-                FS.CreatePath(name);
+                QuakeFileSystem.CreatePath(name);
                 Globals.cls.demofile = new RandomAccessFile(name, "rw");
                 if (Globals.cls.demofile == null) {
                     Com.Printf("ERROR: couldn't open.\n");
@@ -162,14 +162,14 @@ public final class CL {
                 SZ.Init(buf, buf_data, Defines.MAX_MSGLEN);
 
                 // send the serverdata
-                MSG.WriteByte(buf, Defines.svc_serverdata);
-                MSG.WriteInt(buf, Defines.PROTOCOL_VERSION);
-                MSG.WriteInt(buf, 0x10000 + Globals.cl.servercount);
-                MSG.WriteByte(buf, 1); // demos are always attract loops
-                MSG.WriteString(buf, Globals.cl.gamedir);
-                MSG.WriteShort(buf, Globals.cl.playernum);
+                Messages.WriteByte(buf, Defines.svc_serverdata);
+                Messages.WriteInt(buf, Defines.PROTOCOL_VERSION);
+                Messages.WriteInt(buf, 0x10000 + Globals.cl.servercount);
+                Messages.WriteByte(buf, 1); // demos are always attract loops
+                Messages.WriteString(buf, Globals.cl.gamedir);
+                Messages.WriteShort(buf, Globals.cl.playernum);
 
-                MSG.WriteString(buf, Globals.cl.configstrings[Defines.CS_NAME]);
+                Messages.WriteString(buf, Globals.cl.configstrings[Defines.CS_NAME]);
 
                 // configstrings
                 for (i = 0; i < Defines.MAX_CONFIGSTRINGS; i++) {
@@ -183,9 +183,9 @@ public final class CL {
                             buf.cursize = 0;
                         }
 
-                        MSG.WriteByte(buf, Defines.svc_configstring);
-                        MSG.WriteShort(buf, i);
-                        MSG.WriteString(buf, Globals.cl.configstrings[i]);
+                        Messages.WriteByte(buf, Defines.svc_configstring);
+                        Messages.WriteShort(buf, i);
+                        Messages.WriteString(buf, Globals.cl.configstrings[i]);
                     }
 
                 }
@@ -203,13 +203,13 @@ public final class CL {
                         buf.cursize = 0;
                     }
 
-                    MSG.WriteByte(buf, Defines.svc_spawnbaseline);
-                    MSG.WriteDeltaEntity(nullstate,
+                    Messages.WriteByte(buf, Defines.svc_spawnbaseline);
+                    Messages.WriteDeltaEntity(nullstate,
                             Globals.cl_entities[i].baseline, buf, true, true);
                 }
 
-                MSG.WriteByte(buf, Defines.svc_stufftext);
-                MSG.WriteString(buf, "precache\n");
+                Messages.WriteByte(buf, Defines.svc_stufftext);
+                Messages.WriteString(buf, "precache\n");
 
                 // write it to the demo file
                 Globals.cls.demofile.writeInt(EndianHandler.swapInt(buf.cursize));
@@ -224,7 +224,7 @@ public final class CL {
     /**
      * ForwardToServer_f
      */
-    static xcommand_t ForwardToServer_f = new xcommand_t() {
+    static ExecutableCommand ForwardToServer_f = new ExecutableCommand() {
         public void execute() {
             if (Globals.cls.state != Defines.ca_connected
                     && Globals.cls.state != Defines.ca_active) {
@@ -234,7 +234,7 @@ public final class CL {
 
             // don't forward the first argument
             if (Cmd.Argc() > 1) {
-                MSG.WriteByte(Globals.cls.netchan.message,
+                Messages.WriteByte(Globals.cls.netchan.message,
                         Defines.clc_stringcmd);
                 SZ.Print(Globals.cls.netchan.message, Cmd.Args());
             }
@@ -244,24 +244,24 @@ public final class CL {
     /**
      * Pause_f
      */
-    static xcommand_t Pause_f = new xcommand_t() {
+    static ExecutableCommand Pause_f = new ExecutableCommand() {
         public void execute() {
             // never pause in multiplayer
 
-            if (Cvar.VariableValue("maxclients") > 1
+            if (ConsoleVariables.VariableValue("maxclients") > 1
                     || Globals.server_state == 0) {
-                Cvar.SetValue("paused", 0);
+                ConsoleVariables.SetValue("paused", 0);
                 return;
             }
 
-            Cvar.SetValue("paused", Globals.cl_paused.value);
+            ConsoleVariables.SetValue("paused", Globals.cl_paused.value);
         }
     };
 
     /**
      * Quit_f
      */
-    static xcommand_t Quit_f = new xcommand_t() {
+    static ExecutableCommand Quit_f = new ExecutableCommand() {
         public void execute() {
             Disconnect();
             Com.Quit();
@@ -271,7 +271,7 @@ public final class CL {
     /**
      * Connect_f
      */
-    static xcommand_t Connect_f = new xcommand_t() {
+    static ExecutableCommand Connect_f = new ExecutableCommand() {
         public void execute() {
             String server;
 
@@ -282,7 +282,7 @@ public final class CL {
 
             if (Globals.server_state != 0) {
                 // if running a local server, kill it and reissue
-                SV_MAIN.SV_Shutdown("Server quit\n", false);
+                ServerMain.SV_Shutdown("Server quit\n", false);
             } else {
                 Disconnect();
             }
@@ -306,7 +306,7 @@ public final class CL {
      * 
      * Send the rest of the command line over as an unconnected command.
      */
-    static xcommand_t Rcon_f = new xcommand_t() {
+    static ExecutableCommand Rcon_f = new ExecutableCommand() {
         public void execute() {
 
             if (Globals.rcon_client_password.string.length() == 0) {
@@ -334,7 +334,7 @@ public final class CL {
                 message.append(" ");
             }
 
-            netadr_t to = new netadr_t();
+            NetworkAddress to = new NetworkAddress();
 
             if (Globals.cls.state >= Defines.ca_connected)
                 to = Globals.cls.netchan.remote_address;
@@ -352,7 +352,7 @@ public final class CL {
         }
     };
 
-    static xcommand_t Disconnect_f = new xcommand_t() {
+    static ExecutableCommand Disconnect_f = new ExecutableCommand() {
         public void execute() {
             Com.Error(Defines.ERR_DROP, "Disconnected from server");
         }
@@ -363,7 +363,7 @@ public final class CL {
      * 
      * Just sent as a hint to the client that they should drop to full console.
      */
-    static xcommand_t Changing_f = new xcommand_t() {
+    static ExecutableCommand Changing_f = new ExecutableCommand() {
         public void execute() {
             //ZOID
             //if we are downloading, we don't change!
@@ -372,7 +372,7 @@ public final class CL {
             if (Globals.cls.download != null)
                 return;
 
-            SCR.BeginLoadingPlaque();
+            Screen.BeginLoadingPlaque();
             Globals.cls.state = Defines.ca_connected; // not active anymore, but
                                                       // not disconnected
             Com.Printf("\nChanging map...\n");
@@ -384,7 +384,7 @@ public final class CL {
      * 
      * The server is changing levels.
      */
-    static xcommand_t Reconnect_f = new xcommand_t() {
+    static ExecutableCommand Reconnect_f = new ExecutableCommand() {
         public void execute() {
             //ZOID
             //if we are downloading, we don't change! This so we don't suddenly
@@ -392,13 +392,13 @@ public final class CL {
             if (Globals.cls.download != null)
                 return;
 
-            S.StopAllSounds();
+            Sound.StopAllSounds();
             if (Globals.cls.state == Defines.ca_connected) {
                 Com.Printf("reconnecting...\n");
                 Globals.cls.state = Defines.ca_connected;
-                MSG.WriteChar(Globals.cls.netchan.message,
+                Messages.WriteChar(Globals.cls.netchan.message,
                         Defines.clc_stringcmd);
-                MSG.WriteString(Globals.cls.netchan.message, "new");
+                Messages.WriteString(Globals.cls.netchan.message, "new");
                 return;
             }
 
@@ -418,37 +418,37 @@ public final class CL {
     /**
      * PingServers_f
      */
-    static xcommand_t PingServers_f = new xcommand_t() {
+    static ExecutableCommand PingServers_f = new ExecutableCommand() {
         public void execute() {
             int i;
-            netadr_t adr = new netadr_t();
+            NetworkAddress adr = new NetworkAddress();
             //char name[32];
             String name;
             String adrstring;
-            cvar_t noudp;
-            cvar_t noipx;
+            ConsoleVariable noudp;
+            ConsoleVariable noipx;
 
             NET.Config(true); // allow remote
 
             // send a broadcast packet
             Com.Printf("pinging broadcast...\n");
 
-            noudp = Cvar.Get("noudp", "0", Defines.CVAR_NOSET);
+            noudp = ConsoleVariables.Get("noudp", "0", Defines.CVAR_NOSET);
             if (noudp.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST;
                 adr.port = Defines.PORT_SERVER;
                 //adr.port = BigShort(PORT_SERVER);
-                Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
+                NetworkChannels.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
                         + Defines.PROTOCOL_VERSION);
             }
 
             // we use no IPX
-            noipx = Cvar.Get("noipx", "1", Defines.CVAR_NOSET);
+            noipx = ConsoleVariables.Get("noipx", "1", Defines.CVAR_NOSET);
             if (noipx.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST_IPX;
                 //adr.port = BigShort(PORT_SERVER);
                 adr.port = Defines.PORT_SERVER;
-                Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
+                NetworkChannels.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
                         + Defines.PROTOCOL_VERSION);
             }
 
@@ -456,7 +456,7 @@ public final class CL {
             for (i = 0; i < 16; i++) {
                 //Com_sprintf (name, sizeof(name), "adr%i", i);
                 name = "adr" + i;
-                adrstring = Cvar.VariableString(name);
+                adrstring = ConsoleVariables.VariableString(name);
                 if (adrstring == null || adrstring.length() == 0)
                     continue;
 
@@ -468,7 +468,7 @@ public final class CL {
                 if (adr.port == 0)
                     //adr.port = BigShort(PORT_SERVER);
                     adr.port = Defines.PORT_SERVER;
-                Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
+                NetworkChannels.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
                         + Defines.PROTOCOL_VERSION);
             }
         }
@@ -479,7 +479,7 @@ public final class CL {
      * 
      * Load or download any custom player skins and models.
      */
-    static xcommand_t Skins_f = new xcommand_t() {
+    static ExecutableCommand Skins_f = new ExecutableCommand() {
         public void execute() {
             int i;
 
@@ -489,9 +489,9 @@ public final class CL {
                 Com.Printf("client " + i + ": "
                         + Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
                         + "\n");
-                SCR.UpdateScreen();
+                Screen.UpdateScreen();
                 Sys.SendKeyEvents(); // pump message loop
-                CL_parse.ParseClientinfo(i);
+                ClientParser.ParseClientinfo(i);
             }
         }
     };
@@ -499,10 +499,10 @@ public final class CL {
     /**
      * Userinfo_f
      */
-    static xcommand_t Userinfo_f = new xcommand_t() {
+    static ExecutableCommand Userinfo_f = new ExecutableCommand() {
         public void execute() {
             Com.Printf("User info settings:\n");
-            Info.Print(Cvar.Userinfo());
+            Info.Print(ConsoleVariables.Userinfo());
         }
     };
 
@@ -512,11 +512,11 @@ public final class CL {
      * Restart the sound subsystem so it can pick up new parameters and flush
      * all sounds.
      */
-    static xcommand_t Snd_Restart_f = new xcommand_t() {
+    static ExecutableCommand Snd_Restart_f = new ExecutableCommand() {
         public void execute() {
-            S.Shutdown();
-            S.Init();
-            CL_parse.RegisterSounds();
+            Sound.Shutdown();
+            Sound.Init();
+            ClientParser.RegisterSounds();
         }
     };
 
@@ -532,7 +532,7 @@ public final class CL {
      * The server will send this command right before allowing the client into
      * the server.
      */
-    static xcommand_t Precache_f = new xcommand_t() {
+    static ExecutableCommand Precache_f = new ExecutableCommand() {
         public void execute() {
             // Yet another hack to let old demos work the old precache sequence.
             if (Cmd.Argc() < 2) {
@@ -542,8 +542,8 @@ public final class CL {
                 CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
                         true, iw);
 
-                CL_parse.RegisterSounds();
-                CL_view.PrepRefresh();
+                ClientParser.RegisterSounds();
+                ClientView.PrepRefresh();
                 return;
             }
 
@@ -593,7 +593,7 @@ public final class CL {
      * We have gotten a challenge from the server, so try and connect.
      */
     static void SendConnectPacket() {
-        netadr_t adr = new netadr_t();
+        NetworkAddress adr = new NetworkAddress();
         int port;
 
         if (!NET.StringToAdr(Globals.cls.servername, adr)) {
@@ -605,12 +605,12 @@ public final class CL {
             adr.port = Defines.PORT_SERVER;
         //			adr.port = BigShort(PORT_SERVER);
 
-        port = (int) Cvar.VariableValue("qport");
+        port = (int) ConsoleVariables.VariableValue("qport");
         Globals.userinfo_modified = false;
 
-        Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "connect "
+        NetworkChannels.OutOfBandPrint(Defines.NS_CLIENT, adr, "connect "
                 + Defines.PROTOCOL_VERSION + " " + port + " "
-                + Globals.cls.challenge + " \"" + Cvar.Userinfo() + "\"\n");
+                + Globals.cls.challenge + " \"" + ConsoleVariables.Userinfo() + "\"\n");
     }
 
     /**
@@ -619,7 +619,7 @@ public final class CL {
      * Resend a connect message if the last one has timed out.
      */
     static void CheckForResend() {
-        netadr_t adr = new netadr_t();
+        NetworkAddress adr = new NetworkAddress();
 
         // if the local server is running and we aren't
         // then connect
@@ -652,7 +652,7 @@ public final class CL {
 
         Com.Printf("Connecting to " + Globals.cls.servername + "...\n");
 
-        Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "getchallenge\n");
+        NetworkChannels.OutOfBandPrint(Defines.NS_CLIENT, adr, "getchallenge\n");
     }
 
     /**
@@ -660,15 +660,15 @@ public final class CL {
      * 
      */
     static void ClearState() {
-        S.StopAllSounds();
-        CL_fx.ClearEffects();
-        CL_tent.ClearTEnts();
+        Sound.StopAllSounds();
+        ClientEffects.ClearEffects();
+        ClientTent.ClearTEnts();
 
         // wipe the entire cl structure
 
-        Globals.cl = new client_state_t();
+        Globals.cl = new ClientState();
         for (int i = 0; i < Globals.cl_entities.length; i++) {
-            Globals.cl_entities[i] = new centity_t();
+            Globals.cl_entities[i] = new ClientEntity();
         }
 
         SZ.Clear(Globals.cls.netchan.message);
@@ -707,16 +707,16 @@ public final class CL {
 
         Globals.cls.connect_time = 0;
 
-        SCR.StopCinematic();
+        Screen.StopCinematic();
 
         if (Globals.cls.demorecording)
             Stop_f.execute();
 
         // send a disconnect message to the server
         fin = (char) Defines.clc_stringcmd + "disconnect";
-        Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
-        Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
-        Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
+        NetworkChannels.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
+        NetworkChannels.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
+        NetworkChannels.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
 
         ClearState();
 
@@ -737,7 +737,7 @@ public final class CL {
     static void ParseStatusMessage() {
         String s;
 
-        s = MSG.ReadString(Globals.net_message);
+        s = Messages.ReadString(Globals.net_message);
 
         Com.Printf(s + "\n");
         Menu.AddToServerList(Globals.net_from, s);
@@ -752,10 +752,10 @@ public final class CL {
         String s;
         String c;
 
-        MSG.BeginReading(Globals.net_message);
-        MSG.ReadLong(Globals.net_message); // skip the -1
+        Messages.BeginReading(Globals.net_message);
+        Messages.ReadLong(Globals.net_message); // skip the -1
 
-        s = MSG.ReadStringLine(Globals.net_message);
+        s = Messages.ReadStringLine(Globals.net_message);
 
         Cmd.TokenizeString(s.toCharArray(), false);
 
@@ -769,10 +769,10 @@ public final class CL {
                 Com.Printf("Dup connect received.  Ignored.\n");
                 return;
             }
-            Netchan.Setup(Defines.NS_CLIENT, Globals.cls.netchan,
+            NetworkChannels.Setup(Defines.NS_CLIENT, Globals.cls.netchan,
                     Globals.net_from, Globals.cls.quakePort);
-            MSG.WriteChar(Globals.cls.netchan.message, Defines.clc_stringcmd);
-            MSG.WriteString(Globals.cls.netchan.message, "new");
+            Messages.WriteChar(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Messages.WriteString(Globals.cls.netchan.message, "new");
             Globals.cls.state = Defines.ca_connected;
             return;
         }
@@ -789,14 +789,14 @@ public final class CL {
                 Com.Printf("Command packet from remote host.  Ignored.\n");
                 return;
             }
-            s = MSG.ReadString(Globals.net_message);
-            Cbuf.AddText(s);
-            Cbuf.AddText("\n");
+            s = Messages.ReadString(Globals.net_message);
+            CommandBuffer.AddText(s);
+            CommandBuffer.AddText("\n");
             return;
         }
         // print command from somewhere
         if (c.equals("print")) {
-            s = MSG.ReadString(Globals.net_message);
+            s = Messages.ReadString(Globals.net_message);
             if (s.length() > 0)
             	Com.Printf(s);
             return;
@@ -804,7 +804,7 @@ public final class CL {
 
         // ping from somewhere
         if (c.equals("ping")) {
-            Netchan.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, "ack");
+            NetworkChannels.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, "ack");
             return;
         }
 
@@ -817,7 +817,7 @@ public final class CL {
 
         // echo request from server
         if (c.equals("echo")) {
-            Netchan.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, Cmd
+            NetworkChannels.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, Cmd
                     .Argv(1));
             return;
         }
@@ -864,9 +864,9 @@ public final class CL {
                         + ":sequenced packet without connection\n");
                 continue;
             }
-            if (!Netchan.Process(Globals.cls.netchan, Globals.net_message))
+            if (!NetworkChannels.Process(Globals.cls.netchan, Globals.net_message))
                 continue; // wasn't accepted for some reason
-            CL_parse.ParseServerMessage();
+            ClientParser.ParseServerMessage();
         }
 
         //
@@ -903,11 +903,11 @@ public final class CL {
 
             sk = Globals.skin.string;
             if (sk.startsWith("male") || sk.startsWith("cyborg"))
-                Cvar.Set("gender", "male");
+                ConsoleVariables.Set("gender", "male");
             else if (sk.startsWith("female") || sk.startsWith("crackhor"))
-                Cvar.Set("gender", "female");
+                ConsoleVariables.Set("gender", "female");
             else
-                Cvar.Set("gender", "none");
+                ConsoleVariables.Set("gender", "none");
             Globals.gender.modified = false;
         }
     }
@@ -917,12 +917,12 @@ public final class CL {
         //char fn[MAX_OSPATH];
         String fn;
 
-        qfiles.dmdl_t pheader;
+        QuakeFiles.dmdl_t pheader;
 
         if (Globals.cls.state != Defines.ca_connected)
             return;
 
-        if (SV_MAIN.allow_download.value == 0 && CL.precache_check < ENV_CNT)
+        if (ServerMain.allow_download.value == 0 && CL.precache_check < ENV_CNT)
             CL.precache_check = ENV_CNT;
 
         //	  ZOID
@@ -1222,11 +1222,11 @@ public final class CL {
         }
         
         //	  ZOID
-        CL_parse.RegisterSounds();
-        CL_view.PrepRefresh();
+        ClientParser.RegisterSounds();
+        ClientView.PrepRefresh();
 
-        MSG.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
-        MSG.WriteString(Globals.cls.netchan.message, "begin "
+        Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+        Messages.WriteString(Globals.cls.netchan.message, "begin "
                 + CL.precache_spawncount + "\n");
     }
 
@@ -1237,93 +1237,93 @@ public final class CL {
         Globals.cls.state = Defines.ca_disconnected;
         Globals.cls.realtime = Timer.Milliseconds();
 
-        CL_input.InitInput();
+        ClientInput.InitInput();
 
-        Cvar.Get("adr0", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr1", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr2", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr3", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr4", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr5", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr6", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr7", "", Defines.CVAR_ARCHIVE);
-        Cvar.Get("adr8", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr0", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr1", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr2", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr3", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr4", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr5", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr6", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr7", "", Defines.CVAR_ARCHIVE);
+        ConsoleVariables.Get("adr8", "", Defines.CVAR_ARCHIVE);
 
         //
         // register our variables
         //
-        Globals.cl_stereo_separation = Cvar.Get("cl_stereo_separation", "0.4",
+        Globals.cl_stereo_separation = ConsoleVariables.Get("cl_stereo_separation", "0.4",
                 Defines.CVAR_ARCHIVE);
-        Globals.cl_stereo = Cvar.Get("cl_stereo", "0", 0);
+        Globals.cl_stereo = ConsoleVariables.Get("cl_stereo", "0", 0);
 
-        Globals.cl_add_blend = Cvar.Get("cl_blend", "1", 0);
-        Globals.cl_add_lights = Cvar.Get("cl_lights", "1", 0);
-        Globals.cl_add_particles = Cvar.Get("cl_particles", "1", 0);
-        Globals.cl_add_entities = Cvar.Get("cl_entities", "1", 0);
-        Globals.cl_gun = Cvar.Get("cl_gun", "1", 0);
-        Globals.cl_footsteps = Cvar.Get("cl_footsteps", "1", 0);
-        Globals.cl_noskins = Cvar.Get("cl_noskins", "0", 0);
-        Globals.cl_autoskins = Cvar.Get("cl_autoskins", "0", 0);
-        Globals.cl_predict = Cvar.Get("cl_predict", "1", 0);
+        Globals.cl_add_blend = ConsoleVariables.Get("cl_blend", "1", 0);
+        Globals.cl_add_lights = ConsoleVariables.Get("cl_lights", "1", 0);
+        Globals.cl_add_particles = ConsoleVariables.Get("cl_particles", "1", 0);
+        Globals.cl_add_entities = ConsoleVariables.Get("cl_entities", "1", 0);
+        Globals.cl_gun = ConsoleVariables.Get("cl_gun", "1", 0);
+        Globals.cl_footsteps = ConsoleVariables.Get("cl_footsteps", "1", 0);
+        Globals.cl_noskins = ConsoleVariables.Get("cl_noskins", "0", 0);
+        Globals.cl_autoskins = ConsoleVariables.Get("cl_autoskins", "0", 0);
+        Globals.cl_predict = ConsoleVariables.Get("cl_predict", "1", 0);
 
-        Globals.cl_maxfps = Cvar.Get("cl_maxfps", "90", 0);
+        Globals.cl_maxfps = ConsoleVariables.Get("cl_maxfps", "90", 0);
 
-        Globals.cl_upspeed = Cvar.Get("cl_upspeed", "200", 0);
-        Globals.cl_forwardspeed = Cvar.Get("cl_forwardspeed", "200", 0);
-        Globals.cl_sidespeed = Cvar.Get("cl_sidespeed", "200", 0);
-        Globals.cl_yawspeed = Cvar.Get("cl_yawspeed", "140", 0);
-        Globals.cl_pitchspeed = Cvar.Get("cl_pitchspeed", "150", 0);
-        Globals.cl_anglespeedkey = Cvar.Get("cl_anglespeedkey", "1.5", 0);
+        Globals.cl_upspeed = ConsoleVariables.Get("cl_upspeed", "200", 0);
+        Globals.cl_forwardspeed = ConsoleVariables.Get("cl_forwardspeed", "200", 0);
+        Globals.cl_sidespeed = ConsoleVariables.Get("cl_sidespeed", "200", 0);
+        Globals.cl_yawspeed = ConsoleVariables.Get("cl_yawspeed", "140", 0);
+        Globals.cl_pitchspeed = ConsoleVariables.Get("cl_pitchspeed", "150", 0);
+        Globals.cl_anglespeedkey = ConsoleVariables.Get("cl_anglespeedkey", "1.5", 0);
 
-        Globals.cl_run = Cvar.Get("cl_run", "0", Defines.CVAR_ARCHIVE);
-        Globals.lookspring = Cvar.Get("lookspring", "0", Defines.CVAR_ARCHIVE);
-        Globals.lookstrafe = Cvar.Get("lookstrafe", "0", Defines.CVAR_ARCHIVE);
-        Globals.sensitivity = Cvar
+        Globals.cl_run = ConsoleVariables.Get("cl_run", "0", Defines.CVAR_ARCHIVE);
+        Globals.lookspring = ConsoleVariables.Get("lookspring", "0", Defines.CVAR_ARCHIVE);
+        Globals.lookstrafe = ConsoleVariables.Get("lookstrafe", "0", Defines.CVAR_ARCHIVE);
+        Globals.sensitivity = ConsoleVariables
                 .Get("sensitivity", "3", Defines.CVAR_ARCHIVE);
 
-        Globals.m_pitch = Cvar.Get("m_pitch", "0.022", Defines.CVAR_ARCHIVE);
-        Globals.m_yaw = Cvar.Get("m_yaw", "0.022", 0);
-        Globals.m_forward = Cvar.Get("m_forward", "1", 0);
-        Globals.m_side = Cvar.Get("m_side", "1", 0);
+        Globals.m_pitch = ConsoleVariables.Get("m_pitch", "0.022", Defines.CVAR_ARCHIVE);
+        Globals.m_yaw = ConsoleVariables.Get("m_yaw", "0.022", 0);
+        Globals.m_forward = ConsoleVariables.Get("m_forward", "1", 0);
+        Globals.m_side = ConsoleVariables.Get("m_side", "1", 0);
 
-        Globals.cl_shownet = Cvar.Get("cl_shownet", "0", 0);
-        Globals.cl_showmiss = Cvar.Get("cl_showmiss", "0", 0);
-        Globals.cl_showclamp = Cvar.Get("showclamp", "0", 0);
-        Globals.cl_timeout = Cvar.Get("cl_timeout", "120", 0);
-        Globals.cl_paused = Cvar.Get("paused", "0", 0);
-        Globals.cl_timedemo = Cvar.Get("timedemo", "0", 0);
+        Globals.cl_shownet = ConsoleVariables.Get("cl_shownet", "0", 0);
+        Globals.cl_showmiss = ConsoleVariables.Get("cl_showmiss", "0", 0);
+        Globals.cl_showclamp = ConsoleVariables.Get("showclamp", "0", 0);
+        Globals.cl_timeout = ConsoleVariables.Get("cl_timeout", "120", 0);
+        Globals.cl_paused = ConsoleVariables.Get("paused", "0", 0);
+        Globals.cl_timedemo = ConsoleVariables.Get("timedemo", "0", 0);
 
-        Globals.rcon_client_password = Cvar.Get("rcon_password", "", 0);
-        Globals.rcon_address = Cvar.Get("rcon_address", "", 0);
+        Globals.rcon_client_password = ConsoleVariables.Get("rcon_password", "", 0);
+        Globals.rcon_address = ConsoleVariables.Get("rcon_address", "", 0);
 
-        Globals.cl_lightlevel = Cvar.Get("r_lightlevel", "0", 0);
+        Globals.cl_lightlevel = ConsoleVariables.Get("r_lightlevel", "0", 0);
 
         //
         // userinfo
         //
-        Globals.info_password = Cvar.Get("password", "", Defines.CVAR_USERINFO);
-        Globals.info_spectator = Cvar.Get("spectator", "0",
+        Globals.info_password = ConsoleVariables.Get("password", "", Defines.CVAR_USERINFO);
+        Globals.info_spectator = ConsoleVariables.Get("spectator", "0",
                 Defines.CVAR_USERINFO);
-        Globals.name = Cvar.Get("name", "unnamed", Defines.CVAR_USERINFO
+        Globals.name = ConsoleVariables.Get("name", "unnamed", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
-        Globals.skin = Cvar.Get("skin", "male/grunt", Defines.CVAR_USERINFO
+        Globals.skin = ConsoleVariables.Get("skin", "male/grunt", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
-        Globals.rate = Cvar.Get("rate", "25000", Defines.CVAR_USERINFO
+        Globals.rate = ConsoleVariables.Get("rate", "25000", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE); // FIXME
-        Globals.msg = Cvar.Get("msg", "1", Defines.CVAR_USERINFO
+        Globals.msg = ConsoleVariables.Get("msg", "1", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
-        Globals.hand = Cvar.Get("hand", "0", Defines.CVAR_USERINFO
+        Globals.hand = ConsoleVariables.Get("hand", "0", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
-        Globals.fov = Cvar.Get("fov", "90", Defines.CVAR_USERINFO
+        Globals.fov = ConsoleVariables.Get("fov", "90", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
-        Globals.gender = Cvar.Get("gender", "male", Defines.CVAR_USERINFO
+        Globals.gender = ConsoleVariables.Get("gender", "male", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
-        Globals.gender_auto = Cvar
+        Globals.gender_auto = ConsoleVariables
                 .Get("gender_auto", "1", Defines.CVAR_ARCHIVE);
         Globals.gender.modified = false; // clear this so we know when user sets
                                          // it manually
 
-        Globals.cl_vwep = Cvar.Get("cl_vwep", "1", Defines.CVAR_ARCHIVE);
+        Globals.cl_vwep = ConsoleVariables.Get("cl_vwep", "1", Defines.CVAR_ARCHIVE);
 
         //
         // register our commands
@@ -1350,7 +1350,7 @@ public final class CL {
 
         Cmd.AddCommand("precache", Precache_f);
 
-        Cmd.AddCommand("download", CL_parse.Download_f);
+        Cmd.AddCommand("download", ClientParser.Download_f);
 
         //
         // forward to server commands
@@ -1392,7 +1392,7 @@ public final class CL {
 //        if (Globals.cls.state == Defines.ca_uninitialized)
 //            return;
 
-        path = FS.Gamedir() + "/config.cfg";
+        path = QuakeFileSystem.Gamedir() + "/config.cfg";
         f = Lib.fopen(path, "rw");
         if (f == null) {
             Com.Printf("Couldn't write config.cfg.\n");
@@ -1410,7 +1410,7 @@ public final class CL {
 
         Key.WriteBindings(f);
         Lib.fclose(f);
-        Cvar.WriteVariables(path);
+        ConsoleVariables.WriteVariables(path);
     }
 
     /**
@@ -1428,7 +1428,7 @@ public final class CL {
         // find all the cvars if we haven't done it yet
         if (0 == CL.numcheatvars) {
             while (CL.cheatvars[CL.numcheatvars].name != null) {
-                CL.cheatvars[CL.numcheatvars].var = Cvar.Get(
+                CL.cheatvars[CL.numcheatvars].var = ConsoleVariables.Get(
                         CL.cheatvars[CL.numcheatvars].name,
                         CL.cheatvars[CL.numcheatvars].value, 0);
                 CL.numcheatvars++;
@@ -1439,7 +1439,7 @@ public final class CL {
         for (i = 0; i < CL.numcheatvars; i++) {
             var = CL.cheatvars[i];
             if (!var.var.string.equals(var.value)) {
-                Cvar.Set(var.name, var.value);
+                ConsoleVariables.Set(var.name, var.value);
             }
         }
     }
@@ -1457,13 +1457,13 @@ public final class CL {
         IN.Commands();
 
         // process console commands
-        Cbuf.Execute();
+        CommandBuffer.Execute();
 
         // fix any cheating cvars
         FixCvarCheats();
 
         // send intentions now
-        CL_input.SendCmd();
+        ClientInput.SendCmd();
 
         // resend a connection request if necessary
         CheckForResend();
@@ -1514,15 +1514,15 @@ public final class CL {
         SendCommand();
 
         // predict all unacknowledged movements
-        CL_pred.PredictMovement();
+        ClientPrediction.PredictMovement();
 
         // allow rendering DLL change
-        VID.CheckChanges();
+        Window.CheckChanges();
 
         if (!Globals.cl.refresh_prepped
                 && Globals.cls.state == Defines.ca_active) {
         	
-            CL_view.PrepRefresh();
+            ClientView.PrepRefresh();
 
             // HACK: PrepRefresh() can kick off model loads, and UpdateScreen()
             // will try to use them imeediately. So we jump out early here if
@@ -1532,17 +1532,17 @@ public final class CL {
             }
         }
 
-        SCR.UpdateScreen();
+        Screen.UpdateScreen();
 
         // update audio
-        S.Update(Globals.cl.refdef.vieworg, Globals.cl.v_forward,
+        Sound.Update(Globals.cl.refdef.vieworg, Globals.cl.v_forward,
                 Globals.cl.v_right, Globals.cl.v_up);
 
         // advance local effects for next frame
-        CL_fx.RunDLights();
-        CL_fx.RunLightStyles();
-        SCR.RunCinematic();
-        SCR.RunConsole();
+        ClientEffects.RunDLights();
+        ClientEffects.RunLightStyles();
+        Screen.RunCinematic();
+        Screen.RunConsole();
 
         Globals.cls.framecount++;
         if (Globals.cls.state != Defines.ca_active
@@ -1563,9 +1563,9 @@ public final class CL {
 
         WriteConfiguration();
 
-        S.Shutdown();
+        Sound.Shutdown();
         IN.Shutdown();
-        VID.Shutdown();
+        Window.Shutdown();
     }
 
     /**
@@ -1579,24 +1579,24 @@ public final class CL {
 
         Console.Init(); //ok
 
-        S.Init(); //empty
-        VID.Init();
+        Sound.Init(); //empty
+        Window.Init();
 
-        V.Init();
+        Video.Init();
 
         Globals.net_message.data = Globals.net_message_buffer;
         Globals.net_message.maxsize = Globals.net_message_buffer.length;
 
         Menu.Init();
 
-        SCR.Init();
+        Screen.Init();
         //Globals.cls.disable_screen = 1.0f; // don't draw yet
 
         InitLocal();
         IN.Init();
 
 //        FS.ExecAutoexec();
-        Cbuf.Execute();
+        CommandBuffer.Execute();
     }
 
     /**
@@ -1612,6 +1612,6 @@ public final class CL {
 
         // drop loading plaque unless this is the initial game start
         if (Globals.cls.disable_servercount != -1)
-            SCR.EndLoadingPlaque(); // get rid of loading plaque
+            Screen.EndLoadingPlaque(); // get rid of loading plaque
     }
 }

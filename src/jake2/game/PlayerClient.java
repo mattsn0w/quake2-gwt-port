@@ -23,8 +23,11 @@
 */
 package jake2.game;
 
-import jake2.game.monsters.M_Player;
-import jake2.game.pmove_t.TraceAdapter;
+import jake2.game.adapters.EntDieAdapter;
+import jake2.game.adapters.EntityPainAdapter;
+import jake2.game.adapters.EntitiyThinkAdapter;
+import jake2.game.monsters.MonsterPlayer;
+import jake2.game.PlayerMove.TraceAdapter;
 import jake2.qcommon.Defines;
 import jake2.util.Lib;
 import jake2.util.Math3D;
@@ -38,7 +41,7 @@ public class PlayerClient {
      */
     static EntDieAdapter player_die = new EntDieAdapter() {
     	public String getID() { return "player_die"; }
-        public void die(edict_t self, edict_t inflictor, edict_t attacker,
+        public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
             int n;
     
@@ -104,22 +107,22 @@ public class PlayerClient {
                     player_die_i = (player_die_i + 1) % 3;
                     // start a death animation
                     self.client.anim_priority = Defines.ANIM_DEATH;
-                    if ((self.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                        self.s.frame = M_Player.FRAME_crdeath1 - 1;
-                        self.client.anim_end = M_Player.FRAME_crdeath5;
+                    if ((self.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                        self.s.frame = MonsterPlayer.FRAME_crdeath1 - 1;
+                        self.client.anim_end = MonsterPlayer.FRAME_crdeath5;
                     } else
                         switch (player_die_i) {
                         case 0:
-                            self.s.frame = M_Player.FRAME_death101 - 1;
-                            self.client.anim_end = M_Player.FRAME_death106;
+                            self.s.frame = MonsterPlayer.FRAME_death101 - 1;
+                            self.client.anim_end = MonsterPlayer.FRAME_death106;
                             break;
                         case 1:
-                            self.s.frame = M_Player.FRAME_death201 - 1;
-                            self.client.anim_end = M_Player.FRAME_death206;
+                            self.s.frame = MonsterPlayer.FRAME_death201 - 1;
+                            self.client.anim_end = MonsterPlayer.FRAME_death206;
                             break;
                         case 2:
-                            self.s.frame = M_Player.FRAME_death301 - 1;
-                            self.client.anim_end = M_Player.FRAME_death308;
+                            self.s.frame = MonsterPlayer.FRAME_death301 - 1;
+                            self.client.anim_end = MonsterPlayer.FRAME_death308;
                             break;
                         }
     
@@ -134,15 +137,15 @@ public class PlayerClient {
             GameBase.gi.linkentity(self);
         }
     };
-    static EntThinkAdapter SP_FixCoopSpots = new EntThinkAdapter() {
+    static EntitiyThinkAdapter SP_FixCoopSpots = new EntitiyThinkAdapter() {
     	public String getID() { return "SP_FixCoopSpots"; }
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
     
-            edict_t spot;
+            Entity spot;
             float[] d = { 0, 0, 0 };
     
             spot = null;
-            EdictIterator es = null;
+            EntityIterator es = null;
     
             while (true) {
                 es = GameBase.G_Find(es, GameBase.findByClass,
@@ -170,11 +173,11 @@ public class PlayerClient {
             }
         }
     };
-    static EntThinkAdapter SP_CreateCoopSpots = new EntThinkAdapter() {
+    static EntitiyThinkAdapter SP_CreateCoopSpots = new EntitiyThinkAdapter() {
     	public String getID() { return "SP_CreateCoopSpots"; }
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
     
-            edict_t spot;
+            Entity spot;
     
             if (Lib.Q_stricmp(GameBase.level.mapname, "security") == 0) {
                 spot = GameUtil.G_Spawn();
@@ -205,14 +208,14 @@ public class PlayerClient {
         }
     };
     // player pain is handled at the end of the frame in P_DamageFeedback
-    static EntPainAdapter player_pain = new EntPainAdapter() {
+    static EntityPainAdapter player_pain = new EntityPainAdapter() {
     	public String getID() { return "player_pain"; }
-        public void pain(edict_t self, edict_t other, float kick, int damage) {
+        public void pain(Entity self, Entity other, float kick, int damage) {
         }
     };
     static EntDieAdapter body_die = new EntDieAdapter() {
     	public String getID() { return "body_die"; }
-        public void die(edict_t self, edict_t inflictor, edict_t attacker,
+        public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
     
             int n;
@@ -229,11 +232,11 @@ public class PlayerClient {
             }
         }
     };
-    static edict_t pm_passent;
+    static Entity pm_passent;
     // pmove doesn't need to know about passent and contentmask
-    public static pmove_t.TraceAdapter PM_trace = new pmove_t.TraceAdapter() {
+    public static PlayerMove.TraceAdapter PM_trace = new PlayerMove.TraceAdapter() {
     
-        public trace_t trace(float[] start, float[] mins, float[] maxs,
+        public Trace trace(float[] start, float[] mins, float[] maxs,
                 float[] end) {
             if (pm_passent.health > 0)
                 return GameBase.gi.trace(start, mins, maxs, end, pm_passent,
@@ -249,7 +252,7 @@ public class PlayerClient {
      * QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32) The normal
      * starting point for a level.
      */
-    public static void SP_info_player_start(edict_t self) {
+    public static void SP_info_player_start(Entity self) {
         if (GameBase.coop.value == 0)
             return;
         if (Lib.Q_stricmp(GameBase.level.mapname, "security") == 0) {
@@ -263,7 +266,7 @@ public class PlayerClient {
      * QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) potential
      * spawning position for deathmatch games.
      */
-    public static void SP_info_player_deathmatch(edict_t self) {
+    public static void SP_info_player_deathmatch(Entity self) {
         if (0 == GameBase.deathmatch.value) {
             GameUtil.G_FreeEdict(self);
             return;
@@ -276,7 +279,7 @@ public class PlayerClient {
      * spawning position for coop games.
      */
 
-    public static void SP_info_player_coop(edict_t self) {
+    public static void SP_info_player_coop(Entity self) {
         if (0 == GameBase.coop.value) {
             GameUtil.G_FreeEdict(self);
             return;
@@ -311,8 +314,8 @@ public class PlayerClient {
     public static void SP_info_player_intermission() {
     }
 
-    public static void ClientObituary(edict_t self, edict_t inflictor,
-            edict_t attacker) {
+    public static void ClientObituary(Entity self, Entity inflictor,
+            Entity attacker) {
         int mod;
         String message;
         String message2;
@@ -507,10 +510,10 @@ public class PlayerClient {
      * This is only called when the game first initializes in single player, but
      * is called after each death and level change in deathmatch. 
      */
-    public static void InitClientPersistant(gclient_t client) {
-        gitem_t item;
+    public static void InitClientPersistant(GameClient client) {
+        GameItem item;
 
-        client.pers = new client_persistant_t();
+        client.pers = new ClientPersistentState();
 
         item = GameItems.FindItem("Blaster");
         client.pers.selected_item = GameItems.ITEM_INDEX(item);
@@ -537,7 +540,7 @@ public class PlayerClient {
         client.pers.connected = true;
     }
 
-    public static void InitClientResp(gclient_t client) {
+    public static void InitClientResp(GameClient client) {
         //memset(& client.resp, 0, sizeof(client.resp));
         client.resp.clear(); //  ok.
         client.resp.enterframe = GameBase.level.framenum;
@@ -551,7 +554,7 @@ public class PlayerClient {
      */
     public static void SaveClientData() {
         int i;
-        edict_t ent;
+        Entity ent;
 
         for (i = 0; i < GameBase.game.maxclients; i++) {
             ent = GameBase.g_edicts[1 + i];
@@ -568,7 +571,7 @@ public class PlayerClient {
         }
     }
 
-    public static void FetchClientEntData(edict_t ent) {
+    public static void FetchClientEntData(Entity ent) {
         ent.health = ent.client.pers.health;
         ent.max_health = ent.client.pers.max_health;
         ent.flags |= ent.client.pers.savedFlags;
@@ -579,8 +582,8 @@ public class PlayerClient {
     /**
      * Returns the distance to the nearest player from the given spot.
      */
-    static float PlayersRangeFromSpot(edict_t spot) {
-        edict_t player;
+    static float PlayersRangeFromSpot(Entity spot) {
+        Entity player;
         float bestplayerdistance;
         float[] v = { 0, 0, 0 };
         int n;
@@ -610,8 +613,8 @@ public class PlayerClient {
     /**
      * Go to a random point, but NOT the two points closest to other players.
      */
-    public static edict_t SelectRandomDeathmatchSpawnPoint() {
-        edict_t spot, spot1, spot2;
+    public static Entity SelectRandomDeathmatchSpawnPoint() {
+        Entity spot, spot1, spot2;
         int count = 0;
         int selection;
         float range, range1, range2;
@@ -620,7 +623,7 @@ public class PlayerClient {
         range1 = range2 = 99999;
         spot1 = spot2 = null;
 
-        EdictIterator es = null;
+        EntityIterator es = null;
 
         while ((es = GameBase.G_Find(es, GameBase.findByClass,
                 "info_player_deathmatch")) != null) {
@@ -666,16 +669,16 @@ public class PlayerClient {
     /** 
 	 * If turned on in the dmflags, select a spawn point far away from other players.
      */
-    static edict_t SelectFarthestDeathmatchSpawnPoint() {
-        edict_t bestspot;
+    static Entity SelectFarthestDeathmatchSpawnPoint() {
+        Entity bestspot;
         float bestdistance, bestplayerdistance;
-        edict_t spot;
+        Entity spot;
 
         spot = null;
         bestspot = null;
         bestdistance = 0;
 
-        EdictIterator es = null;
+        EntityIterator es = null;
         while ((es = GameBase.G_Find(es, GameBase.findByClass,
                 "info_player_deathmatch")) != null) {
             spot = es.o;
@@ -693,7 +696,7 @@ public class PlayerClient {
 
         // if there is a player just spawned on each and every start spot
         // we have no choice to turn one into a telefrag meltdown
-        EdictIterator edit = GameBase.G_Find(null, GameBase.findByClass,
+        EntityIterator edit = GameBase.G_Find(null, GameBase.findByClass,
                 "info_player_deathmatch");
         if (edit == null)
             return null;
@@ -702,16 +705,16 @@ public class PlayerClient {
     }
 
     
-    public static edict_t SelectDeathmatchSpawnPoint() {
+    public static Entity SelectDeathmatchSpawnPoint() {
         if (0 != ((int) (GameBase.dmflags.value) & Defines.DF_SPAWN_FARTHEST))
             return SelectFarthestDeathmatchSpawnPoint();
         else
             return SelectRandomDeathmatchSpawnPoint();
     }
 
-    public static edict_t SelectCoopSpawnPoint(edict_t ent) {
+    public static Entity SelectCoopSpawnPoint(Entity ent) {
         int index;
-        edict_t spot = null;
+        Entity spot = null;
         String target;
 
         //index = ent.client - game.clients;
@@ -722,7 +725,7 @@ public class PlayerClient {
             return null;
 
         spot = null;
-        EdictIterator es = null;
+        EntityIterator es = null;
 
         // assume there are four coop spots at each spawnpoint
         while (true) {
@@ -754,16 +757,16 @@ public class PlayerClient {
     /**
      * Chooses a player start, deathmatch start, coop start, etc.
      */
-    public static void SelectSpawnPoint(edict_t ent, float[] origin,
+    public static void SelectSpawnPoint(Entity ent, float[] origin,
             float[] angles) {
-        edict_t spot = null;
+        Entity spot = null;
 
         if (GameBase.deathmatch.value != 0)
             spot = SelectDeathmatchSpawnPoint();
         else if (GameBase.coop.value != 0)
             spot = SelectCoopSpawnPoint(ent);
 
-        EdictIterator es = null;
+        EntityIterator es = null;
         // find a single player start spot
         if (null == spot) {
             while ((es = GameBase.G_Find(es, GameBase.findByClass,
@@ -809,7 +812,7 @@ public class PlayerClient {
 
     public static void InitBodyQue() {
         int i;
-        edict_t ent;
+        Entity ent;
 
         GameBase.level.body_que = 0;
         for (i = 0; i < Defines.BODY_QUEUE_SIZE; i++) {
@@ -818,8 +821,8 @@ public class PlayerClient {
         }
     }
 
-    public static void CopyToBodyQue(edict_t ent) {
-        edict_t body;
+    public static void CopyToBodyQue(Entity ent) {
+        Entity body;
 
         // grab a body que and cycle to the next one
         int i = (int) GameBase.maxclients.value + GameBase.level.body_que + 1;
@@ -853,7 +856,7 @@ public class PlayerClient {
         GameBase.gi.linkentity(body);
     }
 
-    public static void respawn(edict_t self) {
+    public static void respawn(Entity self) {
         if (GameBase.deathmatch.value != 0 || GameBase.coop.value != 0) {
             // spectator's don't leave bodies
             if (self.movetype != Defines.MOVETYPE_NOCLIP)
@@ -865,7 +868,7 @@ public class PlayerClient {
             self.s.event = Defines.EV_PLAYER_TELEPORT;
 
             // hold in place briefly
-            self.client.ps.pmove.pm_flags = pmove_t.PMF_TIME_TELEPORT;
+            self.client.ps.pmove.pm_flags = PlayerMove.PMF_TIME_TELEPORT;
             self.client.ps.pmove.pm_time = 14;
 
             self.client.respawn_time = GameBase.level.time;
@@ -887,7 +890,7 @@ public class PlayerClient {
      * Only called when pers.spectator changes note that resp.spectator should
      * be the opposite of pers.spectator here
      */
-    public static void spectator_respawn(edict_t ent) {
+    public static void spectator_respawn(Entity ent) {
         int i, numspec;
 
         // if the user wants to become a spectator, make sure he doesn't
@@ -956,7 +959,7 @@ public class PlayerClient {
             GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
 
             // hold in place briefly
-            ent.client.ps.pmove.pm_flags = pmove_t.PMF_TIME_TELEPORT;
+            ent.client.ps.pmove.pm_flags = PlayerMove.PMF_TIME_TELEPORT;
             ent.client.ps.pmove.pm_time = 14;
         }
 
@@ -973,15 +976,15 @@ public class PlayerClient {
     /**
      * Called when a player connects to a server or respawns in a deathmatch.
      */
-    public static void PutClientInServer(edict_t ent) {
+    public static void PutClientInServer(Entity ent) {
         float[] mins = { -16, -16, -24 };
         float[] maxs = { 16, 16, 32 };
         int index;
         float[] spawn_origin = { 0, 0, 0 }, spawn_angles = { 0, 0, 0 };
-        gclient_t client;
+        GameClient client;
         int i;
-        client_persistant_t saved = new client_persistant_t();
-        client_respawn_t resp = new client_respawn_t();
+        ClientPersistentState saved = new ClientPersistentState();
+        ClientRespawn resp = new ClientRespawn();
 
         // find a spawn point
         // do it before setting health back up, so farthest
@@ -1129,7 +1132,7 @@ public class PlayerClient {
      * A client has just connected to the server in deathmatch mode, so clear
      * everything out before starting them. 
      */
-    public static void ClientBeginDeathmatch(edict_t ent) {
+    public static void ClientBeginDeathmatch(Entity ent) {
         GameUtil.G_InitEdict(ent, ent.index);
 
         InitClientResp(ent.client);
@@ -1159,7 +1162,7 @@ public class PlayerClient {
      * Called when a client has finished connecting, and is ready to be placed
      * into the game. This will happen every level load. 
      */
-    public static void ClientBegin(edict_t ent) {
+    public static void ClientBegin(Entity ent) {
         int i;
 
         //ent.client = game.clients + (ent - g_edicts - 1);
@@ -1216,7 +1219,7 @@ public class PlayerClient {
      * names, etc) before copying it off. 
      *
      */
-    public static String ClientUserinfoChanged(edict_t ent, String userinfo) {
+    public static String ClientUserinfoChanged(Entity ent, String userinfo) {
         String s;
         int playernum;
 
@@ -1279,7 +1282,7 @@ public class PlayerClient {
      * Changing levels will NOT cause this to be called again, but loadgames
      * will. 
      */
-    public static boolean ClientConnect(edict_t ent, String userinfo) {
+    public static boolean ClientConnect(Entity ent, String userinfo) {
         String value;
 
         // check to see if they are on the banned IP list
@@ -1347,7 +1350,7 @@ public class PlayerClient {
     /**
      * Called when a player drops from the server. Will not be called between levels. 
      */
-    public static void ClientDisconnect(edict_t ent) {
+    public static void ClientDisconnect(Entity ent) {
         int playernum;
 
         if (ent.client == null)
@@ -1397,11 +1400,11 @@ public class PlayerClient {
      * This will be called once for each client frame, which will usually be a
      * couple times for each server frame.
      */
-    public static void ClientThink(edict_t ent, usercmd_t ucmd) {
-        gclient_t client;
-        edict_t other;
+    public static void ClientThink(Entity ent, UserCommand ucmd) {
+        GameClient client;
+        Entity other;
         int i, j;
-        pmove_t pm = null;
+        PlayerMove pm = null;
 
         GameBase.level.current_entity = ent;
         client = ent.client;
@@ -1426,7 +1429,7 @@ public class PlayerClient {
         } else {
 
             // set up for pmove
-            pm = new pmove_t();
+            pm = new PlayerMove();
 
             if (ent.movetype == Defines.MOVETYPE_NOCLIP)
                 client.ps.pmove.pm_type = Defines.PM_SPECTATOR;
@@ -1534,7 +1537,7 @@ public class PlayerClient {
 
                 if (client.chase_target != null) {
                     client.chase_target = null;
-                    client.ps.pmove.pm_flags &= ~pmove_t.PMF_NO_PREDICTION;
+                    client.ps.pmove.pm_flags &= ~PlayerMove.PMF_NO_PREDICTION;
                 } else
                     GameChase.GetChaseTarget(ent);
 
@@ -1546,15 +1549,15 @@ public class PlayerClient {
 
         if (client.resp.spectator) {
             if (ucmd.upmove >= 10) {
-                if (0 == (client.ps.pmove.pm_flags & pmove_t.PMF_JUMP_HELD)) {
-                    client.ps.pmove.pm_flags |= pmove_t.PMF_JUMP_HELD;
+                if (0 == (client.ps.pmove.pm_flags & PlayerMove.PMF_JUMP_HELD)) {
+                    client.ps.pmove.pm_flags |= PlayerMove.PMF_JUMP_HELD;
                     if (client.chase_target != null)
                         GameChase.ChaseNext(ent);
                     else
                         GameChase.GetChaseTarget(ent);
                 }
             } else
-                client.ps.pmove.pm_flags &= ~pmove_t.PMF_JUMP_HELD;
+                client.ps.pmove.pm_flags &= ~PlayerMove.PMF_JUMP_HELD;
         }
 
         // update chase cam if being followed
@@ -1569,8 +1572,8 @@ public class PlayerClient {
      * This will be called once for each server frame, before running any other
      * entities in the world. 
      */
-    public static void ClientBeginServerFrame(edict_t ent) {
-        gclient_t client;
+    public static void ClientBeginServerFrame(Entity ent) {
+        GameClient client;
         int buttonMask;
 
         if (GameBase.level.intermissiontime != 0)
@@ -1620,7 +1623,7 @@ public class PlayerClient {
     /** 
      * Returns true, if the players gender flag was set to female. 
      */
-    public static boolean IsFemale(edict_t ent) {
+    public static boolean IsFemale(Entity ent) {
         char info;
     
         if (null == ent.client)
@@ -1637,7 +1640,7 @@ public class PlayerClient {
      * Returns true, if the players gender flag was neither set to female nor to
      * male.
      */
-    public static boolean IsNeutral(edict_t ent) {
+    public static boolean IsNeutral(Entity ent) {
         char info;
     
         if (ent.client == null)
@@ -1654,11 +1657,11 @@ public class PlayerClient {
     /**
      * Changes the camera view to look at the killer.
      */
-    public static void LookAtKiller(edict_t self, edict_t inflictor,
-            edict_t attacker) {
+    public static void LookAtKiller(Entity self, Entity inflictor,
+            Entity attacker) {
         float dir[] = { 0, 0, 0 };
     
-        edict_t world = GameBase.g_edicts[0];
+        Entity world = GameBase.g_edicts[0];
     
         if (attacker != null && attacker != world && attacker != self) {
             Math3D.VectorSubtract(attacker.s.origin, self.s.origin, dir);
@@ -1688,9 +1691,9 @@ public class PlayerClient {
     /** 
      * Drop items and weapons in deathmatch games. 
      */ 
-    public static void TossClientWeapon(edict_t self) {
-        gitem_t item;
-        edict_t drop;
+    public static void TossClientWeapon(Entity self) {
+        GameItem item;
+        Entity drop;
         boolean quad;
         float spread;
     

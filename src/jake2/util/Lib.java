@@ -25,7 +25,7 @@ package jake2.util;
 
 import jake2.qcommon.Com;
 import jake2.qcommon.Compatibility;
-import jake2.qcommon.FS;
+import jake2.qcommon.QuakeFileSystem;
 import jake2.qcommon.Globals;
 
 import java.io.File;
@@ -246,7 +246,7 @@ public class Lib {
 	/** Like in libc */
 	public static String freadString(RandomAccessFile f, int len) {
 		byte buffer[] = new byte[len];
-		FS.Read(buffer, len, f);
+		QuakeFileSystem.Read(buffer, len, f);
 	
 		return Lib.CtoJava(buffer);
 	}

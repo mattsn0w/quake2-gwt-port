@@ -18,14 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.gwt.client;
 
-import jake2.render.gl.GLRenderer;
+import jake2.render.gl.GlRenderer;
 import jake2.sys.KBD;
 
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.corp.compatibility.Numbers;
 
 
-abstract class AbstractGwtGLRenderer extends GLRenderer {
+abstract class AbstractGwtGLRenderer extends GlRenderer {
 	KBD kbd = new GwtKBD();
 	
 	

@@ -51,7 +51,7 @@ public abstract class Converter {
     converters.put(inExt, this);
   }
 
-  public abstract void convert(byte[] raw, File outFile) throws IOException;
+  public abstract void convert(byte[] raw, File outFile, int[] size) throws IOException;
 
   public String getOutExt() {
     return outExt;

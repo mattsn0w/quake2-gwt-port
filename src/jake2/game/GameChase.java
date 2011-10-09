@@ -35,11 +35,11 @@ import jake2.util.Math3D;
 
 public class GameChase {
 
-    public static void UpdateChaseCam(edict_t ent) {
+    public static void UpdateChaseCam(Entity ent) {
         float[] o = { 0, 0, 0 }, ownerv = { 0, 0, 0 }, goal = { 0, 0, 0 };
-        edict_t targ;
+        Entity targ;
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-        trace_t trace;
+        Trace trace;
         int i;
         float[] oldgoal = { 0, 0, 0 };
         float[] angles = { 0, 0, 0 };
@@ -47,11 +47,11 @@ public class GameChase {
         // is our chase target gone?
         if (!ent.client.chase_target.inuse
                 || ent.client.chase_target.client.resp.spectator) {
-            edict_t old = ent.client.chase_target;
+            Entity old = ent.client.chase_target;
             ChaseNext(ent);
             if (ent.client.chase_target == old) {
                 ent.client.chase_target = null;
-                ent.client.ps.pmove.pm_flags &= ~pmove_t.PMF_NO_PREDICTION;
+                ent.client.ps.pmove.pm_flags &= ~PlayerMove.PMF_NO_PREDICTION;
                 return;
             }
         }
@@ -124,13 +124,13 @@ public class GameChase {
         }
     
         ent.viewheight = 0;
-        ent.client.ps.pmove.pm_flags |= pmove_t.PMF_NO_PREDICTION;
-        SV_WORLD.SV_LinkEdict(ent);
+        ent.client.ps.pmove.pm_flags |= PlayerMove.PMF_NO_PREDICTION;
+        ServerWorld.SV_LinkEdict(ent);
     }
 
-    public static void ChaseNext(edict_t ent) {
+    public static void ChaseNext(Entity ent) {
         int i;
-        edict_t e;
+        Entity e;
     
         if (null == ent.client.chase_target)
             return;
@@ -152,9 +152,9 @@ public class GameChase {
         ent.client.update_chase = true;
     }
 
-    public static void ChasePrev(edict_t ent) {
+    public static void ChasePrev(Entity ent) {
         int i;
-        edict_t e;
+        Entity e;
     
         if (ent.client.chase_target == null)
             return;
@@ -175,9 +175,9 @@ public class GameChase {
         ent.client.update_chase = true;
     }
 
-    public static void GetChaseTarget(edict_t ent) {
+    public static void GetChaseTarget(Entity ent) {
         int i;
-        edict_t other;
+        Entity other;
     
         for (i = 1; i <= GameBase.maxclients.value; i++) {
             other = GameBase.g_edicts[i];

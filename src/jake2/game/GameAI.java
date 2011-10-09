@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.game;
 
-import jake2.client.M;
+import jake2.client.ClientMonsterMethods;
+import jake2.game.adapters.AIAdapter;
+import jake2.game.adapters.EntitiyThinkAdapter;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
 import jake2.util.Lib;
@@ -32,28 +34,28 @@ import jake2.util.Math3D;
 
 public class GameAI {
 
-    public static void AttackFinished(edict_t self, float time) {
+    public static void AttackFinished(Entity self, float time) {
         self.monsterinfo.attack_finished = GameBase.level.time + time;
     }
 
     /** Don't move, but turn towards ideal_yaw Distance is for slight position
      * adjustments needed by the animations.
      */
-    public static void ai_turn(edict_t self, float dist) {
+    public static void ai_turn(Entity self, float dist) {
         if (dist != 0)
-            M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
+            ClientMonsterMethods.M_walkmove(self, self.s.angles[Defines.YAW], dist);
 
         if (GameUtil.FindTarget(self))
             return;
 
-        M.M_ChangeYaw(self);
+        ClientMonsterMethods.M_ChangeYaw(self);
     }
     
     /** 
      * Checks, if the monster should turn left/right.
      */
 
-    public static boolean FacingIdeal(edict_t self) {
+    public static boolean FacingIdeal(Entity self) {
         float delta;
 
         delta = Math3D.anglemod(self.s.angles[Defines.YAW] - self.ideal_yaw);
@@ -65,9 +67,9 @@ public class GameAI {
     /**
      * Turn and close until within an angle to launch a melee attack.
      */
-    public static void ai_run_melee(edict_t self) {
+    public static void ai_run_melee(Entity self) {
         self.ideal_yaw = enemy_yaw;
-        M.M_ChangeYaw(self);
+        ClientMonsterMethods.M_ChangeYaw(self);
 
         if (FacingIdeal(self)) {
             self.monsterinfo.melee.think(self);
@@ -78,9 +80,9 @@ public class GameAI {
     /**
      * Turn in place until within an angle to launch a missile attack.
      */
-    public static void ai_run_missile(edict_t self) {
+    public static void ai_run_missile(Entity self) {
         self.ideal_yaw = enemy_yaw;
-        M.M_ChangeYaw(self);
+        ClientMonsterMethods.M_ChangeYaw(self);
 
         if (FacingIdeal(self)) {
             self.monsterinfo.attack.think(self);
@@ -91,22 +93,22 @@ public class GameAI {
     /**
      * Strafe sideways, but stay at aproximately the same range.
      */
-    public static void ai_run_slide(edict_t self, float distance) {
+    public static void ai_run_slide(Entity self, float distance) {
         float ofs;
 
         self.ideal_yaw = enemy_yaw;
-        M.M_ChangeYaw(self);
+        ClientMonsterMethods.M_ChangeYaw(self);
 
         if (self.monsterinfo.lefty != 0)
             ofs = 90;
         else
             ofs = -90;
 
-        if (M.M_walkmove(self, self.ideal_yaw + ofs, distance))
+        if (ClientMonsterMethods.M_walkmove(self, self.ideal_yaw + ofs, distance))
             return;
 
         self.monsterinfo.lefty = 1 - self.monsterinfo.lefty;
-        M.M_walkmove(self, self.ideal_yaw - ofs, distance);
+        ClientMonsterMethods.M_walkmove(self, self.ideal_yaw - ofs, distance);
     }
 
     /**
@@ -132,7 +134,7 @@ public class GameAI {
      * 
      * walkmove(angle, speed) primitive is all or nothing
      */
-    public static boolean ai_checkattack(edict_t self, float dist) {
+    public static boolean ai_checkattack(Entity self, float dist) {
         float temp[] = { 0, 0, 0 };
 
         boolean hesDeadJim;
@@ -239,8 +241,8 @@ public class GameAI {
     /**
      * The monster is walking it's beat.
      */
-    static void ai_walk(edict_t self, float dist) {
-        M.M_MoveToGoal(self, dist);
+    static void ai_walk(Entity self, float dist) {
+        ClientMonsterMethods.M_MoveToGoal(self, dist);
     
         // check for noticing a player
         if (GameUtil.FindTarget(self))
@@ -268,7 +270,7 @@ public class GameAI {
      * In coop games, sight_client will cycle between the clients.
      */
     static void AI_SetSightClient() {
-        edict_t ent;
+        Entity ent;
         int start, check;
     
         if (GameBase.level.sight_client == null)
@@ -299,15 +301,15 @@ public class GameAI {
      * Move the specified distance at current facing. This replaces the QC
      * functions: ai_forward, ai_back, ai_pain, and ai_painforward
      */
-    static void ai_move(edict_t self, float dist) {
-        M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
+    static void ai_move(Entity self, float dist) {
+        ClientMonsterMethods.M_walkmove(self, self.s.angles[Defines.YAW], dist);
     }
 
  
     /**
      * Decides running or standing according to flag AI_STAND_GROUND.
      */
-    static void HuntTarget(edict_t self) {
+    static void HuntTarget(Entity self) {
         float[] vec = { 0, 0, 0 };
     
         self.goalentity = self.enemy;
@@ -324,15 +326,15 @@ public class GameAI {
     }
 
     
-    public static EntThinkAdapter walkmonster_start_go = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter walkmonster_start_go = new EntitiyThinkAdapter() {
         public String getID() { return "walkmonster_start_go"; }
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
 
             if (0 == (self.spawnflags & 2) && GameBase.level.time < 1) {
-                M.M_droptofloor.think(self);
+                ClientMonsterMethods.M_droptofloor.think(self);
 
                 if (self.groundentity != null)
-                    if (!M.M_walkmove(self, 0, 0))
+                    if (!ClientMonsterMethods.M_walkmove(self, 0, 0))
                         GameBase.gi.dprintf(self.classname + " in solid at "
                                 + Lib.vtos(self.s.origin) + "\n");
             }
@@ -349,10 +351,10 @@ public class GameAI {
         }
     };
 
-    public static EntThinkAdapter walkmonster_start = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter walkmonster_start = new EntitiyThinkAdapter() {
         public String getID() { return "walkmonster_start";} 
         
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
 
             self.think = walkmonster_start_go;
             Monster.monster_start(self);
@@ -360,10 +362,10 @@ public class GameAI {
         }
     };
 
-    public static EntThinkAdapter flymonster_start_go = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter flymonster_start_go = new EntitiyThinkAdapter() {
         public String getID() { return "flymonster_start_go";}
-        public boolean think(edict_t self) {
-            if (!M.M_walkmove(self, 0, 0))
+        public boolean think(Entity self) {
+            if (!ClientMonsterMethods.M_walkmove(self, 0, 0))
                 GameBase.gi.dprintf(self.classname + " in solid at "
                         + Lib.vtos(self.s.origin) + "\n");
 
@@ -379,9 +381,9 @@ public class GameAI {
         }
     };
 
-    public static EntThinkAdapter flymonster_start = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter flymonster_start = new EntitiyThinkAdapter() {
         public String getID() { return "flymonster_start";}        
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
             self.flags |= Defines.FL_FLY;
             self.think = flymonster_start_go;
             Monster.monster_start(self);
@@ -389,9 +391,9 @@ public class GameAI {
         }
     };
 
-    public static EntThinkAdapter swimmonster_start_go = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter swimmonster_start_go = new EntitiyThinkAdapter() {
         public String getID() { return "swimmonster_start_go";}
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
             if (0 == self.yaw_speed)
                 self.yaw_speed = 20;
             self.viewheight = 10;
@@ -404,9 +406,9 @@ public class GameAI {
         }
     };
 
-    public static EntThinkAdapter swimmonster_start = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter swimmonster_start = new EntitiyThinkAdapter() {
         public String getID() { return "swimmonster_start";}
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
             self.flags |= Defines.FL_SWIM;
             self.think = swimmonster_start_go;
             Monster.monster_start(self);
@@ -421,15 +423,15 @@ public class GameAI {
      */
     public static AIAdapter ai_turn = new AIAdapter() {
         public String getID() { return "ai_turn";}
-        public void ai(edict_t self, float dist) {
+        public void ai(Entity self, float dist) {
 
             if (dist != 0)
-                M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
+                ClientMonsterMethods.M_walkmove(self, self.s.angles[Defines.YAW], dist);
 
             if (GameUtil.FindTarget(self))
                 return;
 
-            M.M_ChangeYaw(self);
+            ClientMonsterMethods.M_ChangeYaw(self);
         }
     };
 
@@ -440,8 +442,8 @@ public class GameAI {
      */
     public static AIAdapter ai_move = new AIAdapter() {
         public String getID() { return "ai_move";}
-        public void ai(edict_t self, float dist) {
-            M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
+        public void ai(Entity self, float dist) {
+            ClientMonsterMethods.M_walkmove(self, self.s.angles[Defines.YAW], dist);
         }
     };
 
@@ -451,8 +453,8 @@ public class GameAI {
      */
     public static AIAdapter ai_walk = new AIAdapter() {
         public String getID() { return "ai_walk";}
-        public void ai(edict_t self, float dist) {
-            M.M_MoveToGoal(self, dist);
+        public void ai(Entity self, float dist) {
+            ClientMonsterMethods.M_MoveToGoal(self, dist);
 
             // check for noticing a player
             if (GameUtil.FindTarget(self))
@@ -478,11 +480,11 @@ public class GameAI {
 
     public static AIAdapter ai_stand = new AIAdapter() {
         public String getID() { return "ai_stand";}
-        public void ai(edict_t self, float dist) {
+        public void ai(Entity self, float dist) {
             float[] v = { 0, 0, 0 };
 
             if (dist != 0)
-                M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
+                ClientMonsterMethods.M_walkmove(self, self.s.angles[Defines.YAW], dist);
 
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
                 if (self.enemy != null) {
@@ -493,7 +495,7 @@ public class GameAI {
                         self.monsterinfo.aiflags &= ~(Defines.AI_STAND_GROUND | Defines.AI_TEMP_STAND_GROUND);
                         self.monsterinfo.run.think(self);
                     }
-                    M.M_ChangeYaw(self);
+                    ClientMonsterMethods.M_ChangeYaw(self);
                     ai_checkattack(self, 0);
                 } else
                     GameUtil.FindTarget(self);
@@ -526,15 +528,15 @@ public class GameAI {
      */
     public static AIAdapter ai_charge = new AIAdapter() {
         public String getID() { return "ai_charge";}
-        public void ai(edict_t self, float dist) {
+        public void ai(Entity self, float dist) {
             float[] v = { 0, 0, 0 };
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, v);
             self.ideal_yaw = Math3D.vectoyaw(v);
-            M.M_ChangeYaw(self);
+            ClientMonsterMethods.M_ChangeYaw(self);
 
             if (dist != 0)
-                M.M_walkmove(self, self.s.angles[Defines.YAW], dist);
+                ClientMonsterMethods.M_walkmove(self, self.s.angles[Defines.YAW], dist);
         }
     };
 
@@ -544,22 +546,22 @@ public class GameAI {
      */
     public static AIAdapter ai_run = new AIAdapter() {
         public String getID() { return "ai_run";}
-        public void ai(edict_t self, float dist) {
+        public void ai(Entity self, float dist) {
             float[] v = { 0, 0, 0 };
 
-            edict_t tempgoal;
-            edict_t save;
+            Entity tempgoal;
+            Entity save;
             boolean new1;
-            edict_t marker;
+            Entity marker;
             float d1, d2;
-            trace_t tr; // mem
+            Trace tr; // mem
             float[] v_forward = { 0, 0, 0 }, v_right = { 0, 0, 0 };
             float left, center, right;
             float[] left_target = { 0, 0, 0 }, right_target = { 0, 0, 0 };
 
             // if we're going to a combat point, just proceed
             if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0) {
-                M.M_MoveToGoal(self, dist);
+                ClientMonsterMethods.M_MoveToGoal(self, dist);
                 return;
             }
 
@@ -575,7 +577,7 @@ public class GameAI {
                     self.enemy = null;
                 }
                 else               
-                    M.M_MoveToGoal(self, dist);
+                    ClientMonsterMethods.M_MoveToGoal(self, dist);
                 
                 // look for new targets
                 if (!GameUtil.FindTarget(self))
@@ -594,7 +596,7 @@ public class GameAI {
             if (enemy_vis) {
                 //if (self.aiflags & AI_LOST_SIGHT)
                 //   dprint("regained sight\n");
-                M.M_MoveToGoal(self, dist);
+                ClientMonsterMethods.M_MoveToGoal(self, dist);
                 self.monsterinfo.aiflags &= ~Defines.AI_LOST_SIGHT;
                 Math3D.VectorCopy(self.enemy.s.origin, self.monsterinfo.last_sighting);
                 self.monsterinfo.trail_time = GameBase.level.time;
@@ -611,7 +613,7 @@ public class GameAI {
 
             if ((self.monsterinfo.search_time != 0)
                     && (GameBase.level.time > (self.monsterinfo.search_time + 20))) {
-                M.M_MoveToGoal(self, dist);
+                ClientMonsterMethods.M_MoveToGoal(self, dist);
                 self.monsterinfo.search_time = 0;
                 //dprint("search timeout\n");
                 return;
@@ -744,7 +746,7 @@ public class GameAI {
                 // else gi.dprintf("course was fine\n");
             }
 
-            M.M_MoveToGoal(self, dist);
+            ClientMonsterMethods.M_MoveToGoal(self, dist);
 
             GameUtil.G_FreeEdict(tempgoal);
 

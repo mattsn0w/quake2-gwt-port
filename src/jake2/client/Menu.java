@@ -96,18 +96,18 @@ import static jake2.qcommon.Globals.skin;
 import static jake2.qcommon.Globals.viddef;
 
 import jake2.game.Cmd;
-import jake2.game.cvar_t;
+import jake2.game.ConsoleVariable;
 import jake2.qcommon.AsyncCallback;
-import jake2.qcommon.Cbuf;
+import jake2.qcommon.CommandBuffer;
 import jake2.qcommon.Com;
 import jake2.qcommon.Compatibility;
-import jake2.qcommon.Cvar;
-import jake2.qcommon.FS;
+import jake2.qcommon.ConsoleVariables;
+import jake2.qcommon.QuakeFileSystem;
 import jake2.qcommon.Globals;
-import jake2.qcommon.netadr_t;
-import jake2.qcommon.xcommand_t;
-import jake2.render.model_t;
-import jake2.sound.S;
+import jake2.qcommon.NetworkAddress;
+import jake2.qcommon.ExecutableCommand;
+import jake2.render.RendererModel;
+import jake2.sound.Sound;
 import jake2.sys.Sys;
 import jake2.sys.Timer;
 import jake2.util.Lib;
@@ -154,7 +154,7 @@ public final class Menu {
 
     // won't disrupt the sound
 
-    static xcommand_t m_drawfunc;
+    static ExecutableCommand m_drawfunc;
 
     static keyfunc_t m_keyfunc;
 
@@ -164,7 +164,7 @@ public final class Menu {
     public final static int MAX_MENU_DEPTH = 8;
 
     public static class menulayer_t {
-        xcommand_t draw;
+        ExecutableCommand draw;
 
         keyfunc_t key;
     }
@@ -269,12 +269,12 @@ public final class Menu {
                 viddef.height / 2 - 110, name);
     }
 
-    static void PushMenu(xcommand_t draw, keyfunc_t key) { //, String(*key)
+    static void PushMenu(ExecutableCommand draw, keyfunc_t key) { //, String(*key)
                                                            // (int k) ) {
         int i;
 
-        if (Cvar.VariableValue("maxclients") == 1 && Globals.server_state != 0)
-            Cvar.Set("paused", "1");
+        if (ConsoleVariables.VariableValue("maxclients") == 1 && Globals.server_state != 0)
+            ConsoleVariables.Set("paused", "1");
 
         // if this menu is already present, drop back to that level
         // to avoid stacking menus by hotkeys
@@ -305,12 +305,12 @@ public final class Menu {
         cls.key_dest = key_game;
         m_menudepth = 0;
         Key.ClearStates();
-        Cvar.Set("paused", "0");
+        ConsoleVariables.Set("paused", "0");
         CL.WriteConfiguration();
     }
 
     static void PopMenu() {
-        S.StartLocalSound(menu_out_sound);
+        Sound.StartLocalSound(menu_out_sound);
         m_menudepth--;
         if (m_menudepth < 0)
             Com.Error(ERR_FATAL, "PopMenu: depth < 1");
@@ -520,7 +520,7 @@ public final class Menu {
      */
     
 
-    static xcommand_t Main_Draw = new xcommand_t() {
+    static ExecutableCommand Main_Draw = new ExecutableCommand() {
         public void execute() {
             Main_Draw();
         }
@@ -638,14 +638,14 @@ public final class Menu {
         return null;
     }
 
-    static xcommand_t Menu_Main = new xcommand_t() {
+    static ExecutableCommand Menu_Main = new ExecutableCommand() {
         public void execute() {
             Menu_Main_f();
         }
     };
 
     public static void Menu_Main_f() {
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 Main_Draw();
             }
@@ -681,8 +681,8 @@ public final class Menu {
     }
 
     public static void JoinNetworkServerFunc(Object unused) {
-      Cbuf.AddText("connect " + Compatibility.getOriginatingServerAddress() + "\n");
-      Cbuf.Execute();
+      CommandBuffer.AddText("connect " + Compatibility.getOriginatingServerAddress() + "\n");
+      CommandBuffer.Execute();
       ForceMenuOff();
     }
 
@@ -724,7 +724,7 @@ public final class Menu {
         return Default_MenuKey(s_multiplayer_menu, key);
     }
 
-    static xcommand_t Menu_Multiplayer = new xcommand_t() {
+    static ExecutableCommand Menu_Multiplayer = new ExecutableCommand() {
         public void execute() {
             Menu_Multiplayer_f();
         }
@@ -732,7 +732,7 @@ public final class Menu {
 
     static void Menu_Multiplayer_f() {
         Multiplayer_MenuInit();
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 Multiplayer_MenuDraw();
             }
@@ -1236,7 +1236,7 @@ public final class Menu {
         Menu_Center(s_keys_menu);
     }
 
-    static xcommand_t Keys_MenuDraw = new xcommand_t() {
+    static ExecutableCommand Keys_MenuDraw = new ExecutableCommand() {
         public void execute() {
             Keys_MenuDraw_f();
         }
@@ -1265,7 +1265,7 @@ public final class Menu {
                 // Key_KeynumToString(key), bindnames[item.localdata[0]][0]);
                 cmd = "bind \"" + Key.KeynumToString(key) + "\" \""
                         + bindnames[item.localdata[0]][0] + "\"";
-                Cbuf.InsertText(cmd);
+                CommandBuffer.InsertText(cmd);
             }
 
             Menu_SetStatusBar(s_keys_menu,
@@ -1289,7 +1289,7 @@ public final class Menu {
         }
     }
 
-    static xcommand_t Menu_Keys = new xcommand_t() {
+    static ExecutableCommand Menu_Keys = new ExecutableCommand() {
         public void execute() {
             Menu_Keys_f();
         }
@@ -1297,7 +1297,7 @@ public final class Menu {
 
     static void Menu_Keys_f() {
         Keys_MenuInit();
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 Keys_MenuDraw_f();
             }
@@ -1315,7 +1315,7 @@ public final class Menu {
      * 
      * =======================================================================
      */
-    static cvar_t win_noalttab;
+    static ConsoleVariable win_noalttab;
 
     static menuframework_s s_options_menu = new menuframework_s();
 
@@ -1351,11 +1351,11 @@ public final class Menu {
     static menuaction_s s_options_console_action = new menuaction_s();
 
     static void CrosshairFunc(Object unused) {
-        Cvar.SetValue("crosshair", s_options_crosshair_box.curvalue);
+        ConsoleVariables.SetValue("crosshair", s_options_crosshair_box.curvalue);
     }
 
     static void JoystickFunc(Object unused) {
-        Cvar.SetValue("in_joystick", s_options_joystick_box.curvalue);
+        ConsoleVariables.SetValue("in_joystick", s_options_joystick_box.curvalue);
     }
 
     static void CustomizeControlsFunc(Object unused) {
@@ -1363,20 +1363,20 @@ public final class Menu {
     }
 
     static void AlwaysRunFunc(Object unused) {
-        Cvar.SetValue("cl_run", s_options_alwaysrun_box.curvalue);
+        ConsoleVariables.SetValue("cl_run", s_options_alwaysrun_box.curvalue);
     }
 
     static void FreeLookFunc(Object unused) {
-        Cvar.SetValue("freelook", s_options_freelook_box.curvalue);
+        ConsoleVariables.SetValue("freelook", s_options_freelook_box.curvalue);
     }
 
     static void MouseSpeedFunc(Object unused) {
-        Cvar.SetValue("sensitivity",
+        ConsoleVariables.SetValue("sensitivity",
                 s_options_sensitivity_slider.curvalue / 2.0F);
     }
 
     static void NoAltTabFunc(Object unused) {
-        Cvar.SetValue("win_noalttab", s_options_noalttab_box.curvalue);
+        ConsoleVariables.SetValue("win_noalttab", s_options_noalttab_box.curvalue);
     }
 
     static float ClampCvar(float min, float max, float value) {
@@ -1388,7 +1388,7 @@ public final class Menu {
     }
 
     static void ControlsSetMenuItemValues() {
-        s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10;
+        s_options_sfxvolume_slider.curvalue = ConsoleVariables.VariableValue("s_volume") * 10;
 //        s_options_cdvolume_box.curvalue = 1 - ((int) Cvar
 //                .VariableValue("cd_nocd"));
 
@@ -1401,50 +1401,50 @@ public final class Menu {
 
         s_options_sensitivity_slider.curvalue = (sensitivity.value) * 2;
 
-        Cvar.SetValue("cl_run", ClampCvar(0, 1, cl_run.value));
+        ConsoleVariables.SetValue("cl_run", ClampCvar(0, 1, cl_run.value));
         s_options_alwaysrun_box.curvalue = (int) cl_run.value;
 
         s_options_invertmouse_box.curvalue = m_pitch.value < 0 ? 1 : 0;
 
-        Cvar.SetValue("lookspring", ClampCvar(0, 1, lookspring.value));
+        ConsoleVariables.SetValue("lookspring", ClampCvar(0, 1, lookspring.value));
         s_options_lookspring_box.curvalue = (int) lookspring.value;
 
-        Cvar.SetValue("lookstrafe", ClampCvar(0, 1, lookstrafe.value));
+        ConsoleVariables.SetValue("lookstrafe", ClampCvar(0, 1, lookstrafe.value));
         s_options_lookstrafe_box.curvalue = (int) lookstrafe.value;
 
-        Cvar.SetValue("freelook", ClampCvar(0, 1, freelook.value));
+        ConsoleVariables.SetValue("freelook", ClampCvar(0, 1, freelook.value));
         s_options_freelook_box.curvalue = (int) freelook.value;
 
-        Cvar.SetValue("crosshair", ClampCvar(0, 3, Globals.crosshair.value));
+        ConsoleVariables.SetValue("crosshair", ClampCvar(0, 3, Globals.crosshair.value));
         s_options_crosshair_box.curvalue = (int) Globals.crosshair.value;
 
-        Cvar.SetValue("in_joystick", ClampCvar(0, 1, in_joystick.value));
+        ConsoleVariables.SetValue("in_joystick", ClampCvar(0, 1, in_joystick.value));
         s_options_joystick_box.curvalue = (int) in_joystick.value;
 
         s_options_noalttab_box.curvalue = (int) win_noalttab.value;
     }
 
     static void ControlsResetDefaultsFunc(Object unused) {
-        Cbuf.AddText("exec default.cfg\n");
-        Cbuf.Execute();
+        CommandBuffer.AddText("exec default.cfg\n");
+        CommandBuffer.Execute();
 
         ControlsSetMenuItemValues();
     }
 
     static void InvertMouseFunc(Object unused) {
-        Cvar.SetValue("m_pitch", -m_pitch.value);
+        ConsoleVariables.SetValue("m_pitch", -m_pitch.value);
     }
 
     static void LookspringFunc(Object unused) {
-        Cvar.SetValue("lookspring", 1 - lookspring.value);
+        ConsoleVariables.SetValue("lookspring", 1 - lookspring.value);
     }
 
     static void LookstrafeFunc(Object unused) {
-        Cvar.SetValue("lookstrafe", 1 - lookstrafe.value);
+        ConsoleVariables.SetValue("lookstrafe", 1 - lookstrafe.value);
     }
 
     static void UpdateVolumeFunc(Object unused) {
-        Cvar.SetValue("s_volume", s_options_sfxvolume_slider.curvalue / 10);
+        ConsoleVariables.SetValue("s_volume", s_options_sfxvolume_slider.curvalue / 10);
     }
 
 //    static void UpdateCDVolumeFunc(Object unused) {
@@ -1458,7 +1458,7 @@ public final class Menu {
          */
 
         if (cl.attractloop) {
-            Cbuf.AddText("killserver\n");
+            CommandBuffer.AddText("killserver\n");
             return;
         }
 
@@ -1479,7 +1479,7 @@ public final class Menu {
     static String crosshair_names[] = { "none", "cross", "dot", "angle" };
 
     static void Options_MenuInit() {
-        win_noalttab = Cvar.Get("win_noalttab", "0", CVAR_ARCHIVE);
+        win_noalttab = ConsoleVariables.Get("win_noalttab", "0", CVAR_ARCHIVE);
 
         /*
          * * configure controls menu and menu items
@@ -1499,7 +1499,7 @@ public final class Menu {
         };
         s_options_sfxvolume_slider.minvalue = 0;
         s_options_sfxvolume_slider.maxvalue = 10;
-        s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10;
+        s_options_sfxvolume_slider.curvalue = ConsoleVariables.VariableValue("s_volume") * 10;
 
         s_options_sensitivity_slider.type = MTYPE_SLIDER;
         s_options_sensitivity_slider.x = 0;
@@ -1646,7 +1646,7 @@ public final class Menu {
         return Default_MenuKey(s_options_menu, key);
     }
 
-    static xcommand_t Menu_Options = new xcommand_t() {
+    static ExecutableCommand Menu_Options = new ExecutableCommand() {
         public void execute() {
             Menu_Options_f();
         }
@@ -1654,7 +1654,7 @@ public final class Menu {
 
     static void Menu_Options_f() {
         Options_MenuInit();
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 Options_MenuDraw();
             }
@@ -1860,7 +1860,7 @@ public final class Menu {
 
     }
 
-    static xcommand_t Menu_Credits = new xcommand_t() {
+    static ExecutableCommand Menu_Credits = new ExecutableCommand() {
         public void execute() {
             Menu_Credits_f();
         }
@@ -1869,7 +1869,7 @@ public final class Menu {
     static void Menu_Credits_f() {
         credits = idcredits;
         credits_start_time = cls.realtime;
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 Credits_MenuDraw();
             }
@@ -1916,28 +1916,28 @@ public final class Menu {
         // disable updates and start the cinematic going
         cl.servercount = -1;
         ForceMenuOff();
-        Cvar.SetValue("deathmatch", 0);
-        Cvar.SetValue("coop", 0);
+        ConsoleVariables.SetValue("deathmatch", 0);
+        ConsoleVariables.SetValue("coop", 0);
 
-        Cvar.SetValue("gamerules", 0); //PGM
+        ConsoleVariables.SetValue("gamerules", 0); //PGM
 
         // TODO(haustein) Fix this....
-        Cbuf.AddText("loading ; killserver ; wait ; newgame\n");
+        CommandBuffer.AddText("loading ; killserver ; wait ; newgame\n");
         cls.key_dest = key_game;
     }
 
     static void EasyGameFunc(Object data) {
-        Cvar.ForceSet("skill", "0");
+        ConsoleVariables.ForceSet("skill", "0");
         StartGame();
     }
 
     static void MediumGameFunc(Object data) {
-        Cvar.ForceSet("skill", "1");
+        ConsoleVariables.ForceSet("skill", "1");
         StartGame();
     }
 
     static void HardGameFunc(Object data) {
-        Cvar.ForceSet("skill", "2");
+        ConsoleVariables.ForceSet("skill", "2");
         StartGame();
     }
 
@@ -1952,13 +1952,13 @@ public final class Menu {
     static void DemoFunc(Object unused) {
         cl.servercount = -1;
         ForceMenuOff();
-        Cbuf.AddText("loading ; killserver ; wait ; timedemo 0 ; d1\n");
+        CommandBuffer.AddText("loading ; killserver ; wait ; timedemo 0 ; d1\n");
     }
 
     static void BenchmarkFunc(Object unused) {
         cl.servercount = -1;
         ForceMenuOff();
-        Cbuf.AddText("loading ; killserver ; wait ; timedemo 1 ; d1\n");
+        CommandBuffer.AddText("loading ; killserver ; wait ; timedemo 1 ; d1\n");
     }
 
     
@@ -2091,7 +2091,7 @@ public final class Menu {
         return Default_MenuKey(s_game_menu, key);
     }
 
-    static xcommand_t Menu_Game = new xcommand_t() {
+    static ExecutableCommand Menu_Game = new ExecutableCommand() {
         public void execute() {
             Menu_Game_f();
         }
@@ -2102,7 +2102,7 @@ public final class Menu {
     	
     	
         Game_MenuInit();
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 Game_MenuDraw();
             }
@@ -2154,7 +2154,7 @@ public final class Menu {
         for (i = 0; i < MAX_SAVEGAMES; i++) {
 
             m_savestrings[i] = "<EMPTY>";
-            name = FS.Gamedir() + "/save/save" + i + "/server.ssv";
+            name = QuakeFileSystem.Gamedir() + "/save/save" + i + "/server.ssv";
 
             try {
                 f = new QuakeFile(name, "r");
@@ -2180,7 +2180,7 @@ public final class Menu {
         menuaction_s a = (menuaction_s) self;
 
         if (m_savevalid[a.localdata[0]])
-            Cbuf.AddText("load save" + a.localdata[0] + "\n");
+            CommandBuffer.AddText("load save" + a.localdata[0] + "\n");
         ForceMenuOff();
     }
 
@@ -2229,7 +2229,7 @@ public final class Menu {
         return Default_MenuKey(s_loadgame_menu, key);
     }
 
-    static xcommand_t Menu_LoadGame = new xcommand_t() {
+    static ExecutableCommand Menu_LoadGame = new ExecutableCommand() {
         public void execute() {
             Menu_LoadGame_f();
         }
@@ -2237,7 +2237,7 @@ public final class Menu {
 
     static void Menu_LoadGame_f() {
         LoadGame_MenuInit();
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 LoadGame_MenuDraw();
             }
@@ -2267,7 +2267,7 @@ public final class Menu {
     static void SaveGameCallback(Object self) {
         menuaction_s a = (menuaction_s) self;
 
-        Cbuf.AddText("save save" + a.localdata[0] + "\n");
+        CommandBuffer.AddText("save save" + a.localdata[0] + "\n");
         ForceMenuOff();
     }
 
@@ -2315,7 +2315,7 @@ public final class Menu {
         return Default_MenuKey(s_savegame_menu, key);
     }
 
-    static xcommand_t Menu_SaveGame = new xcommand_t() {
+    static ExecutableCommand Menu_SaveGame = new ExecutableCommand() {
         public void execute() {
             Menu_SaveGame_f();
         }
@@ -2326,7 +2326,7 @@ public final class Menu {
             return; // not playing a game
 
         SaveGame_MenuInit();
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 SaveGame_MenuDraw();
             }
@@ -2455,14 +2455,14 @@ public final class Menu {
             "Dual ISDN/Cable", "T1/LAN", "User defined" };
 
     static void HandednessCallback(Object unused) {
-        Cvar.SetValue("hand", s_player_handedness_box.curvalue);
+        ConsoleVariables.SetValue("hand", s_player_handedness_box.curvalue);
     }
 
     static void RateCallback(Object unused) {
         if (s_player_rate_box.curvalue != rate_tbl.length - 1) //sizeof(rate_tbl)
                                                                // / sizeof(*
                                                                // rate_tbl) - 1)
-            Cvar.SetValue("rate", rate_tbl[s_player_rate_box.curvalue]);
+            ConsoleVariables.SetValue("rate", rate_tbl[s_player_rate_box.curvalue]);
     }
 
     static void ModelCallback(Object unused) {
@@ -2669,10 +2669,10 @@ public final class Menu {
         int currentdirectoryindex = 0;
         int currentskinindex = 0;
 
-        cvar_t hand = Cvar.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+        ConsoleVariable hand = ConsoleVariables.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
 
         if (hand.value < 0 || hand.value > 2)
-            Cvar.SetValue("hand", 0);
+            ConsoleVariables.SetValue("hand", 0);
 
         currentdirectory = skin.string;
 
@@ -2775,11 +2775,11 @@ public final class Menu {
                 HandednessCallback(o);
             }
         };
-        s_player_handedness_box.curvalue = (int) Cvar.VariableValue("hand");
+        s_player_handedness_box.curvalue = (int) ConsoleVariables.VariableValue("hand");
         s_player_handedness_box.itemnames = handedness;
 
         for (i = 0; i < rate_tbl.length - 1; i++)
-            if (Cvar.VariableValue("rate") == rate_tbl[i])
+            if (ConsoleVariables.VariableValue("rate") == rate_tbl[i])
                 break;
 
         s_player_rate_title.type = MTYPE_SEPARATOR;
@@ -2817,10 +2817,10 @@ public final class Menu {
 
     private static int yaw;
     private static boolean entityModelLoading;
-    private static final entity_t entity = new entity_t();
+    private static final EntityType entity = new EntityType();
 
     static void PlayerConfig_MenuDraw() {
-        refdef_t refdef = new refdef_t();
+        RendererState refdef = new RendererState();
         //char scratch[MAX_QPATH];
         String scratch;
 
@@ -2842,8 +2842,8 @@ public final class Menu {
               entityModelLoading = true;
               scratch = "players/" + s_pmi[s_player_model_box.curvalue].directory
                   + "/tris.md2";
-              re.RegisterModel(scratch, new AsyncCallback<model_t>() {
-                public void onSuccess(model_t response) {
+              re.RegisterModel(scratch, new AsyncCallback<RendererModel>() {
+                public void onSuccess(RendererModel response) {
                   entity.model = response;
                   // TODO(jgw): Signal to someone that they need to redraw?
                 }
@@ -2875,7 +2875,7 @@ public final class Menu {
 
             refdef.areabits = null;
             refdef.num_entities = 1;
-            refdef.entities = new entity_t[] { entity };
+            refdef.entities = new EntityType[] { entity };
             refdef.lightstyles = null;
             refdef.rdflags = RDF_NOWORLDMODEL;
 
@@ -2905,13 +2905,13 @@ public final class Menu {
         if (key == K_ESCAPE) {
             String scratch;
 
-            Cvar.Set("name", s_player_name_field.buffer.toString());
+            ConsoleVariables.Set("name", s_player_name_field.buffer.toString());
 
             scratch = s_pmi[s_player_model_box.curvalue].directory
                     + "/"
                     + s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue];
 
-            Cvar.Set("skin", scratch);
+            ConsoleVariables.Set("skin", scratch);
 
 // TODO(jgw): Not clear why the skin names are cleared -- this causes an
 // NPE if you try to open the options menu twice.
@@ -2928,7 +2928,7 @@ public final class Menu {
         return Default_MenuKey(s_player_config_menu, key);
     }
 
-    static xcommand_t Menu_PlayerConfig = new xcommand_t() {
+    static ExecutableCommand Menu_PlayerConfig = new ExecutableCommand() {
         public void execute() {
             Menu_PlayerConfig_f();
         }
@@ -2941,7 +2941,7 @@ public final class Menu {
             return;
         }
         Menu_SetStatusBar(s_multiplayer_menu, null);
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 PlayerConfig_MenuDraw();
             }
@@ -2991,14 +2991,14 @@ public final class Menu {
         re.DrawPic((viddef.width - w) / 2, (viddef.height - h) / 2, "quit");
     }
 
-    static xcommand_t Menu_Quit = new xcommand_t() {
+    static ExecutableCommand Menu_Quit = new ExecutableCommand() {
         public void execute() {
             Menu_Quit_f();
         }
     };
 
     static void Menu_Quit_f() {
-        PushMenu(new xcommand_t() {
+        PushMenu(new ExecutableCommand() {
             public void execute() {
                 Quit_Draw();
             }
@@ -3046,7 +3046,7 @@ public final class Menu {
             return;
 
         // repaint everything next frame
-        SCR.DirtyScreen();
+        Screen.DirtyScreen();
 
         // dim everything behind it down
         if (cl.cinematictime > 0)
@@ -3060,7 +3060,7 @@ public final class Menu {
         // menu has been drawn, to avoid delay while
         // caching images
         if (m_entersound) {
-            S.StartLocalSound(menu_in_sound);
+            Sound.StartLocalSound(menu_in_sound);
             m_entersound = false;
         }
     }
@@ -3073,7 +3073,7 @@ public final class Menu {
 
         if (m_keyfunc != null)
             if ((s = m_keyfunc.execute(key)) != null)
-                S.StartLocalSound(s);
+                Sound.StartLocalSound(s);
     }
 
     public static void Action_DoEnter(menuaction_s a) {
@@ -3629,7 +3629,7 @@ public final class Menu {
         }
     }
 
-	public static void AddToServerList(netadr_t netFrom, String s) {
+	public static void AddToServerList(NetworkAddress netFrom, String s) {
 		// TODO Auto-generated method stub
 	}
 

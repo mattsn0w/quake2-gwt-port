@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.tools;
 
-import jake2.qcommon.qfiles;
+import jake2.qcommon.QuakeFiles;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -32,13 +32,15 @@ public class WALConverter extends Converter {
   }
 
   @Override
-  public void convert(byte[] raw, File outFile) throws IOException {
+  public void convert(byte[] raw, File outFile, int[] size) throws IOException {
     RenderedImage ri = makePalletizedImage(LoadWAL(raw));
     ImageIO.write(ri, "png", outFile);
+    size[0] = ri.getWidth();
+    size[1] = ri.getHeight();
   }
 
   static image_t LoadWAL(byte[] raw) throws IOException {
-    qfiles.miptex_t mt = new qfiles.miptex_t(raw);
+    QuakeFiles.miptex_t mt = new QuakeFiles.miptex_t(raw);
 
     image_t image = new image_t();
     image.width = mt.width;

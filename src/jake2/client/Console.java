@@ -42,12 +42,12 @@ import static jake2.qcommon.Globals.re;
 import static jake2.qcommon.Globals.viddef;
 
 import jake2.game.Cmd;
-import jake2.qcommon.Cbuf;
+import jake2.qcommon.CommandBuffer;
 import jake2.qcommon.Com;
-import jake2.qcommon.Cvar;
+import jake2.qcommon.ConsoleVariables;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
-import jake2.qcommon.xcommand_t;
+import jake2.qcommon.ExecutableCommand;
 import jake2.util.Vargs;
 
 import java.util.Arrays;
@@ -57,18 +57,18 @@ import java.util.Arrays;
  */
 public final class Console {
 
-    public static xcommand_t ToggleConsole_f = new xcommand_t() {
+    public static ExecutableCommand ToggleConsole_f = new ExecutableCommand() {
         public void execute() {
-            SCR.EndLoadingPlaque(); // get rid of loading plaque
+            Screen.EndLoadingPlaque(); // get rid of loading plaque
 
             if (Globals.cl.attractloop) {
-                Cbuf.AddText("killserver\n");
+                CommandBuffer.AddText("killserver\n");
                 return;
             }
 
             if (Globals.cls.state == Defines.ca_disconnected) {
                 // start the demo loop again
-                Cbuf.AddText("d1\n");
+                CommandBuffer.AddText("d1\n");
                 return;
             }
 
@@ -77,19 +77,19 @@ public final class Console {
 
             if (Globals.cls.key_dest == Defines.key_console) {
                 Menu.ForceMenuOff();
-                Cvar.Set("paused", "0");
+                ConsoleVariables.Set("paused", "0");
             } else {
                 Menu.ForceMenuOff();
                 Globals.cls.key_dest = Defines.key_console;
 
-                if (Cvar.VariableValue("maxclients") == 1
+                if (ConsoleVariables.VariableValue("maxclients") == 1
                         && Globals.server_state != 0)
-                    Cvar.Set("paused", "1");
+                    ConsoleVariables.Set("paused", "1");
             }
         }
     };
 
-    public static xcommand_t Clear_f = new xcommand_t() {
+    public static ExecutableCommand Clear_f = new ExecutableCommand() {
         public void execute() {
             Arrays.fill(Globals.con.text, (byte) ' ');
         }
@@ -108,7 +108,7 @@ public final class Console {
         //
         // register our commands
         //
-        Globals.con_notifytime = Cvar.Get("con_notifytime", "3", 0);
+        Globals.con_notifytime = ConsoleVariables.Get("con_notifytime", "3", 0);
 
         Cmd.AddCommand("toggleconsole", ToggleConsole_f);
         Cmd.AddCommand("togglechat", ToggleChat_f);
@@ -181,7 +181,7 @@ public final class Console {
     /*
      * ================ Con_ToggleChat_f ================
      */
-    static xcommand_t ToggleChat_f = new xcommand_t() {
+    static ExecutableCommand ToggleChat_f = new ExecutableCommand() {
         public void execute() {
             Key.ClearTyping();
 
@@ -200,7 +200,7 @@ public final class Console {
     /*
      * ================ Con_MessageMode_f ================
      */
-    static xcommand_t MessageMode_f = new xcommand_t() {
+    static ExecutableCommand MessageMode_f = new ExecutableCommand() {
         public void execute() {
             chat_team = false;
             cls.key_dest = key_message;
@@ -210,7 +210,7 @@ public final class Console {
     /*
      * ================ Con_MessageMode2_f ================
      */
-    static xcommand_t MessageMode2_f = new xcommand_t() {
+    static ExecutableCommand MessageMode2_f = new ExecutableCommand() {
         public void execute() {
             chat_team = true;
             cls.key_dest = key_message;
@@ -423,8 +423,8 @@ public final class Console {
         }
 
         if (v != 0) {
-            SCR.AddDirtyPoint(0, 0);
-            SCR.AddDirtyPoint(viddef.width - 1, v);
+            Screen.AddDirtyPoint(0, 0);
+            Screen.AddDirtyPoint(viddef.width - 1, v);
         }
     }
 
@@ -450,8 +450,8 @@ public final class Console {
         // draw the background
         re.DrawStretchPic(0, -viddef.height + lines, viddef.width,
                 viddef.height, "conback");
-        SCR.AddDirtyPoint(0, 0);
-        SCR.AddDirtyPoint(viddef.width - 1, lines - 1);
+        Screen.AddDirtyPoint(0, 0);
+        Screen.AddDirtyPoint(viddef.width - 1, lines - 1);
 
         version = Com.sprintf("v%4.2f", new Vargs(1).add(Defines.VERSION));
         re.DrawString(viddef.width - 44, lines - 12, version);

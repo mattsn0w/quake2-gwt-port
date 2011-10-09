@@ -23,7 +23,7 @@
 */
 package jake2.game;
 
-import jake2.game.monsters.M_Player;
+import jake2.game.monsters.MonsterPlayer;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
 import jake2.util.Lib;
@@ -31,9 +31,9 @@ import jake2.util.Math3D;
 
 public class PlayerView {
 
-    public static edict_t current_player;
+    public static Entity current_player;
 
-    public static gclient_t current_client;
+    public static GameClient current_client;
 
     public static float[] forward = { 0, 0, 0 };
 
@@ -71,8 +71,8 @@ public class PlayerView {
      * ===============
      */
 
-    public static void P_DamageFeedback(edict_t player) {
-        gclient_t client;
+    public static void P_DamageFeedback(Entity player) {
+        GameClient client;
         float side;
         float realcount, count, kick;
         float[] v = { 0, 0, 0 };
@@ -102,24 +102,24 @@ public class PlayerView {
         if ((client.anim_priority < Defines.ANIM_PAIN)
                 & (player.s.modelindex == 255)) {
             client.anim_priority = Defines.ANIM_PAIN;
-            if ((client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                player.s.frame = M_Player.FRAME_crpain1 - 1;
-                client.anim_end = M_Player.FRAME_crpain4;
+            if ((client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                player.s.frame = MonsterPlayer.FRAME_crpain1 - 1;
+                client.anim_end = MonsterPlayer.FRAME_crpain4;
             } else {
 
                 xxxi = (xxxi + 1) % 3;
                 switch (xxxi) {
                 case 0:
-                    player.s.frame = M_Player.FRAME_pain101 - 1;
-                    client.anim_end = M_Player.FRAME_pain104;
+                    player.s.frame = MonsterPlayer.FRAME_pain101 - 1;
+                    client.anim_end = MonsterPlayer.FRAME_pain104;
                     break;
                 case 1:
-                    player.s.frame = M_Player.FRAME_pain201 - 1;
-                    client.anim_end = M_Player.FRAME_pain204;
+                    player.s.frame = MonsterPlayer.FRAME_pain201 - 1;
+                    client.anim_end = MonsterPlayer.FRAME_pain204;
                     break;
                 case 2:
-                    player.s.frame = M_Player.FRAME_pain301 - 1;
-                    client.anim_end = M_Player.FRAME_pain304;
+                    player.s.frame = MonsterPlayer.FRAME_pain301 - 1;
+                    client.anim_end = MonsterPlayer.FRAME_pain304;
                     break;
                 }
             }
@@ -219,7 +219,7 @@ public class PlayerView {
      * fall from 640: 960 =  
      * damage = deltavelocity*deltavelocity * 0.0001
      */
-    public static void SV_CalcViewOffset(edict_t ent) {
+    public static void SV_CalcViewOffset(Entity ent) {
         float angles[] = { 0, 0, 0 };
         float bob;
         float ratio;
@@ -268,11 +268,11 @@ public class PlayerView {
 
             // add angles based on bob
             delta = bobfracsin * GameBase.bob_pitch.value * xyspeed;
-            if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
+            if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
                 delta *= 6; // crouching
             angles[Defines.PITCH] += delta;
             delta = bobfracsin * GameBase.bob_roll.value * xyspeed;
-            if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
+            if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
                 delta *= 6; // crouching
             if ((bobcycle & 1) != 0)
                 delta = -delta;
@@ -326,7 +326,7 @@ public class PlayerView {
     /**
      * Calculates where to draw the gun.
      */
-    public static void SV_CalcGunOffset(edict_t ent) {
+    public static void SV_CalcGunOffset(Entity ent) {
         int i;
         float delta;
 
@@ -389,7 +389,7 @@ public class PlayerView {
     /**
      * Calculates the blending color according to the players environment.
      */
-    public static void SV_CalcBlend(edict_t ent) {
+    public static void SV_CalcBlend(Entity ent) {
         int contents;
         float[] vieworg = { 0, 0, 0 };
         int remaining;
@@ -469,7 +469,7 @@ public class PlayerView {
     /**
      * Calculates damage and effect when a player falls down.
      */
-    public static void P_FallingDamage(edict_t ent) {
+    public static void P_FallingDamage(Entity ent) {
         float delta;
         int damage;
         float[] dir = { 0, 0, 0 };
@@ -734,7 +734,7 @@ public class PlayerView {
      * G_SetClientEffects 
      * ===============
      */
-    public static void G_SetClientEffects(edict_t ent) {
+    public static void G_SetClientEffects(Entity ent) {
         int pa_type;
         int remaining;
 
@@ -780,7 +780,7 @@ public class PlayerView {
      * G_SetClientEvent 
      * ===============
      */
-    public static void G_SetClientEvent(edict_t ent) {
+    public static void G_SetClientEvent(Entity ent) {
         if (ent.s.event != 0)
             return;
 
@@ -795,7 +795,7 @@ public class PlayerView {
      * G_SetClientSound 
      * ===============
      */
-    public static void G_SetClientSound(edict_t ent) {
+    public static void G_SetClientSound(Entity ent) {
         String weap;
 
         if (ent.client.pers.game_helpchanged != GameBase.game.helpchanged) {
@@ -835,8 +835,8 @@ public class PlayerView {
      * G_SetClientFrame 
      * ===============
      */
-    public static void G_SetClientFrame(edict_t ent) {
-        gclient_t client;
+    public static void G_SetClientFrame(Entity ent) {
+        GameClient client;
         boolean duck, run;
 
         if (ent.s.modelindex != 255)
@@ -844,7 +844,7 @@ public class PlayerView {
 
         client = ent.client;
 
-        if ((client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
+        if ((client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
             duck = true;
         else
             duck = false;
@@ -884,8 +884,8 @@ public class PlayerView {
                 if (null == ent.groundentity)
                     return; // stay there
                 ent.client.anim_priority = Defines.ANIM_WAVE;
-                ent.s.frame = M_Player.FRAME_jump3;
-                ent.client.anim_end = M_Player.FRAME_jump6;
+                ent.s.frame = MonsterPlayer.FRAME_jump3;
+                ent.client.anim_end = MonsterPlayer.FRAME_jump6;
                 return;
             }
         }
@@ -897,24 +897,24 @@ public class PlayerView {
 
         if (null == ent.groundentity) {
             client.anim_priority = Defines.ANIM_JUMP;
-            if (ent.s.frame != M_Player.FRAME_jump2)
-                ent.s.frame = M_Player.FRAME_jump1;
-            client.anim_end = M_Player.FRAME_jump2;
+            if (ent.s.frame != MonsterPlayer.FRAME_jump2)
+                ent.s.frame = MonsterPlayer.FRAME_jump1;
+            client.anim_end = MonsterPlayer.FRAME_jump2;
         } else if (run) { // running
             if (duck) {
-                ent.s.frame = M_Player.FRAME_crwalk1;
-                client.anim_end = M_Player.FRAME_crwalk6;
+                ent.s.frame = MonsterPlayer.FRAME_crwalk1;
+                client.anim_end = MonsterPlayer.FRAME_crwalk6;
             } else {
-                ent.s.frame = M_Player.FRAME_run1;
-                client.anim_end = M_Player.FRAME_run6;
+                ent.s.frame = MonsterPlayer.FRAME_run1;
+                client.anim_end = MonsterPlayer.FRAME_run6;
             }
         } else { // standing
             if (duck) {
-                ent.s.frame = M_Player.FRAME_crstnd01;
-                client.anim_end = M_Player.FRAME_crstnd19;
+                ent.s.frame = MonsterPlayer.FRAME_crstnd01;
+                client.anim_end = MonsterPlayer.FRAME_crstnd19;
             } else {
-                ent.s.frame = M_Player.FRAME_stand01;
-                client.anim_end = M_Player.FRAME_stand40;
+                ent.s.frame = MonsterPlayer.FRAME_stand01;
+                client.anim_end = MonsterPlayer.FRAME_stand40;
             }
         }
     }
@@ -924,7 +924,7 @@ public class PlayerView {
      * Called for each player at the end of the server frame and right after
      * spawning.
      */
-    public static void ClientEndServerFrame(edict_t ent) {
+    public static void ClientEndServerFrame(Entity ent) {
         float bobtime;
         int i;
 
@@ -995,7 +995,7 @@ public class PlayerView {
 
         bobtime = (current_client.bobtime += bobmove);
 
-        if ((current_client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
+        if ((current_client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
             bobtime *= 4;
 
         bobcycle = (int) bobtime;

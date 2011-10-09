@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.game;
 
 
+import jake2.game.adapters.EntitiyThinkAdapter;
+import jake2.game.adapters.EntityTouchAdapter;
+import jake2.game.adapters.EntityUseAdapter;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.util.Lib;
@@ -34,11 +37,11 @@ import java.util.StringTokenizer;
 
 public class GameItems {
 
-    public static gitem_armor_t jacketarmor_info = new gitem_armor_t(25, 50,
+    public static GameItemArmor jacketarmor_info = new GameItemArmor(25, 50,
     .30f, .00f, Defines.ARMOR_JACKET);
-    public static gitem_armor_t combatarmor_info = new gitem_armor_t(50, 100,
+    public static GameItemArmor combatarmor_info = new GameItemArmor(50, 100,
     .60f, .30f, Defines.ARMOR_COMBAT);
-    public static gitem_armor_t bodyarmor_info = new gitem_armor_t(100, 200,
+    public static GameItemArmor bodyarmor_info = new GameItemArmor(100, 200,
     .80f, .60f, Defines.ARMOR_BODY);
     static int quad_drop_timeout_hack = 0;
     static int jacket_armor_index;
@@ -47,11 +50,11 @@ public class GameItems {
     static int power_screen_index;
     static int power_shield_index;
     
-    static EntThinkAdapter DoRespawn = new EntThinkAdapter() {
+    static EntitiyThinkAdapter DoRespawn = new EntitiyThinkAdapter() {
         public String getID() { return "do_respawn";}
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
             if (ent.team != null) {
-                edict_t master;
+                Entity master;
                 int count;
                 int choice = 0;
     
@@ -79,9 +82,9 @@ public class GameItems {
     };
     static EntInteractAdapter Pickup_Pack = new EntInteractAdapter() {
         public String getID() { return "pickup_pack";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
     
-            gitem_t item;
+            GameItem item;
             int index;
     
             if (other.client.pers.max_bullets < 300)
@@ -154,7 +157,7 @@ public class GameItems {
     };
     final static EntInteractAdapter Pickup_Health = new EntInteractAdapter() {
         public String getID() { return "pickup_health";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
     
             if (0 == (ent.style & Defines.HEALTH_IGNORE_MAX))
                 if (other.health >= other.max_health)
@@ -184,10 +187,10 @@ public class GameItems {
         }
     
     };
-    static EntTouchAdapter Touch_Item = new EntTouchAdapter() {
+    static EntityTouchAdapter Touch_Item = new EntityTouchAdapter() {
         public String getID() { return "touch_item";}
-        public void touch(edict_t ent, edict_t other, cplane_t plane,
-                csurface_t surf) {
+        public void touch(Entity ent, Entity other, Plane plane,
+                Surface surf) {
             boolean taken;
     
             if (ent.classname.equals("item_breather"))
@@ -260,19 +263,19 @@ public class GameItems {
             }
         }
     };
-    static EntTouchAdapter drop_temp_touch = new EntTouchAdapter() {
+    static EntityTouchAdapter drop_temp_touch = new EntityTouchAdapter() {
         public String getID() { return "drop_temp_touch";}
-        public void touch(edict_t ent, edict_t other, cplane_t plane,
-                csurface_t surf) {
+        public void touch(Entity ent, Entity other, Plane plane,
+                Surface surf) {
             if (other == ent.owner)
                 return;
     
             Touch_Item.touch(ent, other, plane, surf);
         }
     };
-    static EntThinkAdapter drop_make_touchable = new EntThinkAdapter() {
+    static EntitiyThinkAdapter drop_make_touchable = new EntitiyThinkAdapter() {
         public String getID() { return "drop_make_touchable";}
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
             ent.touch = Touch_Item;
             if (GameBase.deathmatch.value != 0) {
                 ent.nextthink = GameBase.level.time + 29;
@@ -283,7 +286,7 @@ public class GameItems {
     };
     static ItemUseAdapter Use_Quad = new ItemUseAdapter() {
         public String getID() { return "use_quad";}    
-        public void use(edict_t ent, gitem_t item) {
+        public void use(Entity ent, GameItem item) {
             int timeout;
     
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
@@ -308,7 +311,7 @@ public class GameItems {
     
     static ItemUseAdapter Use_Invulnerability = new ItemUseAdapter() {
         public String getID() { return "use_invulnerability";}
-        public void use(edict_t ent, gitem_t item) {
+        public void use(Entity ent, GameItem item) {
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
             GameUtil.ValidateSelectedItem(ent);
     
@@ -323,7 +326,7 @@ public class GameItems {
     };
     static ItemUseAdapter Use_Breather = new ItemUseAdapter() {
         public String getID() { return "use_breather";}
-        public void use(edict_t ent, gitem_t item) {
+        public void use(Entity ent, GameItem item) {
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
     
             GameUtil.ValidateSelectedItem(ent);
@@ -339,7 +342,7 @@ public class GameItems {
     };
     static ItemUseAdapter Use_Envirosuit = new ItemUseAdapter() {
         public String getID() { return "use_envirosuit";}
-        public void use(edict_t ent, gitem_t item) {
+        public void use(Entity ent, GameItem item) {
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
             GameUtil.ValidateSelectedItem(ent);
     
@@ -354,7 +357,7 @@ public class GameItems {
     };
     static ItemUseAdapter Use_Silencer = new ItemUseAdapter() {
         public String getID() { return "use_silencer";}
-        public void use(edict_t ent, gitem_t item) {
+        public void use(Entity ent, GameItem item) {
     
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
             GameUtil.ValidateSelectedItem(ent);
@@ -366,7 +369,7 @@ public class GameItems {
     };
     static EntInteractAdapter Pickup_Key = new EntInteractAdapter() {
         public String getID() { return "pickup_key";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
             if (GameBase.coop.value != 0) {
                 if (Lib.strcmp(ent.classname, "key_power_cube") == 0) {
                     if ((other.client.pers.power_cubes & ((ent.spawnflags & 0x0000ff00) >> 8)) != 0)
@@ -386,7 +389,7 @@ public class GameItems {
     };
     public static EntInteractAdapter Pickup_Ammo = new EntInteractAdapter() {
         public String getID() { return "pickup_ammo";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
             int oldcount;
             int count;
             boolean weapon;
@@ -419,16 +422,16 @@ public class GameItems {
     };
     public static EntInteractAdapter Pickup_Armor = new EntInteractAdapter() {
         public String getID() { return "pickup_armor";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
             int old_armor_index;
-            gitem_armor_t oldinfo;
-            gitem_armor_t newinfo;
+            GameItemArmor oldinfo;
+            GameItemArmor newinfo;
             int newcount;
             float salvage;
             int salvagecount;
     
             // get info on new armor
-            newinfo = (gitem_armor_t) ent.item.info;
+            newinfo = (GameItemArmor) ent.item.info;
     
             old_armor_index = ArmorIndex(other);
     
@@ -502,7 +505,7 @@ public class GameItems {
     };
     public static EntInteractAdapter Pickup_PowerArmor = new EntInteractAdapter() {
         public String getID() { return "pickup_powerarmor";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
     
             int quantity;
     
@@ -522,7 +525,7 @@ public class GameItems {
     };
     public static EntInteractAdapter Pickup_Powerup = new EntInteractAdapter() {
         public String getID() { return "pickup_powerup";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
             int quantity;
     
             quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
@@ -555,7 +558,7 @@ public class GameItems {
     };
     public static EntInteractAdapter Pickup_Adrenaline = new EntInteractAdapter() {
         public String getID() { return "pickup_adrenaline";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
             if (GameBase.deathmatch.value == 0)
                 other.max_health += 1;
     
@@ -572,7 +575,7 @@ public class GameItems {
     };
     public static EntInteractAdapter Pickup_AncientHead = new EntInteractAdapter() {
         public String getID() { return "pickup_ancienthead";}
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
             other.max_health += 2;
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
@@ -584,8 +587,8 @@ public class GameItems {
     };
     public static EntInteractAdapter Pickup_Bandolier = new EntInteractAdapter() {
         public String getID() { return "pickup_bandolier";}
-        public boolean interact(edict_t ent, edict_t other) {
-            gitem_t item;
+        public boolean interact(Entity ent, Entity other) {
+            GameItem item;
             int index;
     
             if (other.client.pers.max_bullets < 250)
@@ -623,8 +626,8 @@ public class GameItems {
     };
     public static ItemDropAdapter Drop_Ammo = new ItemDropAdapter() {
         public String getID() { return "drop_ammo";}
-        public void drop(edict_t ent, gitem_t item) {
-            edict_t dropped;
+        public void drop(Entity ent, GameItem item) {
+            Entity dropped;
             int index;
     
             index = ITEM_INDEX(item);
@@ -650,7 +653,7 @@ public class GameItems {
     };
     public static ItemDropAdapter Drop_General = new ItemDropAdapter() {
         public String getID() { return "drop_general";}
-        public void drop(edict_t ent, gitem_t item) {
+        public void drop(Entity ent, GameItem item) {
             Drop_Item(ent, item);
             ent.client.pers.inventory[ITEM_INDEX(item)]--;
             Cmd.ValidateSelectedItem(ent);
@@ -659,7 +662,7 @@ public class GameItems {
     
     public static ItemDropAdapter Drop_PowerArmor = new ItemDropAdapter() {
         public String getID() { return "drop_powerarmor";}
-        public void drop(edict_t ent, gitem_t item) {
+        public void drop(Entity ent, GameItem item) {
             if (0 != (ent.flags & Defines.FL_POWER_ARMOR)
                     && (ent.client.pers.inventory[ITEM_INDEX(item)] == 1))
                 Use_PowerArmor.use(ent, item);
@@ -667,10 +670,10 @@ public class GameItems {
         }
     };
     
-    public static EntThinkAdapter droptofloor = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter droptofloor = new EntitiyThinkAdapter() {
         public String getID() { return "drop_to_floor";}
-        public boolean think(edict_t ent) {
-            trace_t tr;
+        public boolean think(Entity ent) {
+            Trace tr;
             float[] dest = { 0, 0, 0 };
     
             //float v[];
@@ -736,7 +739,7 @@ public class GameItems {
     };
     public static ItemUseAdapter Use_PowerArmor = new ItemUseAdapter() {
         public String getID() { return "use_powerarmor";}
-        public void use(edict_t ent, gitem_t item) {
+        public void use(Entity ent, GameItem item) {
             int index;
     
             if ((ent.flags & Defines.FL_POWER_ARMOR) != 0) {
@@ -760,9 +763,9 @@ public class GameItems {
             }
         }
     };
-    public static EntUseAdapter Use_Item = new EntUseAdapter() {
+    public static EntityUseAdapter Use_Item = new EntityUseAdapter() {
         public String getID() { return "use_item";}
-        public void use(edict_t ent, edict_t other, edict_t activator) {
+        public void use(Entity ent, Entity other, Entity activator) {
             ent.svflags &= ~Defines.SVF_NOCLIENT;
             ent.use = null;
     
@@ -781,7 +784,7 @@ public class GameItems {
     /*
      * =============== GetItemByIndex ===============
      */
-    public static gitem_t GetItemByIndex(int index) {
+    public static GameItem GetItemByIndex(int index) {
         if (index == 0 || index >= GameBase.game.num_items)
             return null;
     
@@ -793,10 +796,10 @@ public class GameItems {
      * 
      * ===============
      */
-    static gitem_t FindItemByClassname(String classname) {
+    static GameItem FindItemByClassname(String classname) {
     
         for (int i = 1; i < GameBase.game.num_items; i++) {
-            gitem_t it = GameItemList.itemlist[i];
+            GameItem it = GameItemList.itemlist[i];
     
             if (it.classname == null)
                 continue;
@@ -811,9 +814,9 @@ public class GameItems {
      * =============== FindItem ===============
      */
     //geht.
-    static gitem_t FindItem(String pickup_name) {
+    static GameItem FindItem(String pickup_name) {
         for (int i = 1; i < GameBase.game.num_items; i++) {
-            gitem_t it = GameItemList.itemlist[i];
+            GameItem it = GameItemList.itemlist[i];
     
             if (it.pickup_name == null)
                 continue;
@@ -824,7 +827,7 @@ public class GameItems {
         return null;
     }
 
-    static void SetRespawn(edict_t ent, float delay) {
+    static void SetRespawn(Entity ent, float delay) {
         ent.flags |= Defines.FL_RESPAWN;
         ent.svflags |= Defines.SVF_NOCLIENT;
         ent.solid = Defines.SOLID_NOT;
@@ -833,12 +836,12 @@ public class GameItems {
         GameBase.gi.linkentity(ent);
     }
 
-    static int ITEM_INDEX(gitem_t item) {
+    static int ITEM_INDEX(GameItem item) {
         return item.index;
     }
 
-    static edict_t Drop_Item(edict_t ent, gitem_t item) {
-        edict_t dropped;
+    static Entity Drop_Item(Entity ent, GameItem item) {
+        Entity dropped;
         float[] forward = { 0, 0, 0 };
         float[] right = { 0, 0, 0 };
         float[] offset = { 0, 0, 0 };
@@ -861,7 +864,7 @@ public class GameItems {
         dropped.owner = ent;
     
         if (ent.client != null) {
-            trace_t trace;
+            Trace trace;
     
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
             Math3D.VectorSet(offset, 24, 0, -16);
@@ -886,7 +889,7 @@ public class GameItems {
         return dropped;
     }
 
-    static void Use_Item(edict_t ent, edict_t other, edict_t activator) {
+    static void Use_Item(Entity ent, Entity other, Entity activator) {
         ent.svflags &= ~Defines.SVF_NOCLIENT;
         ent.use = null;
     
@@ -901,7 +904,7 @@ public class GameItems {
         GameBase.gi.linkentity(ent);
     }
 
-    static int PowerArmorType(edict_t ent) {
+    static int PowerArmorType(Entity ent) {
         if (ent.client == null)
             return Defines.POWER_ARMOR_NONE;
     
@@ -917,7 +920,7 @@ public class GameItems {
         return Defines.POWER_ARMOR_NONE;
     }
 
-    static int ArmorIndex(edict_t ent) {
+    static int ArmorIndex(Entity ent) {
         if (ent.client == null)
             return 0;
     
@@ -933,7 +936,7 @@ public class GameItems {
         return 0;
     }
 
-    public static boolean Pickup_PowerArmor(edict_t ent, edict_t other) {
+    public static boolean Pickup_PowerArmor(Entity ent, Entity other) {
         int quantity;
     
         quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
@@ -951,7 +954,7 @@ public class GameItems {
         return true;
     }
 
-    public static boolean Add_Ammo(edict_t ent, gitem_t item, int count) {
+    public static boolean Add_Ammo(Entity ent, GameItem item, int count) {
         int index;
         int max;
     
@@ -997,7 +1000,7 @@ public class GameItems {
      */
     public static void SetItemNames() {
         int i;
-        gitem_t it;
+        GameItem it;
     
         for (i = 1; i < GameBase.game.num_items; i++) {
             it = GameItemList.itemlist[i];
@@ -1011,10 +1014,10 @@ public class GameItems {
         power_shield_index = ITEM_INDEX(FindItem("Power Shield"));
     }
 
-    public static void SelectNextItem(edict_t ent, int itflags) {
-        gclient_t cl;
+    public static void SelectNextItem(Entity ent, int itflags) {
+        GameClient cl;
         int i, index;
-        gitem_t it;
+        GameItem it;
     
         cl = ent.client;
     
@@ -1041,10 +1044,10 @@ public class GameItems {
         cl.pers.selected_item = -1;
     }
 
-    public static void SelectPrevItem(edict_t ent, int itflags) {
-        gclient_t cl;
+    public static void SelectPrevItem(Entity ent, int itflags) {
+        GameClient cl;
         int i, index;
-        gitem_t it;
+        GameItem it;
     
         cl = ent.client;
     
@@ -1079,11 +1082,11 @@ public class GameItems {
      * item spawned in a level, and for each item in each client's inventory.
      * ===============
      */
-    public static void PrecacheItem(gitem_t it) {
+    public static void PrecacheItem(GameItem it) {
         String s;
         String data;
         int len;
-        gitem_t ammo;
+        GameItem ammo;
     
         if (it == null)
             return;
@@ -1146,7 +1149,7 @@ public class GameItems {
      * Items can't be immediately dropped to floor, because they might be on an
      * entity that hasn't spawned yet. ============
      */
-    public static void SpawnItem(edict_t ent, gitem_t item) {
+    public static void SpawnItem(Entity ent, GameItem item) {
         PrecacheItem(item);
     
         if (ent.spawnflags != 0) {
@@ -1216,7 +1219,7 @@ public class GameItems {
     /*
      * QUAKED item_health (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
-    public static void SP_item_health(edict_t self) {
+    public static void SP_item_health(Entity self) {
         if (GameBase.deathmatch.value != 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
@@ -1231,7 +1234,7 @@ public class GameItems {
     /*
      * QUAKED item_health_small (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
-    static void SP_item_health_small(edict_t self) {
+    static void SP_item_health_small(Entity self) {
         if (GameBase.deathmatch.value != 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
@@ -1248,7 +1251,7 @@ public class GameItems {
     /*
      * QUAKED item_health_large (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
-    static void SP_item_health_large(edict_t self) {
+    static void SP_item_health_large(Entity self) {
         if (GameBase.deathmatch.value != 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
@@ -1264,7 +1267,7 @@ public class GameItems {
     /*
      * QUAKED item_health_mega (.3 .3 1) (-16 -16 -16) (16 16 16)
      */
-    static void SP_item_health_mega(edict_t self) {
+    static void SP_item_health_mega(Entity self) {
         if (GameBase.deathmatch.value != 0
                 && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
@@ -1283,8 +1286,8 @@ public class GameItems {
      * Touch_Item 
      * ===============
      */
-    public static void Touch_Item(edict_t ent, edict_t other, cplane_t plane,
-            csurface_t surf) {
+    public static void Touch_Item(Entity ent, Entity other, Plane plane,
+            Surface surf) {
         boolean taken;
 
         // freed edicts have not items.

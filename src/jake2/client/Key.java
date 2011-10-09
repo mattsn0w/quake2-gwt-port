@@ -332,7 +332,7 @@ public class Key extends Globals {
 
 			if (Globals.cl.frame.playerstate.stats[Defines.STAT_LAYOUTS] != 0 && Globals.cls.key_dest == Defines.key_game) {
 				// put away help computer / inventory
-				Cbuf.AddText("cmd putaway\n");
+				CommandBuffer.AddText("cmd putaway\n");
 				return;
 			}
 			switch (Globals.cls.key_dest) {
@@ -375,7 +375,7 @@ public class Key extends Globals {
 			kb = Globals.keybindings[key];
 			if (kb != null && kb.length()>0 && kb.charAt(0) == '+') {
 				cmd = "-" + kb.substring(1) + " " + key + " " + time + "\n";
-				Cbuf.AddText(cmd);
+				CommandBuffer.AddText(cmd);
 			}
 //			if (keyshift[key] != key) {
 //				kb = Globals.keybindings[keyshift[key]];
@@ -398,10 +398,10 @@ public class Key extends Globals {
 				if (kb.length()>0 && kb.charAt(0) == '+') {
 					// button commands add keynum and time as a parm
 					cmd = kb + " " + key + " " + time + "\n";
-					Cbuf.AddText(cmd);
+					CommandBuffer.AddText(cmd);
 				}
 				else {
-					Cbuf.AddText(kb + "\n");
+					CommandBuffer.AddText(kb + "\n");
 				}
 			}
 			return;
@@ -471,12 +471,12 @@ public class Key extends Globals {
 
 		if (key == K_ENTER || key == K_KP_ENTER) {
 			if (Globals.chat_team)
-				Cbuf.AddText("say_team \"");
+				CommandBuffer.AddText("say_team \"");
 			else
-				Cbuf.AddText("say \"");
+				CommandBuffer.AddText("say \"");
 
-			Cbuf.AddText(Globals.chat_buffer);
-			Cbuf.AddText("\"\n");
+			CommandBuffer.AddText(Globals.chat_buffer);
+			CommandBuffer.AddText("\"\n");
 
 			Globals.cls.key_dest = Defines.key_game;
 			Globals.chat_buffer = "";
@@ -559,7 +559,7 @@ public class Key extends Globals {
 
 		if (key == 'l') {
 			if (Globals.keydown[K_CTRL]) {
-				Cbuf.AddText("clear\n");
+				CommandBuffer.AddText("clear\n");
 				return;
 			}
 		}
@@ -567,13 +567,13 @@ public class Key extends Globals {
 		if (key == K_ENTER || key == K_KP_ENTER) {
 			// backslash text are commands, else chat
 			if (Globals.key_lines[Globals.edit_line][1] == '\\' || Globals.key_lines[Globals.edit_line][1] == '/')
-				Cbuf.AddText(
+				CommandBuffer.AddText(
 					Compatibility.newString(Globals.key_lines[Globals.edit_line], 2, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 2));
 			else
-				Cbuf.AddText(
+				CommandBuffer.AddText(
 					Compatibility.newString(Globals.key_lines[Globals.edit_line], 1, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 1));
 
-			Cbuf.AddText("\n");
+			CommandBuffer.AddText("\n");
 
 			Com.Printf(Compatibility.newString(Globals.key_lines[Globals.edit_line], 1, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 1) + "\n");
 			Globals.edit_line = (Globals.edit_line + 1) & 31;
@@ -582,7 +582,7 @@ public class Key extends Globals {
 			Globals.key_lines[Globals.edit_line][0] = ']';
 			Globals.key_linepos = 1;
 			if (Globals.cls.state == Defines.ca_disconnected)
-				SCR.UpdateScreen(); // force an update, because the command may take some time
+				Screen.UpdateScreen(); // force an update, because the command may take some time
 			return;
 		}
 
@@ -683,7 +683,7 @@ public class Key extends Globals {
 		String s = Compatibility.newString(key_lines[edit_line], start, end-start);
 		
 		Vector cmds = Cmd.CompleteCommand(s);
-		Vector vars = Cvar.CompleteVariable(s);
+		Vector vars = ConsoleVariables.CompleteVariable(s);
 		
 		int c = cmds.size();
 		int v = vars.size();
@@ -708,7 +708,7 @@ public class Key extends Globals {
 		return;
 	}
 
-	public static xcommand_t Bind_f = new xcommand_t() {
+	public static ExecutableCommand Bind_f = new ExecutableCommand() {
 		public void execute() {
 			Key_Bind_f();
 		}
@@ -756,7 +756,7 @@ public class Key extends Globals {
 		Globals.keybindings[keynum] = binding;
 	}
 
-	static xcommand_t Unbind_f = new xcommand_t() {
+	static ExecutableCommand Unbind_f = new ExecutableCommand() {
 		public void execute() {
 			Key_Unbind_f();
 		}
@@ -778,7 +778,7 @@ public class Key extends Globals {
 		Key.SetBinding(b, null);
 	}
 
-	static xcommand_t Unbindall_f = new xcommand_t() {
+	static ExecutableCommand Unbindall_f = new ExecutableCommand() {
 		public void execute() {
 			Key_Unbindall_f();
 		}
@@ -789,7 +789,7 @@ public class Key extends Globals {
 			Key.SetBinding(i, null);
 	}
 
-	static xcommand_t Bindlist_f = new xcommand_t() {
+	static ExecutableCommand Bindlist_f = new ExecutableCommand() {
 		public void execute() {
 			Key_Bindlist_f();
 		}

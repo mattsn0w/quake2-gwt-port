@@ -23,87 +23,116 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.sound;
 
-import jake2.qcommon.Defines;
+
+import jake2.game.ConsoleVariable;
+import jake2.qcommon.Com;
+import jake2.qcommon.ConsoleVariables;
 
 import java.nio.ByteBuffer;
 
 /**
- * Sound
- * 
- * @author cwei
+ * S
  */
-public interface Sound {
+public class Sound {
+	
+	public static SoundImpl impl;
+
+	/**
+	 * Initializes the sound module.
+	 */
+	public static void Init() {
+		Com.Printf("\n------- sound initialization -------\n");
+
+		ConsoleVariable cv = ConsoleVariables.Get("s_initsound", "1", 0);
+		if (cv.value == 0.0f) {
+			Com.Printf("not initializing.\n");
+			return;			
+		}
+
+		Com.Printf("\n------- use sound driver \"" + impl.getName() + "\" -------\n");
+		StopAllSounds();
+	}
+	
+	public static void Shutdown() {
+		impl.Shutdown();
+	}
+	
+	/**
+	 * Called before the sounds are to be loaded and registered.
+	 */
+	public static void BeginRegistration() {
+		impl.BeginRegistration();		
+	}
+	
+	/**
+	 * Registers and loads a sound.
+	 */
+	public static Sfx RegisterSound(String sample) {
+		return impl.RegisterSound(sample);
+	}
+	
+	/**
+	 * Called after all sounds are registered and loaded.
+	 */
+	public static void EndRegistration() {
+		impl.EndRegistration();
+	}
+	
+	/**
+	 * Starts a local sound.
+	 */
+	public static void StartLocalSound(String sound) {
+		impl.StartLocalSound(sound);		
+	}
+	
+	/** 
+	 * StartSound - Validates the parms and ques the sound up
+	 * if pos is NULL, the sound will be dynamically sourced from the entity
+	 * Entchannel 0 will never override a playing sound
+	 */
+	public static void StartSound(float[] origin, int entnum, int entchannel, Sfx sfx, float fvol, float attenuation, float timeofs) {
+		impl.StartSound(origin, entnum, entchannel, sfx, fvol, attenuation, timeofs);
+	}
+
+	/**
+	 * Updates the sound renderer according to the changes in the environment,
+	 * called once each time through the main loop.
+	 */
+	public static void Update(float[] origin, float[] forward, float[] right, float[] up) {
+		impl.Update(origin, forward, right, up);
+	}
+
+	/**
+	 * Cinematic streaming and voice over network.
+	 */
+	public static void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data) {
+		impl.RawSamples(samples, rate, width, channels, data);
+	}
     
-    static final int MAX_SFX = Defines.MAX_SOUNDS * 2;
-    static final int STREAM_QUEUE = 8;
-	
-	String getName();
-	
-	boolean Init();
-	void Shutdown();
-	
-	/*
-	=====================
-	S_BeginRegistration
-	=====================
-	*/
-	void BeginRegistration();
-	
-	/*
-	=====================
-	S_RegisterSound
-	=====================
-	*/
-	sfx_t RegisterSound(String sample);
-	
-	/*
-	=====================
-	S_EndRegistration
-	=====================
-	*/
-	void EndRegistration();
-	
-	/*
-	==================
-	S_StartLocalSound
-	==================
-	*/
-	void StartLocalSound(String sound);
-	
-	/*
-	====================
-	S_StartSound
+	/**
+	 * Switches off the sound streaming.
+	 */ 
+    public static void disableStreaming() {
+        impl.disableStreaming();
+    }
 
-	Validates the parms and ques the sound up
-	if pos is NULL, the sound will be dynamically sourced from the entity
-	Entchannel 0 will never override a playing sound
-	====================
-	*/
-	void StartSound(float[] origin, int entnum, int entchannel, sfx_t sfx, float fvol, float attenuation, float timeofs);
+	/**
+	 * Stops all sounds. 
+	 */
+	public static void StopAllSounds() {
+		impl.StopAllSounds();
+	}
+	
+	public static String getDriverName() {
+		return impl.getName();
+	}
 
-	/*
-	============
-	S_Update
-
-	Called once each time through the main loop
-	============
-	*/
-	void Update(float[] origin, float[] forward, float[] right, float[] up);
-	/*
-	============
-	S_RawSamples
-	 
-	Cinematic streaming and voice over network
-	============
-	*/
-	void RawSamples(int samples, int rate, int width, int channels, ByteBuffer data);
-
-    void disableStreaming();
-	/*
-	==================
-	S_StopAllSounds
-	==================
-	*/
-	void StopAllSounds();
-
+	/**
+	 * This is used, when resampling to this default sampling rate is activated 
+	 * in the wavloader. It is placed here that sound implementors can override 
+	 * this one day.
+	 */
+	public static int getDefaultSampleRate() {
+		return 44100;
+	}
 }

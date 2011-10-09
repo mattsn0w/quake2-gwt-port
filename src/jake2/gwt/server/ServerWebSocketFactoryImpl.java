@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import jake2.qcommon.Compatibility;
-import jake2.qcommon.netadr_t;
-import jake2.sys.QSocket;
-import jake2.sys.QSocketFactory;
+import jake2.qcommon.NetworkAddress;
+import jake2.sys.QuakeSocket;
+import jake2.sys.QuakeSocketFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,13 +36,13 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocketHandler;
 
-public class ServerWebSocketFactoryImpl implements QSocketFactory {
-  public QSocket bind(String ip, int port) {
+public class ServerWebSocketFactoryImpl implements QuakeSocketFactory {
+  public QuakeSocket bind(String ip, int port) {
     return new ServerWebSocketImpl(port);
   }
 }
 
-class ServerWebSocketImpl implements QSocket {
+class ServerWebSocketImpl implements QuakeSocket {
   private Map<String, MyWebSocket> sockets = new HashMap<String, MyWebSocket>();
   private Server server;
   private final int port;
@@ -121,7 +121,7 @@ class ServerWebSocketImpl implements QSocket {
     sockets = null;
   }
 
-  public int receive(netadr_t fromAdr, byte[] buf) throws IOException {
+  public int receive(NetworkAddress fromAdr, byte[] buf) throws IOException {
     synchronized (msgQueue) {
       if (msgQueue.isEmpty()) {
         return -1;
@@ -142,7 +142,7 @@ class ServerWebSocketImpl implements QSocket {
     }
   }
 
-  public void send(netadr_t dstSocket, byte[] data, int len) throws IOException {
+  public void send(NetworkAddress dstSocket, byte[] data, int len) throws IOException {
 
     String targetAddress = InetAddress.getByAddress(dstSocket.ip).getHostAddress()
         + ":" + dstSocket.port;
