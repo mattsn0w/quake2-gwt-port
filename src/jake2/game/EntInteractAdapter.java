@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.game;
 
+import jake2.game.adapters.SuperAdapter;
+
 public abstract class EntInteractAdapter extends SuperAdapter
 {
-	public abstract boolean interact(edict_t self, edict_t other);
+	public abstract boolean interact(Entity self, Entity other);
 }

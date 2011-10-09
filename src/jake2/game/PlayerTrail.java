@@ -42,7 +42,7 @@ public class PlayerTrail {
 
     static int TRAIL_LENGTH = 8;
 
-    static edict_t trail[] = new edict_t[TRAIL_LENGTH];
+    static Entity trail[] = new Entity[TRAIL_LENGTH];
 
     static int trail_head;
 
@@ -50,7 +50,7 @@ public class PlayerTrail {
     static {
         //TODO: potential error
         for (int n = 0; n < TRAIL_LENGTH; n++)
-            trail[n] = new edict_t(n);
+            trail[n] = new Entity(n);
     }
 
     static int NEXT(int n) {
@@ -101,7 +101,7 @@ public class PlayerTrail {
         Add(spot);
     }
 
-    static edict_t PickFirst(edict_t self) {
+    static Entity PickFirst(Entity self) {
 
         if (!trail_active)
             return null;
@@ -126,7 +126,7 @@ public class PlayerTrail {
         return PlayerTrail.trail[marker];
     }
 
-    static edict_t PickNext(edict_t self) {
+    static Entity PickNext(Entity self) {
         int marker;
         int n;
 
@@ -143,7 +143,7 @@ public class PlayerTrail {
         return PlayerTrail.trail[marker];
     }
 
-    static edict_t LastSpot() {
+    static Entity LastSpot() {
         return PlayerTrail.trail[PREV(trail_head)];
     }
 }

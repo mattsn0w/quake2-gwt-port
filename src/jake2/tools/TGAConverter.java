@@ -20,7 +20,7 @@ package jake2.tools;
 
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
-import jake2.qcommon.qfiles;
+import jake2.qcommon.QuakeFiles;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -35,9 +35,11 @@ public class TGAConverter extends Converter {
   }
 
   @Override
-  public void convert(byte[] raw, File outFile) throws IOException {
+  public void convert(byte[] raw, File outFile, int[] size) throws IOException {
     RenderedImage ri = makeImage(LoadTGA(raw));
     ImageIO.write(ri, "png", outFile);
+    size[0] = ri.getWidth();
+    size[1] = ri.getHeight();
   }
 
   private static image_t LoadTGA(byte[] raw) {
@@ -46,10 +48,10 @@ public class TGAConverter extends Converter {
     int row, column;
     ByteBuffer buf_p;
     // int length;
-    qfiles.tga_t targa_header;
+    QuakeFiles.tga_t targa_header;
     image_t img = new image_t();
 
-    targa_header = new qfiles.tga_t(raw);
+    targa_header = new QuakeFiles.tga_t(raw);
 
     if (targa_header.image_type != 2 && targa_header.image_type != 10)
       Com.Error(Defines.ERR_DROP,

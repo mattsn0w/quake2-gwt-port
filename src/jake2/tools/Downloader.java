@@ -131,7 +131,7 @@ public class Downloader implements Runnable {
 			System.out.println("Download finished; uncompressing");
 			
 			ZipFile zipFile = new ZipFile(tempFile);
-			Enumeration e = zipFile.entries();
+			Enumeration<?> e = zipFile.entries();
 			while (e.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry)e.nextElement();
 				String name = entry.getName();

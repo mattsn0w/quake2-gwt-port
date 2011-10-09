@@ -27,6 +27,8 @@ package jake2.game;
 import jake2.*;
 import jake2.client.*;
 import jake2.game.*;
+import jake2.game.adapters.EntitiyThinkAdapter;
+import jake2.game.adapters.EntityTouchAdapter;
 import jake2.qcommon.*;
 import jake2.render.*;
 import jake2.server.*;
@@ -36,11 +38,11 @@ import jake2.util.Math3D;
 
 public class GameWeapon {
 
-    static EntTouchAdapter blaster_touch = new EntTouchAdapter() {
+    static EntityTouchAdapter blaster_touch = new EntityTouchAdapter() {
     	public String getID() { return "blaster_touch"; }
     
-        public void touch(edict_t self, edict_t other, cplane_t plane,
-                csurface_t surf) {
+        public void touch(Entity self, Entity other, Plane plane,
+                Surface surf) {
             int mod;
     
             if (other == self.owner)
@@ -87,9 +89,9 @@ public class GameWeapon {
         }
     };
     
-    static EntThinkAdapter Grenade_Explode = new EntThinkAdapter() {
+    static EntitiyThinkAdapter Grenade_Explode = new EntitiyThinkAdapter() {
     	public String getID() { return "Grenade_Explode"; }
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
             float[] origin = { 0, 0, 0 };
             int mod;
     
@@ -147,10 +149,10 @@ public class GameWeapon {
             return true;
         }
     };
-    static EntTouchAdapter Grenade_Touch = new EntTouchAdapter() {
+    static EntityTouchAdapter Grenade_Touch = new EntityTouchAdapter() {
     	public String getID() { return "Grenade_Touch"; }
-        public void touch(edict_t ent, edict_t other, cplane_t plane,
-                csurface_t surf) {
+        public void touch(Entity ent, Entity other, Plane plane,
+                Surface surf) {
             if (other == ent.owner)
                 return;
     
@@ -187,10 +189,10 @@ public class GameWeapon {
      * fire_rocket 
      * =================
      */
-    static EntTouchAdapter rocket_touch = new EntTouchAdapter() {
+    static EntityTouchAdapter rocket_touch = new EntityTouchAdapter() {
     	public String  getID() { return "rocket_touch"; }
-        public void touch(edict_t ent, edict_t other, cplane_t plane,
-                csurface_t surf) {
+        public void touch(Entity ent, Entity other, Plane plane,
+                Surface surf) {
             float[] origin = { 0, 0, 0 };
             int n;
     
@@ -248,15 +250,15 @@ public class GameWeapon {
      * fire_bfg 
      * =================
      */
-    static EntThinkAdapter bfg_explode = new EntThinkAdapter() {
+    static EntitiyThinkAdapter bfg_explode = new EntitiyThinkAdapter() {
     	public String getID() { return "bfg_explode"; }
-        public boolean think(edict_t self) {
-            edict_t ent;
+        public boolean think(Entity self) {
+            Entity ent;
             float points;
             float[] v = { 0, 0, 0 };
             float dist;
     
-            EdictIterator edit = null;
+            EntityIterator edit = null;
     
             if (self.s.frame == 0) {
                 // the BFG effect
@@ -301,10 +303,10 @@ public class GameWeapon {
         }
     };
     
-    static EntTouchAdapter bfg_touch = new EntTouchAdapter() {
+    static EntityTouchAdapter bfg_touch = new EntityTouchAdapter() {
     	public String getID() { return "bfg_touch"; }
-        public void touch(edict_t self, edict_t other, cplane_t plane,
-                csurface_t surf) {
+        public void touch(Entity self, Entity other, Plane plane,
+                Surface surf) {
             if (other == self.owner)
                 return;
     
@@ -348,24 +350,24 @@ public class GameWeapon {
         }
     };
     
-    static EntThinkAdapter bfg_think = new EntThinkAdapter() {
+    static EntitiyThinkAdapter bfg_think = new EntitiyThinkAdapter() {
     	public String getID() { return "bfg_think"; }
-        public boolean think(edict_t self) {
-            edict_t ent;
-            edict_t ignore;
+        public boolean think(Entity self) {
+            Entity ent;
+            Entity ignore;
             float[] point = { 0, 0, 0 };
             float[] dir = { 0, 0, 0 };
             float[] start = { 0, 0, 0 };
             float[] end = { 0, 0, 0 };
             int dmg;
-            trace_t tr;
+            Trace tr;
     
             if (GameBase.deathmatch.value != 0)
                 dmg = 5;
             else
                 dmg = 10;
     
-            EdictIterator edit = null;
+            EntityIterator edit = null;
             while ((edit = GameBase.findradius(edit, self.s.origin, 256)) != null) {
                 ent = edit.o;
     
@@ -446,10 +448,10 @@ public class GameWeapon {
      * called. 
      * =================
      */
-    static void check_dodge(edict_t self, float[] start, float[] dir, int speed) {
+    static void check_dodge(Entity self, float[] start, float[] dir, int speed) {
         float[] end = { 0, 0, 0 };
         float[] v = { 0, 0, 0 };
-        trace_t tr;
+        Trace tr;
         float eta;
     
         // easy mode only ducks one quarter the time
@@ -475,9 +477,9 @@ public class GameWeapon {
      * Used for all impact (hit/punch/slash) attacks 
      * =================
      */
-    public static boolean fire_hit(edict_t self, float[] aim, int damage,
+    public static boolean fire_hit(Entity self, float[] aim, int damage,
             int kick) {
-        trace_t tr;
+        Trace tr;
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
         float[] v = { 0, 0, 0 };
         float[] point = { 0, 0, 0 };
@@ -548,10 +550,10 @@ public class GameWeapon {
      * This is an internal support routine used for bullet/pellet based weapons.
      * =================
      */
-    public static void fire_lead(edict_t self, float[] start, float[] aimdir,
+    public static void fire_lead(Entity self, float[] start, float[] aimdir,
             int damage, int kick, int te_impact, int hspread, int vspread,
             int mod) {
-        trace_t tr;
+        Trace tr;
         float[] dir = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
         float[] end = { 0, 0, 0 };
@@ -682,7 +684,7 @@ public class GameWeapon {
      * Fires a single round. Used for machinegun and chaingun. Would be fine for
      * pistols, rifles, etc.... =================
      */
-    public static void fire_bullet(edict_t self, float[] start, float[] aimdir,
+    public static void fire_bullet(Entity self, float[] start, float[] aimdir,
             int damage, int kick, int hspread, int vspread, int mod) {
         fire_lead(self, start, aimdir, damage, kick, Defines.TE_GUNSHOT,
                 hspread, vspread, mod);
@@ -695,7 +697,7 @@ public class GameWeapon {
      * Shoots shotgun pellets. Used by shotgun and super shotgun.
      * =================
      */
-    public static void fire_shotgun(edict_t self, float[] start,
+    public static void fire_shotgun(Entity self, float[] start,
             float[] aimdir, int damage, int kick, int hspread, int vspread,
             int count, int mod) {
         int i;
@@ -713,10 +715,10 @@ public class GameWeapon {
      * =================
      */
 
-    public static void fire_blaster(edict_t self, float[] start, float[] dir,
+    public static void fire_blaster(Entity self, float[] start, float[] dir,
             int damage, int speed, int effect, boolean hyper) {
-        edict_t bolt;
-        trace_t tr;
+        Entity bolt;
+        Trace tr;
     
         Math3D.VectorNormalize(dir);
     
@@ -762,10 +764,10 @@ public class GameWeapon {
         }
     }
 
-    public static void fire_grenade(edict_t self, float[] start,
+    public static void fire_grenade(Entity self, float[] start,
             float[] aimdir, int damage, int speed, float timer,
             float damage_radius) {
-        edict_t grenade;
+        Entity grenade;
         float[] dir = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
     
@@ -799,10 +801,10 @@ public class GameWeapon {
         GameBase.gi.linkentity(grenade);
     }
 
-    public static void fire_grenade2(edict_t self, float[] start,
+    public static void fire_grenade2(Entity self, float[] start,
             float[] aimdir, int damage, int speed, float timer,
             float damage_radius, boolean held) {
-        edict_t grenade;
+        Entity grenade;
         float[] dir = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
     
@@ -848,9 +850,9 @@ public class GameWeapon {
         }
     }
 
-    public static void fire_rocket(edict_t self, float[] start, float[] dir,
+    public static void fire_rocket(Entity self, float[] start, float[] dir,
             int damage, int speed, float damage_radius, int radius_damage) {
-        edict_t rocket;
+        Entity rocket;
     
         rocket = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, rocket.s.origin);
@@ -886,12 +888,12 @@ public class GameWeapon {
      * fire_rail 
      * =================
      */
-    public static void fire_rail(edict_t self, float[] start, float[] aimdir,
+    public static void fire_rail(Entity self, float[] start, float[] aimdir,
             int damage, int kick) {
         float[] from = { 0, 0, 0 };
         float[] end = { 0, 0, 0 };
-        trace_t tr = null;
-        edict_t ignore;
+        Trace tr = null;
+        Entity ignore;
         int mask;
         boolean water;
     
@@ -945,9 +947,9 @@ public class GameWeapon {
             PlayerWeapon.PlayerNoise(self, tr.endpos, Defines.PNOISE_IMPACT);
     }
 
-    public static void fire_bfg(edict_t self, float[] start, float[] dir,
+    public static void fire_bfg(Entity self, float[] start, float[] dir,
             int damage, int speed, float damage_radius) {
-        edict_t bfg;
+        Entity bfg;
     
         bfg = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, bfg.s.origin);

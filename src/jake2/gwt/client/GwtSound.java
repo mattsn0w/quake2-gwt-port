@@ -28,28 +28,28 @@ import java.nio.ShortBuffer;
 
 import jake2.client.Console;
 import jake2.game.Cmd;
-import jake2.game.cvar_t;
-import jake2.game.entity_state_t;
+import jake2.game.ConsoleVariable;
+import jake2.game.EntityState;
 import jake2.gwt.client.GwtQuake.BrowserType;
 import jake2.qcommon.Com;
-import jake2.qcommon.Cvar;
+import jake2.qcommon.ConsoleVariables;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
-import jake2.qcommon.xcommand_t;
+import jake2.qcommon.ExecutableCommand;
 import jake2.sound.ALAdapter;
 import jake2.sound.Channel;
 import jake2.sound.PlaySound;
-import jake2.sound.Sound;
-import jake2.sound.sfx_t;
-import jake2.sound.sfxcache_t;
+import jake2.sound.SoundImpl;
+import jake2.sound.Sfx;
+import jake2.sound.SfxCache;
 import jake2.util.Lib;
 import jake2.util.Vargs;
 
 import static jake2.qcommon.Defines.CS_PLAYERSKINS;
 
-public class GwtSound implements Sound {
+public class GwtSound implements SoundImpl {
 
-  static class gwtsfxcache_t extends sfxcache_t {
+  static class gwtsfxcache_t extends SfxCache {
 
     public String soundUrl;
 
@@ -60,7 +60,7 @@ public class GwtSound implements Sound {
   }
 
   
-  static sfx_t[] known_sfx = new sfx_t[MAX_SFX];
+  static Sfx[] known_sfx = new Sfx[MAX_SFX];
 
   static int num_sfx;
 
@@ -74,7 +74,7 @@ public class GwtSound implements Sound {
 
   static {
     for (int i = 0; i < known_sfx.length; i++) {
-      known_sfx[i] = new sfx_t();
+      known_sfx[i] = new Sfx();
     }
   }
 
@@ -84,7 +84,7 @@ public class GwtSound implements Sound {
 
   private boolean hasEAX;
 
-  private cvar_t s_volume;
+  private ConsoleVariable s_volume;
 
   // the last 4 buffers are used for cinematics streaming
   private IntBuffer buffers = Lib.newIntBuffer(MAX_SFX + STREAM_QUEUE);
@@ -122,7 +122,7 @@ public class GwtSound implements Sound {
          */
   public void EndRegistration() {
     int i;
-    sfx_t sfx;
+    Sfx sfx;
     int size;
 
     // free any sounds not from this registration sequence
@@ -170,27 +170,27 @@ public class GwtSound implements Sound {
     }
 
     // set the listerner (master) volume
-    s_volume = Cvar.Get("s_volume", "0.7", Defines.CVAR_ARCHIVE);
+    s_volume = ConsoleVariables.Get("s_volume", "0.7", Defines.CVAR_ARCHIVE);
     ALAdapter.impl.alGenBuffers(buffers);
     int count = Channel.init(buffers);
     Com.Printf("... using " + count + " channels\n");
     ALAdapter.impl.alDistanceModel(ALAdapter.AL_INVERSE_DISTANCE_CLAMPED);
-    Cmd.AddCommand("play", new xcommand_t() {
+    Cmd.AddCommand("play", new ExecutableCommand() {
       public void execute() {
         Play();
       }
     });
-    Cmd.AddCommand("stopsound", new xcommand_t() {
+    Cmd.AddCommand("stopsound", new ExecutableCommand() {
       public void execute() {
         StopAllSounds();
       }
     });
-    Cmd.AddCommand("soundlist", new xcommand_t() {
+    Cmd.AddCommand("soundlist", new ExecutableCommand() {
       public void execute() {
         SoundList();
       }
     });
-    Cmd.AddCommand("soundinfo", new xcommand_t() {
+    Cmd.AddCommand("soundinfo", new ExecutableCommand() {
       public void execute() {
         SoundInfo_f();
       }
@@ -210,7 +210,7 @@ public class GwtSound implements Sound {
         S_LoadSound
         ==============
         */
-  public sfxcache_t LoadSound(sfx_t s) {
+  public SfxCache LoadSound(Sfx s) {
 	  
     if (s.isCached) {
       return s.cache;
@@ -270,10 +270,10 @@ public class GwtSound implements Sound {
   /* (non-Javadoc)
          * @see jake2.sound.Sound#RegisterSound(java.lang.String)
          */
-  public sfx_t RegisterSound(String name) {
+  public Sfx RegisterSound(String name) {
 //		log("Trying to load "+name);
 
-    sfx_t sfx = FindName(name, true);
+    Sfx sfx = FindName(name, true);
     sfx.registration_sequence = s_registration_sequence;
 
     if (!s_registering) {
@@ -311,7 +311,7 @@ public class GwtSound implements Sound {
          * @see jake2.sound.Sound#StartLocalSound(java.lang.String)
          */
   public void StartLocalSound(String sound) {
-    sfx_t sfx;
+    Sfx sfx;
 
     sfx = RegisterSound(sound);
     if (sfx == null) {
@@ -324,7 +324,7 @@ public class GwtSound implements Sound {
   /* (non-Javadoc)
   * @see jake2.sound.SoundImpl#StartSound(float[], int, int, jake2.sound.sfx_t, float, float, float)
   */
-  public void StartSound(float[] origin, int entnum, int entchannel, sfx_t sfx,
+  public void StartSound(float[] origin, int entnum, int entchannel, Sfx sfx,
       float fvol, float attenuation, float timeofs) {
 
     if (sfx == null) {
@@ -395,8 +395,8 @@ public class GwtSound implements Sound {
 
         ==================
         */
-  sfx_t AliasName(String aliasname, String truename) {
-    sfx_t sfx = null;
+  Sfx AliasName(String aliasname, String truename) {
+    Sfx sfx = null;
     String s;
     int i;
 
@@ -436,9 +436,9 @@ public class GwtSound implements Sound {
     ALAdapter.impl.destroy();
   }
 
-  sfx_t FindName(String name, boolean create) {
+  Sfx FindName(String name, boolean create) {
     int i;
-    sfx_t sfx = null;
+    Sfx sfx = null;
 
     if (name == null) {
       Com.Error(Defines.ERR_FATAL, "S_FindName: NULL\n");
@@ -497,7 +497,7 @@ public class GwtSound implements Sound {
   void Play() {
     int i;
     String name;
-    sfx_t sfx;
+    Sfx sfx;
 
     i = 1;
     while (i < Cmd.Argc()) {
@@ -512,9 +512,9 @@ public class GwtSound implements Sound {
     }
   }
 
-  sfx_t RegisterSexedSound(entity_state_t ent, String base) {
+  Sfx RegisterSexedSound(EntityState ent, String base) {
 
-    sfx_t sfx = null;
+    Sfx sfx = null;
 
     // determine what model the client is using
     String model = null;
@@ -574,8 +574,8 @@ public class GwtSound implements Sound {
 
   void SoundList() {
     int i;
-    sfx_t sfx;
-    sfxcache_t sc;
+    Sfx sfx;
+    SfxCache sc;
     int size, total;
 
     total = 0;

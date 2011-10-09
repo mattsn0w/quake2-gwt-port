@@ -24,15 +24,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.gl;
 
 
-import jake2.client.dlight_t;
-import jake2.game.cplane_t;
+import jake2.client.DynamicLightData;
+import jake2.game.Plane;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
-import jake2.render.GLAdapter;
-import jake2.render.mnode_t;
-import jake2.render.msurface_t;
-import jake2.render.mtexinfo_t;
+import jake2.render.GlAdapter;
+import jake2.render.ModelNode;
+import jake2.render.ModelSurface;
+import jake2.render.ModelTextureInfo;
 import jake2.util.Math3D;
 import jake2.util.Vec3Cache;
 
@@ -65,13 +65,13 @@ public abstract class Light extends Warp {
 	/**
 	 * R_RenderDlight
 	 */
-	void R_RenderDlight(dlight_t light)
+	void R_RenderDlight(DynamicLightData light)
 	{
 		float rad = light.intensity * 0.35f;
 
 		Math3D.VectorSubtract (light.origin, r_origin, v);
 
-		gl.glBegin (GLAdapter.GL_TRIANGLE_FAN);
+		gl.glBegin (GlAdapter.GL_TRIANGLE_FAN);
 		gl.glColor3f (light.color[0]*0.2f, light.color[1]*0.2f, light.color[2]*0.2f);
 		int i;
 		for (i=0 ; i<3 ; i++)
@@ -104,10 +104,10 @@ public abstract class Light extends Warp {
 		r_dlightframecount = r_framecount + 1;	// because the count hasn't
 												//  advanced yet for this frame
 		gl.glDepthMask(false);
-		gl.glDisable(GLAdapter.GL_TEXTURE_2D);
-		gl.glShadeModel (GLAdapter.GL_SMOOTH);
-		gl.glEnable (GLAdapter.GL_BLEND);
-		gl.glBlendFunc (GLAdapter.GL_ONE, GLAdapter.GL_ONE);
+		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		gl.glShadeModel (GlAdapter.GL_SMOOTH);
+		gl.glEnable (GlAdapter.GL_BLEND);
+		gl.glBlendFunc (GlAdapter.GL_ONE, GlAdapter.GL_ONE);
 
 		for (int i=0 ; i<r_newrefdef.num_dlights ; i++)
 		{
@@ -115,9 +115,9 @@ public abstract class Light extends Warp {
 		}
 
 		gl.glColor3f (1,1,1);
-		gl.glDisable(GLAdapter.GL_BLEND);
-		gl.glEnable(GLAdapter.GL_TEXTURE_2D);
-		gl.glBlendFunc(GLAdapter.GL_SRC_ALPHA, GLAdapter.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glDisable(GlAdapter.GL_BLEND);
+		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		gl.glBlendFunc(GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glDepthMask(true);
 	}
 
@@ -133,12 +133,12 @@ public abstract class Light extends Warp {
 	/**
 	 * R_MarkLights
 	 */
-	void R_MarkLights (dlight_t light, int bit, mnode_t node)
+	void R_MarkLights (DynamicLightData light, int bit, ModelNode node)
 	{
 		if (node.contents != -1)
 			return;
 
-		cplane_t 	splitplane = node.plane;
+		Plane 	splitplane = node.plane;
 		float dist = Math3D.DotProduct (light.origin, splitplane.normal) - splitplane.dist;
 	
 		if (dist > light.intensity - DLIGHT_CUTOFF)
@@ -153,7 +153,7 @@ public abstract class Light extends Warp {
 		}
 
 		// mark the polygons
-		msurface_t	surf;
+		ModelSurface	surf;
 		int sidebit;
 		for (int i=0 ; i<node.numsurfaces ; i++)
 		{
@@ -195,7 +195,7 @@ public abstract class Light extends Warp {
 
 		r_dlightframecount = r_framecount + 1;	// because the count hasn't
 												//  advanced yet for this frame
-		dlight_t l;
+		DynamicLightData l;
 		for (int i=0 ; i<r_newrefdef.num_dlights ; i++) {
 			l = r_newrefdef.dlights[i];
 			R_MarkLights( l, 1<<i, r_worldmodel.nodes[0] );
@@ -211,7 +211,7 @@ public abstract class Light extends Warp {
 	*/
 
 	float[] pointcolor = {0, 0, 0}; // vec3_t
-	cplane_t lightplane; // used as shadow plane
+	Plane lightplane; // used as shadow plane
 	float[] lightspot = {0, 0, 0}; // vec3_t
 
 	/**
@@ -221,7 +221,7 @@ public abstract class Light extends Warp {
 	 * @param end
 	 * @return
 	 */
-	int RecursiveLightPoint (mnode_t node, float[] start, float[] end)
+	int RecursiveLightPoint (ModelNode node, float[] start, float[] end)
 	{
 		if (node.contents != -1)
 			return -1;		// didn't hit anything
@@ -229,7 +229,7 @@ public abstract class Light extends Warp {
 		// calculate mid point
 
 		// FIXME: optimize for axial
-		cplane_t plane = node.plane;
+		Plane plane = node.plane;
 		float front = Math3D.DotProduct (start, plane.normal) - plane.dist;
 		float back = Math3D.DotProduct (end, plane.normal) - plane.dist;
 		boolean side = (front < 0);
@@ -261,9 +261,9 @@ public abstract class Light extends Warp {
 		lightplane = plane;
 		int surfIndex = node.firstsurface;
 
-		msurface_t surf;
+		ModelSurface surf;
 		int s, t, ds, dt;
-		mtexinfo_t tex;
+		ModelTextureInfo tex;
 		ByteBuffer lightmap;
 		int maps;
 		for (int i=0 ; i<node.numsurfaces ; i++, surfIndex++)
@@ -360,7 +360,7 @@ public abstract class Light extends Warp {
 		//
 		// add dynamic lights
 		//
-		dlight_t dl;
+		DynamicLightData dl;
 		float add;
 		for (int lnum=0 ; lnum<r_newrefdef.num_dlights ; lnum++)
 		{
@@ -386,18 +386,18 @@ public abstract class Light extends Warp {
 	/**
 	 * R_AddDynamicLights
 	 */
-	void R_AddDynamicLights(msurface_t surf)
+	void R_AddDynamicLights(ModelSurface surf)
 	{
 		int sd, td;
 		float fdist, frad, fminlight;
 		int s, t;
-		dlight_t dl;
+		DynamicLightData dl;
 		float[] pfBL;
 		float fsacc, ftacc;
 
 		int smax = (surf.extents[0]>>4)+1;
 		int tmax = (surf.extents[1]>>4)+1;
-		mtexinfo_t tex = surf.texinfo;
+		ModelTextureInfo tex = surf.texinfo;
 
 		float local0, local1;
 		for (int lnum=0 ; lnum<r_newrefdef.num_dlights ; lnum++)
@@ -460,7 +460,7 @@ public abstract class Light extends Warp {
 	/**
 	 * R_SetCacheState
 	 */
-	void R_SetCacheState( msurface_t surf )
+	void R_SetCacheState( ModelSurface surf )
 	{
 		for (int maps = 0 ; maps < Defines.MAXLIGHTMAPS && surf.styles[maps] != (byte)255 ; maps++)
 		{
@@ -476,7 +476,7 @@ public abstract class Light extends Warp {
 	 * 
 	 * Combine and scale multiple lightmaps into the floating format in blocklights
 	 */
-	void R_BuildLightMap(msurface_t surf, IntBuffer dest, int stride)
+	void R_BuildLightMap(ModelSurface surf, IntBuffer dest, int stride)
 	{
         int r, g, b, a, max;
         int i, j;

@@ -237,7 +237,7 @@ public class GameSVCmds {
         byte b[];
 
         int i;
-        cvar_t game;
+        ConsoleVariable game;
 
         game = GameBase.gi.cvar("game", "", 0);
 

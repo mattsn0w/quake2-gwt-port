@@ -26,10 +26,10 @@ package jake2.render;
 import com.google.gwt.user.client.Command;
 
 import jake2.client.Dimension;
-import jake2.client.refdef_t;
-import jake2.client.refexport_t;
+import jake2.client.RendererState;
+import jake2.client.Renderer;
 import jake2.qcommon.AsyncCallback;
-import jake2.qcommon.xcommand_t;
+import jake2.qcommon.ExecutableCommand;
 import jake2.sys.KBD;
 
 /**
@@ -37,7 +37,7 @@ import jake2.sys.KBD;
  * 
  * @author cwei
  */
-public class DummyRenderer implements refexport_t {
+public class DummyRenderer implements Renderer {
 
 	/* (non-Javadoc)
 	 * @see jake2.client.refexport_t#Init(int, int)
@@ -59,20 +59,20 @@ public class DummyRenderer implements refexport_t {
 	  callback.execute();
 	}
 
-	public void RegisterModel(String name, AsyncCallback<model_t> callback) {
+	public void RegisterModel(String name, AsyncCallback<RendererModel> callback) {
 	}
 
   /* (non-Javadoc)
 	 * @see jake2.client.refexport_t#RegisterSkin(java.lang.String)
 	 */
-	public image_t RegisterSkin(String name) {
+	public ModelImage RegisterSkin(String name) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see jake2.client.refexport_t#RegisterPic(java.lang.String)
 	 */
-	public image_t RegisterPic(String name) {
+	public ModelImage RegisterPic(String name) {
 		return null;
 	}
 
@@ -91,7 +91,7 @@ public class DummyRenderer implements refexport_t {
 	/* (non-Javadoc)
 	 * @see jake2.client.refexport_t#RenderFrame(jake2.client.refdef_t)
 	 */
-	public void RenderFrame(refdef_t fd) {
+	public void RenderFrame(RendererState fd) {
 	}
 
 	/* (non-Javadoc)
@@ -181,7 +181,7 @@ public class DummyRenderer implements refexport_t {
 	/* (non-Javadoc)
 	 * @see jake2.client.refexport_t#updateScreen(jake2.qcommon.xcommand_t)
 	 */
-	public void updateScreen(xcommand_t callback) {
+	public void updateScreen(ExecutableCommand callback) {
 	    callback.execute();
 	}
 

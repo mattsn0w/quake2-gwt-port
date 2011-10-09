@@ -23,7 +23,7 @@
 */
 package jake2.render.gl;
 
-import jake2.render.GLAdapter;
+import jake2.render.GlAdapter;
 
 
 /**
@@ -31,7 +31,7 @@ import jake2.render.GLAdapter;
  * 
  * @author dsanders/cwei
  */
-public abstract class Base extends GLBase {
+public abstract class Base extends GlBase {
     
   //  static final int GL_COLOR_INDEX8_EXT = GLAdapter._GL_COLOR_INDEX;
     

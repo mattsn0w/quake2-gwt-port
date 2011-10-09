@@ -23,7 +23,8 @@
 */
 package jake2.game;
 
-import jake2.game.monsters.M_Player;
+import jake2.game.adapters.EntitiyThinkAdapter;
+import jake2.game.monsters.MonsterPlayer;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
@@ -32,10 +33,10 @@ import jake2.util.Math3D;
 
 public class PlayerWeapon {
 
-    public static EntThinkAdapter Weapon_Grenade = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_Grenade = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_Grenade"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
             if ((ent.client.newweapon != null)
                     && (ent.client.weaponstate == Defines.WEAPON_READY)) {
                 ChangeWeapon(ent);
@@ -144,10 +145,10 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntThinkAdapter weapon_grenadelauncher_fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter weapon_grenadelauncher_fire = new EntitiyThinkAdapter() {
     	public String getID() { return "weapon_grenadelauncher_fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
             float[] offset = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
             float[] start = { 0, 0, 0 };
@@ -184,10 +185,10 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_GrenadeLauncher = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_GrenadeLauncher = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_GrenadeLauncher"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 34, 51, 59, 0 };
             int fire_frames[] = { 6, 0 };
@@ -206,10 +207,10 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntThinkAdapter Weapon_RocketLauncher_Fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_RocketLauncher_Fire = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_RocketLauncher_Fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -254,10 +255,10 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_RocketLauncher = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_RocketLauncher = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_RocketLauncher"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 25, 33, 42, 50, 0 };
             int fire_frames[] = { 5, 0 };
@@ -268,10 +269,10 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_Blaster_Fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_Blaster_Fire = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_Blaster_Fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int damage;
 
@@ -286,10 +287,10 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_Blaster = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_Blaster = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_Blaster"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 19, 32, 0 };
             int fire_frames[] = { 5, 0 };
@@ -300,10 +301,10 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_HyperBlaster_Fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_HyperBlaster_Fire = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_HyperBlaster_Fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
             float rotation;
             float[] offset = { 0, 0, 0 };
             int effect;
@@ -344,12 +345,12 @@ public class PlayerWeapon {
                         ent.client.pers.inventory[ent.client.ammo_index]--;
 
                     ent.client.anim_priority = Defines.ANIM_ATTACK;
-                    if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                        ent.s.frame = M_Player.FRAME_crattak1 - 1;
-                        ent.client.anim_end = M_Player.FRAME_crattak9;
+                    if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                        ent.s.frame = MonsterPlayer.FRAME_crattak1 - 1;
+                        ent.client.anim_end = MonsterPlayer.FRAME_crattak9;
                     } else {
-                        ent.s.frame = M_Player.FRAME_attack1 - 1;
-                        ent.client.anim_end = M_Player.FRAME_attack8;
+                        ent.s.frame = MonsterPlayer.FRAME_attack1 - 1;
+                        ent.client.anim_end = MonsterPlayer.FRAME_attack8;
                     }
                 }
 
@@ -371,9 +372,9 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_HyperBlaster = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_HyperBlaster = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_HyperBlaster"; }
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 0 };
             int fire_frames[] = { 6, 7, 8, 9, 10, 11, 0 };
@@ -384,9 +385,9 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_Machinegun = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_Machinegun = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_Machinegun"; }
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 23, 45, 0 };
             int fire_frames[] = { 4, 5, 0 };
@@ -397,9 +398,9 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_Chaingun = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_Chaingun = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_Chaingun"; }
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 38, 43, 51, 61, 0 };
             int fire_frames[] = { 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
@@ -419,10 +420,10 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntThinkAdapter weapon_shotgun_fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter weapon_shotgun_fire = new EntitiyThinkAdapter() {
     	public String getID() { return "weapon_shotgun_fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -474,9 +475,9 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_Shotgun = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_Shotgun = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_Shotgun"; }
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
             int pause_frames[] = { 22, 28, 34, 0 };
             int fire_frames[] = { 8, 9, 0 };
 
@@ -486,10 +487,10 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter weapon_supershotgun_fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter weapon_supershotgun_fire = new EntitiyThinkAdapter() {
     	public String getID() { return "weapon_supershotgun_fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -544,9 +545,9 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_SuperShotgun = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_SuperShotgun = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_SuperShotgun"; }
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 29, 42, 57, 0 };
             int fire_frames[] = { 7, 0 };
@@ -564,10 +565,10 @@ public class PlayerWeapon {
      * 
      * ======================================================================
      */
-    public static EntThinkAdapter weapon_railgun_fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter weapon_railgun_fire = new EntitiyThinkAdapter() {
     	public String getID() { return "weapon_railgun_fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -616,10 +617,10 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_Railgun = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_Railgun = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_Railgun"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int pause_frames[] = { 56, 0 };
             int fire_frames[] = { 4, 0 };
@@ -637,10 +638,10 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntThinkAdapter weapon_bfg_fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter weapon_bfg_fire = new EntitiyThinkAdapter() {
     	public String getID() { return "weapon_bfg_fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -701,9 +702,9 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntThinkAdapter Weapon_BFG = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Weapon_BFG = new EntitiyThinkAdapter() {
     	public String getID() { return "Weapon_BFG"; }
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             Weapon_Generic(ent, 8, 32, 55, 58, pause_frames, fire_frames,
                     weapon_bfg_fire);
@@ -726,9 +727,9 @@ public class PlayerWeapon {
     public static ItemUseAdapter Use_Weapon = new ItemUseAdapter() {
     	public String getID() { return "Use_Weapon"; }
 
-        public void use(edict_t ent, gitem_t item) {
+        public void use(Entity ent, GameItem item) {
             int ammo_index;
-            gitem_t ammo_item;
+            GameItem ammo_item;
 
             // see if we're already using it
             if (item == ent.client.pers.weapon)
@@ -768,7 +769,7 @@ public class PlayerWeapon {
 
     public static ItemDropAdapter Drop_Weapon = new ItemDropAdapter() {
     	public String getID() { return "Drop_Weapon"; }
-        public void drop(edict_t ent, gitem_t item) {
+        public void drop(Entity ent, GameItem item) {
             int index;
 
             if (0 != ((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY))
@@ -796,10 +797,10 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntThinkAdapter Machinegun_Fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Machinegun_Fire = new EntitiyThinkAdapter() {
     	public String getID() { return "Machinegun_Fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int i;
             float[] start = { 0, 0, 0 };
@@ -875,23 +876,23 @@ public class PlayerWeapon {
                 ent.client.pers.inventory[ent.client.ammo_index]--;
 
             ent.client.anim_priority = Defines.ANIM_ATTACK;
-            if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                ent.s.frame = M_Player.FRAME_crattak1
+            if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                ent.s.frame = MonsterPlayer.FRAME_crattak1
                         - (int) (Lib.random() + 0.25);
-                ent.client.anim_end = M_Player.FRAME_crattak9;
+                ent.client.anim_end = MonsterPlayer.FRAME_crattak9;
             } else {
-                ent.s.frame = M_Player.FRAME_attack1
+                ent.s.frame = MonsterPlayer.FRAME_attack1
                         - (int) (Lib.random() + 0.25);
-                ent.client.anim_end = M_Player.FRAME_attack8;
+                ent.client.anim_end = MonsterPlayer.FRAME_attack8;
             }
             return true;
         }
     };
 
-    public static EntThinkAdapter Chaingun_Fire = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter Chaingun_Fire = new EntitiyThinkAdapter() {
     	public String getID() { return "Chaingun_Fire"; }
 
-        public boolean think(edict_t ent) {
+        public boolean think(Entity ent) {
 
             int i;
             int shots;
@@ -936,14 +937,14 @@ public class PlayerWeapon {
             }
 
             ent.client.anim_priority = Defines.ANIM_ATTACK;
-            if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                ent.s.frame = M_Player.FRAME_crattak1
+            if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                ent.s.frame = MonsterPlayer.FRAME_crattak1
                         - (ent.client.ps.gunframe & 1);
-                ent.client.anim_end = M_Player.FRAME_crattak9;
+                ent.client.anim_end = MonsterPlayer.FRAME_crattak9;
             } else {
-                ent.s.frame = M_Player.FRAME_attack1
+                ent.s.frame = MonsterPlayer.FRAME_attack1
                         - (ent.client.ps.gunframe & 1);
-                ent.client.anim_end = M_Player.FRAME_attack8;
+                ent.client.anim_end = MonsterPlayer.FRAME_attack8;
             }
 
             if (ent.client.ps.gunframe <= 9)
@@ -1017,9 +1018,9 @@ public class PlayerWeapon {
 
     public static EntInteractAdapter Pickup_Weapon = new EntInteractAdapter() {
     	public String getID() { return "Pickup_Weapon"; }
-        public boolean interact(edict_t ent, edict_t other) {
+        public boolean interact(Entity ent, Entity other) {
             int index;
-            gitem_t ammo;
+            GameItem ammo;
     
             index = GameItems.ITEM_INDEX(ent.item);
     
@@ -1061,7 +1062,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static void P_ProjectSource(gclient_t client, float[] point,
+    public static void P_ProjectSource(GameClient client, float[] point,
             float[] distance, float[] forward, float[] right, float[] result) {
         float[] _distance = { 0, 0, 0 };
 
@@ -1080,7 +1081,7 @@ public class PlayerWeapon {
      * The old weapon has been dropped all the way, so make the new one current
      * ===============
      */
-    public static void ChangeWeapon(edict_t ent) {
+    public static void ChangeWeapon(Entity ent) {
         int i;
 
         if (ent.client.grenade_time != 0) {
@@ -1123,12 +1124,12 @@ public class PlayerWeapon {
                 .modelindex(ent.client.pers.weapon.view_model);
 
         ent.client.anim_priority = Defines.ANIM_PAIN;
-        if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-            ent.s.frame = M_Player.FRAME_crpain1;
-            ent.client.anim_end = M_Player.FRAME_crpain4;
+        if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+            ent.s.frame = MonsterPlayer.FRAME_crpain1;
+            ent.client.anim_end = MonsterPlayer.FRAME_crpain4;
         } else {
-            ent.s.frame = M_Player.FRAME_pain301;
-            ent.client.anim_end = M_Player.FRAME_pain304;
+            ent.s.frame = MonsterPlayer.FRAME_pain301;
+            ent.client.anim_end = MonsterPlayer.FRAME_pain304;
 
         }
     }
@@ -1138,7 +1139,7 @@ public class PlayerWeapon {
      * NoAmmoWeaponChange 
      * =================
      */
-    public static void NoAmmoWeaponChange(edict_t ent) {
+    public static void NoAmmoWeaponChange(Entity ent) {
         if (0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
                 .FindItem("slugs"))]
                 && 0 != ent.client.pers.inventory[GameItems.ITEM_INDEX(GameItems
@@ -1191,7 +1192,7 @@ public class PlayerWeapon {
      * Called by ClientBeginServerFrame and ClientThink 
      * =================
      */
-    public static void Think_Weapon(edict_t ent) {
+    public static void Think_Weapon(Entity ent) {
         // if just died, put the weapon away
         if (ent.health < 1) {
             ent.client.newweapon = null;
@@ -1218,10 +1219,10 @@ public class PlayerWeapon {
      * ================
      */
 
-    public static void Weapon_Generic(edict_t ent, int FRAME_ACTIVATE_LAST,
+    public static void Weapon_Generic(Entity ent, int FRAME_ACTIVATE_LAST,
             int FRAME_FIRE_LAST, int FRAME_IDLE_LAST,
             int FRAME_DEACTIVATE_LAST, int pause_frames[], int fire_frames[],
-            EntThinkAdapter fire) {
+            EntitiyThinkAdapter fire) {
         int FRAME_FIRE_FIRST = (FRAME_ACTIVATE_LAST + 1);
         int FRAME_IDLE_FIRST = (FRAME_FIRE_LAST + 1);
         int FRAME_DEACTIVATE_FIRST = (FRAME_IDLE_LAST + 1);
@@ -1240,12 +1241,12 @@ public class PlayerWeapon {
                 return;
             } else if ((FRAME_DEACTIVATE_LAST - ent.client.ps.gunframe) == 4) {
                 ent.client.anim_priority = Defines.ANIM_REVERSE;
-                if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                    ent.s.frame = M_Player.FRAME_crpain4 + 1;
-                    ent.client.anim_end = M_Player.FRAME_crpain1;
+                if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                    ent.s.frame = MonsterPlayer.FRAME_crpain4 + 1;
+                    ent.client.anim_end = MonsterPlayer.FRAME_crpain1;
                 } else {
-                    ent.s.frame = M_Player.FRAME_pain304 + 1;
-                    ent.client.anim_end = M_Player.FRAME_pain301;
+                    ent.s.frame = MonsterPlayer.FRAME_pain304 + 1;
+                    ent.client.anim_end = MonsterPlayer.FRAME_pain301;
                 }
             }
 
@@ -1271,12 +1272,12 @@ public class PlayerWeapon {
 
             if ((FRAME_DEACTIVATE_LAST - FRAME_DEACTIVATE_FIRST) < 4) {
                 ent.client.anim_priority = Defines.ANIM_REVERSE;
-                if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                    ent.s.frame = M_Player.FRAME_crpain4 + 1;
-                    ent.client.anim_end = M_Player.FRAME_crpain1;
+                if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                    ent.s.frame = MonsterPlayer.FRAME_crpain4 + 1;
+                    ent.client.anim_end = MonsterPlayer.FRAME_crpain1;
                 } else {
-                    ent.s.frame = M_Player.FRAME_pain304 + 1;
-                    ent.client.anim_end = M_Player.FRAME_pain301;
+                    ent.s.frame = MonsterPlayer.FRAME_pain304 + 1;
+                    ent.client.anim_end = MonsterPlayer.FRAME_pain301;
 
                 }
             }
@@ -1293,12 +1294,12 @@ public class PlayerWeapon {
 
                     // start the animation
                     ent.client.anim_priority = Defines.ANIM_ATTACK;
-                    if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
-                        ent.s.frame = M_Player.FRAME_crattak1 - 1;
-                        ent.client.anim_end = M_Player.FRAME_crattak9;
+                    if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
+                        ent.s.frame = MonsterPlayer.FRAME_crattak1 - 1;
+                        ent.client.anim_end = MonsterPlayer.FRAME_crattak9;
                     } else {
-                        ent.s.frame = M_Player.FRAME_attack1 - 1;
-                        ent.client.anim_end = M_Player.FRAME_attack8;
+                        ent.s.frame = MonsterPlayer.FRAME_attack1 - 1;
+                        ent.client.anim_end = MonsterPlayer.FRAME_attack8;
                     }
                 } else {
                     if (GameBase.level.time >= ent.pain_debounce_time) {
@@ -1358,7 +1359,7 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static void weapon_grenade_fire(edict_t ent, boolean held) {
+    public static void weapon_grenade_fire(Entity ent, boolean held) {
         float[] offset = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
         float[] start = { 0, 0, 0 };
@@ -1395,14 +1396,14 @@ public class PlayerWeapon {
         if (ent.health <= 0)
             return;
 
-        if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
+        if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
             ent.client.anim_priority = Defines.ANIM_ATTACK;
-            ent.s.frame = M_Player.FRAME_crattak1 - 1;
-            ent.client.anim_end = M_Player.FRAME_crattak3;
+            ent.s.frame = MonsterPlayer.FRAME_crattak1 - 1;
+            ent.client.anim_end = MonsterPlayer.FRAME_crattak3;
         } else {
             ent.client.anim_priority = Defines.ANIM_REVERSE;
-            ent.s.frame = M_Player.FRAME_wave08;
-            ent.client.anim_end = M_Player.FRAME_wave01;
+            ent.s.frame = MonsterPlayer.FRAME_wave08;
+            ent.client.anim_end = MonsterPlayer.FRAME_wave01;
         }
     }
 
@@ -1414,7 +1415,7 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static void Blaster_Fire(edict_t ent, float[] g_offset, int damage,
+    public static void Blaster_Fire(Entity ent, float[] g_offset, int damage,
             boolean hyper, int effect) {
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
         float[] start = { 0, 0, 0 };
@@ -1456,8 +1457,8 @@ public class PlayerWeapon {
      * of seeing the player from there. 
      * ===============
      */
-    static void PlayerNoise(edict_t who, float[] where, int type) {
-        edict_t noise;
+    static void PlayerNoise(Entity who, float[] where, int type) {
+        Entity noise;
     
         if (type == Defines.PNOISE_WEAPON) {
             if (who.client.silencer_shots > 0) {

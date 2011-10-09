@@ -24,11 +24,11 @@
 package jake2.qcommon;
 
 
-import jake2.game.cmodel_t;
-import jake2.game.cplane_t;
-import jake2.game.cvar_t;
-import jake2.game.mapsurface_t;
-import jake2.game.trace_t;
+import jake2.game.Model;
+import jake2.game.Plane;
+import jake2.game.ConsoleVariable;
+import jake2.game.MapSurface;
+import jake2.game.Trace;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 import jake2.util.Vargs;
@@ -42,15 +42,15 @@ import java.util.Arrays;
 
 public class CM {
     public static class cnode_t {
-        cplane_t plane; // ptr
+        Plane plane; // ptr
 
         int children[] = { 0, 0 }; // negative numbers are leafs
     }
 
     public static class cbrushside_t {
-        cplane_t plane; // ptr
+        Plane plane; // ptr
 
-        mapsurface_t surface; // ptr
+        MapSurface surface; // ptr
     }
 
     public static class cleaf_t {
@@ -101,20 +101,20 @@ public class CM {
 
     public static int numtexinfo;
 
-    public static mapsurface_t map_surfaces[] = new mapsurface_t[Defines.MAX_MAP_TEXINFO];
+    public static MapSurface map_surfaces[] = new MapSurface[Defines.MAX_MAP_TEXINFO];
     static {
         for (int n = 0; n < Defines.MAX_MAP_TEXINFO; n++)
-            map_surfaces[n] = new mapsurface_t();
+            map_surfaces[n] = new MapSurface();
     }
 
     static int numplanes;
 
     /** Extra for box hull ( +6) */
-    static cplane_t map_planes[] = new cplane_t[Defines.MAX_MAP_PLANES + 6];
+    static Plane map_planes[] = new Plane[Defines.MAX_MAP_PLANES + 6];
 
     static {
         for (int n = 0; n < Defines.MAX_MAP_PLANES + 6; n++)
-            map_planes[n] = new cplane_t();
+            map_planes[n] = new Plane();
     }
 
     static int numnodes;
@@ -143,10 +143,10 @@ public class CM {
 
     public static int numcmodels;
 
-    public static cmodel_t map_cmodels[] = new cmodel_t[Defines.MAX_MAP_MODELS];
+    public static Model map_cmodels[] = new Model[Defines.MAX_MAP_MODELS];
     static {
         for (int n = 0; n < Defines.MAX_MAP_MODELS; n++)
-            map_cmodels[n] = new cmodel_t();
+            map_cmodels[n] = new Model();
 
     }
 
@@ -164,7 +164,7 @@ public class CM {
     public static byte map_visibility[] = new byte[Defines.MAX_MAP_VISIBILITY];
 
     /** Main visibility data. */
-    public static qfiles.dvis_t map_vis = new qfiles.dvis_t(ByteBuffer
+    public static QuakeFiles.dvis_t map_vis = new QuakeFiles.dvis_t(ByteBuffer
             .wrap(map_visibility));
 
     public static int numentitychars;
@@ -182,23 +182,23 @@ public class CM {
 
     public static int numareaportals;
 
-    public static qfiles.dareaportal_t map_areaportals[] = new qfiles.dareaportal_t[Defines.MAX_MAP_AREAPORTALS];
+    public static QuakeFiles.dareaportal_t map_areaportals[] = new QuakeFiles.dareaportal_t[Defines.MAX_MAP_AREAPORTALS];
 
     static {
         for (int n = 0; n < Defines.MAX_MAP_AREAPORTALS; n++)
-            map_areaportals[n] = new qfiles.dareaportal_t();
+            map_areaportals[n] = new QuakeFiles.dareaportal_t();
 
     }
 
     public static int numclusters = 1;
 
-    public static mapsurface_t nullsurface = new mapsurface_t();
+    public static MapSurface nullsurface = new MapSurface();
 
     public static int floodvalid;
 
     public static boolean portalopen[] = new boolean[Defines.MAX_MAP_AREAPORTALS];
 
-    public static cvar_t map_noareas;
+    public static ConsoleVariable map_noareas;
 
     public static ByteBuffer cmod_base;
 
@@ -212,9 +212,9 @@ public class CM {
      * CM_LoadMap()). On the server, it will also reset portals/areas if the
      * map is to be reused.
      */
-    public static cmodel_t CM_IsMapLoaded(String name, boolean clientload) {
+    public static Model CM_IsMapLoaded(String name, boolean clientload) {
         if (map_name.equals(name)
-            && (clientload || 0 == Cvar.VariableValue("flushmap"))) {
+            && (clientload || 0 == ConsoleVariables.VariableValue("flushmap"))) {
             if (!clientload) {
                 Arrays.fill(portalopen, false);
                 FloodAreaConnections();
@@ -225,7 +225,7 @@ public class CM {
     }
 
     public interface ModelCallback {
-    	public void onSuccess(cmodel_t model);    	
+    	public void onSuccess(Model model);    	
     }
     
     public static void CM_LoadMap(String name, boolean clientload,
@@ -241,10 +241,10 @@ public class CM {
         Com.DPrintf("CM_LoadMap(" + name + ")...\n");
        
 
-        map_noareas = Cvar.Get("map_noareas", "0", 0);
+        map_noareas = ConsoleVariables.Get("map_noareas", "0", 0);
 
         if (map_name.equals(name)
-                && (clientload || 0 == Cvar.VariableValue("flushmap"))) {
+                && (clientload || 0 == ConsoleVariables.VariableValue("flushmap"))) {
 
             checksum[0] = last_checksum;
 
@@ -292,7 +292,7 @@ public class CM {
         last_checksum++; // = MD4.Com_BlockChecksum(buf, length);
         checksum[0] = last_checksum;
 
-        qfiles.dheader_t header = new qfiles.dheader_t(bbuf.slice());
+        QuakeFiles.dheader_t header = new QuakeFiles.dheader_t(bbuf.slice());
 
         if (header.version != Defines.BSPVERSION)
             Com.Error(Defines.ERR_DROP, "CMod_LoadBrushModel: " + name
@@ -331,16 +331,16 @@ public class CM {
     }
 
     /** Loads Submodels. */
-    public static void CMod_LoadSubmodels(lump_t l) {
+    public static void CMod_LoadSubmodels(Lump l) {
         Com.DPrintf("CMod_LoadSubmodels()\n");
-        qfiles.dmodel_t in;
-        cmodel_t out;
+        QuakeFiles.dmodel_t in;
+        Model out;
         int i, j, count;
 
-        if ((l.filelen % qfiles.dmodel_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.dmodel_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "CMod_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dmodel_t.SIZE;
+        count = l.filelen / QuakeFiles.dmodel_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no models");
@@ -356,8 +356,8 @@ public class CM {
         for (i = 0; i < count; i++) {
 //            in = new qfiles.dmodel_t(ByteBuffer.wrap(cmod_base, i
 //                    * qfiles.dmodel_t.SIZE + l.fileofs, qfiles.dmodel_t.SIZE));
-            cmod_base.position(i * qfiles.dmodel_t.SIZE + l.fileofs);
-            in = new qfiles.dmodel_t(cmod_base);
+            cmod_base.position(i * QuakeFiles.dmodel_t.SIZE + l.fileofs);
+            in = new QuakeFiles.dmodel_t(cmod_base);
             out = map_cmodels[i];
 
             for (j = 0; j < 3; j++) { // spread the mins / maxs by a pixel
@@ -383,16 +383,16 @@ public class CM {
     static boolean debugloadmap = false;
 
     /** Loads surfaces. */
-    public static void CMod_LoadSurfaces(lump_t l) {
+    public static void CMod_LoadSurfaces(Lump l) {
         Com.DPrintf("CMod_LoadSurfaces()\n");
-        texinfo_t in;
-        mapsurface_t out;
+        TextureInfo in;
+        MapSurface out;
         int i, count;
 
-        if ((l.filelen % texinfo_t.SIZE) != 0)
+        if ((l.filelen % TextureInfo.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / texinfo_t.SIZE;
+        count = l.filelen / TextureInfo.SIZE;
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no surfaces");
         if (count > Defines.MAX_MAP_TEXINFO)
@@ -404,11 +404,11 @@ public class CM {
             Com.DPrintf("surfaces:\n");
 
         for (i = 0; i < count; i++) {
-            out = map_surfaces[i] = new mapsurface_t();
+            out = map_surfaces[i] = new MapSurface();
 //            in = new texinfo_t(cmod_base, l.fileofs + i * texinfo_t.SIZE,
 //                    texinfo_t.SIZE);
-            cmod_base.position(l.fileofs + i * texinfo_t.SIZE);
-            in = new texinfo_t(cmod_base);
+            cmod_base.position(l.fileofs + i * TextureInfo.SIZE);
+            in = new TextureInfo(cmod_base);
 
             out.c.name = in.texture;
             out.rname = in.texture;
@@ -425,17 +425,17 @@ public class CM {
     }
 
     /** Loads nodes. */
-    public static void CMod_LoadNodes(lump_t l) {
+    public static void CMod_LoadNodes(Lump l) {
         Com.DPrintf("CMod_LoadNodes()\n");
-        qfiles.dnode_t in;
+        QuakeFiles.dnode_t in;
         int child;
         cnode_t out;
         int i, j, count;
 
-        if ((l.filelen % qfiles.dnode_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.dnode_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size:"
-                    + l.fileofs + "," + qfiles.dnode_t.SIZE);
-        count = l.filelen / qfiles.dnode_t.SIZE;
+                    + l.fileofs + "," + QuakeFiles.dnode_t.SIZE);
+        count = l.filelen / QuakeFiles.dnode_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map has no nodes");
@@ -452,8 +452,8 @@ public class CM {
         for (i = 0; i < count; i++) {
 //            in = new qfiles.dnode_t(ByteBuffer.wrap(cmod_base,
 //                    qfiles.dnode_t.SIZE * i + l.fileofs, qfiles.dnode_t.SIZE));
-          cmod_base.position(qfiles.dnode_t.SIZE * i + l.fileofs);
-          in = new qfiles.dnode_t(cmod_base);
+          cmod_base.position(QuakeFiles.dnode_t.SIZE * i + l.fileofs);
+          in = new QuakeFiles.dnode_t(cmod_base);
             out = map_nodes[i];
 
             out.plane = map_planes[in.planenum];
@@ -469,16 +469,16 @@ public class CM {
     }
 
     /** Loads brushes.*/
-    public static void CMod_LoadBrushes(lump_t l) {
+    public static void CMod_LoadBrushes(Lump l) {
         Com.DPrintf("CMod_LoadBrushes()\n");
-        qfiles.dbrush_t in;
+        QuakeFiles.dbrush_t in;
         cbrush_t out;
         int i, count;
 
-        if ((l.filelen % qfiles.dbrush_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.dbrush_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dbrush_t.SIZE;
+        count = l.filelen / QuakeFiles.dbrush_t.SIZE;
 
         if (count > Defines.MAX_MAP_BRUSHES)
             Com.Error(Defines.ERR_DROP, "Map has too many brushes");
@@ -491,8 +491,8 @@ public class CM {
         for (i = 0; i < count; i++) {
 //            in = new qfiles.dbrush_t(ByteBuffer.wrap(cmod_base, i
 //                    * qfiles.dbrush_t.SIZE + l.fileofs, qfiles.dbrush_t.SIZE));
-            cmod_base.position(i * qfiles.dbrush_t.SIZE + l.fileofs);
-            in = new qfiles.dbrush_t(cmod_base);
+            cmod_base.position(i * QuakeFiles.dbrush_t.SIZE + l.fileofs);
+            in = new QuakeFiles.dbrush_t(cmod_base);
             out = map_brushes[i];
             out.firstbrushside = in.firstside;
             out.numsides = in.numsides;
@@ -508,17 +508,17 @@ public class CM {
     }
 
     /** Loads leafs.   */
-    public static void CMod_LoadLeafs(lump_t l) {
+    public static void CMod_LoadLeafs(Lump l) {
         Com.DPrintf("CMod_LoadLeafs()\n");
         int i;
         cleaf_t out;
-        qfiles.dleaf_t in;
+        QuakeFiles.dleaf_t in;
         int count;
 
-        if ((l.filelen % qfiles.dleaf_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.dleaf_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dleaf_t.SIZE;
+        count = l.filelen / QuakeFiles.dleaf_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no leafs");
@@ -536,8 +536,8 @@ public class CM {
         for (i = 0; i < count; i++) {
 //            in = new qfiles.dleaf_t(cmod_base, i * qfiles.dleaf_t.SIZE
 //                    + l.fileofs, qfiles.dleaf_t.SIZE);
-          cmod_base.position(i * qfiles.dleaf_t.SIZE + l.fileofs);
-          in = new qfiles.dleaf_t(cmod_base);
+          cmod_base.position(i * QuakeFiles.dleaf_t.SIZE + l.fileofs);
+          in = new QuakeFiles.dleaf_t(cmod_base);
 
             out = map_leafs[i];
 
@@ -578,18 +578,18 @@ public class CM {
     }
 
     /** Loads planes. */
-    public static void CMod_LoadPlanes(lump_t l) {
+    public static void CMod_LoadPlanes(Lump l) {
         Com.DPrintf("CMod_LoadPlanes()\n");
         int i, j;
-        cplane_t out;
-        qfiles.dplane_t in;
+        Plane out;
+        QuakeFiles.dplane_t in;
         int count;
         int bits;
 
-        if ((l.filelen % qfiles.dplane_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.dplane_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dplane_t.SIZE;
+        count = l.filelen / QuakeFiles.dplane_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no planes");
@@ -609,8 +609,8 @@ public class CM {
         for (i = 0; i < count; i++) {
 //            in = new qfiles.dplane_t(ByteBuffer.wrap(cmod_base, i
 //                    * qfiles.dplane_t.SIZE + l.fileofs, qfiles.dplane_t.SIZE));
-          cmod_base.position(i * qfiles.dplane_t.SIZE + l.fileofs);
-          in = new qfiles.dplane_t(cmod_base);
+          cmod_base.position(i * QuakeFiles.dplane_t.SIZE + l.fileofs);
+          in = new QuakeFiles.dplane_t(cmod_base);
 
             out = map_planes[i];
 
@@ -636,7 +636,7 @@ public class CM {
     }
 
     /** Loads leaf brushes. */
-    public static void CMod_LoadLeafBrushes(lump_t l) {
+    public static void CMod_LoadLeafBrushes(Lump l) {
         Com.DPrintf("CMod_LoadLeafBrushes()\n");
         int i;
         int out[];
@@ -677,17 +677,17 @@ public class CM {
     }
 
     /** Loads brush sides. */
-    public static void CMod_LoadBrushSides(lump_t l) {
+    public static void CMod_LoadBrushSides(Lump l) {
         Com.DPrintf("CMod_LoadBrushSides()\n");
         int i, j;
         cbrushside_t out;
-        qfiles.dbrushside_t in;
+        QuakeFiles.dbrushside_t in;
         int count;
         int num;
 
-        if ((l.filelen % qfiles.dbrushside_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.dbrushside_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
-        count = l.filelen / qfiles.dbrushside_t.SIZE;
+        count = l.filelen / QuakeFiles.dbrushside_t.SIZE;
 
         // need to save space for box planes
         if (count > Defines.MAX_MAP_BRUSHSIDES)
@@ -705,8 +705,8 @@ public class CM {
 //            in = new qfiles.dbrushside_t(ByteBuffer.wrap(cmod_base, i
 //                    * qfiles.dbrushside_t.SIZE + l.fileofs,
 //                    qfiles.dbrushside_t.SIZE));
-          cmod_base.position(i * qfiles.dbrushside_t.SIZE + l.fileofs);
-          in = new qfiles.dbrushside_t(cmod_base);
+          cmod_base.position(i * QuakeFiles.dbrushside_t.SIZE + l.fileofs);
+          in = new QuakeFiles.dbrushside_t(cmod_base);
 
             out = map_brushsides[i];
 
@@ -721,7 +721,7 @@ public class CM {
 
             // java specific handling of -1
             if (j == -1)
-                out.surface = new mapsurface_t(); // just for safety
+                out.surface = new MapSurface(); // just for safety
             else
                 out.surface = map_surfaces[j];
 
@@ -732,17 +732,17 @@ public class CM {
     }
 
     /** Loads areas. */
-    public static void CMod_LoadAreas(lump_t l) {
+    public static void CMod_LoadAreas(Lump l) {
         Com.DPrintf("CMod_LoadAreas()\n");
         int i;
         carea_t out;
-        qfiles.darea_t in;
+        QuakeFiles.darea_t in;
         int count;
 
-        if ((l.filelen % qfiles.darea_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.darea_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.darea_t.SIZE;
+        count = l.filelen / QuakeFiles.darea_t.SIZE;
 
         if (count > Defines.MAX_MAP_AREAS)
             Com.Error(Defines.ERR_DROP, "Map has too many areas");
@@ -757,8 +757,8 @@ public class CM {
         for (i = 0; i < count; i++) {
 //            in = new qfiles.darea_t(ByteBuffer.wrap(cmod_base, i
 //                    * qfiles.darea_t.SIZE + l.fileofs, qfiles.darea_t.SIZE));
-            cmod_base.position(i * qfiles.darea_t.SIZE + l.fileofs);
-            in = new qfiles.darea_t(cmod_base);
+            cmod_base.position(i * QuakeFiles.darea_t.SIZE + l.fileofs);
+            in = new QuakeFiles.darea_t(cmod_base);
             out = map_areas[i];
 
             out.numareaportals = in.numareaportals;
@@ -773,16 +773,16 @@ public class CM {
     }
 
     /** Loads area portals. */
-    public static void CMod_LoadAreaPortals(lump_t l) {
+    public static void CMod_LoadAreaPortals(Lump l) {
         Com.DPrintf("CMod_LoadAreaPortals()\n");
         int i;
-        qfiles.dareaportal_t out;
-        qfiles.dareaportal_t in;
+        QuakeFiles.dareaportal_t out;
+        QuakeFiles.dareaportal_t in;
         int count;
 
-        if ((l.filelen % qfiles.dareaportal_t.SIZE) != 0)
+        if ((l.filelen % QuakeFiles.dareaportal_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
-        count = l.filelen / qfiles.dareaportal_t.SIZE;
+        count = l.filelen / QuakeFiles.dareaportal_t.SIZE;
 
         if (count > Defines.MAX_MAP_AREAS)
             Com.Error(Defines.ERR_DROP, "Map has too many areas");
@@ -796,8 +796,8 @@ public class CM {
 //            in = new qfiles.dareaportal_t(ByteBuffer.wrap(cmod_base, i
 //                    * qfiles.dareaportal_t.SIZE + l.fileofs,
 //                    qfiles.dareaportal_t.SIZE));
-          cmod_base.position(i * qfiles.dareaportal_t.SIZE + l.fileofs);
-          in = new qfiles.dareaportal_t(cmod_base);
+          cmod_base.position(i * QuakeFiles.dareaportal_t.SIZE + l.fileofs);
+          in = new QuakeFiles.dareaportal_t(cmod_base);
 
             out = map_areaportals[i];
 
@@ -812,7 +812,7 @@ public class CM {
     }
 
     /** Loads visibility data. */
-    public static void CMod_LoadVisibility(lump_t l) {
+    public static void CMod_LoadVisibility(Lump l) {
         Com.DPrintf("CMod_LoadVisibility()\n");
 
         numvisibility = l.filelen;
@@ -833,11 +833,11 @@ public class CM {
         // TODO(jgw): can we avoid the extra ByteBuffer here? Seems kind of silly.
         ByteBuffer bb = ByteBuffer.wrap(map_visibility, 0, l.filelen);
         bb.order(ByteOrder.LITTLE_ENDIAN);
-        map_vis = new qfiles.dvis_t(bb);
+        map_vis = new QuakeFiles.dvis_t(bb);
     }
 
     /** Loads entity strings. */
-    public static void CMod_LoadEntityString(lump_t l) {
+    public static void CMod_LoadEntityString(Lump l) {
         Com.DPrintf("CMod_LoadEntityString()\n");
 
         numentitychars = l.filelen;
@@ -864,7 +864,7 @@ public class CM {
     }
 
     /** Returns the model with a given id "*" + <number> */
-    public static cmodel_t InlineModel(String name) {
+    public static Model InlineModel(String name) {
         int num;
 
         if (name == null || name.charAt(0) != '*')
@@ -908,7 +908,7 @@ public class CM {
         return map_leafs[leafnum].area;
     }
 
-    static cplane_t box_planes[];
+    static Plane box_planes[];
 
     static int box_headnode;
 
@@ -923,12 +923,12 @@ public class CM {
         int i;
         int side;
         cnode_t c;
-        cplane_t p;
+        Plane p;
         cbrushside_t s;
 
         box_headnode = numnodes; //rst: still room for 6 brushes left?
 
-        box_planes = new cplane_t[] { map_planes[numplanes],
+        box_planes = new Plane[] { map_planes[numplanes],
                 map_planes[numplanes + 1], map_planes[numplanes + 2],
                 map_planes[numplanes + 3], map_planes[numplanes + 4],
                 map_planes[numplanes + 5], map_planes[numplanes + 6],
@@ -1010,7 +1010,7 @@ public class CM {
     private static int CM_PointLeafnum_r(float[] p, int num) {
         float d;
         cnode_t node;
-        cplane_t plane;
+        Plane plane;
 
         while (num >= 0) {
             node = map_nodes[num];
@@ -1050,7 +1050,7 @@ public class CM {
 
     /** Recursively fills in a list of all the leafs touched. */    
     private static void CM_BoxLeafnums_r(int nodenum) {
-        cplane_t plane;
+        Plane plane;
         cnode_t node;
         int s;
 
@@ -1171,7 +1171,7 @@ public class CM {
 
     private static float[] trace_extents = { 0, 0, 0 };
 
-    private static trace_t trace_trace = new trace_t();
+    private static Trace trace_trace = new Trace();
 
     private static int trace_contents;
 
@@ -1181,9 +1181,9 @@ public class CM {
      * ================ CM_ClipBoxToBrush ================
      */
     public static void CM_ClipBoxToBrush(float[] mins, float[] maxs,
-            float[] p1, float[] p2, trace_t trace, cbrush_t brush) {
+            float[] p1, float[] p2, Trace trace, cbrush_t brush) {
         int i, j;
-        cplane_t plane, clipplane;
+        Plane plane, clipplane;
         float dist;
         float enterfrac, leavefrac;
         float[] ofs = { 0, 0, 0 };
@@ -1281,9 +1281,9 @@ public class CM {
      * ================ CM_TestBoxInBrush ================
      */
     public static void CM_TestBoxInBrush(float[] mins, float[] maxs,
-            float[] p1, trace_t trace, cbrush_t brush) {
+            float[] p1, Trace trace, cbrush_t brush) {
         int i, j;
-        cplane_t plane;
+        Plane plane;
         float dist;
         float[] ofs = { 0, 0, 0 };
         float d1;
@@ -1392,7 +1392,7 @@ public class CM {
     public static void CM_RecursiveHullCheck(int num, float p1f, float p2f,
             float[] p1, float[] p2) {
         cnode_t node;
-        cplane_t plane;
+        Plane plane;
         float t1, t2, offset;
         float frac, frac2;
         float idist;
@@ -1491,7 +1491,7 @@ public class CM {
     /*
      * ================== CM_BoxTrace ==================
      */
-    public static trace_t BoxTrace(float[] start, float[] end, float[] mins,
+    public static Trace BoxTrace(float[] start, float[] end, float[] mins,
             float[] maxs, int headnode, int brushmask) {
 
         // for multi-check avoidance
@@ -1502,7 +1502,7 @@ public class CM {
 
         // fill in a default trace
         //was: memset(& trace_trace, 0, sizeof(trace_trace));
-        trace_trace = new trace_t();
+        trace_trace = new Trace();
 
         trace_trace.fraction = 1;
         trace_trace.surface = nullsurface.c;
@@ -1585,10 +1585,10 @@ public class CM {
      * Handles offseting and rotation of the end points for moving and rotating
      * entities ==================
      */
-    public static trace_t TransformedBoxTrace(float[] start, float[] end,
+    public static Trace TransformedBoxTrace(float[] start, float[] end,
             float[] mins, float[] maxs, int headnode, int brushmask,
             float[] origin, float[] angles) {
-        trace_t trace;
+        Trace trace;
         float[] start_l = { 0, 0, 0 }, end_l = { 0, 0, 0 };
         float[] a = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
@@ -1718,7 +1718,7 @@ public class CM {
     public static void FloodArea_r(carea_t area, int floodnum) {
         //Com.Printf("FloodArea_r(" + floodnum + ")...\n");
         int i;
-        qfiles.dareaportal_t p;
+        QuakeFiles.dareaportal_t p;
 
         if (area.floodvalid == floodvalid) {
             if (area.floodnum == floodnum)
@@ -1854,7 +1854,7 @@ public class CM {
 
         byte buf[] = new byte[len];
 
-        FS.Read(buf, len, f);
+        QuakeFileSystem.Read(buf, len, f);
 
         ByteBuffer bb = ByteBuffer.wrap(buf);
         IntBuffer ib = bb.asIntBuffer();

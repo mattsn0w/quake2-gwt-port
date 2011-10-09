@@ -25,7 +25,10 @@ package jake2.game;
 
 import jake2.*;
 import jake2.client.*;
-import jake2.game.monsters.M_Infantry;
+import jake2.game.adapters.EntityBlockedAdapter;
+import jake2.game.adapters.EntDieAdapter;
+import jake2.game.adapters.EntitiyThinkAdapter;
+import jake2.game.monsters.MonsterInfantry;
 import jake2.qcommon.*;
 import jake2.render.*;
 import jake2.server.*;
@@ -67,7 +70,7 @@ public class GameTurret {
      * yaw angle : default 360
      */
 
-    public static void turret_breach_fire(edict_t self) {
+    public static void turret_breach_fire(Entity self) {
         float[] f = { 0, 0, 0 }, r = { 0, 0, 0 }, u = { 0, 0, 0 };
         float[] start = { 0, 0, 0 };
         int damage;
@@ -87,7 +90,7 @@ public class GameTurret {
                 Defines.ATTN_NORM, 0);
     }
 
-    public static void SP_turret_breach(edict_t self) {
+    public static void SP_turret_breach(Entity self) {
         self.solid = Defines.SOLID_BSP;
         self.movetype = Defines.MOVETYPE_PUSH;
         GameBase.gi.setmodel(self, self.model);
@@ -124,7 +127,7 @@ public class GameTurret {
      * MUST be teamed with a turret_breach.
      */
 
-    public static void SP_turret_base(edict_t self) {
+    public static void SP_turret_base(Entity self) {
         self.solid = Defines.SOLID_BSP;
         self.movetype = Defines.MOVETYPE_PUSH;
         GameBase.gi.setmodel(self, self.model);
@@ -132,7 +135,7 @@ public class GameTurret {
         GameBase.gi.linkentity(self);
     }
 
-    public static void SP_turret_driver(edict_t self) {
+    public static void SP_turret_driver(Entity self) {
         if (GameBase.deathmatch.value != 0) {
             GameUtil.G_FreeEdict(self);
             return;
@@ -151,7 +154,7 @@ public class GameTurret {
         self.viewheight = 24;
 
         self.die = turret_driver_die;
-        self.monsterinfo.stand = M_Infantry.infantry_stand;
+        self.monsterinfo.stand = MonsterInfantry.infantry_stand;
 
         self.flags |= Defines.FL_NO_KNOCKBACK;
 
@@ -179,10 +182,10 @@ public class GameTurret {
         GameBase.gi.linkentity(self);
     }
 
-    static EntBlockedAdapter turret_blocked = new EntBlockedAdapter() {
+    static EntityBlockedAdapter turret_blocked = new EntityBlockedAdapter() {
     	public String getID() { return "turret_blocked"; }
-        public void blocked(edict_t self, edict_t other) {
-            edict_t attacker;
+        public void blocked(Entity self, Entity other) {
+            Entity attacker;
 
             if (other.takedamage != 0) {
                 if (self.teammaster.owner != null)
@@ -196,11 +199,11 @@ public class GameTurret {
         }
     };
 
-    static EntThinkAdapter turret_breach_think = new EntThinkAdapter() {
+    static EntitiyThinkAdapter turret_breach_think = new EntitiyThinkAdapter() {
     	public String getID() { return "turret_breach_think"; }
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
 
-            edict_t ent;
+            Entity ent;
             float[] current_angles = { 0, 0, 0 };
             float[] delta = { 0, 0, 0 };
 
@@ -308,9 +311,9 @@ public class GameTurret {
         }
     };
 
-    static EntThinkAdapter turret_breach_finish_init = new EntThinkAdapter() {
+    static EntitiyThinkAdapter turret_breach_finish_init = new EntitiyThinkAdapter() {
     	public String getID() { return "turret_breach_finish_init"; }
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
 
             // get and save info for muzzle location
             if (self.target == null) {
@@ -337,10 +340,10 @@ public class GameTurret {
      */
     static EntDieAdapter turret_driver_die = new EntDieAdapter() {
     	public String getID() { return "turret_driver_die"; }
-        public void die(edict_t self, edict_t inflictor, edict_t attacker,
+        public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
 
-            edict_t ent;
+            Entity ent;
 
             // level the gun
             self.target_ent.move_angles[0] = 0;
@@ -355,13 +358,13 @@ public class GameTurret {
             self.target_ent.owner = null;
             self.target_ent.teammaster.owner = null;
 
-            M_Infantry.infantry_die.die(self, inflictor, attacker, damage, null);
+            MonsterInfantry.infantry_die.die(self, inflictor, attacker, damage, null);
         }
     };
 
-    static EntThinkAdapter turret_driver_think = new EntThinkAdapter() {
+    static EntitiyThinkAdapter turret_driver_think = new EntitiyThinkAdapter() {
     	public String getID() { return "turret_driver_think"; }
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
 
             float[] target = { 0, 0, 0 };
             float[] dir = { 0, 0, 0 };
@@ -412,12 +415,12 @@ public class GameTurret {
         }
     };
 
-    public static EntThinkAdapter turret_driver_link = new EntThinkAdapter() {
+    public static EntitiyThinkAdapter turret_driver_link = new EntitiyThinkAdapter() {
     	public String getID() { return "turret_driver_link"; }
-        public boolean think(edict_t self) {
+        public boolean think(Entity self) {
 
             float[] vec = { 0, 0, 0 };
-            edict_t ent;
+            Entity ent;
 
             self.think = turret_driver_think;
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;

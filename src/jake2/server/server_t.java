@@ -23,22 +23,22 @@
 */
 package jake2.server;
 
-import jake2.game.cmodel_t;
-import jake2.game.entity_state_t;
+import jake2.game.Model;
+import jake2.game.EntityState;
 import jake2.qcommon.Defines;
-import jake2.qcommon.sizebuf_t;
+import jake2.qcommon.Buffer;
 
 import java.nio.ByteBuffer;
 
 public class server_t {
 
     public server_t() {
-        models = new cmodel_t[Defines.MAX_MODELS];
+        models = new Model[Defines.MAX_MODELS];
         for (int n = 0; n < Defines.MAX_MODELS; n++)
-            models[n] = new cmodel_t();
+            models[n] = new Model();
 
         for (int n = 0; n < Defines.MAX_EDICTS; n++)
-            baselines[n] = new entity_state_t(null);
+            baselines[n] = new EntityState(null);
     }
 
     int state; // precache commands are only valid during load
@@ -54,15 +54,15 @@ public class server_t {
 
     String name = ""; // map name, or cinematic name
 
-    cmodel_t models[];
+    Model models[];
 
     String configstrings[] = new String[Defines.MAX_CONFIGSTRINGS];
 
-    entity_state_t baselines[] = new entity_state_t[Defines.MAX_EDICTS];
+    EntityState baselines[] = new EntityState[Defines.MAX_EDICTS];
 
     // the multicast buffer is used to send a message to a set of clients
     // it is only used to marshall data until SV_Multicast is called
-    sizebuf_t multicast = new sizebuf_t();
+    Buffer multicast = new Buffer();
 
     byte multicast_buf[] = new byte[Defines.MAX_MSGLEN];
 

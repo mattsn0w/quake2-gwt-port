@@ -36,9 +36,9 @@ public class GameCombat {
      * Returns true if the inflictor can directly damage the target. Used for
      * explosions and melee attacks.
      */
-    static boolean CanDamage(edict_t targ, edict_t inflictor) {
+    static boolean CanDamage(Entity targ, Entity inflictor) {
         float[] dest = { 0, 0, 0 };
-        trace_t trace;
+        Trace trace;
     
         // bmodels need special checking because their origin is 0,0,0
         if (targ.movetype == Defines.MOVETYPE_PUSH) {
@@ -97,8 +97,8 @@ public class GameCombat {
     /**
      * Killed.
      */
-    public static void Killed(edict_t targ, edict_t inflictor,
-            edict_t attacker, int damage, float[] point) {
+    public static void Killed(Entity targ, Entity inflictor,
+            Entity attacker, int damage, float[] point) {
         Com.DPrintf("Killing a " + targ.classname + "\n");
         if (targ.health < -999)
             targ.health = -999;
@@ -150,9 +150,9 @@ public class GameCombat {
         GameBase.gi.multicast(origin, Defines.MULTICAST_PVS);
     }
 
-    static int CheckPowerArmor(edict_t ent, float[] point, float[] normal,
+    static int CheckPowerArmor(Entity ent, float[] point, float[] normal,
             int damage, int dflags) {
-        gclient_t client;
+        GameClient client;
         int save;
         int power_armor_type;
         int index = 0;
@@ -227,12 +227,12 @@ public class GameCombat {
         return save;
     }
 
-    static int CheckArmor(edict_t ent, float[] point, float[] normal,
+    static int CheckArmor(Entity ent, float[] point, float[] normal,
             int damage, int te_sparks, int dflags) {
-        gclient_t client;
+        GameClient client;
         int save;
         int index;
-        gitem_t armor;
+        GameItem armor;
     
         if (damage == 0)
             return 0;
@@ -251,7 +251,7 @@ public class GameCombat {
             return 0;
     
         armor = GameItems.GetItemByIndex(index);
-        gitem_armor_t garmor = (gitem_armor_t) armor.info;
+        GameItemArmor garmor = (GameItemArmor) armor.info;
     
         if (0 != (dflags & Defines.DAMAGE_ENERGY))
             save = (int) Math.ceil(garmor.energy_protection * damage);
@@ -270,7 +270,7 @@ public class GameCombat {
         return save;
     }
 
-    public static void M_ReactToDamage(edict_t targ, edict_t attacker) {
+    public static void M_ReactToDamage(Entity targ, Entity attacker) {
         if ((null != attacker.client)
                 && 0 != (attacker.svflags & Defines.SVF_MONSTER))
             return;
@@ -343,7 +343,7 @@ public class GameCombat {
         }
     }
 
-    static boolean CheckTeamDamage(edict_t targ, edict_t attacker) {
+    static boolean CheckTeamDamage(Entity targ, Entity attacker) {
         //FIXME make the next line real and uncomment this block
         // if ((ability to damage a teammate == OFF) && (targ's team ==
         // attacker's team))
@@ -353,17 +353,17 @@ public class GameCombat {
     /**
      * T_RadiusDamage.
      */
-    static void T_RadiusDamage(edict_t inflictor, edict_t attacker,
-            float damage, edict_t ignore, float radius, int mod) {
+    static void T_RadiusDamage(Entity inflictor, Entity attacker,
+            float damage, Entity ignore, float radius, int mod) {
         float points;
-        EdictIterator edictit = null;
+        EntityIterator edictit = null;
     
         float[] v = { 0, 0, 0 };
         float[] dir = { 0, 0, 0 };
     
         while ((edictit = GameBase.findradius(edictit, inflictor.s.origin,
                 radius)) != null) {
-            edict_t ent = edictit.o;
+            Entity ent = edictit.o;
             if (ent == ignore)
                 continue;
             if (ent.takedamage == 0)
@@ -386,10 +386,10 @@ public class GameCombat {
         }
     }
 
-    public static void T_Damage(edict_t targ, edict_t inflictor,
-            edict_t attacker, float[] dir, float[] point, float[] normal,
+    public static void T_Damage(Entity targ, Entity inflictor,
+            Entity attacker, float[] dir, float[] point, float[] normal,
             int damage, int knockback, int dflags, int mod) {
-        gclient_t client;
+        GameClient client;
         int take;
         int save;
         int asave;

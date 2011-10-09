@@ -24,10 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.gl;
 
 
-import jake2.client.VID;
+import jake2.client.Window;
 import jake2.qcommon.Defines;
 import jake2.qcommon.QuakeImage;
-import jake2.render.GLAdapter;
+import jake2.render.GlAdapter;
 
 import java.nio.FloatBuffer;
 
@@ -206,34 +206,34 @@ public abstract class Misc extends Mesh {
 	{
 	  gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
 		//gl.glClearColor(0, 0, 0, 0); // replaced with black
-	  gl.glCullFace(GLAdapter.GL_FRONT);
-	  gl.glEnable(GLAdapter.GL_TEXTURE_2D);
+	  gl.glCullFace(GlAdapter.GL_FRONT);
+	  gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 
 //	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
-	  gl.glAlphaFunc(GLAdapter.GL_GREATER, 0.666f);
+	  gl.glAlphaFunc(GlAdapter.GL_GREATER, 0.666f);
 
-	  gl.glDisable (GLAdapter.GL_DEPTH_TEST);
-	  gl.glDisable (GLAdapter.GL_CULL_FACE);
-	  gl.glDisable (GLAdapter.GL_BLEND);
+	  gl.glDisable (GlAdapter.GL_DEPTH_TEST);
+	  gl.glDisable (GlAdapter.GL_CULL_FACE);
+	  gl.glDisable (GlAdapter.GL_BLEND);
 
 	  gl.glColor4f (1,1,1,1);
 
 	  System.out.println("   gl.glPolygonMode (GLAdapter.GL_FRONT_AND_BACK, GLAdapter.GL_FILL);");
-	  gl.glShadeModel (GLAdapter.GL_FLAT);
+	  gl.glShadeModel (GlAdapter.GL_FLAT);
 
 		GL_TextureMode( gl_texturemode.string );
 		GL_TextureAlphaMode( gl_texturealphamode.string );
 		GL_TextureSolidMode( gl_texturesolidmode.string );
 
-		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
+		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
 
-		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_WRAP_S, GLAdapter.GL_REPEAT);
-		gl.glTexParameterf(GLAdapter.GL_TEXTURE_2D, GLAdapter.GL_TEXTURE_WRAP_T, GLAdapter.GL_REPEAT);
+		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_S, GlAdapter.GL_REPEAT);
+		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_T, GlAdapter.GL_REPEAT);
 
-		gl.glBlendFunc (GLAdapter.GL_SRC_ALPHA, GLAdapter.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glBlendFunc (GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
 
-		GL_TexEnv( GLAdapter.GL_REPLACE );
+		GL_TexEnv( GlAdapter.GL_REPLACE );
 
 		if ( qglPointParameterfEXT )
 		{
@@ -243,9 +243,9 @@ public abstract class Misc extends Mesh {
 			att_buffer.put(1,gl_particle_att_b.value);
 			att_buffer.put(2,gl_particle_att_c.value);
 			
-			gl.glEnable( GLAdapter.GL_POINT_SMOOTH );
-			gl.glPointParameterf(GLAdapter.GL_POINT_SIZE_MIN, gl_particle_min_size.value );
-			gl.glPointParameterf( GLAdapter.GL_POINT_SIZE_MAX, gl_particle_max_size.value );
+			gl.glEnable( GlAdapter.GL_POINT_SMOOTH );
+			gl.glPointParameterf(GlAdapter.GL_POINT_SIZE_MIN, gl_particle_min_size.value );
+			gl.glPointParameterf( GlAdapter.GL_POINT_SIZE_MAX, gl_particle_max_size.value );
 			System.out.println("  gl.glPointParameter( GLAdapter.GL_DISTANCE_ATTENUATION, att_buffer );");
 		}
 
@@ -261,9 +261,9 @@ public abstract class Misc extends Mesh {
 		/*
 		 * vertex array extension
 		 */
-		gl.glEnableClientState(GLAdapter.GL_VERTEX_ARRAY);
+		gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
 		gl.glClientActiveTexture(GL_TEXTURE0);
-		gl.glEnableClientState(GLAdapter.GL_TEXTURE_COORD_ARRAY);
+		gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 	}
 
 	void GL_UpdateSwapInterval()

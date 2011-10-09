@@ -26,7 +26,7 @@ package jake2.qcommon;
 import jake2.client.CL;
 import jake2.client.Console;
 import jake2.game.Cmd;
-import jake2.server.SV_MAIN;
+import jake2.server.ServerMain;
 import jake2.sys.Sys;
 import jake2.util.*;
 
@@ -241,20 +241,20 @@ public final class Com
     return new String(com_token, 0, len);
   }
 
-	public static xcommand_t Error_f= new xcommand_t()
+	public static ExecutableCommand Error_f= new ExecutableCommand()
 	{
-		public void execute() throws longjmpException
+		public void execute() throws LongJmpException
 		{
 			Error(Defines.ERR_FATAL, Cmd.Argv(1));
 		}
 	};
 
-	public static void Error(int code, String fmt) throws longjmpException
+	public static void Error(int code, String fmt) throws LongJmpException
 	{
 		Error(code, fmt, null);
 	}
 
-	public static void Error(int code, String fmt, Vargs vargs) throws longjmpException
+	public static void Error(int code, String fmt, Vargs vargs) throws LongJmpException
 	{
 		// va_list argptr;
 		// static char msg[MAXPRINTMSG];
@@ -271,19 +271,19 @@ public final class Com
 		{
 			CL.Drop();
       recursive = false;
-      throw new longjmpException();
+      throw new LongJmpException();
 		}
 		else if (code == Defines.ERR_DROP)
 		{
 			Com.Printf("********************\nERROR: " + msg + "\n********************\n");
-			SV_MAIN.SV_Shutdown("Server crashed: " + msg + "\n", false);
+			ServerMain.SV_Shutdown("Server crashed: " + msg + "\n", false);
 			CL.Drop();
       recursive = false;
-      throw new longjmpException();
+      throw new LongJmpException();
     }
 		else
 		{
-			SV_MAIN.SV_Shutdown("Server fatal crashed: %s" + msg + "\n", false);
+			ServerMain.SV_Shutdown("Server fatal crashed: %s" + msg + "\n", false);
 			CL.Shutdown();
 		}
 
@@ -294,7 +294,7 @@ public final class Com
 	 * Com_InitArgv checks the number of command line arguments
 	 * and copies all arguments with valid length into com_argv.
 	 */
-	static void InitArgv(String[] args) throws longjmpException
+	static void InitArgv(String[] args) throws LongJmpException
 	{
 
 		if (args.length > Defines.MAX_NUM_ARGVS)
@@ -365,7 +365,7 @@ public final class Com
 
 			if (Globals.logfile == null)
 			{
-				name= FS.Gamedir() + "/qconsole.log";
+				name= QuakeFileSystem.Gamedir() + "/qconsole.log";
 				if (Globals.logfile_active.value > 2)
 					try
 					{
@@ -443,7 +443,7 @@ public final class Com
 
 	public static void Quit()
 	{
-		SV_MAIN.SV_Shutdown("Server quit\n", false);
+		ServerMain.SV_Shutdown("Server quit\n", false);
 		CL.Shutdown();
 
 		if (Globals.logfile != null)

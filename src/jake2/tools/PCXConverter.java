@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.tools;
 
-import jake2.qcommon.qfiles;
+import jake2.qcommon.QuakeFiles;
 
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -32,19 +32,21 @@ public class PCXConverter extends Converter {
   }
 
   @Override
-  public void convert(byte[] raw, File outFile) throws IOException {
+  public void convert(byte[] raw, File outFile, int[] size) throws IOException {
     RenderedImage ri = makePalletizedImage(LoadPCX(raw, null));
     ImageIO.write(ri, "png", outFile);
+    size[0] = ri.getWidth();
+    size[1] = ri.getHeight();
   }
 
   private image_t LoadPCX(byte[] raw, byte[][] palette) {
-    qfiles.pcx_t pcx;
+    QuakeFiles.pcx_t pcx;
     image_t img = new image_t();
 
     //
     // parse the PCX file
     //
-    pcx = new qfiles.pcx_t(raw);
+    pcx = new QuakeFiles.pcx_t(raw);
 
     if (pcx.manufacturer != 0x0a || pcx.version != 5 || pcx.encoding != 1
         || pcx.bits_per_pixel != 8 || pcx.xmax >= 640 || pcx.ymax >= 480) {

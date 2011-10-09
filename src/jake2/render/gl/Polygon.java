@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.render.gl;
 
 
-import jake2.render.glpoly_t;
+import jake2.render.GlPolygon;
 import jake2.util.Lib;
 
 import java.nio.FloatBuffer;
@@ -34,7 +34,7 @@ import java.nio.FloatBuffer;
  * 
  * @author cwei
  */
-public final class Polygon extends glpoly_t {
+public final class Polygon extends GlPolygon {
     
 	private final static int MAX_POLYS = 20000;
 	private final static int MAX_BUFFER_VERTICES = 120000;
@@ -54,7 +54,7 @@ public final class Polygon extends glpoly_t {
         }
 	}
 	
-	static glpoly_t create(int numverts) {
+	static GlPolygon create(int numverts) {
 	    Polygon poly = polyCache[polyCount++];
 	    poly.clear();
 	    poly.numverts = numverts;

@@ -76,7 +76,7 @@ public class WAVConverter extends Converter {
 	}
 	
 	@Override
-	public void convert(byte[] raw, File outFile) throws IOException {
+	public void convert(byte[] raw, File outFile, int[] size) throws IOException {
 	  String outPath = lowerFile(outFile);
 
 		if (lameLocation == null) {

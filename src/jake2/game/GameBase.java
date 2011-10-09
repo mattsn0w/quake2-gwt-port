@@ -36,15 +36,15 @@ import jake2.server.*;
 import jake2.util.*;
 
 public class GameBase {
-    public static cplane_t dummyplane = new cplane_t();
+    public static Plane dummyplane = new Plane();
 
-    public static game_locals_t game = new game_locals_t();
+    public static GameState game = new GameState();
 
-    public static level_locals_t level = new level_locals_t();
+    public static LevelLocals level = new LevelLocals();
 
-    public static game_import_t gi = new game_import_t();
+    public static GameEngine gi = new GameEngine();
 
-    public static spawn_temp_t st = new spawn_temp_t();
+    public static SpawnTemp st = new SpawnTemp();
 
     public static int sm_meat_index;
 
@@ -54,73 +54,73 @@ public class GameBase {
 
     public static int num_edicts;
 
-    public static edict_t g_edicts[] = new edict_t[Defines.MAX_EDICTS];
+    public static Entity g_edicts[] = new Entity[Defines.MAX_EDICTS];
     static {
         for (int n = 0; n < Defines.MAX_EDICTS; n++)
-            g_edicts[n] = new edict_t(n);
+            g_edicts[n] = new Entity(n);
     }
 
-    public static cvar_t deathmatch = new cvar_t();
+    public static ConsoleVariable deathmatch = new ConsoleVariable();
 
-    public static cvar_t coop = new cvar_t();
+    public static ConsoleVariable coop = new ConsoleVariable();
 
-    public static cvar_t dmflags = new cvar_t();
+    public static ConsoleVariable dmflags = new ConsoleVariable();
 
-    public static cvar_t skill; // = new cvar_t();
+    public static ConsoleVariable skill; // = new cvar_t();
 
-    public static cvar_t fraglimit = new cvar_t();
+    public static ConsoleVariable fraglimit = new ConsoleVariable();
 
-    public static cvar_t timelimit = new cvar_t();
+    public static ConsoleVariable timelimit = new ConsoleVariable();
 
-    public static cvar_t password = new cvar_t();
+    public static ConsoleVariable password = new ConsoleVariable();
 
-    public static cvar_t spectator_password = new cvar_t();
+    public static ConsoleVariable spectator_password = new ConsoleVariable();
 
-    public static cvar_t needpass = new cvar_t();
+    public static ConsoleVariable needpass = new ConsoleVariable();
 
-    public static cvar_t maxclients = new cvar_t();
+    public static ConsoleVariable maxclients = new ConsoleVariable();
 
-    public static cvar_t maxspectators = new cvar_t();
+    public static ConsoleVariable maxspectators = new ConsoleVariable();
 
-    public static cvar_t maxentities = new cvar_t();
+    public static ConsoleVariable maxentities = new ConsoleVariable();
 
-    public static cvar_t g_select_empty = new cvar_t();
+    public static ConsoleVariable g_select_empty = new ConsoleVariable();
 
-    public static cvar_t filterban = new cvar_t();
+    public static ConsoleVariable filterban = new ConsoleVariable();
 
-    public static cvar_t sv_maxvelocity = new cvar_t();
+    public static ConsoleVariable sv_maxvelocity = new ConsoleVariable();
 
-    public static cvar_t sv_gravity = new cvar_t();
+    public static ConsoleVariable sv_gravity = new ConsoleVariable();
 
-    public static cvar_t sv_rollspeed = new cvar_t();
+    public static ConsoleVariable sv_rollspeed = new ConsoleVariable();
 
-    public static cvar_t sv_rollangle = new cvar_t();
+    public static ConsoleVariable sv_rollangle = new ConsoleVariable();
 
-    public static cvar_t gun_x = new cvar_t();
+    public static ConsoleVariable gun_x = new ConsoleVariable();
 
-    public static cvar_t gun_y = new cvar_t();
+    public static ConsoleVariable gun_y = new ConsoleVariable();
 
-    public static cvar_t gun_z = new cvar_t();
+    public static ConsoleVariable gun_z = new ConsoleVariable();
 
-    public static cvar_t run_pitch = new cvar_t();
+    public static ConsoleVariable run_pitch = new ConsoleVariable();
 
-    public static cvar_t run_roll = new cvar_t();
+    public static ConsoleVariable run_roll = new ConsoleVariable();
 
-    public static cvar_t bob_up = new cvar_t();
+    public static ConsoleVariable bob_up = new ConsoleVariable();
 
-    public static cvar_t bob_pitch = new cvar_t();
+    public static ConsoleVariable bob_pitch = new ConsoleVariable();
 
-    public static cvar_t bob_roll = new cvar_t();
+    public static ConsoleVariable bob_roll = new ConsoleVariable();
 
-    public static cvar_t sv_cheats = new cvar_t();
+    public static ConsoleVariable sv_cheats = new ConsoleVariable();
 
-    public static cvar_t flood_msgs = new cvar_t();
+    public static ConsoleVariable flood_msgs = new ConsoleVariable();
 
-    public static cvar_t flood_persecond = new cvar_t();
+    public static ConsoleVariable flood_persecond = new ConsoleVariable();
 
-    public static cvar_t flood_waitdelay = new cvar_t();
+    public static ConsoleVariable flood_waitdelay = new ConsoleVariable();
 
-    public static cvar_t sv_maplist = new cvar_t();
+    public static ConsoleVariable sv_maplist = new ConsoleVariable();
 
     public final static float STOP_EPSILON = 0.1f;
 
@@ -162,11 +162,11 @@ public class GameBase {
      * 
      */
 
-    public static EdictIterator G_Find(EdictIterator from, EdictFindFilter eff,
+    public static EntityIterator G_Find(EntityIterator from, EntityFilter eff,
             String s) {
 
         if (from == null)
-            from = new EdictIterator(0);
+            from = new EntityIterator(0);
         else
             from.i++;
 
@@ -187,9 +187,9 @@ public class GameBase {
     }
 
     // comfort version (rst)
-    public static edict_t G_FindEdict(EdictIterator from, EdictFindFilter eff,
+    public static Entity G_FindEdict(EntityIterator from, EntityFilter eff,
             String s) {
-        EdictIterator ei = G_Find(from, eff, s);
+        EntityIterator ei = G_Find(from, eff, s);
         if (ei == null)
             return null;
         else
@@ -199,13 +199,13 @@ public class GameBase {
     /**
      * Returns entities that have origins within a spherical area.
      */
-    public static EdictIterator findradius(EdictIterator from, float[] org,
+    public static EntityIterator findradius(EntityIterator from, float[] org,
             float rad) {
         float[] eorg = { 0, 0, 0 };
         int j;
 
         if (from == null)
-            from = new EdictIterator(0);
+            from = new EntityIterator(0);
         else
             from.i++;
 
@@ -239,16 +239,16 @@ public class GameBase {
 
     public static int MAXCHOICES = 8;
 
-    public static edict_t G_PickTarget(String targetname) {
+    public static Entity G_PickTarget(String targetname) {
         int num_choices = 0;
-        edict_t choice[] = new edict_t[MAXCHOICES];
+        Entity choice[] = new Entity[MAXCHOICES];
 
         if (targetname == null) {
             gi.dprintf("G_PickTarget called with null targetname\n");
             return null;
         }
 
-        EdictIterator es = null;
+        EntityIterator es = null;
 
         while ((es = G_Find(es, findByTarget, targetname)) != null) {
             choice[num_choices++] = es.o;
@@ -292,11 +292,11 @@ public class GameBase {
      * G_TouchTriggers
      */
 
-    static edict_t touch[] = new edict_t[Defines.MAX_EDICTS];
+    static Entity touch[] = new Entity[Defines.MAX_EDICTS];
 
-    public static void G_TouchTriggers(edict_t ent) {
+    public static void G_TouchTriggers(Entity ent) {
         int i, num;
-        edict_t hit;
+        Entity hit;
 
         // dead things don't activate triggers!
         if ((ent.client != null || (ent.svflags & Defines.SVF_MONSTER) != 0)
@@ -321,15 +321,15 @@ public class GameBase {
         }
     }
 
-    public static pushed_t pushed[] = new pushed_t[Defines.MAX_EDICTS];
+    public static Pushed pushed[] = new Pushed[Defines.MAX_EDICTS];
     static {
         for (int n = 0; n < Defines.MAX_EDICTS; n++)
-            pushed[n] = new pushed_t();
+            pushed[n] = new Pushed();
     }
 
     public static int pushed_p;
 
-    public static edict_t obstacle;
+    public static Entity obstacle;
 
     public static int c_yes, c_no;
 
@@ -338,7 +338,7 @@ public class GameBase {
     /**
      * G_RunEntity
      */
-    public static void G_RunEntity(edict_t ent) {
+    public static void G_RunEntity(Entity ent) {
 
         if (ent.prethink != null)
             ent.prethink.think(ent);
@@ -386,16 +386,16 @@ public class GameBase {
         }
     }
 
-    public static EdictFindFilter findByTarget = new EdictFindFilter() {
-        public boolean matches(edict_t e, String s) {
+    public static EntityFilter findByTarget = new EntityFilter() {
+        public boolean matches(Entity e, String s) {
             if (e.targetname == null)
                 return false;
             return e.targetname.equalsIgnoreCase(s);
         }
     };
 
-    public static EdictFindFilter findByClass = new EdictFindFilter() {
-        public boolean matches(edict_t e, String s) {
+    public static EntityFilter findByClass = new EntityFilter() {
+        public boolean matches(Entity e, String s) {
             return e.classname.equalsIgnoreCase(s);
         }
     };
@@ -409,7 +409,7 @@ public class GameBase {
      */
     public static void ClientEndServerFrames() {
         int i;
-        edict_t ent;
+        Entity ent;
 
         // calc the player views now that all pushing
         // and damage has been added
@@ -425,8 +425,8 @@ public class GameBase {
     /**
      * Returns the created target changelevel.
      */
-    public static edict_t CreateTargetChangeLevel(String map) {
-        edict_t ent;
+    public static Entity CreateTargetChangeLevel(String map) {
+        Entity ent;
 
         ent = GameUtil.G_Spawn();
         ent.classname = "target_changelevel";
@@ -439,7 +439,7 @@ public class GameBase {
      * The timelimit or fraglimit has been exceeded.
      */
     public static void EndDMLevel() {
-        edict_t ent;
+        Entity ent;
         //char * s, * t, * f;
         //static const char * seps = " ,\n\r";
         String s, t, f;
@@ -483,7 +483,7 @@ public class GameBase {
         if (level.nextmap.length() > 0) // go to a specific map
             PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.nextmap));
         else { // search for a changelevel
-            EdictIterator edit = null;
+            EntityIterator edit = null;
             edit = G_Find(edit, findByClass, "target_changelevel");
             if (edit == null) { // the map designer didn't include a
                                 // changelevel,
@@ -525,7 +525,7 @@ public class GameBase {
      */
     public static void CheckDMRules() {
         int i;
-        gclient_t cl;
+        GameClient cl;
 
         if (level.intermissiontime != 0)
             return;
@@ -561,7 +561,7 @@ public class GameBase {
      */
     public static void ExitLevel() {
         int i;
-        edict_t ent;
+        Entity ent;
 
         String command = "gamemap \"" + level.changemap + "\"\n";
         gi.AddCommandString(command);
@@ -587,7 +587,7 @@ public class GameBase {
      */
     public static void G_RunFrame() {
         int i;
-        edict_t ent;
+        Entity ent;
 
         level.framenum++;
         level.time = level.framenum * Defines.FRAMETIME;
@@ -622,7 +622,7 @@ public class GameBase {
                 ent.groundentity = null;
                 if (0 == (ent.flags & (Defines.FL_SWIM | Defines.FL_FLY))
                         && (ent.svflags & Defines.SVF_MONSTER) != 0) {
-                    M.M_CheckGround(ent);
+                    ClientMonsterMethods.M_CheckGround(ent);
                 }
             }
 
@@ -649,11 +649,11 @@ public class GameBase {
      * variables. 
      */
 
-    public static void GetGameApi(game_import_t imp) {
+    public static void GetGameApi(GameEngine imp) {
         gi = imp;
-        gi.pointcontents = new pmove_t.PointContentsAdapter() {
+        gi.pointcontents = new PlayerMove.PointContentsAdapter() {
             public int pointcontents(float[] o) {
-                return SV_WORLD.SV_PointContents(o);
+                return ServerWorld.SV_PointContents(o);
             }
         };
     }

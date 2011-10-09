@@ -25,14 +25,14 @@ package jake2.server;
 
 import static jake2.qcommon.Defines.CVAR_NOSET;
 
-import jake2.qcommon.Cbuf;
+import jake2.qcommon.CommandBuffer;
 import jake2.qcommon.Compatibility;
-import jake2.qcommon.Cvar;
+import jake2.qcommon.ConsoleVariables;
 import jake2.qcommon.Globals;
-import jake2.qcommon.Qcommon;
+import jake2.qcommon.QuakeCommon;
 import jake2.qcommon.ResourceLoader;
 import jake2.sound.DummyDriver;
-import jake2.sound.S;
+import jake2.sound.Sound;
 import jake2.sys.Timer;
 
 public class QuakeServer {
@@ -42,7 +42,7 @@ public class QuakeServer {
 //  public static final String CPUSTRING = System.getProperty("os.arch");
 
   public static void run(String[] args) {
-    Globals.dedicated = Cvar.Get("dedicated", "1", CVAR_NOSET);
+    Globals.dedicated = ConsoleVariables.Get("dedicated", "1", CVAR_NOSET);
 
     // in C the first arg is the filename
     int argc = (args == null) ? 1 : args.length + 1;
@@ -52,13 +52,13 @@ public class QuakeServer {
       System.arraycopy(args, 0, c_args, 1, argc - 1);
     }
 
-    Globals.nostdout = Cvar.Get("nostdout", "0", 0);
+    Globals.nostdout = ConsoleVariables.Get("nostdout", "0", 0);
 
-    Cvar.SetValue("deathmatch", 1);
-    Cvar.SetValue("coop", 0);
+    ConsoleVariables.SetValue("deathmatch", 1);
+    ConsoleVariables.SetValue("coop", 0);
 
-    S.impl = new DummyDriver();
-    Qcommon.Init(c_args);
+    Sound.impl = new DummyDriver();
+    QuakeCommon.Init(c_args);
 
     
     // Start off on map demo1.
@@ -76,7 +76,7 @@ public class QuakeServer {
       ResourceLoader.Pump();
       if (time > 0) {
         try {
-          Qcommon.Frame((int)time);
+          QuakeCommon.Frame((int)time);
         } catch (Throwable e) {
           Compatibility.printStackTrace(e);
         }

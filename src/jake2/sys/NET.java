@@ -23,14 +23,14 @@
 */
 package jake2.sys;
 
-import jake2.game.cvar_t;
+import jake2.game.ConsoleVariable;
 import jake2.qcommon.Com;
 import jake2.qcommon.Compatibility;
-import jake2.qcommon.Cvar;
+import jake2.qcommon.ConsoleVariables;
 import jake2.qcommon.Defines;
 import jake2.qcommon.Globals;
-import jake2.qcommon.netadr_t;
-import jake2.qcommon.sizebuf_t;
+import jake2.qcommon.NetworkAddress;
+import jake2.qcommon.Buffer;
 import jake2.util.Lib;
 
 import java.io.IOException;
@@ -38,12 +38,12 @@ import java.net.InetAddress;
 
 public final class NET {
 
-	public static QSocketFactory socketFactory;
+	public static QuakeSocketFactory socketFactory;
 	
     private final static int MAX_LOOPBACK = 4;
 
     /** Local loopback adress. */
-    private static netadr_t net_local_adr = new netadr_t();
+    private static NetworkAddress net_local_adr = new NetworkAddress();
 
     public static class loopmsg_t {
         byte data[] = new byte[Defines.MAX_MSGLEN];
@@ -71,12 +71,12 @@ public final class NET {
     }
 
 
-    private static QSocket[] ip_sockets = { null, null };
+    private static QuakeSocket[] ip_sockets = { null, null };
 
     /**
      * Compares ip address and port.
      */
-    public static boolean CompareAdr(netadr_t a, netadr_t b) {
+    public static boolean CompareAdr(NetworkAddress a, NetworkAddress b) {
         return (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2]
                 && a.ip[3] == b.ip[3] && a.port == b.port);
     }
@@ -84,7 +84,7 @@ public final class NET {
     /**
      * Compares ip address without the port.
      */
-    public static boolean CompareBaseAdr(netadr_t a, netadr_t b) {
+    public static boolean CompareBaseAdr(NetworkAddress a, NetworkAddress b) {
         if (a.type != b.type)
             return false;
 
@@ -101,7 +101,7 @@ public final class NET {
     /**
      * Returns a string holding ip address and port like "ip0.ip1.ip2.ip3:port".
      */
-    public static String AdrToString(netadr_t a) {
+    public static String AdrToString(NetworkAddress a) {
         StringBuffer sb = new StringBuffer();
         sb.append(a.ip[0] & 0xFF).append('.').append(a.ip[1] & 0xFF);
         sb.append('.');
@@ -113,7 +113,7 @@ public final class NET {
     /**
      * Returns IP address without the port as string.
      */
-    public static String BaseAdrToString(netadr_t a) {
+    public static String BaseAdrToString(NetworkAddress a) {
         StringBuffer sb = new StringBuffer();
         sb.append(a.ip[0] & 0xFF).append('.').append(a.ip[1] & 0xFF);
         sb.append('.');
@@ -124,7 +124,7 @@ public final class NET {
     /**
      * Creates an netadr_t from an string.
      */
-    public static boolean StringToAdr(String s, netadr_t a) {
+    public static boolean StringToAdr(String s, NetworkAddress a) {
         if (s.equalsIgnoreCase("localhost") || s.equalsIgnoreCase("loopback")) {
             a.set(net_local_adr);
             return true;
@@ -146,7 +146,7 @@ public final class NET {
     /**
      * Seems to return true, if the address is is on 127.0.0.1.
      */
-    public static boolean IsLocalAddress(netadr_t adr) {
+    public static boolean IsLocalAddress(NetworkAddress adr) {
         return CompareAdr(adr, net_local_adr);
     }
 
@@ -161,8 +161,8 @@ public final class NET {
     /**
      * Gets a packet from internal loopback.
      */
-    public static boolean GetLoopPacket(int sock, netadr_t net_from,
-            sizebuf_t net_message) {
+    public static boolean GetLoopPacket(int sock, NetworkAddress net_from,
+            Buffer net_message) {
         loopback_t loop;
         loop = loopbacks[sock];
 
@@ -187,7 +187,7 @@ public final class NET {
      * Sends a packet via internal loopback.
      */
     public static void SendLoopPacket(int sock, int length, byte[] data,
-            netadr_t to) {
+            NetworkAddress to) {
         int i;
         loopback_t loop;
 
@@ -204,8 +204,8 @@ public final class NET {
     /**
      * Gets a packet from a network channel
      */
-    public static boolean GetPacket(int sock, netadr_t net_from,
-            sizebuf_t net_message) {
+    public static boolean GetPacket(int sock, NetworkAddress net_from,
+            Buffer net_message) {
 
         if (GetLoopPacket(sock, net_from, net_message)) {
             return true;
@@ -248,7 +248,7 @@ public final class NET {
     /**
      * Sends a Packet.
      */
-    public static void SendPacket(int sock, int length, byte[] data, netadr_t to) {
+    public static void SendPacket(int sock, int length, byte[] data, NetworkAddress to) {
     	    	
         if (to.type == Defines.NA_LOOPBACK) {
             SendLoopPacket(sock, length, data, to);
@@ -275,11 +275,11 @@ public final class NET {
      * OpenIP, creates the network sockets. 
      */
     private static void OpenIP() {
-        cvar_t port, ip, clientport;
+        ConsoleVariable port, ip, clientport;
 
-        port = Cvar.Get("port", "" + Defines.PORT_SERVER, Defines.CVAR_NOSET);
-        ip = Cvar.Get("ip", "localhost", Defines.CVAR_NOSET);
-        clientport = Cvar.Get("clientport", "" + Defines.PORT_CLIENT, Defines.CVAR_NOSET);
+        port = ConsoleVariables.Get("port", "" + Defines.PORT_SERVER, Defines.CVAR_NOSET);
+        ip = ConsoleVariables.Get("ip", "localhost", Defines.CVAR_NOSET);
+        clientport = ConsoleVariables.Get("clientport", "" + Defines.PORT_CLIENT, Defines.CVAR_NOSET);
         
         if (ip_sockets[Defines.NS_SERVER] == null)
             ip_sockets[Defines.NS_SERVER] = Socket(Defines.NS_SERVER,
@@ -326,9 +326,9 @@ public final class NET {
     /*
      * Socket
      */
-    private static QSocket Socket(int sock, String ip, int port) {
+    private static QuakeSocket Socket(int sock, String ip, int port) {
 
-        QSocket newsocket = null;
+        QuakeSocket newsocket = null;
         try {
             if (ip == null || ip.length() == 0 || ip.equals("localhost")) {
                 if (port == Defines.PORT_ANY) {

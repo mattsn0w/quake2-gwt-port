@@ -20,8 +20,10 @@ package jake2.tools;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -74,8 +76,9 @@ public class Unpak {
 
     indir = new File(args[0]);
     outdir = new File(args[1]);
+    File imageSizesFile = new File(outdir, "image_sizes.js");
 
-    if (outdir.exists()) {
+    if (outdir.exists() && imageSizesFile.exists()) {
       System.out.println(outdir + " already exists; no need to unpak");
       return;
     }
@@ -85,24 +88,28 @@ public class Unpak {
       System.exit(-1);
     }
 
-    convertDir(indir, "");
+    Writer imageSizes = new FileWriter(imageSizesFile);
+    imageSizes.write("var __imageSizes = {\n");
+    convertDir(indir, "", imageSizes);
+    imageSizes.write("};\n");
+    imageSizes.close();
   }
 
-  private static void convertDir(File file, String prefix) throws IOException {
+  private static void convertDir(File file, String prefix, Writer imageSizes) throws IOException {
     for (String child : file.list()) {
       File childFile = new File(file, child);
       if (childFile.isDirectory()) {
-        convertDir(childFile, prefix + child + File.separator);
+        convertDir(childFile, prefix + child + File.separator, imageSizes);
       } else {
         // See if it's a .pak file.
         if (childFile.getName().endsWith(".pak")) {
           // Unpak it.
-          unpak(childFile.getAbsolutePath());
+          unpak(childFile.getAbsolutePath(), imageSizes);
         } else {
           // Convert the file.
           RandomAccessFile rafile = new RandomAccessFile(childFile, "r");
           FileChannel fc = rafile.getChannel();
-          convertFile(prefix + childFile.getName(), fc, (int) fc.size());
+          convertFile(prefix + childFile.getName(), fc, (int) fc.size(), imageSizes);
           fc.close();
         }
       }
@@ -110,15 +117,14 @@ public class Unpak {
   }
 
   private static void convertFile(String filename, FileChannel inChannel,
-      int len) throws IOException {
+      int len, Writer imageSizes) throws IOException {
     System.out.println(filename);
 
     Converter converter = Converter.get(filename);
-    if (converter != null) {
-      filename = replaceExtension(filename, converter.getOutExt());
-    }
+    String destName = converter == null ? filename : 
+    		replaceExtension(filename, converter.getOutExt());
 
-    String canonicalPath = new File(outdir, filename).getCanonicalPath();
+    String canonicalPath = new File(outdir, destName).getCanonicalPath();
     File outFile = new File(canonicalPath);
     createPath(outFile.getAbsolutePath());
  //   outFile.createNewFile();
@@ -130,7 +136,16 @@ public class Unpak {
       buf.flip();
       byte[] raw = new byte[len];
       buf.get(raw);
-      converter.convert(raw, outFile);
+      int[] size = {0, 0};
+      converter.convert(raw, outFile, size);
+      if (size[0] != 0) {
+    	  	 int cut = filename.indexOf("/baseq2/");
+          String jsName = cut == -1 ? filename : filename.substring(cut+ "/baseq2/".length());
+          cut = jsName.lastIndexOf('.');
+          jsName = jsName.substring(0, cut);
+          imageSizes.write("'" + jsName + "':["+size[0] + ","+ size[1] +"],\n");
+      }
+      
     } else {
       // Just copy it directly.
       FileOutputStream outStream = new FileOutputStream(outFile);
@@ -227,14 +242,14 @@ public class Unpak {
     return filename.substring(0, idx) + "." + outExt;
   }
 
-  private static void unpak(String pakname) throws IOException {
+  private static void unpak(String pakname, Writer sizes) throws IOException {
     pack_t pak = loadPackFile(pakname);
     pak.handle = new RandomAccessFile(pak.filename, "r");
     FileChannel inChannel = pak.handle.getChannel();
 
     for (packfile_t entry : pak.files.values()) {
       pak.handle.seek(entry.filepos);
-      convertFile(entry.name, inChannel, entry.filelen);
+      convertFile(entry.name, inChannel, entry.filelen, sizes);
     }
 
     pak.handle.close();

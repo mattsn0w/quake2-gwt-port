@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.util;
 
-import jake2.game.cplane_t;
+import jake2.game.Plane;
 import jake2.qcommon.Com;
 import jake2.qcommon.Defines;
 
@@ -315,7 +315,7 @@ public class Math3D {
 	 stellt fest, auf welcher Seite sich die Kiste befindet, wenn die Ebene 
 	 durch Entfernung und Senkrechten-Normale gegeben ist.    
 	 erste Version mit vec3_t... */
-	public static final int BoxOnPlaneSide(float emins[], float emaxs[], cplane_t p) {
+	public static final int BoxOnPlaneSide(float emins[], float emaxs[], Plane p) {
 
 		assert(emins.length == 3 && emaxs.length == 3) : "vec3_t bug";
 
@@ -383,7 +383,7 @@ public class Math3D {
 	}
 	//	this is the slow, general version
 	private static float corners[][] = new float[2][3];
-	public static final int BoxOnPlaneSide2(float[] emins, float[] emaxs, cplane_t p) {
+	public static final int BoxOnPlaneSide2(float[] emins, float[] emaxs, Plane p) {
 
 		for (int i = 0; i < 3; i++) {
 			if (p.normal[i] < 0) {

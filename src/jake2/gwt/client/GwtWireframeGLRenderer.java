@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.gwt.client;
 
-import jake2.client.refexport_t;
-import jake2.render.image_t;
+import jake2.client.Renderer;
+import jake2.render.ModelImage;
 import jake2.render.gl.WireframeRenderer;
 import jake2.sys.KBD;
 
@@ -28,7 +28,7 @@ import com.google.gwt.corp.compatibility.Numbers;
 import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.html5.client.CanvasRenderingContext2D;
 
-public class GwtWireframeGLRenderer extends AbstractGwtGLRenderer implements refexport_t {
+public class GwtWireframeGLRenderer extends AbstractGwtGLRenderer implements Renderer {
 	KBD kbd = new GwtKBD();
 	private CanvasRenderingContext2D ctx;
 
@@ -85,8 +85,8 @@ public class GwtWireframeGLRenderer extends AbstractGwtGLRenderer implements ref
     return $wnd.__imageSizes[name];
   }-*/;
   
-  protected image_t GL_LoadNewImage(final String name, int type) {
-		final image_t image = GL_Find_free_image_t(name, type);
+  protected ModelImage GL_LoadNewImage(final String name, int type) {
+		final ModelImage image = GL_Find_free_image_t(name, type);
 
 		JsArrayInteger d = getImageSize(name);
 		if (d == null) {

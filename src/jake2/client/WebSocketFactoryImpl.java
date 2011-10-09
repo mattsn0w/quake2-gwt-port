@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.client;
 
 import jake2.qcommon.Compatibility;
-import jake2.qcommon.netadr_t;
-import jake2.sys.QSocket;
-import jake2.sys.QSocketFactory;
+import jake2.qcommon.NetworkAddress;
+import jake2.sys.QuakeSocket;
+import jake2.sys.QuakeSocketFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -34,14 +34,14 @@ import com.google.gwt.corp.websocket.OpenEvent;
 import com.google.gwt.corp.websocket.WebSocket;
 
 
-public class WebSocketFactoryImpl implements QSocketFactory {
+public class WebSocketFactoryImpl implements QuakeSocketFactory {
 
-	public QSocket bind(String ip, int port) {
+	public QuakeSocket bind(String ip, int port) {
 		return new GwtWebSocketImpl(ip, port);
 	}
 }
 
-class GwtWebSocketImpl implements QSocket {
+class GwtWebSocketImpl implements QuakeSocket {
 
 	private String ip;
 	private WebSocket socket;
@@ -71,7 +71,7 @@ class GwtWebSocketImpl implements QSocket {
 	    socket = null;
 	}
 
-	public int receive(netadr_t address, byte[] buf) throws IOException {
+	public int receive(NetworkAddress address, byte[] buf) throws IOException {
 		if (msgQueue.isEmpty()) { 
 			return -1;
 		}
@@ -88,7 +88,7 @@ class GwtWebSocketImpl implements QSocket {
 		return len;
 	}
 
-	public void send(netadr_t adr, byte[] buf, int len) throws IOException {
+	public void send(NetworkAddress adr, byte[] buf, int len) throws IOException {
 		// TODO(haustein): check if addess still matches?
 
 		if (socket == null) {

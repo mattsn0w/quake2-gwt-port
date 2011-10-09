@@ -19,15 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package jake2.gwt.client;
 
 import jake2.client.Dimension;
-import jake2.client.SCR;
+import jake2.client.Screen;
 import jake2.client.WebSocketFactoryImpl;
-import jake2.client.refexport_t;
+import jake2.client.Renderer;
 import jake2.qcommon.Compatibility;
-import jake2.qcommon.Cvar;
+import jake2.qcommon.ConsoleVariables;
 import jake2.qcommon.Globals;
-import jake2.qcommon.Qcommon;
+import jake2.qcommon.QuakeCommon;
 import jake2.qcommon.ResourceLoader;
-import jake2.sound.S;
+import jake2.sound.Sound;
 import jake2.sys.NET;
 
 import com.google.gwt.core.client.Duration;
@@ -132,14 +132,14 @@ public class GwtQuake implements EntryPoint {
     try {
       Globals.autojoin.value =
           Window.Location.getHash().indexOf("autojoin") != -1 ? 1.0f : 0.0f;
-      final refexport_t renderer = wireframe 
+      final Renderer renderer = wireframe 
       	? new GwtWireframeGLRenderer(canvas) : new GwtWebGLRenderer(canvas, video);
       Globals.re = renderer;
 
       ResourceLoader.impl = new GwtResourceLoaderImpl();
       Compatibility.impl = new CompatibilityImpl();
       
-      S.impl = new GwtSound();
+      Sound.impl = new GwtSound();
       NET.socketFactory = new WebSocketFactoryImpl();
 //      Sys.impl = new Sys.SysImpl() {
 //        public void exit(int status) {
@@ -149,11 +149,11 @@ public class GwtQuake implements EntryPoint {
 //      };
 
       // Flags.
-      Qcommon.Init(new String[] { "GQuake" });
+      QuakeCommon.Init(new String[] { "GQuake" });
 
 
       // Enable stdout.
-      Globals.nostdout = Cvar.Get("nostdout", "0", 0);
+      Globals.nostdout = ConsoleVariables.Get("nostdout", "0", 0);
 
       Window.addResizeHandler(new ResizeHandler() {
 
@@ -181,11 +181,11 @@ public class GwtQuake implements EntryPoint {
             double curTime = Duration.currentTimeMillis();
             boolean pumping = ResourceLoader.Pump();
             if (pumping) {
-            	SCR.UpdateScreen2();
+            	Screen.UpdateScreen2();
             } else {
             	int dt = (int)(curTime - startTime);
             	GwtKBD.Frame(dt);
-            	Qcommon.Frame(dt);
+            	QuakeCommon.Frame(dt);
             }
             startTime = curTime;
             timer.schedule(ResourceLoader.Pump() ? LOADING_DELAY : INTER_FRAME_DELAY);

@@ -19,7 +19,7 @@
 */
 package jake2.render.gl;
 
-import jake2.render.GLAdapter;
+import jake2.render.GlAdapter;
 
 /**
  * A set of GL utilities inspired by the OpenGL Utility Toolkit.
@@ -35,19 +35,19 @@ public class GLU {
      */
     public static String gluErrorString(int error) {
         switch (error) {
-        case GLAdapter.GL_NO_ERROR:
+        case GlAdapter.GL_NO_ERROR:
             return "no error";
-        case GLAdapter.GL_INVALID_ENUM:
+        case GlAdapter.GL_INVALID_ENUM:
             return "invalid enum";
-        case GLAdapter.GL_INVALID_VALUE:
+        case GlAdapter.GL_INVALID_VALUE:
             return "invalid value";
-        case GLAdapter.GL_INVALID_OPERATION:
+        case GlAdapter.GL_INVALID_OPERATION:
             return "invalid operation";
-        case GLAdapter.GL_STACK_OVERFLOW:
+        case GlAdapter.GL_STACK_OVERFLOW:
             return "stack overflow";
-        case GLAdapter.GL_STACK_UNDERFLOW:
+        case GlAdapter.GL_STACK_UNDERFLOW:
             return "stack underflow";
-        case GLAdapter.GL_OUT_OF_MEMORY:
+        case GlAdapter.GL_OUT_OF_MEMORY:
             return "out of memory";
         default:
             return null;
@@ -155,7 +155,7 @@ public class GLU {
      * @param zFar specifies the distance from the viewer to the far clipping
      *        plane (always positive).
      */
-    public static void gluPerspective(GLAdapter gl, float fovy, float aspect,
+    public static void gluPerspective(GlAdapter gl, float fovy, float aspect,
             float zNear, float zFar) {
         float top = zNear * (float) Math.tan(fovy * (Math.PI / 360.0));
         float bottom = -top;
@@ -210,7 +210,7 @@ public class GLU {
 
         float w = v2[3];
         if (w == 0.0f) {
-            return GLAdapter.GL_FALSE;
+            return GlAdapter.GL_FALSE;
         }
 
         float rw = 1.0f / w;
@@ -223,7 +223,7 @@ public class GLU {
                         * (v2[1] * rw + 1.0f) * 0.5f;
         win[winOffset + 2] = (v2[2] * rw + 1.0f) * 0.5f;
 
-        return GLAdapter.GL_TRUE;
+        return GlAdapter.GL_TRUE;
     }
 
     /**
@@ -261,7 +261,7 @@ public class GLU {
 
         float[] invPM = new float[16];
         if (!Matrix.invertM(invPM, 0, pm, 0)) {
-            return GLAdapter.GL_FALSE;
+            return GlAdapter.GL_FALSE;
         }
 
         float[] v = new float[4];
@@ -283,7 +283,7 @@ public class GLU {
         obj[objOffset + 1] = v2[1];
         obj[objOffset + 2] = v2[2];
 
-        return GLAdapter.GL_TRUE;
+        return GlAdapter.GL_TRUE;
     }
 
  }

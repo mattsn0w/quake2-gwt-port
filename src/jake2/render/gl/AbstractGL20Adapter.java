@@ -25,8 +25,8 @@ package jake2.render.gl;
 
 
 import jake2.render.DisplayMode;
-import jake2.render.GLAdapter;
-import jake2.render.GLDebugWrapper;
+import jake2.render.GlAdapter;
+import jake2.render.GlDebugWrapper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -41,7 +41,7 @@ import java.util.ArrayList;
  * 
  * @author haustein@google.com (Stefan Haustein)
  */
-public abstract class AbstractGL20Adapter extends GLAdapter {
+public abstract class AbstractGL20Adapter extends GlAdapter {
 
   // looks like the buffer access semantics may be different for lwjgl and JSR239? :-/
   protected static final boolean AUTO_REWIND = true;
@@ -282,7 +282,7 @@ public abstract class AbstractGL20Adapter extends GLAdapter {
 		  result.position(p);
 		  break;
 	default:
-		throw new IllegalArgumentException("glGetFloat("+GLDebugWrapper.c(name)+")");
+		throw new IllegalArgumentException("glGetFloat("+GlDebugWrapper.c(name)+")");
 	  }
 
   }
