@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package jake2.tools;
 
+import jake2.gwt.server.CompatibilityImpl;
+import jake2.qcommon.Compatibility;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,11 +41,15 @@ public class Downloader implements Runnable {
 		"ftp://ftp.demon.co.uk/pub/mirrors/idsoftware/quake2/q2-314-demo-x86.exe",
 		"ftp://ftp.fragzone.se/pub/spel/quake2/q2-314-demo-x86.exe",
 		"ftp://ftp.idsoftware.com/idstuff/quake2/q2-314-demo-x86.exe",
-		"ftp://ftp.gamers.org/pub/games/idgames2/idstuff/quake2/q2-314-demo-x86.exe"
+		"ftp://ftp.gamers.org/pub/games/idgames2/idstuff/quake2/q2-314-demo-x86.exe",
+		"http://ftp.iinet.net.au/games/idstuff/quake2/q2-314-demo-x86.exe"
 	};
+	static final int FILE_SIZE = 39015499;
+	
     private boolean hiresPak;
 
     public static void main(String[] args) throws MalformedURLException, InterruptedException {
+    	 Compatibility.impl = new CompatibilityImpl();
 		if (new File("raw", "baseq2").exists()) {
 			System.out.println("raw/baseq2 already exists; no need to download");
 			return;
@@ -87,7 +94,7 @@ public class Downloader implements Runnable {
 		System.out.println("Trying mirror: " + url);
 	}
 
-	void copyStream(InputStream is, OutputStream os, boolean showProgress) throws IOException {
+	void copyStream(InputStream is, OutputStream os, int expected_size) throws IOException {
 		int total = 0;
 		int dots = 0;
 		
@@ -97,7 +104,7 @@ public class Downloader implements Runnable {
 				break;
 			}
 			total += count;
-			if (showProgress) {
+			if (expected_size != -1) {
 				if (total / 1000000 > dots) {
 					System.out.print(".");
 					dots++;
@@ -105,6 +112,10 @@ public class Downloader implements Runnable {
 			}
 			os.write(buf, 0, count);
 		}
+		if (expected_size != -1 && total != expected_size) {
+			throw new IOException("Download errot: expected file size: " + expected_size + "; received: " + total); 
+		}
+		
 		os.close();
 		is.close();
 	}
@@ -115,7 +126,7 @@ public class Downloader implements Runnable {
 			File tempFile = File.createTempFile("q2-temp", null);
 			tempFile.deleteOnExit();
 			System.out.print("Downloading");
-			copyStream(is, new FileOutputStream(tempFile), true);
+			copyStream(is, new FileOutputStream(tempFile), FILE_SIZE);
 			
 			System.out.println("Download finished; uncompressing");
 			
@@ -137,7 +148,7 @@ public class Downloader implements Runnable {
 						System.out.println("installing " + name.substring(i));
 						outFile.getParentFile().mkdirs();
 						copyStream(zipFile.getInputStream(entry), 
-								new FileOutputStream(outFile), false);
+								new FileOutputStream(outFile), -1);
 					}
 				}
 			}
