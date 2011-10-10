@@ -20,9 +20,9 @@ package java.nio;
 import com.googlecode.gwtquake.client.HasArrayBufferView;
 import com.google.gwt.corp.compatibility.Numbers;
 import org.apache.harmony.luni.platform.Endianness;
-import com.google.gwt.typedarrays.client.ArrayBuffer;
-import com.google.gwt.typedarrays.client.ArrayBufferView;
-import com.google.gwt.typedarrays.client.Int8Array;
+import com.googlecode.gwtgl.array.ArrayBuffer;
+import com.googlecode.gwtgl.array.ArrayBufferView;
+import com.googlecode.gwtgl.array.Int8Array;
 
 /**
  * DirectByteBuffer, DirectReadWriteByteBuffer and DirectReadOnlyHeapByteBuffer compose
@@ -89,14 +89,14 @@ abstract class DirectByteBuffer extends BaseByteBuffer implements HasArrayBuffer
 //        if (position == limit) {
 //            throw new BufferUnderflowException();
 //        }
-        return byteArray.get(position++);
+        return (byte) byteArray.get(position++);
     }
 
     public final byte get(int index) {
 //        if (index < 0 || index >= limit) {
 //            throw new IndexOutOfBoundsException();
 //        }
-        return byteArray.get(index);
+        return (byte) byteArray.get(index);
     }
 
     public final double getDouble() {

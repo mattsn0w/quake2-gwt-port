@@ -16,8 +16,8 @@
 
 package java.nio;
 
-import com.google.gwt.typedarrays.client.ArrayBufferView;
-import com.google.gwt.typedarrays.client.Int32Array;
+import com.googlecode.gwtgl.array.ArrayBufferView;
+import com.googlecode.gwtgl.array.Int32Array;
 
 import com.googlecode.gwtquake.client.HasArrayBufferView;
 

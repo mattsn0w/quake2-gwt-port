@@ -2,6 +2,7 @@
   <inherits name="com.google.gwt.user.User"/>
   <inherits name="com.google.gwt.webgl.WebGL"/>
   <inherits name="com.google.gwt.corp.Runtime"/>
+  <inherits name='com.googlecode.gwtgl.binding'/>
 
   <source path='client'/>
   <source path='shared'/>

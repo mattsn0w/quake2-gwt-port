@@ -7,5 +7,7 @@ war/WEB-INF/lib
 maven-build/client/target
 maven-build/server/target
 maven-build/installer/target
-.settings
-.swp
+\.settings
+\.swp
+\.classpath
+\.gwt

@@ -2,11 +2,13 @@
 <project name="GwtQuake" default="build" basedir=".">
   <property name="gwt.args" value="" />
   <property name="gwt.sdk" location="lib/gwt-2.1.0" />
+  <property name="gwtgl" location="lib/gwtgl-0.3" />
 
   <path id="project.class.path">
     <pathelement location="war/WEB-INF/classes"/>
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <fileset dir="${gwt.sdk}" includes="gwt-dev*.jar"/>
+    <fileset dir="${gwtgl}" includes="*.jar"/>
     <fileset dir="lib/jetty" includes="**/*.jar"/>
     <fileset dir="war/WEB-INF/lib" includes="**/*.jar"/>
   </path>
@@ -14,8 +16,8 @@
   <fileset id="inputfiles" dir=".">
     <patternset>
       <include name="src/**/*.java"/>
-      <include name="lib/gwt-2.1.0/gwt-dev.jar" />
-      <include name="lib/gwt-2.1.0/gwt-user.jar" />
+      <include name="${gwt.sdk}/gwt-dev.jar" />
+      <include name="${gwt.sdk}/gwt-user.jar" />
     </patternset>
   </fileset>
 
