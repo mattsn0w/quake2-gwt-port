@@ -18,8 +18,8 @@ package java.nio;
 
 import com.googlecode.gwtquake.client.HasArrayBufferView;
 
-import com.google.gwt.typedarrays.client.ArrayBufferView;
-import com.google.gwt.typedarrays.client.Int16Array;
+import com.googlecode.gwtgl.array.ArrayBufferView;
+import com.googlecode.gwtgl.array.Int16Array;
 
 /**
  * This class wraps a byte buffer to be a short buffer.
@@ -90,7 +90,7 @@ final class DirectReadWriteShortBufferAdapter extends ShortBuffer implements Has
 //        if (position == limit) {
 //            throw new BufferUnderflowException();
 //        }
-        return shortArray.get(position++);
+        return (short) shortArray.get(position++);
     }
 
     @Override
@@ -98,7 +98,7 @@ final class DirectReadWriteShortBufferAdapter extends ShortBuffer implements Has
 //        if (index < 0 || index >= limit) {
 //            throw new IndexOutOfBoundsException();
 //        }
-        return shortArray.get(index);
+        return (short) shortArray.get(index);
     }
 
     @Override

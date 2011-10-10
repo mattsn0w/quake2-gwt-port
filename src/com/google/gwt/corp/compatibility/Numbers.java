@@ -15,9 +15,9 @@
  */
 package com.google.gwt.corp.compatibility;
 
-import com.google.gwt.typedarrays.client.Float32Array;
-import com.google.gwt.typedarrays.client.Int32Array;
-import com.google.gwt.typedarrays.client.Int8Array;
+import com.googlecode.gwtgl.array.Float32Array;
+import com.googlecode.gwtgl.array.Int32Array;
+import com.googlecode.gwtgl.array.Int8Array;
 
 public class Numbers {
   

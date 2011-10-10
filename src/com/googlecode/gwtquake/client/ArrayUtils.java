@@ -1,4 +1,4 @@
-package com.google.gwt.typedarrays.client;
+package com.googlecode.gwtquake.client;
 
 import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.core.client.JsArrayNumber;

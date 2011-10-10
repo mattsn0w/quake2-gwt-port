@@ -18,8 +18,8 @@ package java.nio;
 
 import com.googlecode.gwtquake.client.HasArrayBufferView;
 
-import com.google.gwt.typedarrays.client.ArrayBufferView;
-import com.google.gwt.typedarrays.client.Float32Array;
+import com.googlecode.gwtgl.array.ArrayBufferView;
+import com.googlecode.gwtgl.array.Float32Array;
 
 /**
  * This class wraps a byte buffer to be a float buffer.

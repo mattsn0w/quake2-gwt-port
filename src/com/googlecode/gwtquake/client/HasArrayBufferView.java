@@ -1,6 +1,6 @@
 package com.googlecode.gwtquake.client;
 
-import com.google.gwt.typedarrays.client.ArrayBufferView;
+import com.googlecode.gwtgl.array.ArrayBufferView;
 
 public interface HasArrayBufferView {
 

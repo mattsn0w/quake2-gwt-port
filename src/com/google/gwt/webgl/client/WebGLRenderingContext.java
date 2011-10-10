@@ -22,11 +22,11 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.html5.client.ImageData;
 import com.google.gwt.html5.client.VideoElement;
-import com.google.gwt.typedarrays.client.ArrayBuffer;
-import com.google.gwt.typedarrays.client.ArrayBufferView;
-import com.google.gwt.typedarrays.client.ArrayUtils;
-import com.google.gwt.typedarrays.client.Float32Array;
-import com.google.gwt.typedarrays.client.Int32Array;
+import com.googlecode.gwtgl.array.ArrayBuffer;
+import com.googlecode.gwtgl.array.ArrayBufferView;
+import com.googlecode.gwtgl.array.Float32Array;
+import com.googlecode.gwtgl.array.Int32Array;
+import com.googlecode.gwtquake.client.ArrayUtils;
 
 /**
  * TODO
