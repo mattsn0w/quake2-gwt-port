@@ -9,31 +9,8 @@
     }
     </style>
     <script src="baseq2/image_sizes.js"></script>
-    <script>
-      function onQuakeNetMessage(msg) {
-        myNotification(msg);
-      }
-
-      function myNotification(msg)
-      {
-        try
-        {
-          var nc = window.webkitNotifications;
-          var notif = nc.createNotification("baseq2/pics/m_cursor7.png", "Gwt Quake",msg);
-          notif.ondisplay = function() {
-            setTimeout(function(){
-               notif.cancel();
-            },5000);
-          };
-          notif.show();
-         } catch(Err) {
-           alert(Err.message);
-         }
-      }
-    </script>
    
     <!--SERVER_ADDRESS_PLACEHOLDER-->
-
     <!--script src='webgl-debug.js'></script-->
     <script src='gwtquake/gwtquake.nocache.js'></script>
   </head>
