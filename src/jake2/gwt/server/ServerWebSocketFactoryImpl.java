@@ -189,7 +189,8 @@ class ServerWebSocketImpl implements QuakeSocket {
       System.out.println("onDisconnect");
     }
 
-    @Override
+    // If you know this: Please add a comment about the required Jetty version at the top
+    // @Override
     public void onFragment(boolean arg0, byte arg1, byte[] arg2, int arg3,
         int arg4) {
       assert false : "Why is this method separate from the other onMessage()?";
