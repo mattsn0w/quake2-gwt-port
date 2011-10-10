@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="GwtQuake" default="build" basedir=".">
   <property name="gwt.args" value="" />
-  <property name="gwt.sdk" location="lib/gwt-2.1.0" />
+  <property name="gwt.sdk" location="lib/gwt-2.4.0" />
   <property name="gwtgl" location="lib/gwtgl-0.3" />
 
   <path id="project.class.path">
