@@ -19,7 +19,7 @@ package java.nio;
 import com.google.gwt.typedarrays.client.ArrayBufferView;
 import com.google.gwt.typedarrays.client.Int32Array;
 
-import jake2.gwt.client.HasArrayBufferView;
+import com.googlecode.gwtquake.client.HasArrayBufferView;
 
 /**
  * This class wraps a byte buffer to be a int buffer.

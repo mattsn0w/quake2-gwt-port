@@ -15,11 +15,11 @@
  */
 package com.google.gwt.corp.localstorage;
 
-import jake2.qcommon.Compatibility;
 
 import java.io.IOException;
 
 import com.google.gwt.core.client.JavaScriptException;
+import com.googlecode.gwtquake.shared.common.Compatibility;
 
 public class LocalStorage {
 

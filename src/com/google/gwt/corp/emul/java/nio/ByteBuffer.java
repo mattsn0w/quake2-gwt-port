@@ -17,7 +17,7 @@
 
 package java.nio;
 
-import jake2.util.StringToByteBuffer;
+import com.googlecode.gwtquake.shared.util.StringToByteBuffer;
 
 import org.apache.harmony.luni.platform.Endianness;
 

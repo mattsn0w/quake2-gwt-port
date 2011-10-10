@@ -16,7 +16,7 @@
 
 package java.nio;
 
-import jake2.gwt.client.HasArrayBufferView;
+import com.googlecode.gwtquake.client.HasArrayBufferView;
 
 import com.google.gwt.typedarrays.client.ArrayBufferView;
 import com.google.gwt.typedarrays.client.Float32Array;

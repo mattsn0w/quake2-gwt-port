@@ -63,7 +63,7 @@
   </target>
 
   <target name="install-resources" depends="server" description="Fetch and install the demo resources from an external server">
-    <java failonerror="true" fork="true" classname="jake2.tools.Installer">
+    <java failonerror="true" fork="true" classname="com.googlecode.gwtquake.tools.Installer">
       <classpath>
         <pathelement location="src"/>
         <path refid="project.class.path"/>
@@ -84,7 +84,7 @@
       <arg line="-war"/>
       <arg value="war"/>
       <arg line="${gwt.args}"/>
-      <arg value="jake2.GwtQuake"/>
+      <arg value="com.googlecode.gwtquake.GwtQuake"/>
     </java>
   </target>
 
@@ -98,13 +98,13 @@
 
   <target name="client.run" depends="server" unless="client.updated"
       description="GWT compile to JavaScript (production mode)">
-    <gwtc module="jake2.GwtQuake" />
+    <gwtc module="com.googlecode.gwtquake.GwtQuake" />
   </target>
 
   <target name="build" depends="server,install-resources,client.build" description="Build this project" />
 
   <target name="run" depends="build" description="Run the server">
-    <java failonerror="true" fork="true" classname="jake2.gwt.server.GwtQuakeServer">
+    <java failonerror="true" fork="true" classname="com.googlecode.gwtquake.server.GwtQuakeServer">
       <classpath>
         <pathelement location="src"/>
         <path refid="project.class.path"/>
