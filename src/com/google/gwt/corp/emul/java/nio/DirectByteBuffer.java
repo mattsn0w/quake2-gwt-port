@@ -17,7 +17,7 @@
 
 package java.nio;
 
-import jake2.gwt.client.HasArrayBufferView;
+import com.googlecode.gwtquake.client.HasArrayBufferView;
 import com.google.gwt.corp.compatibility.Numbers;
 import org.apache.harmony.luni.platform.Endianness;
 import com.google.gwt.typedarrays.client.ArrayBuffer;
