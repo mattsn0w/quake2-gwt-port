@@ -168,7 +168,7 @@ public final class Client {
         //
         // write out messages to hold the startup information
         //
-        SZ.Init(buf, buf_data, Defines.MAX_MSGLEN);
+        Buffer.Init(buf, buf_data, Defines.MAX_MSGLEN);
 
         // send the serverdata
         Messages.WriteByte(buf, Defines.svc_serverdata);
@@ -245,7 +245,7 @@ public final class Client {
       if (Commands.Argc() > 1) {
         Messages.WriteByte(Globals.cls.netchan.message,
             Defines.clc_stringcmd);
-        SZ.Print(Globals.cls.netchan.message, Commands.Args());
+        Buffer.Print(Globals.cls.netchan.message, Commands.Args());
       }
     }
   };
@@ -675,7 +675,7 @@ public final class Client {
       Globals.cl_entities[i] = new ClientEntity();
     }
 
-    SZ.Clear(Globals.cls.netchan.message);
+    Globals.cls.netchan.message.clear();
   }
 
   /**

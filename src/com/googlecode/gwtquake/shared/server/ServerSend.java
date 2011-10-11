@@ -155,7 +155,7 @@ public class ServerSend {
 
 		// if doing a serverrecord, store everything
 		if (ServerInit.svs.demofile != null)
-			SZ.Write(ServerInit.svs.demo_multicast, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
+			Buffer.Write(ServerInit.svs.demo_multicast, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
 
 		switch (to) {
 			case Defines.MULTICAST_ALL_R :
@@ -210,12 +210,12 @@ public class ServerSend {
 			}
 
 			if (reliable)
-				SZ.Write(client.netchan.message, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
+				Buffer.Write(client.netchan.message, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
 			else
-				SZ.Write(client.datagram, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
+				Buffer.Write(client.datagram, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
 		}
 
-		SZ.Clear(ServerInit.sv.multicast);
+		ServerInit.sv.multicast.clear();
 	}
 
 	private static final float[] origin_v = { 0, 0, 0 };
@@ -366,7 +366,7 @@ public class ServerSend {
 
 		ServerEntities.SV_BuildClientFrame(client);
 
-		SZ.Init(msg, msgbuf, msgbuf.length);
+		Buffer.Init(msg, msgbuf, msgbuf.length);
 		msg.allowoverflow = true;
 
 		// send over all the relevant entity_state_t
@@ -380,12 +380,12 @@ public class ServerSend {
 		if (client.datagram.overflowed)
 			Com.Printf("WARNING: datagram overflowed for " + client.name + "\n");
 		else
-			SZ.Write(msg, client.datagram.data, client.datagram.cursize);
-		SZ.Clear(client.datagram);
+			Buffer.Write(msg, client.datagram.data, client.datagram.cursize);
+		client.datagram.clear();
 
 		if (msg.overflowed) { // must have room left for the packet header
 			Com.Printf("WARNING: msg overflowed for " + client.name + "\n");
-			SZ.Clear(msg);
+			msg.clear();
 		}
 
 		// send the datagram
@@ -497,8 +497,8 @@ public class ServerSend {
 			// if the reliable message overflowed,
 			// drop the client
 			if (c.netchan.message.overflowed) {
-				SZ.Clear(c.netchan.message);
-				SZ.Clear(c.datagram);
+				c.netchan.message.clear();
+				c.datagram.clear();
 				SV_BroadcastPrintf(Defines.PRINT_HIGH, c.name + " overflowed\n");
 				ServerMain.SV_DropClient(c);
 			}

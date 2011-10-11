@@ -49,13 +49,13 @@ public class ServerGame {
         client = ServerInit.svs.clients[p - 1];
 
         if (reliable)
-            SZ.Write(client.netchan.message, ServerInit.sv.multicast.data,
+            Buffer.Write(client.netchan.message, ServerInit.sv.multicast.data,
                     ServerInit.sv.multicast.cursize);
         else
-            SZ.Write(client.datagram, ServerInit.sv.multicast.data,
+            Buffer.Write(client.datagram, ServerInit.sv.multicast.data,
                     ServerInit.sv.multicast.cursize);
 
-        SZ.Clear(ServerInit.sv.multicast);
+        ServerInit.sv.multicast.clear();
     }
 
     /**
@@ -167,7 +167,7 @@ public class ServerGame {
 
         if (ServerInit.sv.state != Defines.ss_loading) { // send the update to
                                                       // everyone
-            SZ.Clear(ServerInit.sv.multicast);
+            ServerInit.sv.multicast.clear();
             Messages.WriteChar(ServerInit.sv.multicast, Defines.svc_configstring);
             Messages.WriteShort(ServerInit.sv.multicast, index);
             Messages.WriteString(ServerInit.sv.multicast, val);

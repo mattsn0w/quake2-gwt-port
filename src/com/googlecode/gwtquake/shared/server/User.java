@@ -26,6 +26,7 @@ package com.googlecode.gwtquake.shared.server;
 
 import java.nio.ByteBuffer;
 
+import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.CommandBuffer;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
@@ -34,7 +35,6 @@ import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.common.ResourceLoader;
-import com.googlecode.gwtquake.shared.common.SZ;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.Entity;
 import com.googlecode.gwtquake.shared.game.EntityState;
@@ -367,7 +367,7 @@ public class User {
             size = 1;
         percent = ServerMain.sv_client.downloadcount * 100 / size;
         Messages.WriteByte(ServerMain.sv_client.netchan.message, percent);
-        SZ.Write(ServerMain.sv_client.netchan.message, ServerMain.sv_client.download,
+        Buffer.Write(ServerMain.sv_client.netchan.message, ServerMain.sv_client.download,
                 ServerMain.sv_client.downloadcount - r, r);
 
         if (ServerMain.sv_client.downloadcount != ServerMain.sv_client.downloadsize)

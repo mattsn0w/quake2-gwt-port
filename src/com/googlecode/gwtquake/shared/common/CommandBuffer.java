@@ -39,7 +39,7 @@ public final class CommandBuffer {
      *  
      */
     public static void Init() {
-        SZ.Init(Globals.cmd_text, Globals.cmd_text_buf,
+        Buffer.Init(Globals.cmd_text, Globals.cmd_text_buf,
                 Globals.cmd_text_buf.length);
     }
 
@@ -51,7 +51,7 @@ public final class CommandBuffer {
         templen = Globals.cmd_text.cursize;
         if (templen != 0) {
             System.arraycopy(Globals.cmd_text.data, 0, tmp, 0, templen);
-            SZ.Clear(Globals.cmd_text);
+            Globals.cmd_text.clear();
         }
 
         // add the entire text of the file
@@ -59,7 +59,7 @@ public final class CommandBuffer {
 
         // add the copied off data
         if (templen != 0) {
-            SZ.Write(Globals.cmd_text, tmp, templen);
+            Buffer.Write(Globals.cmd_text, tmp, templen);
         }
     }
 
@@ -143,7 +143,7 @@ public final class CommandBuffer {
             Compatibility.printStackTrace(new Exception());
             return;
         }
-        SZ.Write(Globals.cmd_text, Lib.stringToBytes(text), l);
+        Buffer.Write(Globals.cmd_text, Lib.stringToBytes(text), l);
     }
 
     /**

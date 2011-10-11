@@ -393,7 +393,7 @@ public class ServerMain {
 
         ServerInit.svs.clients[i].state = Defines.cs_connected;
 
-        SZ.Init(ServerInit.svs.clients[i].datagram,
+        Buffer.Init(ServerInit.svs.clients[i].datagram,
                 ServerInit.svs.clients[i].datagram_buf,
                 ServerInit.svs.clients[i].datagram_buf.length);
         
@@ -905,7 +905,7 @@ public class ServerMain {
         ServerMain.sv_reconnect_limit = ConsoleVariables.Get("sv_reconnect_limit", "3",
                 Defines.CVAR_ARCHIVE);
 
-        SZ.Init(Globals.net_message, Globals.net_message_buffer,
+        Buffer.Init(Globals.net_message, Globals.net_message_buffer,
                 Globals.net_message_buffer.length);
     }
 
@@ -919,7 +919,7 @@ public class ServerMain {
         int i;
         ClientData cl;
 
-        SZ.Clear(Globals.net_message);
+        Globals.net_message.clear();
         Messages.WriteByte(Globals.net_message, Defines.svc_print);
         Messages.WriteByte(Globals.net_message, Defines.PRINT_HIGH);
         Messages.WriteString(Globals.net_message, message);

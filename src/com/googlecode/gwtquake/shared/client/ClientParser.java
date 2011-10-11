@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
+import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.CommandBuffer;
@@ -35,7 +36,6 @@ import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
-import com.googlecode.gwtquake.shared.common.SZ;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.EntityState;
 import com.googlecode.gwtquake.shared.render.RendererModel;
@@ -253,7 +253,7 @@ public class ClientParser {
             //	   change display routines by zoid
             Globals.cls.downloadpercent = percent;
             Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
-            SZ.Print(Globals.cls.netchan.message, "nextdl");
+            Buffer.Print(Globals.cls.netchan.message, "nextdl");
         } else {
             String oldn, newn;
             //char oldn[MAX_OSPATH];

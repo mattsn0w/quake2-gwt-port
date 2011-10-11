@@ -25,6 +25,8 @@ package com.googlecode.gwtquake.shared.common;
 
 import java.util.Arrays;
 
+import com.googlecode.gwtquake.shared.util.Lib;
+
 /**
  * sizebuf_t
  */
@@ -42,5 +44,75 @@ public final class Buffer {
 			Arrays.fill(data,(byte)0);
 		cursize = 0;
 		overflowed = false;
+	}
+
+	// 
+	public static void Print(Buffer buf, String data) {
+	    Com.dprintln("SZ.print():<" + data + ">" );
+		int length = data.length();
+		byte str[] = Lib.stringToBytes(data);
+	
+		if (buf.cursize != 0) {
+	
+			if (buf.data[buf.cursize - 1] != 0) {
+				//memcpy( SZ_GetSpace(buf, len), data, len); // no trailing 0
+				System.arraycopy(str, 0, buf.data, GetSpace(buf, length+1), length);
+			} else {
+				System.arraycopy(str, 0, buf.data, GetSpace(buf, length)-1, length);
+				//memcpy(SZ_GetSpace(buf, len - 1) - 1, data, len); // write over trailing 0
+			}
+		} else
+			// first print.
+			System.arraycopy(str, 0, buf.data, GetSpace(buf, length), length);
+		//memcpy(SZ_GetSpace(buf, len), data, len);
+		
+		buf.data[buf.cursize - 1]=0;
+	}
+
+	public static void Write(Buffer buf, byte data[]) {
+		int length = data.length;
+		//memcpy(SZ_GetSpace(buf, length), data, length);
+		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
+	}
+
+	public static void Write(Buffer buf, byte data[], int offset, int length) {
+		System.arraycopy(data, offset, buf.data, GetSpace(buf, length), length);
+	}
+
+	public static void Write(Buffer buf, byte data[], int length) {
+		//memcpy(SZ_GetSpace(buf, length), data, length);
+		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
+	}
+
+	/** Ask for the pointer using sizebuf_t.cursize (RST) */
+	public static int GetSpace(Buffer buf, int length) {
+		int oldsize;
+	
+		if (buf.cursize + length > buf.maxsize) {
+			if (!buf.allowoverflow)
+				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow set");
+	
+			if (length > buf.maxsize)
+				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: " + length + " is > full buffer size");
+	
+			Com.Printf("SZ_GetSpace: overflow\n");
+			buf.clear();
+			buf.overflowed = true;
+		}
+	
+		oldsize = buf.cursize;
+		buf.cursize += length;
+	
+		return oldsize;
+	}
+
+	public static void Init(Buffer buf, byte data[], int length) {
+	  // TODO check this. cwei
+	  buf.readcount = 0;
+	
+	  buf.data = data;
+		buf.maxsize = length;
+		buf.cursize = 0;
+		buf.allowoverflow = buf.overflowed = false;
 	}
 }

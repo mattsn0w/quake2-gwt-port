@@ -54,6 +54,7 @@ import static com.googlecode.gwtquake.shared.common.Globals.re;
 import static com.googlecode.gwtquake.shared.common.Globals.scr_vrect;
 import static com.googlecode.gwtquake.shared.common.Globals.viddef;
 
+import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Compatibility;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
@@ -61,7 +62,6 @@ import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.common.ResourceLoader;
-import com.googlecode.gwtquake.shared.common.SZ;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.sound.Sound;
@@ -1410,7 +1410,7 @@ public final class Screen {
     static void FinishCinematic() {
         // tell the server to advance to the next map / cinematic
         Messages.WriteByte(cls.netchan.message, clc_stringcmd);
-        SZ.Print(cls.netchan.message, "nextserver " + cl.servercount + '\n');
+        Buffer.Print(cls.netchan.message, "nextserver " + cl.servercount + '\n');
         re.showVideo(null);
     }
 

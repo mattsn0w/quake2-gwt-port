@@ -35,7 +35,7 @@ public class Messages extends Globals {
 
     //ok.
     public static void WriteChar(Buffer sb, int c) {
-        sb.data[SZ.GetSpace(sb, 1)] = (byte) (c & 0xFF);
+        sb.data[Buffer.GetSpace(sb, 1)] = (byte) (c & 0xFF);
     }
 
     //ok.
@@ -46,7 +46,7 @@ public class Messages extends Globals {
 
     //ok.
     public static void WriteByte(Buffer sb, int c) {
-        sb.data[SZ.GetSpace(sb, 1)] = (byte) (c & 0xFF);
+        sb.data[Buffer.GetSpace(sb, 1)] = (byte) (c & 0xFF);
     }
 
     //ok.
@@ -55,14 +55,14 @@ public class Messages extends Globals {
     }
 
     public static void WriteShort(Buffer sb, int c) {
-        int i = SZ.GetSpace(sb, 2);
+        int i = Buffer.GetSpace(sb, 2);
         sb.data[i++] = (byte) (c & 0xff);
         sb.data[i] = (byte) ((c >>> 8) & 0xFF);
     }
 
     //ok.
     public static void WriteInt(Buffer sb, int c) {
-        int i = SZ.GetSpace(sb, 4);
+        int i = Buffer.GetSpace(sb, 4);
         sb.data[i++] = (byte) ((c & 0xff));
         sb.data[i++] = (byte) ((c >>> 8) & 0xff);
         sb.data[i++] = (byte) ((c >>> 16) & 0xff);
@@ -86,7 +86,7 @@ public class Messages extends Globals {
         if (s == null)
             x = "";
 
-        SZ.Write(sb, Lib.stringToBytes(x));
+        Buffer.Write(sb, Lib.stringToBytes(x));
         WriteByte(sb, 0);
         //Com.dprintln("MSG.WriteString:" + s.replace('\0', '@'));
     }

@@ -338,7 +338,7 @@ public class ServerEntities {
 
         // send over the areabits
         Messages.WriteByte(msg, frame.areabytes);
-        SZ.Write(msg, frame.areabits, frame.areabytes);
+        Buffer.Write(msg, frame.areabits, frame.areabytes);
 
         // delta encode the playerstate
         SV_WritePlayerstateToClient(oldframe, frame, msg);
@@ -549,7 +549,7 @@ public class ServerEntities {
             return;
 
         //memset (nostate, 0, sizeof(nostate));
-        SZ.Init(buf, buf_data, buf_data.length);
+        Buffer.Init(buf, buf_data, buf_data.length);
 
         // write a frame message that doesn't contain a player_state_t
         Messages.WriteByte(buf, Defines.svc_frame);
@@ -576,9 +576,9 @@ public class ServerEntities {
         Messages.WriteShort(buf, 0); // end of packetentities
 
         // now add the accumulated multicast information
-        SZ.Write(buf, ServerInit.svs.demo_multicast.data,
+        Buffer.Write(buf, ServerInit.svs.demo_multicast.data,
                 ServerInit.svs.demo_multicast.cursize);
-        SZ.Clear(ServerInit.svs.demo_multicast);
+        ServerInit.svs.demo_multicast.clear();
 
         // now write the entire message to the file, prefixed by the length
         len = EndianHandler.swapInt(buf.cursize);
