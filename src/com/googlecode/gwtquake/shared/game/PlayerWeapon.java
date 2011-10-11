@@ -26,7 +26,8 @@ package com.googlecode.gwtquake.shared.game;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.monsters.MonsterPlayer;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -34,7 +35,7 @@ import com.googlecode.gwtquake.shared.util.Math3D;
 
 public class PlayerWeapon {
 
-    public static EntitiyThinkAdapter Weapon_Grenade = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_Grenade = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_Grenade"; }
 
         public boolean think(Entity ent) {
@@ -146,7 +147,7 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntitiyThinkAdapter weapon_grenadelauncher_fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter weapon_grenadelauncher_fire = new EntityThinkAdapter() {
     	public String getID() { return "weapon_grenadelauncher_fire"; }
 
         public boolean think(Entity ent) {
@@ -186,7 +187,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_GrenadeLauncher = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_GrenadeLauncher = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_GrenadeLauncher"; }
 
         public boolean think(Entity ent) {
@@ -208,7 +209,7 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntitiyThinkAdapter Weapon_RocketLauncher_Fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_RocketLauncher_Fire = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_RocketLauncher_Fire"; }
 
         public boolean think(Entity ent) {
@@ -256,7 +257,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_RocketLauncher = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_RocketLauncher = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_RocketLauncher"; }
 
         public boolean think(Entity ent) {
@@ -270,7 +271,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_Blaster_Fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_Blaster_Fire = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_Blaster_Fire"; }
 
         public boolean think(Entity ent) {
@@ -288,7 +289,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_Blaster = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_Blaster = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_Blaster"; }
 
         public boolean think(Entity ent) {
@@ -302,7 +303,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_HyperBlaster_Fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_HyperBlaster_Fire = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_HyperBlaster_Fire"; }
 
         public boolean think(Entity ent) {
@@ -373,7 +374,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_HyperBlaster = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_HyperBlaster = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_HyperBlaster"; }
         public boolean think(Entity ent) {
 
@@ -386,7 +387,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_Machinegun = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_Machinegun = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_Machinegun"; }
         public boolean think(Entity ent) {
 
@@ -399,7 +400,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_Chaingun = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_Chaingun = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_Chaingun"; }
         public boolean think(Entity ent) {
 
@@ -421,7 +422,7 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntitiyThinkAdapter weapon_shotgun_fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter weapon_shotgun_fire = new EntityThinkAdapter() {
     	public String getID() { return "weapon_shotgun_fire"; }
 
         public boolean think(Entity ent) {
@@ -476,7 +477,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_Shotgun = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_Shotgun = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_Shotgun"; }
         public boolean think(Entity ent) {
             int pause_frames[] = { 22, 28, 34, 0 };
@@ -488,7 +489,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter weapon_supershotgun_fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter weapon_supershotgun_fire = new EntityThinkAdapter() {
     	public String getID() { return "weapon_supershotgun_fire"; }
 
         public boolean think(Entity ent) {
@@ -546,7 +547,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_SuperShotgun = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_SuperShotgun = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_SuperShotgun"; }
         public boolean think(Entity ent) {
 
@@ -566,7 +567,7 @@ public class PlayerWeapon {
      * 
      * ======================================================================
      */
-    public static EntitiyThinkAdapter weapon_railgun_fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter weapon_railgun_fire = new EntityThinkAdapter() {
     	public String getID() { return "weapon_railgun_fire"; }
 
         public boolean think(Entity ent) {
@@ -618,7 +619,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_Railgun = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_Railgun = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_Railgun"; }
 
         public boolean think(Entity ent) {
@@ -639,7 +640,7 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntitiyThinkAdapter weapon_bfg_fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter weapon_bfg_fire = new EntityThinkAdapter() {
     	public String getID() { return "weapon_bfg_fire"; }
 
         public boolean think(Entity ent) {
@@ -703,7 +704,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Weapon_BFG = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Weapon_BFG = new EntityThinkAdapter() {
     	public String getID() { return "Weapon_BFG"; }
         public boolean think(Entity ent) {
 
@@ -798,7 +799,7 @@ public class PlayerWeapon {
      * ======================================================================
      */
 
-    public static EntitiyThinkAdapter Machinegun_Fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Machinegun_Fire = new EntityThinkAdapter() {
     	public String getID() { return "Machinegun_Fire"; }
 
         public boolean think(Entity ent) {
@@ -890,7 +891,7 @@ public class PlayerWeapon {
         }
     };
 
-    public static EntitiyThinkAdapter Chaingun_Fire = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Chaingun_Fire = new EntityThinkAdapter() {
     	public String getID() { return "Chaingun_Fire"; }
 
         public boolean think(Entity ent) {
@@ -1223,7 +1224,7 @@ public class PlayerWeapon {
     public static void Weapon_Generic(Entity ent, int FRAME_ACTIVATE_LAST,
             int FRAME_FIRE_LAST, int FRAME_IDLE_LAST,
             int FRAME_DEACTIVATE_LAST, int pause_frames[], int fire_frames[],
-            EntitiyThinkAdapter fire) {
+            EntityThinkAdapter fire) {
         int FRAME_FIRE_FIRST = (FRAME_ACTIVATE_LAST + 1);
         int FRAME_IDLE_FIRST = (FRAME_FIRE_LAST + 1);
         int FRAME_DEACTIVATE_FIRST = (FRAME_IDLE_LAST + 1);

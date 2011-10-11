@@ -26,8 +26,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -558,7 +559,7 @@ public class MonsterFloat {
         }
     };
 
-    static EntitiyThinkAdapter floater_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_idle = new EntityThinkAdapter() {
     	public String getID() { return "floater_idle"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
@@ -567,7 +568,7 @@ public class MonsterFloat {
         }
     };
 
-    static EntitiyThinkAdapter floater_fire_blaster = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_fire_blaster = new EntityThinkAdapter() {
     	public String getID() { return "floater_fire_blaster"; }
         public boolean think(Entity self) {
             float[] start = { 0, 0, 0 };
@@ -711,7 +712,7 @@ public class MonsterFloat {
     static MonsterMove floater_move_stand2 = new MonsterMove(FRAME_stand201,
             FRAME_stand252, floater_frames_stand2, null);
 
-    static EntitiyThinkAdapter floater_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_stand = new EntityThinkAdapter() {
     	public String getID() { return "floater_stand"; }
         public boolean think(Entity self) {
             if (Lib.random() <= 0.5)
@@ -757,7 +758,7 @@ public class MonsterFloat {
     static MonsterMove floater_move_activate = new MonsterMove(FRAME_actvat01,
             FRAME_actvat31, floater_frames_activate, null);
 
-    static EntitiyThinkAdapter floater_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_run = new EntityThinkAdapter() {
     	public String getID() { return "floater_run"; }
         public boolean think(Entity self) {
 
@@ -794,7 +795,7 @@ public class MonsterFloat {
 
     static float[] aim = { Defines.MELEE_DISTANCE, 0, 0 };
 
-    static EntitiyThinkAdapter floater_wham = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_wham = new EntityThinkAdapter() {
     	public String getID() { return "floater_wham"; }
         public boolean think(Entity self) {
 
@@ -837,7 +838,7 @@ public class MonsterFloat {
     static MonsterMove floater_move_attack2 = new MonsterMove(FRAME_attak201,
             FRAME_attak225, floater_frames_attack2, floater_run);
 
-    static EntitiyThinkAdapter floater_zap = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_zap = new EntityThinkAdapter() {
     	public String getID() { return "floater_zap"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -931,7 +932,7 @@ public class MonsterFloat {
             new Frame(GameAI.ai_move, 0, null),
             new Frame(GameAI.ai_move, 0, null) };
 
-    static EntitiyThinkAdapter floater_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_dead = new EntityThinkAdapter() {
     	public String getID() { return "floater_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -1103,7 +1104,7 @@ public class MonsterFloat {
     static MonsterMove floater_move_run = new MonsterMove(FRAME_stand101,
             FRAME_stand152, floater_frames_run, null);
 
-    static EntitiyThinkAdapter floater_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_walk = new EntityThinkAdapter() {
     	public String getID() { return "floater_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = floater_move_walk;
@@ -1111,7 +1112,7 @@ public class MonsterFloat {
         }
     };
 
-    static EntitiyThinkAdapter floater_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_attack = new EntityThinkAdapter() {
     	public String getID() { return "floater_attack"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = floater_move_attack1;
@@ -1119,7 +1120,7 @@ public class MonsterFloat {
         }
     };
 
-    static EntitiyThinkAdapter floater_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter floater_melee = new EntityThinkAdapter() {
     	public String getID() { return "floater_melee"; }
         public boolean think(Entity self) {
 
@@ -1160,7 +1161,7 @@ public class MonsterFloat {
         }
     };
 
-    static EntDieAdapter floater_die = new EntDieAdapter() {
+    static EntityDieAdapter floater_die = new EntityDieAdapter() {
     	public String getID() { return "floater_die"; }
 
         public void die(Entity self, Entity inflictor, Entity attacker,

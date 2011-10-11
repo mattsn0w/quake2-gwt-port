@@ -26,8 +26,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -1047,7 +1048,7 @@ public class MonsterBoss32 {
 
     static int sound_hit;
 
-    static EntitiyThinkAdapter makron_taunt = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_taunt = new EntityThinkAdapter() {
     	public String getID() { return "makron_taunt"; }
         public boolean think(Entity self) {
             float r;
@@ -1069,7 +1070,7 @@ public class MonsterBoss32 {
     //
     //	   stand
     //
-    static EntitiyThinkAdapter makron_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_stand = new EntityThinkAdapter() {
     	public String getID() { return "makron_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = makron_move_stand;
@@ -1082,7 +1083,7 @@ public class MonsterBoss32 {
      * think(edict_t self) { return true; } };
      */
 
-    static EntitiyThinkAdapter makron_hit = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_hit = new EntityThinkAdapter() {
     	public String getID() { return "makron_hit"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_AUTO, sound_hit, 1,
@@ -1091,7 +1092,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_popup = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_popup = new EntityThinkAdapter() {
     	public String getID() { return "makron_popup"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_popup, 1,
@@ -1100,7 +1101,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_step_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_step_left = new EntityThinkAdapter() {
     	public String getID() { return "makron_step_left"; }
 
         public boolean think(Entity self) {
@@ -1110,7 +1111,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_step_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_step_right = new EntityThinkAdapter() {
     	public String getID() { return "makron_step_right"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_step_right, 1,
@@ -1119,7 +1120,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_brainsplorch = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_brainsplorch = new EntityThinkAdapter() {
     	public String getID() { return "makron_brainsplorch"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_brainsplorch, 1,
@@ -1128,7 +1129,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_prerailgun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_prerailgun = new EntityThinkAdapter() {
     	public String getID() { return "makron_prerailgun"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_prerailgun, 1,
@@ -1241,7 +1242,7 @@ public class MonsterBoss32 {
     //
     //	   death
     //
-    static EntitiyThinkAdapter makron_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_dead = new EntityThinkAdapter() {
     	public String getID() { return "makron_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -60, -60, 0);
@@ -1254,7 +1255,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_walk = new EntityThinkAdapter() {
     	public String getID() { return "makron_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = makron_move_walk;
@@ -1262,7 +1263,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_run = new EntityThinkAdapter() {
     	public String getID() { return "makron_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -1478,7 +1479,7 @@ public class MonsterBoss32 {
     static MonsterMove makron_move_sight = new MonsterMove(FRAME_active01,
             FRAME_active13, makron_frames_sight, makron_run);
 
-    static EntitiyThinkAdapter makronBFG = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makronBFG = new EntityThinkAdapter() {
     	public String getID() { return "makronBFG"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -1504,7 +1505,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter MakronSaveloc = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter MakronSaveloc = new EntityThinkAdapter() {
     	public String getID() { return "MakronSaveloc"; }
         public boolean think(Entity self) {
             Math3D.VectorCopy(self.enemy.s.origin, self.pos1); //save for
@@ -1517,7 +1518,7 @@ public class MonsterBoss32 {
 
     //	   FIXME: He's not firing from the proper Z
 
-    static EntitiyThinkAdapter MakronRailgun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter MakronRailgun = new EntityThinkAdapter() {
     	public String getID() { return "MakronRailgun"; }
         public boolean think(Entity self) {
             float[] start = { 0, 0, 0 };
@@ -1542,7 +1543,7 @@ public class MonsterBoss32 {
 
     //	   FIXME: This is all wrong. He's not firing at the proper angles.
 
-    static EntitiyThinkAdapter MakronHyperblaster = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter MakronHyperblaster = new EntityThinkAdapter() {
     	public String getID() { return "MakronHyperblaster"; }
         public boolean think(Entity self) {
             float[] dir = { 0, 0, 0 };
@@ -1636,7 +1637,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_attack = new EntityThinkAdapter() {
     	public String getID() { return "makron_attack"; }
         public boolean think(Entity self) {
             float[] vec = { 0, 0, 0 };
@@ -1663,7 +1664,7 @@ public class MonsterBoss32 {
      * --- Makron Torso. This needs to be spawned in ---
      */
 
-    static EntitiyThinkAdapter makron_torso_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_torso_think = new EntityThinkAdapter() {
     	public String getID() { return "makron_torso_think"; }
         public boolean think(Entity self) {
             if (++self.s.frame < 365)
@@ -1676,7 +1677,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter makron_torso = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter makron_torso = new EntityThinkAdapter() {
     	public String getID() { return "makron_torso"; }
         public boolean think(Entity ent) {
             ent.movetype = Defines.MOVETYPE_NONE;
@@ -1694,7 +1695,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntDieAdapter makron_die = new EntDieAdapter() {
+    static EntityDieAdapter makron_die = new EntityDieAdapter() {
     	public String getID() { return "makron_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1742,7 +1743,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter Makron_CheckAttack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Makron_CheckAttack = new EntityThinkAdapter() {
     	public String getID() { return "Makron_CheckAttack"; }
         public boolean think(Entity self) {
             float[] spot1 = { 0, 0, 0 }, spot2 = { 0, 0, 0 };
@@ -1899,7 +1900,7 @@ public class MonsterBoss32 {
      * 
      * =================
      */
-    static EntitiyThinkAdapter MakronSpawn = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter MakronSpawn = new EntityThinkAdapter() {
     	public String getID() { return "MakronSpawn"; }
         public boolean think(Entity self) {
             float[] vec = { 0, 0, 0 };
@@ -1924,7 +1925,7 @@ public class MonsterBoss32 {
         }
     };
 
-    static EntitiyThinkAdapter MakronToss = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter MakronToss = new EntityThinkAdapter() {
     	public String getID() { return "MakronToss"; }
         public boolean think(Entity self) {
             Entity ent;

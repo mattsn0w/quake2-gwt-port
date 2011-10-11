@@ -23,14 +23,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.game;
 
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 
 public class Spawn {
-	public Spawn(String name, EntitiyThinkAdapter spawn) {
+	public Spawn(String name, EntityThinkAdapter spawn) {
 		this.name = name;
 		this.spawn = spawn;
 	}
 
 	String name;
-	EntitiyThinkAdapter spawn;
+	EntityThinkAdapter spawn;
 }

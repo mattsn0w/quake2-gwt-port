@@ -28,13 +28,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import com.googlecode.gwtquake.shared.game.adapters.AIAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.QuakeFile;
 
 public class Frame
 {
-	public Frame(AIAdapter ai, float dist, EntitiyThinkAdapter think)
+	public Frame(AIAdapter ai, float dist, EntityThinkAdapter think)
 	{
 		this.ai= ai;
 		this.dist= dist;
@@ -47,7 +47,7 @@ public class Frame
 
 	public AIAdapter ai;
 	public float dist;
-	public EntitiyThinkAdapter think;
+	public EntityThinkAdapter think;
 
 	public void write(QuakeFile f) throws IOException
 	{
@@ -60,6 +60,6 @@ public class Frame
 	{
 		ai= (AIAdapter) f.readAdapter();
 		dist= f.readFloat();
-		think= (EntitiyThinkAdapter) f.readAdapter();
+		think= (EntityThinkAdapter) f.readAdapter();
 	}
 }

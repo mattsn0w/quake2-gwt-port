@@ -32,8 +32,8 @@ import com.googlecode.gwtquake.shared.game.GameUtil;
 import com.googlecode.gwtquake.shared.game.Monster;
 import com.googlecode.gwtquake.shared.game.MonsterMove;
 import com.googlecode.gwtquake.shared.game.Trace;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -460,7 +460,7 @@ public class MonsterBoss31 {
      * think(edict_t self) { return true; } };
      */
 
-    static EntitiyThinkAdapter jorg_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_search = new EntityThinkAdapter() {
     	public String getID() { return "jorg_search"; }
         public boolean think(Entity self) {
             float r;
@@ -480,7 +480,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_idle = new EntityThinkAdapter() {
     	public String getID() { return "jorg_idle"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
@@ -489,7 +489,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_death_hit = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_death_hit = new EntityThinkAdapter() {
     	public String getID() { return "jorg_death_hit"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_death_hit, 1,
@@ -498,7 +498,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_step_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_step_left = new EntityThinkAdapter() {
     	public String getID() { return "jorg_step_left"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_step_left, 1,
@@ -507,7 +507,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_step_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_step_right = new EntityThinkAdapter() {
     	public String getID() { return "jorg_step_right"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_step_right, 1,
@@ -516,7 +516,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_stand = new EntityThinkAdapter() {
     	public String getID() { return "jorg_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = jorg_move_stand;
@@ -524,7 +524,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_reattack1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_reattack1 = new EntityThinkAdapter() {
     	public String getID() { return "jorg_reattack1"; }
         public boolean think(Entity self) {
             if (GameUtil.visible(self, self.enemy))
@@ -542,7 +542,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_attack1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_attack1 = new EntityThinkAdapter() {
     	public String getID() { return "jorg_attack1"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = jorg_move_attack1;
@@ -610,7 +610,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorgBFG = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorgBFG = new EntityThinkAdapter() {
     	public String getID() { return "jorgBFG"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -641,7 +641,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_firebullet_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_firebullet_right = new EntityThinkAdapter() {
     	public String getID() { return "jorg_firebullet_right"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, target = { 0,
@@ -669,7 +669,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_firebullet_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_firebullet_left = new EntityThinkAdapter() {
     	public String getID() { return "jorg_firebullet_left"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, target = { 0,
@@ -697,7 +697,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_firebullet = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_firebullet = new EntityThinkAdapter() {
     	public String getID() { return "jorg_firebullet"; }
         public boolean think(Entity self) {
             jorg_firebullet_left.think(self);
@@ -706,7 +706,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_attack = new EntityThinkAdapter() {
     	public String getID() { return "jorg_attack"; }
         public boolean think(Entity self) {
             float[] vec = { 0, 0, 0 };
@@ -730,7 +730,7 @@ public class MonsterBoss31 {
     };
 
     /** Was disabled. RST. */
-    static EntitiyThinkAdapter jorg_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_dead = new EntityThinkAdapter() {
     	public String getID() { return "jorg_dead"; }
         public boolean think(Entity self) {
             /*
@@ -753,7 +753,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntDieAdapter jorg_die = new EntDieAdapter() {
+    static EntityDieAdapter jorg_die = new EntityDieAdapter() {
     	public String getID() { return "jorg_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -768,7 +768,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter Jorg_CheckAttack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Jorg_CheckAttack = new EntityThinkAdapter() {
     	public String getID() { return "Jorg_CheckAttack"; }
         public boolean think(Entity self) {
             float[] spot1 = { 0, 0, 0 }, spot2 = { 0, 0, 0 };
@@ -981,7 +981,7 @@ public class MonsterBoss31 {
     static MonsterMove jorg_move_end_walk = new MonsterMove(FRAME_walk20, FRAME_walk25,
             jorg_frames_end_walk, null);
 
-    static EntitiyThinkAdapter jorg_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_walk = new EntityThinkAdapter() {
     	public String getID() { return "jorg_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = jorg_move_walk;
@@ -989,7 +989,7 @@ public class MonsterBoss31 {
         }
     };
 
-    static EntitiyThinkAdapter jorg_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter jorg_run = new EntityThinkAdapter() {
     	public String getID() { return "jorg_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)

@@ -25,8 +25,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -545,7 +546,7 @@ public class MonsterBerserk {
         }
     };
 
-    static EntitiyThinkAdapter berserk_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_search = new EntityThinkAdapter() {
         public String getID() { return "berserk_search";}
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
@@ -554,7 +555,7 @@ public class MonsterBerserk {
         }
     };
 
-    static EntitiyThinkAdapter berserk_fidget = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_fidget = new EntityThinkAdapter() {
         public String getID() { return "berserk_fidget";}
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -580,7 +581,7 @@ public class MonsterBerserk {
     static MonsterMove berserk_move_stand = new MonsterMove(FRAME_stand1, FRAME_stand5,
             berserk_frames_stand, null);
 
-    static EntitiyThinkAdapter berserk_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_stand = new EntityThinkAdapter() {
         public String getID() { return "berserk_stand";}
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = berserk_move_stand;
@@ -630,7 +631,7 @@ public class MonsterBerserk {
     static MonsterMove berserk_move_walk = new MonsterMove(FRAME_walkc1, FRAME_walkc11,
             berserk_frames_walk, null);
 
-    static EntitiyThinkAdapter berserk_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_walk = new EntityThinkAdapter() {
         public String getID() { return "berserk_walk";}
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = berserk_move_walk;
@@ -671,7 +672,7 @@ public class MonsterBerserk {
     static MonsterMove berserk_move_run1 = new MonsterMove(FRAME_run1, FRAME_run6,
             berserk_frames_run1, null);
 
-    static EntitiyThinkAdapter berserk_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_run = new EntityThinkAdapter() {
         public String getID() { return "berserk_run";}
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -682,7 +683,7 @@ public class MonsterBerserk {
         }
     };
 
-    static EntitiyThinkAdapter berserk_attack_spike = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_attack_spike = new EntityThinkAdapter() {
         public String getID() { return "berserk_attack_spike";}
         public boolean think(Entity self) {
             float[] aim = { Defines.MELEE_DISTANCE, 0f, -24f };
@@ -694,7 +695,7 @@ public class MonsterBerserk {
         }
     };
 
-    static EntitiyThinkAdapter berserk_swing = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_swing = new EntityThinkAdapter() {
         public String getID() { return "berserk_swing";}
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_punch, 1,
@@ -716,7 +717,7 @@ public class MonsterBerserk {
     static MonsterMove berserk_move_attack_spike = new MonsterMove(FRAME_att_c1,
             FRAME_att_c8, berserk_frames_attack_spike, berserk_run);
 
-    static EntitiyThinkAdapter berserk_attack_club = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_attack_club = new EntityThinkAdapter() {
         public String getID() { return "berserk_attack_club";}
         public boolean think(Entity self) {
             float aim[] = { 0, 0, 0 };
@@ -746,7 +747,7 @@ public class MonsterBerserk {
     static MonsterMove berserk_move_attack_club = new MonsterMove(FRAME_att_c9,
             FRAME_att_c20, berserk_frames_attack_club, berserk_run);
 
-    static EntitiyThinkAdapter berserk_strike = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_strike = new EntityThinkAdapter() {
         public String getID() { return "berserk_strike";}
         public boolean think(Entity self) {
             return true;
@@ -772,7 +773,7 @@ public class MonsterBerserk {
     static MonsterMove berserk_move_attack_strike = new MonsterMove(FRAME_att_c21,
             FRAME_att_c34, berserk_frames_attack_strike, berserk_run);
 
-    static EntitiyThinkAdapter berserk_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_melee = new EntityThinkAdapter() {
         public String getID() { return "berserk_melee";}
         public boolean think(Entity self) {
             if ((Lib.rand() % 2) == 0)
@@ -861,7 +862,7 @@ public class MonsterBerserk {
         }
     };
 
-    static EntitiyThinkAdapter berserk_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter berserk_dead = new EntityThinkAdapter() {
         public String getID() { return "berserk_dead";}
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -905,7 +906,7 @@ public class MonsterBerserk {
     static MonsterMove berserk_move_death2 = new MonsterMove(FRAME_deathc1,
             FRAME_deathc8, berserk_frames_death2, berserk_dead);
 
-    static EntDieAdapter berserk_die = new EntDieAdapter() {
+    static EntityDieAdapter berserk_die = new EntityDieAdapter() {
         public String getID() { return "berserk_die";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float point[]) {

@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.client;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.server.SV;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -354,7 +354,7 @@ public final class ClientMonsterMethods {
         }
     }
 
-    public static EntitiyThinkAdapter M_droptofloor = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter M_droptofloor = new EntityThinkAdapter() {
         public String getID() { return "m_drop_to_floor";}
         public boolean think(Entity ent) {
             float[] end = { 0, 0, 0 };
@@ -453,7 +453,7 @@ public final class ClientMonsterMethods {
     }
 
     /** Stops the Flies. */
-    public static EntitiyThinkAdapter M_FliesOff = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter M_FliesOff = new EntityThinkAdapter() {
         public String getID() { return "m_fliesoff";}
         public boolean think(Entity self) {
             self.s.effects &= ~Defines.EF_FLIES;
@@ -463,7 +463,7 @@ public final class ClientMonsterMethods {
     };
 
     /** Starts the Flies as setting the animation flag in the entity. */
-    public static EntitiyThinkAdapter M_FliesOn = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter M_FliesOn = new EntityThinkAdapter() {
         public String getID() { return "m_flies_on";}
         public boolean think(Entity self) {
             if (self.waterlevel != 0)
@@ -478,7 +478,7 @@ public final class ClientMonsterMethods {
     };
 
     /** Adds some flies after a random time */
-    public static EntitiyThinkAdapter M_FlyCheck = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter M_FlyCheck = new EntityThinkAdapter() {
         public String getID() { return "m_fly_check";}
         public boolean think(Entity self) {
 

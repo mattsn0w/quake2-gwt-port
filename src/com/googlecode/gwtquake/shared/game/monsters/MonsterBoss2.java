@@ -32,8 +32,8 @@ import com.googlecode.gwtquake.shared.game.GameUtil;
 import com.googlecode.gwtquake.shared.game.Monster;
 import com.googlecode.gwtquake.shared.game.MonsterMove;
 import com.googlecode.gwtquake.shared.game.Trace;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -415,7 +415,7 @@ public class MonsterBoss2 {
 
     static int sound_search1;
 
-    static EntitiyThinkAdapter boss2_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_stand = new EntityThinkAdapter() {
     	public String getID() { return "boss2_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = boss2_move_stand;
@@ -423,7 +423,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_run = new EntityThinkAdapter() {
     	public String getID() { return "boss2_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -434,7 +434,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_walk = new EntityThinkAdapter() {
     	public String getID() { return "boss2_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = boss2_move_stand;
@@ -444,7 +444,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_attack = new EntityThinkAdapter() {
     	public String getID() { return "boss2_attack"; }
         public boolean think(Entity self) {
             float[] vec = { 0, 0, 0 };
@@ -466,7 +466,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_attack_mg = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_attack_mg = new EntityThinkAdapter() {
     	public String getID() { return "boss2_attack_mg"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = boss2_move_attack_mg;
@@ -474,7 +474,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_reattack_mg = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_reattack_mg = new EntityThinkAdapter() {
     	public String getID() { return "boss2_reattack_mg"; }
         public boolean think(Entity self) {
             if (GameUtil.infront(self, self.enemy))
@@ -515,7 +515,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_dead = new EntityThinkAdapter() {
     	public String getID() { return "boss2_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -56, -56, 0);
@@ -528,7 +528,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntDieAdapter boss2_die = new EntDieAdapter() {
+    static EntityDieAdapter boss2_die = new EntityDieAdapter() {
     	public String getID() { return "boss2_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -542,7 +542,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter Boss2_CheckAttack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Boss2_CheckAttack = new EntityThinkAdapter() {
     	public String getID() { return "Boss2_CheckAttack"; }
         public boolean think(Entity self) {
             float[] spot1 = { 0, 0, 0 }, spot2 = { 0, 0, 0 };
@@ -626,7 +626,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_search = new EntityThinkAdapter() {
     	public String getID() { return "boss2_search"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
@@ -636,7 +636,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter Boss2Rocket = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Boss2Rocket = new EntityThinkAdapter() {
     	public String getID() { return "Boss2Rocket"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -693,7 +693,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_firebullet_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_firebullet_right = new EntityThinkAdapter() {
     	public String getID() { return "boss2_firebullet_right"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, target = { 0,
@@ -722,7 +722,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter boss2_firebullet_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter boss2_firebullet_left = new EntityThinkAdapter() {
     	public String getID() { return "boss2_firebullet_left"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, target = { 0,
@@ -752,7 +752,7 @@ public class MonsterBoss2 {
         }
     };
 
-    static EntitiyThinkAdapter Boss2MachineGun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Boss2MachineGun = new EntityThinkAdapter() {
     	public String getID() { return "Boss2MachineGun"; }
         public boolean think(Entity self) {
             /*

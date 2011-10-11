@@ -30,7 +30,7 @@ import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
 import com.googlecode.gwtquake.shared.util.*;
 
@@ -297,7 +297,7 @@ public class Monster {
         self.nextthink = GameBase.level.time + Defines.FRAMETIME;
     }
 
-    public static EntitiyThinkAdapter monster_think = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter monster_think = new EntityThinkAdapter() {
         public String getID() { return "monster_think";}
         public boolean think(Entity self) {
 
@@ -313,7 +313,7 @@ public class Monster {
         }
     };
 
-    public static EntitiyThinkAdapter monster_triggered_spawn = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter monster_triggered_spawn = new EntityThinkAdapter() {
         public String getID() { return "monster_trigger_spawn";}
         public boolean think(Entity self) {
 
@@ -351,7 +351,7 @@ public class Monster {
         }
     };
 
-    public static EntitiyThinkAdapter monster_triggered_start = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter monster_triggered_start = new EntityThinkAdapter() {
         public String getID() { return "monster_triggered_start";}
         public boolean think(Entity self) {
             if (self.index == 312)

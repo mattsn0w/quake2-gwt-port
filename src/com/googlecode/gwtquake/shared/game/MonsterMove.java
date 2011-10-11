@@ -27,12 +27,12 @@ package com.googlecode.gwtquake.shared.game;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.QuakeFile;
 
 public class MonsterMove {
-	public MonsterMove(int firstframe, int lastframe, Frame frame[], EntitiyThinkAdapter endfunc) {
+	public MonsterMove(int firstframe, int lastframe, Frame frame[], EntityThinkAdapter endfunc) {
 		
 		this.firstframe= firstframe;
 		this.lastframe= lastframe;
@@ -46,7 +46,7 @@ public class MonsterMove {
 	public int firstframe;
 	public int lastframe;
 	public Frame frame[]; //ptr
-	public EntitiyThinkAdapter endfunc;
+	public EntityThinkAdapter endfunc;
 	
 
 	/** Writes the structure to a random acccess file. */
@@ -79,6 +79,6 @@ public class MonsterMove {
 			frame[n] = new Frame();
 			frame[n].read(f);
 		}
-		endfunc = (EntitiyThinkAdapter) f.readAdapter();
+		endfunc = (EntityThinkAdapter) f.readAdapter();
 	}
 }

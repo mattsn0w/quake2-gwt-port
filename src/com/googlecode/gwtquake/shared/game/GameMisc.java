@@ -28,8 +28,8 @@ import java.util.Calendar;
 import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -925,7 +925,7 @@ public class GameMisc {
      * middle of a door.
      */
 
-    static EntitiyThinkAdapter SP_func_areaportal = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter SP_func_areaportal = new EntityThinkAdapter() {
         public String getID() { return "sp_func_areaportal";}
         public boolean think(Entity ent) {
             ent.use = Use_Areaportal;
@@ -1058,7 +1058,7 @@ public class GameMisc {
      * QUAKED viewthing (0 .5 .8) (-8 -8 -8) (8 8 8) Just for the debugging
      * level. Don't use
      */
-    public static EntitiyThinkAdapter TH_viewthing = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter TH_viewthing = new EntityThinkAdapter() {
         public String getID() { return "th_viewthing";}
         public boolean think(Entity ent) {
             ent.s.frame = (ent.s.frame + 1) % 7;
@@ -1142,7 +1142,7 @@ public class GameMisc {
         }
     };
 
-    static EntitiyThinkAdapter func_object_release = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter func_object_release = new EntityThinkAdapter() {
         public String getID() { return "func_object_release";}
         public boolean think(Entity self) {
             self.movetype = Defines.MOVETYPE_TOSS;
@@ -1176,7 +1176,7 @@ public class GameMisc {
      * explodes. You get one large chunk per 100 of mass (up to 8) and one small
      * chunk per 25 of mass (up to 16). So 800 gives the most.
      */
-    public static EntDieAdapter func_explosive_explode = new EntDieAdapter() {
+    public static EntityDieAdapter func_explosive_explode = new EntityDieAdapter() {
         public String getID() { return "func_explosive_explode";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1285,7 +1285,7 @@ public class GameMisc {
         }
     };
 
-    public static EntitiyThinkAdapter barrel_explode = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter barrel_explode = new EntityThinkAdapter() {
         public String getID() { return "barrel_explode";}
         public boolean think(Entity self) {
 
@@ -1384,7 +1384,7 @@ public class GameMisc {
         }
     };
 
-    public static EntDieAdapter barrel_delay = new EntDieAdapter() {
+    public static EntityDieAdapter barrel_delay = new EntityDieAdapter() {
         public String getID() { return "barrel_delay";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1416,7 +1416,7 @@ public class GameMisc {
         }
     };
 
-    static EntitiyThinkAdapter misc_blackhole_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter misc_blackhole_think = new EntityThinkAdapter() {
         public String getID() { return "misc_blackhole_think";}
         public boolean think(Entity self) {
 
@@ -1434,7 +1434,7 @@ public class GameMisc {
      * QUAKED misc_eastertank (1 .5 0) (-32 -32 -16) (32 32 32)
      */
 
-    static EntitiyThinkAdapter misc_eastertank_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter misc_eastertank_think = new EntityThinkAdapter() {
         public String getID() { return "misc_eastertank_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 293)
@@ -1451,7 +1451,7 @@ public class GameMisc {
      * QUAKED misc_easterchick (1 .5 0) (-32 -32 0) (32 32 32)
      */
 
-    static EntitiyThinkAdapter misc_easterchick_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter misc_easterchick_think = new EntityThinkAdapter() {
         public String getID() { return "misc_easterchick_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 247)
@@ -1467,7 +1467,7 @@ public class GameMisc {
     /*
      * QUAKED misc_easterchick2 (1 .5 0) (-32 -32 0) (32 32 32)
      */
-    static EntitiyThinkAdapter misc_easterchick2_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter misc_easterchick2_think = new EntityThinkAdapter() {
         public String getID() { return "misc_easterchick2_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 287)
@@ -1486,7 +1486,7 @@ public class GameMisc {
      * a item_commander_head that has this as it's target.
      */
 
-    public static EntitiyThinkAdapter commander_body_think = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter commander_body_think = new EntityThinkAdapter() {
         public String getID() { return "commander_body_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 24)
@@ -1511,7 +1511,7 @@ public class GameMisc {
         }
     };
 
-    public static EntitiyThinkAdapter commander_body_drop = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter commander_body_drop = new EntityThinkAdapter() {
         public String getID() { return "commander_body_group";}
         public boolean think(Entity self) {
             self.movetype = Defines.MOVETYPE_TOSS;
@@ -1524,7 +1524,7 @@ public class GameMisc {
      * QUAKED misc_banner (1 .5 0) (-4 -4 -4) (4 4 4) The origin is the bottom
      * of the banner. The banner is 128 tall.
      */
-    static EntitiyThinkAdapter misc_banner_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter misc_banner_think = new EntityThinkAdapter() {
         public String getID() { return "misc_banner_think";}
         public boolean think(Entity ent) {
             ent.s.frame = (ent.s.frame + 1) % 16;
@@ -1538,7 +1538,7 @@ public class GameMisc {
      * ON_STOMACH BACK_DECAP FETAL_POS SIT_DECAP IMPALED This is the dead player
      * model. Comes in 6 exciting different poses!
      */
-    static EntDieAdapter misc_deadsoldier_die = new EntDieAdapter() {
+    static EntityDieAdapter misc_deadsoldier_die = new EntityDieAdapter() {
         public String getID() { return "misc_deadsoldier_die";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1592,7 +1592,7 @@ public class GameMisc {
         }
     };
 
-    static EntitiyThinkAdapter misc_viper_bomb_prethink = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter misc_viper_bomb_prethink = new EntityThinkAdapter() {
         public String getID() { return "misc_viper_bomb_prethink";}
         public boolean think(Entity self) {
 
@@ -1665,7 +1665,7 @@ public class GameMisc {
     /*
      * QUAKED misc_satellite_dish (1 .5 0) (-64 -64 0) (64 64 128)
      */
-    static EntitiyThinkAdapter misc_satellite_dish_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter misc_satellite_dish_think = new EntityThinkAdapter() {
         public String getID() { return "misc_satellite_dish_think";}
         public boolean think(Entity self) {
             self.s.frame++;
@@ -1732,7 +1732,7 @@ public class GameMisc {
 
     public static final int CLOCK_MESSAGE_SIZE = 16;
 
-    public static EntitiyThinkAdapter func_clock_think = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter func_clock_think = new EntityThinkAdapter() {
         public String getID() { return "func_clock_think";}
         public boolean think(Entity self) {
             if (null == self.enemy) {
@@ -1872,7 +1872,7 @@ public class GameMisc {
      * teleporters at these.
      */
 
-    public static EntitiyThinkAdapter SP_misc_teleporter_dest = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_misc_teleporter_dest = new EntityThinkAdapter() {
         public String getID() { return "SP_misc_teleporter_dest";}
         public boolean think(Entity ent) {
             GameBase.gi.setmodel(ent, "models/objects/dmspot/tris.md2");
@@ -1886,7 +1886,7 @@ public class GameMisc {
         }
     };
 
-    public static EntitiyThinkAdapter gib_think = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter gib_think = new EntityThinkAdapter() {
         public String getID() { return "gib_think";}
         public boolean think(Entity self) {
             self.s.frame++;
@@ -1929,7 +1929,7 @@ public class GameMisc {
         }
     };
 
-    public static EntDieAdapter gib_die = new EntDieAdapter() {
+    public static EntityDieAdapter gib_die = new EntityDieAdapter() {
         public String getID() { return "gib_die";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1940,7 +1940,7 @@ public class GameMisc {
     /**
      * Debris
      */
-    public static EntDieAdapter debris_die = new EntDieAdapter() {
+    public static EntityDieAdapter debris_die = new EntityDieAdapter() {
         public String getID() { return "debris_die";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {

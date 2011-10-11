@@ -25,8 +25,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -462,7 +463,7 @@ public class MonsterHover {
 
     static int sound_search2;
 
-    static EntitiyThinkAdapter hover_reattack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_reattack = new EntityThinkAdapter() {
     	public String getID() { return "hover_reattack"; }
         public boolean think(Entity self) {
             if (self.enemy.health > 0)
@@ -476,7 +477,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_fire_blaster = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_fire_blaster = new EntityThinkAdapter() {
     	public String getID() { return "hover_fire_blaster"; }
         public boolean think(Entity self) {
             float[] start = { 0, 0, 0 };
@@ -505,7 +506,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_stand = new EntityThinkAdapter() {
     	public String getID() { return "hover_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = hover_move_stand;
@@ -513,7 +514,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_run = new EntityThinkAdapter() {
     	public String getID() { return "hover_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -524,7 +525,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_walk = new EntityThinkAdapter() {
     	public String getID() { return "hover_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = hover_move_walk;
@@ -532,7 +533,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_start_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_start_attack = new EntityThinkAdapter() {
     	public String getID() { return "hover_start_attack"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = hover_move_start_attack;
@@ -540,7 +541,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_attack = new EntityThinkAdapter() {
     	public String getID() { return "hover_attack"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = hover_move_attack1;
@@ -580,7 +581,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_deadthink = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_deadthink = new EntityThinkAdapter() {
     	public String getID() { return "hover_deadthink"; }
         public boolean think(Entity self) {
             if (null == self.groundentity
@@ -593,7 +594,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_dead = new EntityThinkAdapter() {
     	public String getID() { return "hover_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -607,7 +608,7 @@ public class MonsterHover {
         }
     };
 
-    static EntDieAdapter hover_die = new EntDieAdapter() {
+    static EntityDieAdapter hover_die = new EntityDieAdapter() {
     	public String getID() { return "hover_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -657,7 +658,7 @@ public class MonsterHover {
         }
     };
 
-    static EntitiyThinkAdapter hover_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter hover_search = new EntityThinkAdapter() {
     	public String getID() { return "hover_search"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)

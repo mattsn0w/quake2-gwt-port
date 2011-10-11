@@ -29,7 +29,8 @@ import java.util.StringTokenizer;
 
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -51,7 +52,7 @@ public class GameItems {
     static int power_screen_index;
     static int power_shield_index;
     
-    static EntitiyThinkAdapter DoRespawn = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter DoRespawn = new EntityThinkAdapter() {
         public String getID() { return "do_respawn";}
         public boolean think(Entity ent) {
             if (ent.team != null) {
@@ -274,7 +275,7 @@ public class GameItems {
             Touch_Item.touch(ent, other, plane, surf);
         }
     };
-    static EntitiyThinkAdapter drop_make_touchable = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter drop_make_touchable = new EntityThinkAdapter() {
         public String getID() { return "drop_make_touchable";}
         public boolean think(Entity ent) {
             ent.touch = Touch_Item;
@@ -671,7 +672,7 @@ public class GameItems {
         }
     };
     
-    public static EntitiyThinkAdapter droptofloor = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter droptofloor = new EntityThinkAdapter() {
         public String getID() { return "drop_to_floor";}
         public boolean think(Entity ent) {
             Trace tr;

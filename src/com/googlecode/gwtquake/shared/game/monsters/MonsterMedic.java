@@ -25,8 +25,10 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -564,7 +566,7 @@ public class MonsterMedic {
         return best;
     }
 
-    static EntitiyThinkAdapter medic_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_idle = new EntityThinkAdapter() {
     	public String getID(){ return "medic_idle"; }
         public boolean think(Entity self) {
             Entity ent;
@@ -583,7 +585,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_search = new EntityThinkAdapter() {
     	public String getID(){ return "medic_search"; }
         public boolean think(Entity self) {
             Entity ent;
@@ -709,7 +711,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_stand = new MonsterMove(FRAME_wait1, FRAME_wait90,
             medic_frames_stand, null);
 
-    static EntitiyThinkAdapter medic_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_stand = new EntityThinkAdapter() {
     	public String getID(){ return "medic_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = medic_move_stand;
@@ -734,7 +736,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_walk = new MonsterMove(FRAME_walk1, FRAME_walk12,
             medic_frames_walk, null);
 
-    static EntitiyThinkAdapter medic_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_walk = new EntityThinkAdapter() {
     	public String getID(){ return "medic_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = medic_move_walk;
@@ -753,7 +755,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_run = new MonsterMove(FRAME_run1, FRAME_run6,
             medic_frames_run, null);
 
-    static EntitiyThinkAdapter medic_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_run = new EntityThinkAdapter() {
     	public String getID(){ return "medic_run"; }
         public boolean think(Entity self) {
             if (0 == (self.monsterinfo.aiflags & Defines.AI_MEDIC)) {
@@ -838,7 +840,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_fire_blaster = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_fire_blaster = new EntityThinkAdapter() {
     	public String getID(){ return "medic_fire_blaster"; }
         public boolean think(Entity self) {
             float[] start = { 0, 0, 0 };
@@ -873,7 +875,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_dead = new EntityThinkAdapter() {
     	public String getID(){ return "medic_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -921,7 +923,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_death = new MonsterMove(FRAME_death1, FRAME_death30,
             medic_frames_death, medic_dead);
 
-    static EntDieAdapter medic_die = new EntDieAdapter() {
+    static EntityDieAdapter medic_die = new EntityDieAdapter() {
     	public String getID(){ return "medic_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -964,7 +966,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_duck_down = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_duck_down = new EntityThinkAdapter() {
     	public String getID(){ return "medic_duck_down"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
@@ -978,7 +980,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_duck_hold = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_duck_hold = new EntityThinkAdapter() {
     	public String getID(){ return "medic_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
@@ -989,7 +991,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_duck_up = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_duck_up = new EntityThinkAdapter() {
     	public String getID(){ return "medic_duck_up"; }
         public boolean think(Entity self) {
             self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
@@ -1021,7 +1023,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_duck = new MonsterMove(FRAME_duck1, FRAME_duck16,
             medic_frames_duck, medic_run);
 
-    static EntDodgeAdapter medic_dodge = new EntDodgeAdapter() {
+    static EntityDodgeAdapter medic_dodge = new EntityDodgeAdapter() {
     	public String getID(){ return "medic_dodge"; }
         public void dodge(Entity self, Entity attacker, float eta) {
             if (Lib.random() > 0.25)
@@ -1055,7 +1057,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_attackHyperBlaster = new MonsterMove(FRAME_attack15,
             FRAME_attack30, medic_frames_attackHyperBlaster, medic_run);
 
-    static EntitiyThinkAdapter medic_continue = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_continue = new EntityThinkAdapter() {
     	public String getID(){ return "medic_continue"; }
         public boolean think(Entity self) {
             if (GameUtil.visible(self, self.enemy))
@@ -1088,7 +1090,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_attackBlaster = new MonsterMove(FRAME_attack1,
             FRAME_attack14, medic_frames_attackBlaster, medic_run);
 
-    static EntitiyThinkAdapter medic_hook_launch = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_hook_launch = new EntityThinkAdapter() {
     	public String getID(){ return "medic_hook_launch"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_hook_launch, 1,
@@ -1104,7 +1106,7 @@ public class MonsterMedic {
             { 34.3f, -18.4f, 10.7f }, { 32.7f, -19.7f, 10.4f },
             { 32.7f, -19.7f, 10.4f } };
 
-    static EntitiyThinkAdapter medic_cable_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_cable_attack = new EntityThinkAdapter() {
     	public String getID(){ return "medic_cable_attack"; }
         public boolean think(Entity self) {
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 }, end = { 0, 0, 0 }, f = {
@@ -1185,7 +1187,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_hook_retract = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_hook_retract = new EntityThinkAdapter() {
     	public String getID(){ return "medic_hook_retract"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_hook_retract, 1,
@@ -1228,7 +1230,7 @@ public class MonsterMedic {
     static MonsterMove medic_move_attackCable = new MonsterMove(FRAME_attack33,
             FRAME_attack60, medic_frames_attackCable, medic_run);
 
-    static EntitiyThinkAdapter medic_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_attack = new EntityThinkAdapter() {
     	public String getID(){ return "medic_attack"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_MEDIC) != 0)
@@ -1239,7 +1241,7 @@ public class MonsterMedic {
         }
     };
 
-    static EntitiyThinkAdapter medic_checkattack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter medic_checkattack = new EntityThinkAdapter() {
     	public String getID(){ return "medic_checkattack"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_MEDIC) != 0) {

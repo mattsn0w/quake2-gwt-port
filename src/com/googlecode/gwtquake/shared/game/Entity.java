@@ -29,8 +29,8 @@ import java.io.RandomAccessFile;
 import com.googlecode.gwtquake.*;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityBlockedAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
@@ -164,9 +164,9 @@ public class Entity {
 
     public float nextthink;
 
-    public EntitiyThinkAdapter prethink = null;
+    public EntityThinkAdapter prethink = null;
 
-    public EntitiyThinkAdapter think = null;
+    public EntityThinkAdapter think = null;
 
     public EntityBlockedAdapter blocked = null;
 
@@ -176,7 +176,7 @@ public class Entity {
 
     public EntityPainAdapter pain = null;
 
-    public EntDieAdapter die = null;
+    public EntityDieAdapter die = null;
 
     /** Are all these legit? do we need more/less of them? */
     public float touch_debounce_time;
@@ -697,14 +697,14 @@ public class Entity {
 
         nextthink = f.readFloat();
 
-        prethink = (EntitiyThinkAdapter) f.readAdapter();
-        think = (EntitiyThinkAdapter) f.readAdapter();
+        prethink = (EntityThinkAdapter) f.readAdapter();
+        think = (EntityThinkAdapter) f.readAdapter();
         blocked = (EntityBlockedAdapter) f.readAdapter();
 
         touch = (EntityTouchAdapter) f.readAdapter();
         use = (EntityUseAdapter) f.readAdapter();
         pain = (EntityPainAdapter) f.readAdapter();
-        die = (EntDieAdapter) f.readAdapter();
+        die = (EntityDieAdapter) f.readAdapter();
 
         touch_debounce_time = f.readFloat();
         pain_debounce_time = f.readFloat();

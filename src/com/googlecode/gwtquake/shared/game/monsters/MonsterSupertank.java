@@ -25,8 +25,8 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -560,7 +560,7 @@ public class MonsterSupertank {
 
     static int tread_sound;
 
-    static EntitiyThinkAdapter TreadSound = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter TreadSound = new EntityThinkAdapter() {
     	public String getID(){ return "TreadSound"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, tread_sound, 1,
@@ -569,7 +569,7 @@ public class MonsterSupertank {
         }
     };
 
-    static EntitiyThinkAdapter supertank_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_search = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_search"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
@@ -651,7 +651,7 @@ public class MonsterSupertank {
     static MonsterMove supertank_move_stand = new MonsterMove(FRAME_stand_1,
             FRAME_stand_60, supertank_frames_stand, null);
 
-    static EntitiyThinkAdapter supertank_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_stand = new EntityThinkAdapter() {
     	public String getID() { return "supertank_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = supertank_move_stand;
@@ -709,7 +709,7 @@ public class MonsterSupertank {
     static MonsterMove supertank_move_forward = new MonsterMove(FRAME_forwrd_1,
             FRAME_forwrd_18, supertank_frames_forward, null);
 
-    static EntitiyThinkAdapter supertank_forward = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_forward = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_forward"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = supertank_move_forward;
@@ -717,7 +717,7 @@ public class MonsterSupertank {
         }
     };
 
-    static EntitiyThinkAdapter supertank_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_walk = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = supertank_move_forward;
@@ -725,7 +725,7 @@ public class MonsterSupertank {
         }
     };
 
-    static EntitiyThinkAdapter supertank_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_run = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -739,7 +739,7 @@ public class MonsterSupertank {
     //
     // death
     //
-    static EntitiyThinkAdapter supertank_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_dead = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -60, -60, 0);
@@ -752,7 +752,7 @@ public class MonsterSupertank {
         }
     };
 
-    static EntitiyThinkAdapter supertankRocket = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertankRocket = new EntityThinkAdapter() {
     	public String getID(){ return "supertankRocket"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -786,7 +786,7 @@ public class MonsterSupertank {
         }
     };
 
-    static EntitiyThinkAdapter supertankMachineGun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertankMachineGun = new EntityThinkAdapter() {
     	public String getID(){ return "supertankMachineGun"; }
         public boolean think(Entity self) {
             float[] dir = { 0, 0, 0 };
@@ -823,7 +823,7 @@ public class MonsterSupertank {
         }
     };
 
-    static EntitiyThinkAdapter supertank_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_attack = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_attack"; }
         public boolean think(Entity self) {
             float[] vec = { 0, 0, 0 };
@@ -1050,7 +1050,7 @@ public class MonsterSupertank {
     static MonsterMove supertank_move_attack2 = new MonsterMove(FRAME_attak2_1,
             FRAME_attak2_27, supertank_frames_attack2, supertank_run);
 
-    static EntitiyThinkAdapter supertank_reattack1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter supertank_reattack1 = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_reattack1"; }
         public boolean think(Entity self) {
             if (GameUtil.visible(self, self.enemy))
@@ -1135,7 +1135,7 @@ public class MonsterSupertank {
         }
     };
 
-    static EntDieAdapter supertank_die = new EntDieAdapter() {
+    static EntityDieAdapter supertank_die = new EntityDieAdapter() {
     	public String getID(){ return "supertank_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1156,7 +1156,7 @@ public class MonsterSupertank {
      * QUAKED monster_supertank (1 .5 0) (-64 -64 0) (64 64 72) Ambush
      * Trigger_Spawn Sight
      */
-    public static EntitiyThinkAdapter SP_monster_supertank = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_monster_supertank = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_supertank"; }
         public boolean think(Entity self) {
             if (GameBase.deathmatch.value != 0) {
@@ -1208,7 +1208,7 @@ public class MonsterSupertank {
 
     /** Common Boss explode animation. */
     
-    public static EntitiyThinkAdapter BossExplode = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter BossExplode = new EntityThinkAdapter() {
     	public String getID(){ return "BossExplode"; }
         public boolean think(Entity self) {
             float[] org = { 0, 0, 0 };

@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.game;
+package com.googlecode.gwtquake.shared.game.adapters;
 
-import com.googlecode.gwtquake.shared.game.adapters.SuperAdapter;
+import com.googlecode.gwtquake.shared.game.Entity;
 
 public abstract class EntInteractAdapter extends SuperAdapter
 {

@@ -25,8 +25,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -380,7 +381,7 @@ public class MonsterFlipper {
     static MonsterMove flipper_move_stand = new MonsterMove(FRAME_flphor01,
             FRAME_flphor01, flipper_frames_stand, null);
 
-    static EntitiyThinkAdapter flipper_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_stand = new EntityThinkAdapter() {
     	public String getID() { return "flipper_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flipper_move_stand;
@@ -424,7 +425,7 @@ public class MonsterFlipper {
     static MonsterMove flipper_move_run_loop = new MonsterMove(FRAME_flpver06,
             FRAME_flpver29, flipper_frames_run, null);
 
-    static EntitiyThinkAdapter flipper_run_loop = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_run_loop = new EntityThinkAdapter() {
     	public String getID() { return "flipper_run_loop"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flipper_move_run_loop;
@@ -443,7 +444,7 @@ public class MonsterFlipper {
     static MonsterMove flipper_move_run_start = new MonsterMove(FRAME_flpver01,
             FRAME_flpver06, flipper_frames_run_start, flipper_run_loop);
 
-    static EntitiyThinkAdapter flipper_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_run = new EntityThinkAdapter() {
     	public String getID() { return "flipper_run"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flipper_move_run_start;
@@ -481,7 +482,7 @@ public class MonsterFlipper {
     static MonsterMove flipper_move_walk = new MonsterMove(FRAME_flphor01,
             FRAME_flphor24, flipper_frames_walk, null);
 
-    static EntitiyThinkAdapter flipper_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_walk = new EntityThinkAdapter() {
     	public String getID() { return "flipper_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flipper_move_walk;
@@ -499,7 +500,7 @@ public class MonsterFlipper {
     static MonsterMove flipper_move_start_run = new MonsterMove(FRAME_flphor01,
             FRAME_flphor05, flipper_frames_start_run, null);
 
-    static EntitiyThinkAdapter flipper_start_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_start_run = new EntityThinkAdapter() {
     	public String getID() { return "flipper_start_run"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flipper_move_start_run;
@@ -527,7 +528,7 @@ public class MonsterFlipper {
     static MonsterMove flipper_move_pain1 = new MonsterMove(FRAME_flppn201,
             FRAME_flppn205, flipper_frames_pain1, flipper_run);
 
-    static EntitiyThinkAdapter flipper_bite = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_bite = new EntityThinkAdapter() {
     	public String getID() { return "flipper_bite"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -538,7 +539,7 @@ public class MonsterFlipper {
         }
     };
 
-    static EntitiyThinkAdapter flipper_preattack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_preattack = new EntityThinkAdapter() {
     	public String getID() { return "flipper_preattack"; }
 
         public boolean think(Entity self) {
@@ -573,7 +574,7 @@ public class MonsterFlipper {
     static MonsterMove flipper_move_attack = new MonsterMove(FRAME_flpbit01,
             FRAME_flpbit20, flipper_frames_attack, flipper_run);
 
-    static EntitiyThinkAdapter flipper_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_melee = new EntityThinkAdapter() {
     	public String getID() { return "flipper_melee"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flipper_move_attack;
@@ -611,7 +612,7 @@ public class MonsterFlipper {
         }
     };
 
-    static EntitiyThinkAdapter flipper_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flipper_dead = new EntityThinkAdapter() {
     	public String getID() { return "flipper_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -694,7 +695,7 @@ public class MonsterFlipper {
         }
     };
 
-    static EntDieAdapter flipper_die = new EntDieAdapter() {
+    static EntityDieAdapter flipper_die = new EntityDieAdapter() {
     	public String getID() { return "flipper_die"; }
 
         public void die(Entity self, Entity inflictor, Entity attacker,

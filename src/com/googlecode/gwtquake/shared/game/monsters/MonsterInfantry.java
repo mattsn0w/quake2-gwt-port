@@ -26,8 +26,10 @@ package com.googlecode.gwtquake.shared.game.monsters;
 import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -502,7 +504,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_stand = new MonsterMove(FRAME_stand50,
             FRAME_stand71, infantry_frames_stand, null);
 
-    public static EntitiyThinkAdapter infantry_stand = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter infantry_stand = new EntityThinkAdapter() {
     	public String getID() { return "infantry_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = infantry_move_stand;
@@ -564,7 +566,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_fidget = new MonsterMove(FRAME_stand01,
             FRAME_stand49, infantry_frames_fidget, infantry_stand);
 
-    static EntitiyThinkAdapter infantry_fidget = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_fidget = new EntityThinkAdapter() {
     	public String getID() { return "infantry_fidget"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = infantry_move_fidget;
@@ -591,7 +593,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_walk = new MonsterMove(FRAME_walk03, FRAME_walk14,
             infantry_frames_walk, null);
 
-    static EntitiyThinkAdapter infantry_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_walk = new EntityThinkAdapter() {
     	public String getID() { return "infantry_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = infantry_move_walk;
@@ -612,7 +614,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_run = new MonsterMove(FRAME_run01, FRAME_run08,
             infantry_frames_run, null);
 
-    static EntitiyThinkAdapter infantry_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_run = new EntityThinkAdapter() {
     	public String getID() { return "infantry_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -691,7 +693,7 @@ public class MonsterInfantry {
             { 40.0f, 35.0f, 0.0f }, { 70.0f, 35.0f, 0.0f },
             { 90.0f, 35.0f, 0.0f } };
 
-    static EntitiyThinkAdapter InfantryMachineGun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter InfantryMachineGun = new EntityThinkAdapter() {
     	public String getID() { return "InfantryMachineGun"; }
         public boolean think(Entity self) {
             float[] start = { 0, 0, 0 }, target = { 0, 0, 0 };
@@ -747,7 +749,7 @@ public class MonsterInfantry {
 
     ///
 
-    static EntitiyThinkAdapter infantry_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_dead = new EntityThinkAdapter() {
     	public String getID() { return "infantry_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -831,7 +833,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_death3 = new MonsterMove(FRAME_death301,
             FRAME_death309, infantry_frames_death3, infantry_dead);
 
-    public static EntDieAdapter infantry_die = new EntDieAdapter() {
+    public static EntityDieAdapter infantry_die = new EntityDieAdapter() {
     	public String getID() { return "infantry_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -881,7 +883,7 @@ public class MonsterInfantry {
         }
     };
 
-    static EntitiyThinkAdapter infantry_duck_down = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_duck_down = new EntityThinkAdapter() {
     	public String getID() { return "infantry_duck_down"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
@@ -895,7 +897,7 @@ public class MonsterInfantry {
         }
     };
 
-    static EntitiyThinkAdapter infantry_duck_hold = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_duck_hold = new EntityThinkAdapter() {
     	public String getID() { return "infantry_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
@@ -906,7 +908,7 @@ public class MonsterInfantry {
         }
     };
 
-    static EntitiyThinkAdapter infantry_duck_up = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_duck_up = new EntityThinkAdapter() {
     	public String getID() { return "infantry_duck_up"; }
         public boolean think(Entity self) {
             self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
@@ -927,7 +929,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_duck = new MonsterMove(FRAME_duck01, FRAME_duck05,
             infantry_frames_duck, infantry_run);
 
-    static EntDodgeAdapter infantry_dodge = new EntDodgeAdapter() {
+    static EntityDodgeAdapter infantry_dodge = new EntityDodgeAdapter() {
     	public String getID() { return "infantry_dodge"; }
         public void dodge(Entity self, Entity attacker, float eta) {
             if (Lib.random() > 0.25)
@@ -940,7 +942,7 @@ public class MonsterInfantry {
         }
     };
 
-    static EntitiyThinkAdapter infantry_cock_gun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_cock_gun = new EntityThinkAdapter() {
     	public String getID() { return "infantry_cock_gun"; }
         public boolean think(Entity self) {
             int n;
@@ -954,7 +956,7 @@ public class MonsterInfantry {
         }
     };
 
-    static EntitiyThinkAdapter infantry_fire = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_fire = new EntityThinkAdapter() {
     	public String getID() { return "infantry_fire"; }
         public boolean think(Entity self) {
             InfantryMachineGun.think(self);
@@ -987,7 +989,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_attack1 = new MonsterMove(FRAME_attak101,
             FRAME_attak115, infantry_frames_attack1, infantry_run);
 
-    static EntitiyThinkAdapter infantry_swing = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_swing = new EntityThinkAdapter() {
     	public String getID() { return "infantry_swing"; }
 
         public boolean think(Entity self) {
@@ -997,7 +999,7 @@ public class MonsterInfantry {
         }
     };
 
-    static EntitiyThinkAdapter infantry_smack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_smack = new EntityThinkAdapter() {
     	public String getID() { return "infantry_smack"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -1023,7 +1025,7 @@ public class MonsterInfantry {
     static MonsterMove infantry_move_attack2 = new MonsterMove(FRAME_attak201,
             FRAME_attak208, infantry_frames_attack2, infantry_run);
 
-    static EntitiyThinkAdapter infantry_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter infantry_attack = new EntityThinkAdapter() {
     	public String getID() { return "infantry_attack"; }
         public boolean think(Entity self) {
             if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)

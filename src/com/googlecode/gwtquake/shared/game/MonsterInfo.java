@@ -27,7 +27,9 @@ package com.googlecode.gwtquake.shared.game;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.util.QuakeFile;
 
 public class MonsterInfo {
@@ -37,20 +39,20 @@ public class MonsterInfo {
 	public int nextframe;
 	public float scale;
 
-	public EntitiyThinkAdapter stand;
-	public EntitiyThinkAdapter idle;
-	public EntitiyThinkAdapter search;
-	public EntitiyThinkAdapter walk;
-	public EntitiyThinkAdapter run;
+	public EntityThinkAdapter stand;
+	public EntityThinkAdapter idle;
+	public EntityThinkAdapter search;
+	public EntityThinkAdapter walk;
+	public EntityThinkAdapter run;
 
-	public EntDodgeAdapter dodge;
+	public EntityDodgeAdapter dodge;
 
-	public EntitiyThinkAdapter attack;
-	public EntitiyThinkAdapter melee;
+	public EntityThinkAdapter attack;
+	public EntityThinkAdapter melee;
 
 	public EntInteractAdapter sight;
 
-	public EntitiyThinkAdapter checkattack;
+	public EntityThinkAdapter checkattack;
 
 	public float pausetime;
 	public float attack_finished;
@@ -124,20 +126,20 @@ public class MonsterInfo {
 		aiflags = f.readInt();
 		nextframe = f.readInt();
 		scale = f.readFloat();
-		stand = (EntitiyThinkAdapter) f.readAdapter();
-		idle = (EntitiyThinkAdapter) f.readAdapter();
-		search = (EntitiyThinkAdapter) f.readAdapter();
-		walk = (EntitiyThinkAdapter) f.readAdapter();
-		run = (EntitiyThinkAdapter) f.readAdapter();
+		stand = (EntityThinkAdapter) f.readAdapter();
+		idle = (EntityThinkAdapter) f.readAdapter();
+		search = (EntityThinkAdapter) f.readAdapter();
+		walk = (EntityThinkAdapter) f.readAdapter();
+		run = (EntityThinkAdapter) f.readAdapter();
 		
-		dodge = (EntDodgeAdapter) f.readAdapter();
+		dodge = (EntityDodgeAdapter) f.readAdapter();
 		
-		attack = (EntitiyThinkAdapter) f.readAdapter();
-		melee = (EntitiyThinkAdapter) f.readAdapter();
+		attack = (EntityThinkAdapter) f.readAdapter();
+		melee = (EntityThinkAdapter) f.readAdapter();
 		
 		sight = (EntInteractAdapter) f.readAdapter();
 		
-		checkattack = (EntitiyThinkAdapter) f.readAdapter();
+		checkattack = (EntityThinkAdapter) f.readAdapter();
 		
  		pausetime = f.readFloat();
  		attack_finished = f.readFloat();

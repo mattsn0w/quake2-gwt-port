@@ -25,8 +25,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -238,7 +239,7 @@ public class MonsterGladiator {
 
     static int sound_sight;
 
-    static EntitiyThinkAdapter gladiator_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_idle = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_idle"; }
         public boolean think(Entity self) {
 
@@ -258,7 +259,7 @@ public class MonsterGladiator {
         }
     };
 
-    static EntitiyThinkAdapter gladiator_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_search = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_search"; }
         public boolean think(Entity self) {
 
@@ -268,7 +269,7 @@ public class MonsterGladiator {
         }
     };
 
-    static EntitiyThinkAdapter gladiator_cleaver_swing = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_cleaver_swing = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_cleaver_swing"; }
         public boolean think(Entity self) {
 
@@ -290,7 +291,7 @@ public class MonsterGladiator {
     static MonsterMove gladiator_move_stand = new MonsterMove(FRAME_stand1,
             FRAME_stand7, gladiator_frames_stand, null);
 
-    static EntitiyThinkAdapter gladiator_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_stand = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_stand"; }
         public boolean think(Entity self) {
 
@@ -320,7 +321,7 @@ public class MonsterGladiator {
     static MonsterMove gladiator_move_walk = new MonsterMove(FRAME_walk1, FRAME_walk16,
             gladiator_frames_walk, null);
 
-    static EntitiyThinkAdapter gladiator_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_walk = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_walk"; }
         public boolean think(Entity self) {
 
@@ -341,7 +342,7 @@ public class MonsterGladiator {
     static MonsterMove gladiator_move_run = new MonsterMove(FRAME_run1, FRAME_run6,
             gladiator_frames_run, null);
 
-    static EntitiyThinkAdapter gladiator_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_run = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_run"; }
         public boolean think(Entity self) {
 
@@ -354,7 +355,7 @@ public class MonsterGladiator {
         }
     };
 
-    static EntitiyThinkAdapter GaldiatorMelee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter GaldiatorMelee = new EntityThinkAdapter() {
     	public String getID() { return "GaldiatorMelee"; }
         public boolean think(Entity self) {
 
@@ -393,7 +394,7 @@ public class MonsterGladiator {
     static MonsterMove gladiator_move_attack_melee = new MonsterMove(FRAME_melee1,
             FRAME_melee17, gladiator_frames_attack_melee, gladiator_run);
 
-    static EntitiyThinkAdapter gladiator_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_melee = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_melee"; }
         public boolean think(Entity self) {
 
@@ -402,7 +403,7 @@ public class MonsterGladiator {
         }
     };
 
-    static EntitiyThinkAdapter GladiatorGun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter GladiatorGun = new EntityThinkAdapter() {
     	public String getID() { return "GladiatorGun"; }
         public boolean think(Entity self) {
 
@@ -443,7 +444,7 @@ public class MonsterGladiator {
     static MonsterMove gladiator_move_attack_gun = new MonsterMove(FRAME_attack1,
             FRAME_attack9, gladiator_frames_attack_gun, gladiator_run);
 
-    static EntitiyThinkAdapter gladiator_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_attack = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_attack"; }
         public boolean think(Entity self) {
 
@@ -524,7 +525,7 @@ public class MonsterGladiator {
         }
     };
 
-    static EntitiyThinkAdapter gladiator_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter gladiator_dead = new EntityThinkAdapter() {
     	public String getID() { return "gladiator_dead"; }
         public boolean think(Entity self) {
 
@@ -565,7 +566,7 @@ public class MonsterGladiator {
     static MonsterMove gladiator_move_death = new MonsterMove(FRAME_death1,
             FRAME_death22, gladiator_frames_death, gladiator_dead);
 
-    static EntDieAdapter gladiator_die = new EntDieAdapter() {
+    static EntityDieAdapter gladiator_die = new EntityDieAdapter() {
     	public String getID() { return "gladiator_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {

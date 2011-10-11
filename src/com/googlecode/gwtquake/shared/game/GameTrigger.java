@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.game;
 import com.googlecode.gwtquake.*;
 import com.googlecode.gwtquake.shared.client.*;
 import com.googlecode.gwtquake.shared.common.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
 import com.googlecode.gwtquake.shared.render.*;
@@ -244,7 +244,7 @@ public class GameTrigger {
     }
 
     // the wait time has passed, so set back up for another activation
-    public static EntitiyThinkAdapter multi_wait = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter multi_wait = new EntityThinkAdapter() {
     	public String getID(){ return "multi_wait"; }
         public boolean think(Entity ent) {
 

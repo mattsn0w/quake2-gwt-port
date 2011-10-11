@@ -27,7 +27,7 @@ import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.Entity;
 import com.googlecode.gwtquake.shared.game.GameBase;
 import com.googlecode.gwtquake.shared.game.GameUtil;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -45,7 +45,7 @@ public class MonsterBoss3 {
         }
     };
 
-    static EntitiyThinkAdapter Think_Boss3Stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Think_Boss3Stand = new EntityThinkAdapter() {
     	public String getID() { return "Think_Boss3Stand"; }
         public boolean think(Entity ent) {
             if (ent.s.frame == MonsterBoss32.FRAME_stand260)
