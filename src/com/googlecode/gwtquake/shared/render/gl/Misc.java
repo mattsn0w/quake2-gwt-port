@@ -28,7 +28,7 @@ package com.googlecode.gwtquake.shared.render.gl;
 import java.nio.FloatBuffer;
 
 import com.googlecode.gwtquake.shared.client.Window;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
 

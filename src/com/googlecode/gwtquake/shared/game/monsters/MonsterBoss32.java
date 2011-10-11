@@ -23,13 +23,16 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -1055,14 +1058,14 @@ public class MonsterBoss32 {
 
             r = Lib.random();
             if (r <= 0.3)
-                GameBase.gi.sound(self, Defines.CHAN_AUTO, sound_taunt1, 1,
-                        Defines.ATTN_NONE, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_AUTO, sound_taunt1, (float) 1, (float) Constants.ATTN_NONE,
+              (float) 0);
             else if (r <= 0.6)
-                GameBase.gi.sound(self, Defines.CHAN_AUTO, sound_taunt2, 1,
-                        Defines.ATTN_NONE, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_AUTO, sound_taunt2, (float) 1, (float) Constants.ATTN_NONE,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_AUTO, sound_taunt3, 1,
-                        Defines.ATTN_NONE, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_AUTO, sound_taunt3, (float) 1, (float) Constants.ATTN_NONE,
+              (float) 0);
             return true;
         }
     };
@@ -1086,8 +1089,8 @@ public class MonsterBoss32 {
     static EntityThinkAdapter makron_hit = new EntityThinkAdapter() {
     	public String getID() { return "makron_hit"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_AUTO, sound_hit, 1,
-                    Defines.ATTN_NONE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_AUTO, sound_hit, (float) 1, (float) Constants.ATTN_NONE,
+            (float) 0);
             return true;
         }
     };
@@ -1095,8 +1098,8 @@ public class MonsterBoss32 {
     static EntityThinkAdapter makron_popup = new EntityThinkAdapter() {
     	public String getID() { return "makron_popup"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_popup, 1,
-                    Defines.ATTN_NONE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_popup, (float) 1, (float) Constants.ATTN_NONE,
+            (float) 0);
             return true;
         }
     };
@@ -1105,8 +1108,8 @@ public class MonsterBoss32 {
     	public String getID() { return "makron_step_left"; }
 
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_step_left, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_step_left, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1114,8 +1117,8 @@ public class MonsterBoss32 {
     static EntityThinkAdapter makron_step_right = new EntityThinkAdapter() {
     	public String getID() { return "makron_step_right"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_step_right, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_step_right, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1123,8 +1126,8 @@ public class MonsterBoss32 {
     static EntityThinkAdapter makron_brainsplorch = new EntityThinkAdapter() {
     	public String getID() { return "makron_brainsplorch"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_brainsplorch, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_brainsplorch, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1132,8 +1135,8 @@ public class MonsterBoss32 {
     static EntityThinkAdapter makron_prerailgun = new EntityThinkAdapter() {
     	public String getID() { return "makron_prerailgun"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_prerailgun, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_prerailgun, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1247,10 +1250,10 @@ public class MonsterBoss32 {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -60, -60, 0);
             Math3D.VectorSet(self.maxs, 60, 60, 72);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -1266,7 +1269,7 @@ public class MonsterBoss32 {
     static EntityThinkAdapter makron_run = new EntityThinkAdapter() {
     	public String getID() { return "makron_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = makron_move_stand;
             else
                 self.monsterinfo.currentmove = makron_move_run;
@@ -1490,17 +1493,17 @@ public class MonsterBoss32 {
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_MAKRON_BFG],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_MAKRON_BFG],
                     forward, right, start);
 
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_attack_bfg, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_attack_bfg, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             Monster.monster_fire_bfg(self, start, dir, 50, 300, 100, 300,
-                    Defines.MZ2_MAKRON_BFG);
+                    Constants.MZ2_MAKRON_BFG);
             return true;
         }
     };
@@ -1527,7 +1530,7 @@ public class MonsterBoss32 {
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_MAKRON_RAILGUN_1],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_MAKRON_RAILGUN_1],
                     forward, right, start);
 
             // calc direction to where we targted
@@ -1535,7 +1538,7 @@ public class MonsterBoss32 {
             Math3D.VectorNormalize(dir);
 
             Monster.monster_fire_railgun(self, start, dir, 50, 100,
-                    Defines.MZ2_MAKRON_RAILGUN_1);
+                    Constants.MZ2_MAKRON_RAILGUN_1);
 
             return true;
         }
@@ -1552,7 +1555,7 @@ public class MonsterBoss32 {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
             int flash_number;
 
-            flash_number = Defines.MZ2_MAKRON_BLASTER_1
+            flash_number = Constants.MZ2_MAKRON_BLASTER_1
                     + (self.s.frame - FRAME_attak405);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
@@ -1580,7 +1583,7 @@ public class MonsterBoss32 {
             Math3D.AngleVectors(dir, forward, null, null);
 
             Monster.monster_fire_blaster(self, start, forward, 15, 1000,
-                    Defines.MZ2_MAKRON_BLASTER_1, Defines.EF_BLASTER);
+                    Constants.MZ2_MAKRON_BLASTER_1, Constants.EF_BLASTER);
 
             return true;
         }
@@ -1606,22 +1609,22 @@ public class MonsterBoss32 {
                 return; // no pain anims in nightmare
 
             if (damage <= 40) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain4, 1,
-                        Defines.ATTN_NONE, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain4, (float) 1, (float) Constants.ATTN_NONE,
+                (float) 0);
                 self.monsterinfo.currentmove = makron_move_pain4;
             } else if (damage <= 110) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain5, 1,
-                        Defines.ATTN_NONE, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain5, (float) 1, (float) Constants.ATTN_NONE,
+                (float) 0);
                 self.monsterinfo.currentmove = makron_move_pain5;
             } else {
                 if (damage <= 150)
                     if (Lib.random() <= 0.45) {
-                        GameBase.gi.sound(self, Defines.CHAN_VOICE,
-                                sound_pain6, 1, Defines.ATTN_NONE, 0);
+                        ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain6, (float) 1, (float) Constants.ATTN_NONE,
+                        (float) 0);
                         self.monsterinfo.currentmove = makron_move_pain6;
                     } else if (Lib.random() <= 0.35) {
-                        GameBase.gi.sound(self, Defines.CHAN_VOICE,
-                                sound_pain6, 1, Defines.ATTN_NONE, 0);
+                        ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain6, (float) 1, (float) Constants.ATTN_NONE,
+                        (float) 0);
                         self.monsterinfo.currentmove = makron_move_pain6;
                     }
             }
@@ -1668,10 +1671,10 @@ public class MonsterBoss32 {
     	public String getID() { return "makron_torso_think"; }
         public boolean think(Entity self) {
             if (++self.s.frame < 365)
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             else {
                 self.s.frame = 346;
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             }
             return true;
         }
@@ -1680,17 +1683,16 @@ public class MonsterBoss32 {
     static EntityThinkAdapter makron_torso = new EntityThinkAdapter() {
     	public String getID() { return "makron_torso"; }
         public boolean think(Entity ent) {
-            ent.movetype = Defines.MOVETYPE_NONE;
-            ent.solid = Defines.SOLID_NOT;
+            ent.movetype = Constants.MOVETYPE_NONE;
+            ent.solid = Constants.SOLID_NOT;
             Math3D.VectorSet(ent.mins, -8, -8, 0);
             Math3D.VectorSet(ent.maxs, 8, 8, 8);
             ent.s.frame = 346;
-            ent.s.modelindex = GameBase.gi
-                    .modelindex("models/monsters/boss3/rider/tris.md2");
+            ent.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/boss3/rider/tris.md2");
             ent.think = makron_torso_think;
-            ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
-            ent.s.sound = GameBase.gi.soundindex("makron/spine.wav");
-            GameBase.gi.linkentity(ent);
+            ent.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
+            ent.s.sound = ServerInit.SV_SoundIndex("makron/spine.wav");
+            World.SV_LinkEdict(ent);
             return true;
         }
     };
@@ -1706,32 +1708,30 @@ public class MonsterBoss32 {
             self.s.sound = 0;
             // check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 1 /* 4 */; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_metal/tris.md2", damage,
-                            Defines.GIB_METALLIC);
+                            Constants.GIB_METALLIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/gear/tris.md2",
-                        damage, Defines.GIB_METALLIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_METALLIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             //	   regular death
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death, 1,
-                    Defines.ATTN_NONE, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death, (float) 1, (float) Constants.ATTN_NONE,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
 
             tempent = GameUtil.G_Spawn();
             Math3D.VectorCopy(self.s.origin, tempent.s.origin);
@@ -1761,10 +1761,9 @@ public class MonsterBoss32 {
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                tr = GameBase.gi.trace(spot1, null, null, spot2, self,
-                        Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
-                                | Defines.CONTENTS_SLIME
-                                | Defines.CONTENTS_LAVA);
+                tr = World.SV_Trace(spot1, null, null, spot2, self, Constants.CONTENTS_SOLID | Constants.CONTENTS_MONSTER
+                | Constants.CONTENTS_SLIME
+                | Constants.CONTENTS_LAVA);
 
                 // do we have a clear shot?
                 if (tr.ent != self.enemy)
@@ -1779,11 +1778,11 @@ public class MonsterBoss32 {
             self.ideal_yaw = enemy_yaw;
 
             // melee attack
-            if (enemy_range == Defines.RANGE_MELEE) {
+            if (enemy_range == Constants.RANGE_MELEE) {
                 if (self.monsterinfo.melee != null)
-                    self.monsterinfo.attack_state = Defines.AS_MELEE;
+                    self.monsterinfo.attack_state = Constants.AS_MELEE;
                 else
-                    self.monsterinfo.attack_state = Defines.AS_MISSILE;
+                    self.monsterinfo.attack_state = Constants.AS_MISSILE;
                 return true;
             }
 
@@ -1794,33 +1793,33 @@ public class MonsterBoss32 {
             if (GameBase.level.time < self.monsterinfo.attack_finished)
                 return false;
 
-            if (enemy_range == Defines.RANGE_FAR)
+            if (enemy_range == Constants.RANGE_FAR)
                 return false;
 
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0) {
                 chance = 0.4f;
-            } else if (enemy_range == Defines.RANGE_MELEE) {
+            } else if (enemy_range == Constants.RANGE_MELEE) {
                 chance = 0.8f;
-            } else if (enemy_range == Defines.RANGE_NEAR) {
+            } else if (enemy_range == Constants.RANGE_NEAR) {
                 chance = 0.4f;
-            } else if (enemy_range == Defines.RANGE_MID) {
+            } else if (enemy_range == Constants.RANGE_MID) {
                 chance = 0.2f;
             } else {
                 return false;
             }
 
             if (Lib.random() < chance) {
-                self.monsterinfo.attack_state = Defines.AS_MISSILE;
+                self.monsterinfo.attack_state = Constants.AS_MISSILE;
                 self.monsterinfo.attack_finished = GameBase.level.time + 2
                         * Lib.random();
                 return true;
             }
 
-            if ((self.flags & Defines.FL_FLY) != 0) {
+            if ((self.flags & Constants.FL_FLY) != 0) {
                 if (Lib.random() < 0.3)
-                    self.monsterinfo.attack_state = Defines.AS_SLIDING;
+                    self.monsterinfo.attack_state = Constants.AS_SLIDING;
                 else
-                    self.monsterinfo.attack_state = Defines.AS_STRAIGHT;
+                    self.monsterinfo.attack_state = Constants.AS_STRAIGHT;
             }
 
             return false;
@@ -1915,7 +1914,7 @@ public class MonsterBoss32 {
                 return true;
 
             Math3D.VectorSubtract(player.s.origin, self.s.origin, vec);
-            self.s.angles[Defines.YAW] = Math3D.vectoyaw(vec);
+            self.s.angles[Constants.YAW] = Math3D.vectoyaw(vec);
             Math3D.VectorNormalize(vec);
             Math3D.VectorMA(Globals.vec3_origin, 400, vec, self.velocity);
             self.velocity[2] = 200;
@@ -1944,22 +1943,22 @@ public class MonsterBoss32 {
     //
 
     static void MakronPrecache() {
-        sound_pain4 = GameBase.gi.soundindex("makron/pain3.wav");
-        sound_pain5 = GameBase.gi.soundindex("makron/pain2.wav");
-        sound_pain6 = GameBase.gi.soundindex("makron/pain1.wav");
-        sound_death = GameBase.gi.soundindex("makron/death.wav");
-        sound_step_left = GameBase.gi.soundindex("makron/step1.wav");
-        sound_step_right = GameBase.gi.soundindex("makron/step2.wav");
-        sound_attack_bfg = GameBase.gi.soundindex("makron/bfg_fire.wav");
-        sound_brainsplorch = GameBase.gi.soundindex("makron/brain1.wav");
-        sound_prerailgun = GameBase.gi.soundindex("makron/rail_up.wav");
-        sound_popup = GameBase.gi.soundindex("makron/popup.wav");
-        sound_taunt1 = GameBase.gi.soundindex("makron/voice4.wav");
-        sound_taunt2 = GameBase.gi.soundindex("makron/voice3.wav");
-        sound_taunt3 = GameBase.gi.soundindex("makron/voice.wav");
-        sound_hit = GameBase.gi.soundindex("makron/bhit.wav");
+        sound_pain4 = ServerInit.SV_SoundIndex("makron/pain3.wav");
+        sound_pain5 = ServerInit.SV_SoundIndex("makron/pain2.wav");
+        sound_pain6 = ServerInit.SV_SoundIndex("makron/pain1.wav");
+        sound_death = ServerInit.SV_SoundIndex("makron/death.wav");
+        sound_step_left = ServerInit.SV_SoundIndex("makron/step1.wav");
+        sound_step_right = ServerInit.SV_SoundIndex("makron/step2.wav");
+        sound_attack_bfg = ServerInit.SV_SoundIndex("makron/bfg_fire.wav");
+        sound_brainsplorch = ServerInit.SV_SoundIndex("makron/brain1.wav");
+        sound_prerailgun = ServerInit.SV_SoundIndex("makron/rail_up.wav");
+        sound_popup = ServerInit.SV_SoundIndex("makron/popup.wav");
+        sound_taunt1 = ServerInit.SV_SoundIndex("makron/voice4.wav");
+        sound_taunt2 = ServerInit.SV_SoundIndex("makron/voice3.wav");
+        sound_taunt3 = ServerInit.SV_SoundIndex("makron/voice.wav");
+        sound_hit = ServerInit.SV_SoundIndex("makron/bhit.wav");
 
-        GameBase.gi.modelindex("models/monsters/boss3/rider/tris.md2");
+        ServerInit.SV_ModelIndex("models/monsters/boss3/rider/tris.md2");
     }
 
     /*
@@ -1974,10 +1973,9 @@ public class MonsterBoss32 {
 
         MakronPrecache();
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/boss3/rider/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/boss3/rider/tris.md2");
         Math3D.VectorSet(self.mins, -30, -30, 0);
         Math3D.VectorSet(self.maxs, 30, 30, 90);
 
@@ -1996,7 +1994,7 @@ public class MonsterBoss32 {
         self.monsterinfo.sight = makron_sight;
         self.monsterinfo.checkattack = Makron_CheckAttack;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         //		self.monsterinfo.currentmove = &makron_move_stand;
         self.monsterinfo.currentmove = makron_move_sight;

@@ -35,12 +35,12 @@ import com.googlecode.gwtquake.shared.util.Lib;
 public class ServerMain {
 
 	/** Addess of group servers.*/ 
-    public static NetworkAddress master_adr[] = new NetworkAddress[Defines.MAX_MASTERS];
+    public static NetworkAddress master_adr[] = new NetworkAddress[Constants.MAX_MASTERS];
                                                                             
                                                                             
                                                                             
     static {
-        for (int i = 0; i < Defines.MAX_MASTERS; i++) {
+        for (int i = 0; i < Constants.MAX_MASTERS; i++) {
             master_adr[i] = new NetworkAddress();
         }
     }
@@ -99,9 +99,9 @@ public class ServerMain {
      */
     public static void SV_DropClient(ClientData drop) {
         // add the disconnect
-        Buffer.WriteByte(drop.netchan.message, Defines.svc_disconnect);
+        Buffer.WriteByte(drop.netchan.message, Constants.svc_disconnect);
 
-        if (drop.state == Defines.cs_spawned) {
+        if (drop.state == Constants.cs_spawned) {
             // call the prog function for removing a client
             // this will remove the body, among other things
             PlayerClient.ClientDisconnect(drop.edict);
@@ -112,7 +112,7 @@ public class ServerMain {
             drop.download = null;
         }
 
-        drop.state = Defines.cs_zombie; // become free in a few seconds
+        drop.state = Constants.cs_zombie; // become free in a few seconds
         drop.name = "";
     }
 
@@ -138,9 +138,9 @@ public class ServerMain {
 
         for (i = 0; i < ServerMain.maxclients.value; i++) {
             cl = ServerInit.svs.clients[i];
-            if (cl.state == Defines.cs_connected
-                    || cl.state == Defines.cs_spawned) {
-                player = "" + cl.edict.client.ps.stats[Defines.STAT_FRAGS]
+            if (cl.state == Constants.cs_connected
+                    || cl.state == Constants.cs_spawned) {
+                player = "" + cl.edict.client.ps.stats[Constants.STAT_FRAGS]
                         + " " + cl.ping + "\"" + cl.name + "\"\n";
 
                 playerLength = player.length();
@@ -160,7 +160,7 @@ public class ServerMain {
      * Responds with all the info that qplug or qspy can see
      */
     public static void SVC_Status() {
-        NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, Globals.net_from, "print\n"
+        NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, Globals.net_from, "print\n"
                 + SV_StatusString());
     }
 
@@ -186,19 +186,19 @@ public class ServerMain {
 
         version = Lib.atoi(Commands.Argv(1));
 
-        if (version != Defines.PROTOCOL_VERSION)
+        if (version != Constants.PROTOCOL_VERSION)
             string = ServerMain.hostname.string + ": wrong version\n";
         else {
             count = 0;
             for (i = 0; i < ServerMain.maxclients.value; i++)
-                if (ServerInit.svs.clients[i].state >= Defines.cs_connected)
+                if (ServerInit.svs.clients[i].state >= Constants.cs_connected)
                     count++;
 
             string = ServerMain.hostname.string + " " + ServerInit.sv.name + " "
                     + count + "/" + (int) ServerMain.maxclients.value + "\n";
         }
 
-        NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, Globals.net_from, "info\n"
+        NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, Globals.net_from, "info\n"
                 + string);
     }
 
@@ -206,7 +206,7 @@ public class ServerMain {
      * SVC_Ping, Just responds with an acknowledgement.
      */
     public static void SVC_Ping() {
-        NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, Globals.net_from, "ack");
+        NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, Globals.net_from, "ack");
     }
 
     /** 
@@ -224,7 +224,7 @@ public class ServerMain {
         oldestTime = 0x7fffffff;
 
         // see if we already have a challenge for this ip
-        for (i = 0; i < Defines.MAX_CHALLENGES; i++) {
+        for (i = 0; i < Constants.MAX_CHALLENGES; i++) {
             if (NET.CompareBaseAdr(Globals.net_from,
                     ServerInit.svs.challenges[i].adr))
                 break;
@@ -234,7 +234,7 @@ public class ServerMain {
             }
         }
 
-        if (i == Defines.MAX_CHALLENGES) {
+        if (i == Constants.MAX_CHALLENGES) {
             // overwrite the oldest
             ServerInit.svs.challenges[oldest].challenge = Lib.rand() & 0x7fff;
             ServerInit.svs.challenges[oldest].adr = Globals.net_from;
@@ -243,7 +243,7 @@ public class ServerMain {
         }
 
         // send it back
-        NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, Globals.net_from,
+        NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, Globals.net_from,
                 "challenge " + ServerInit.svs.challenges[i].challenge);
     }
 
@@ -264,9 +264,9 @@ public class ServerMain {
         Com.DPrintf("SVC_DirectConnect ()\n");
 
         version = Lib.atoi(Commands.Argv(1));
-        if (version != Defines.PROTOCOL_VERSION) {
-            NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr,
-                    "print\nServer is version " + Globals.VERSION + "\n");
+        if (version != Constants.PROTOCOL_VERSION) {
+            NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr,
+                    "print\nServer is version " + Constants.VERSION + "\n");
             Com.DPrintf("    rejected connect from version " + version + "\n");
             return;
         }
@@ -282,7 +282,7 @@ public class ServerMain {
         if (ServerInit.sv.attractloop) {
             if (!NET.IsLocalAddress(adr)) {
                 Com.Printf("Remote connect in attract loop.  Ignored.\n");
-                NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr,
+                NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr,
                         "print\nConnection refused.\n");
                 return;
             }
@@ -290,18 +290,18 @@ public class ServerMain {
 
         // see if the challenge is valid
         if (!NET.IsLocalAddress(adr)) {
-            for (i = 0; i < Defines.MAX_CHALLENGES; i++) {
+            for (i = 0; i < Constants.MAX_CHALLENGES; i++) {
                 if (NET.CompareBaseAdr(Globals.net_from,
                         ServerInit.svs.challenges[i].adr)) {
                     if (challenge == ServerInit.svs.challenges[i].challenge)
                         break; // good
-                    NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr,
+                    NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr,
                             "print\nBad challenge.\n");
                     return;
                 }
             }
-            if (i == Defines.MAX_CHALLENGES) {
-                NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr,
+            if (i == Constants.MAX_CHALLENGES) {
+                NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr,
                         "print\nNo challenge for address.\n");
                 return;
             }
@@ -311,7 +311,7 @@ public class ServerMain {
         for (i = 0; i < ServerMain.maxclients.value; i++) {
             cl = ServerInit.svs.clients[i];
 
-            if (cl.state == Defines.cs_free)
+            if (cl.state == Constants.cs_free)
                 continue;
             if (NET.CompareBaseAdr(adr, cl.netchan.remote_address)
                     && (cl.netchan.qport == qport || adr.port == cl.netchan.remote_address.port)) {
@@ -333,13 +333,13 @@ public class ServerMain {
         int index = -1;
         for (i = 0; i < ServerMain.maxclients.value; i++) {
             cl = ServerInit.svs.clients[i];
-            if (cl.state == Defines.cs_free) {
+            if (cl.state == Constants.cs_free) {
                 index = i;
                 break;
             }
         }
         if (index == -1) {
-            NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr,
+            NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr,
                     "print\nServer is full.\n");
             Com.DPrintf("Rejected a connection.\n");
             return;
@@ -372,11 +372,11 @@ public class ServerMain {
         // userinfo
         if (!(PlayerClient.ClientConnect(ent, userinfo))) {
             if (Info.Info_ValueForKey(userinfo, "rejmsg") != null)
-                NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr, "print\n"
+                NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr, "print\n"
                         + Info.Info_ValueForKey(userinfo, "rejmsg")
                         + "\nConnection refused.\n");
             else
-                NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr,
+                NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr,
                         "print\nConnection refused.\n");
             Com.DPrintf("Game rejected a connection.\n");
             return;
@@ -387,11 +387,11 @@ public class ServerMain {
         SV_UserinfoChanged(ServerInit.svs.clients[i]);
 
         // send the connect packet to the client
-        NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, adr, "client_connect");
+        NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, adr, "client_connect");
 
-        NetworkChannels.Setup(Defines.NS_SERVER, ServerInit.svs.clients[i].netchan, adr, qport);
+        NetworkChannel.Setup(ServerInit.svs.clients[i].netchan, Constants.NS_SERVER, adr, qport);
 
-        ServerInit.svs.clients[i].state = Defines.cs_connected;
+        ServerInit.svs.clients[i].state = Constants.cs_connected;
 
         Buffer.Init(ServerInit.svs.clients[i].datagram,
                 ServerInit.svs.clients[i].datagram_buf,
@@ -436,8 +436,8 @@ public class ServerMain {
             Com.Printf("Rcon from " + NET.AdrToString(Globals.net_from) + ":\n"
                     + msg + "\n");
 
-        Com.BeginRedirect(Defines.RD_PACKET, ServerSend.sv_outputbuf,
-                Defines.SV_OUTPUTBUF_LENGTH, new Com.RD_Flusher() {
+        Com.BeginRedirect(Constants.RD_PACKET, ServerSend.sv_outputbuf,
+                Constants.SV_OUTPUTBUF_LENGTH, new Com.RD_Flusher() {
                     public void rd_flush(int target, StringBuffer buffer) {
                         ServerSend.SV_FlushRedirect(target, Lib.stringToBytes(buffer.toString()));
                     }
@@ -513,12 +513,12 @@ public class ServerMain {
 
         for (i = 0; i < ServerMain.maxclients.value; i++) {
             cl = ServerInit.svs.clients[i];
-            if (cl.state != Defines.cs_spawned)
+            if (cl.state != Constants.cs_spawned)
                 continue;
 
             total = 0;
             count = 0;
-            for (j = 0; j < Defines.LATENCY_COUNTS; j++) {
+            for (j = 0; j < Constants.LATENCY_COUNTS; j++) {
                 if (cl.frame_latency[j] > 0) {
                     count++;
                     total += cl.frame_latency[j];
@@ -547,7 +547,7 @@ public class ServerMain {
 
         for (i = 0; i < ServerMain.maxclients.value; i++) {
             cl = ServerInit.svs.clients[i];
-            if (cl.state == Defines.cs_free)
+            if (cl.state == Constants.cs_free)
                 continue;
 
             cl.commandMsec = 1800; // 1600 + some slop
@@ -562,7 +562,7 @@ public class ServerMain {
         ClientData cl;
         int qport = 0;
 
-        while (NET.GetPacket(Defines.NS_SERVER, Globals.net_from,
+        while (NET.GetPacket(Constants.NS_SERVER, Globals.net_from,
                 Globals.net_message)) {
 
             // check for connectionless packet (0xffffffff) first
@@ -584,7 +584,7 @@ public class ServerMain {
             // check for packets from connected clients
             for (i = 0; i < ServerMain.maxclients.value; i++) {
                 cl = ServerInit.svs.clients[i];
-                if (cl.state == Defines.cs_free)
+                if (cl.state == Constants.cs_free)
                     continue;
                 if (!NET.CompareBaseAdr(Globals.net_from,
                         cl.netchan.remote_address))
@@ -596,9 +596,9 @@ public class ServerMain {
                     cl.netchan.remote_address.port = Globals.net_from.port;
                 }
 
-                if (NetworkChannels.Process(cl.netchan, Globals.net_message)) {
+                if (NetworkChannel.Process(cl.netchan, Globals.net_message)) {
                     // this is a valid, sequenced packet, so process it
-                    if (cl.state != Defines.cs_zombie) {
+                    if (cl.state != Constants.cs_zombie) {
                         cl.lastmessage = ServerInit.svs.realtime; // don't timeout
                         User.SV_ExecuteClientMessage(cl);
                     }
@@ -635,16 +635,16 @@ public class ServerMain {
             if (cl.lastmessage > ServerInit.svs.realtime)
                 cl.lastmessage = ServerInit.svs.realtime;
 
-            if (cl.state == Defines.cs_zombie && cl.lastmessage < zombiepoint) {
-                cl.state = Defines.cs_free; // can now be reused
+            if (cl.state == Constants.cs_zombie && cl.lastmessage < zombiepoint) {
+                cl.state = Constants.cs_free; // can now be reused
                 continue;
             }
-            if ((cl.state == Defines.cs_connected || cl.state == Defines.cs_spawned)
+            if ((cl.state == Constants.cs_connected || cl.state == Constants.cs_spawned)
                     && cl.lastmessage < droppoint) {
-                ServerSend.SV_BroadcastPrintf(Defines.PRINT_HIGH, cl.name
+                ServerSend.SV_BroadcastPrintf(Constants.PRINT_HIGH, cl.name
                         + " timed out\n");
                 SV_DropClient(cl);
-                cl.state = Defines.cs_free; // don't bother with zombie state
+                cl.state = Constants.cs_free; // don't bother with zombie state
             }
         }
     }
@@ -783,11 +783,11 @@ public class ServerMain {
         string = SV_StatusString();
 
         // send to group master
-        for (i = 0; i < Defines.MAX_MASTERS; i++)
+        for (i = 0; i < Constants.MAX_MASTERS; i++)
             if (ServerMain.master_adr[i].port != 0) {
                 Com.Printf("Sending heartbeat to "
                         + NET.AdrToString(ServerMain.master_adr[i]) + "\n");
-                NetworkChannels.OutOfBandPrint(Defines.NS_SERVER,
+                NetworkChannel.OutOfBandPrint(Constants.NS_SERVER,
                         ServerMain.master_adr[i], "heartbeat\n" + string);
             }
     }
@@ -808,12 +808,12 @@ public class ServerMain {
             return; // a private dedicated game
 
         // send to group master
-        for (i = 0; i < Defines.MAX_MASTERS; i++)
+        for (i = 0; i < Constants.MAX_MASTERS; i++)
             if (ServerMain.master_adr[i].port != 0) {
                 if (i > 0)
                     Com.Printf("Sending heartbeat to "
                             + NET.AdrToString(ServerMain.master_adr[i]) + "\n");
-                NetworkChannels.OutOfBandPrint(Defines.NS_SERVER,
+                NetworkChannel.OutOfBandPrint(Constants.NS_SERVER,
                         ServerMain.master_adr[i], "shutdown");
             }
     }
@@ -866,20 +866,20 @@ public class ServerMain {
 
         ServerMain.rcon_password = ConsoleVariables.Get("rcon_password", "", 0);
         ConsoleVariables.Get("skill", "1", 0);
-        ConsoleVariables.Get("deathmatch", "0", Defines.CVAR_LATCH);
-        ConsoleVariables.Get("coop", "0", Defines.CVAR_LATCH);
-        ConsoleVariables.Get("dmflags", "" + Defines.DF_INSTANT_ITEMS,
-                Defines.CVAR_SERVERINFO);
-        ConsoleVariables.Get("fraglimit", "0", Defines.CVAR_SERVERINFO);
-        ConsoleVariables.Get("timelimit", "0", Defines.CVAR_SERVERINFO);
-        ConsoleVariables.Get("cheats", "0", Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
-        ConsoleVariables.Get("protocol", "" + Defines.PROTOCOL_VERSION,
-                Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
+        ConsoleVariables.Get("deathmatch", "0", Constants.CVAR_LATCH);
+        ConsoleVariables.Get("coop", "0", Constants.CVAR_LATCH);
+        ConsoleVariables.Get("dmflags", "" + Constants.DF_INSTANT_ITEMS,
+                Constants.CVAR_SERVERINFO);
+        ConsoleVariables.Get("fraglimit", "0", Constants.CVAR_SERVERINFO);
+        ConsoleVariables.Get("timelimit", "0", Constants.CVAR_SERVERINFO);
+        ConsoleVariables.Get("cheats", "0", Constants.CVAR_SERVERINFO | Constants.CVAR_LATCH);
+        ConsoleVariables.Get("protocol", "" + Constants.PROTOCOL_VERSION,
+                Constants.CVAR_SERVERINFO | Constants.CVAR_NOSET);
 
         ServerMain.maxclients = ConsoleVariables.Get("maxclients", "1",
-                Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
+                Constants.CVAR_SERVERINFO | Constants.CVAR_LATCH);
         ServerMain.hostname = ConsoleVariables.Get("hostname", "noname",
-                Defines.CVAR_SERVERINFO | Defines.CVAR_ARCHIVE);
+                Constants.CVAR_SERVERINFO | Constants.CVAR_ARCHIVE);
         ServerMain.timeout = ConsoleVariables.Get("timeout", "125", 0);
         ServerMain.zombietime = ConsoleVariables.Get("zombietime", "2", 0);
         ServerMain.sv_showclamp = ConsoleVariables.Get("showclamp", "0", 0);
@@ -888,22 +888,22 @@ public class ServerMain {
         ServerMain.sv_enforcetime = ConsoleVariables.Get("sv_enforcetime", "0", 0);
 
         ServerMain.allow_download = ConsoleVariables.Get("allow_download", "1",
-                Defines.CVAR_ARCHIVE);
+                Constants.CVAR_ARCHIVE);
         ServerMain.allow_download_players = ConsoleVariables.Get("allow_download_players",
-                "0", Defines.CVAR_ARCHIVE);
+                "0", Constants.CVAR_ARCHIVE);
         ServerMain.allow_download_models = ConsoleVariables.Get("allow_download_models", "1",
-                Defines.CVAR_ARCHIVE);
+                Constants.CVAR_ARCHIVE);
         ServerMain.allow_download_sounds = ConsoleVariables.Get("allow_download_sounds", "1",
-                Defines.CVAR_ARCHIVE);
+                Constants.CVAR_ARCHIVE);
         ServerMain.allow_download_maps = ConsoleVariables.Get("allow_download_maps", "1",
-                Defines.CVAR_ARCHIVE);
+                Constants.CVAR_ARCHIVE);
 
         ServerMain.sv_noreload = ConsoleVariables.Get("sv_noreload", "0", 0);
         ServerMain.sv_airaccelerate = ConsoleVariables.Get("sv_airaccelerate", "0",
-                Defines.CVAR_LATCH);
+                Constants.CVAR_LATCH);
         ServerMain.public_server = ConsoleVariables.Get("public", "0", 0);
         ServerMain.sv_reconnect_limit = ConsoleVariables.Get("sv_reconnect_limit", "3",
-                Defines.CVAR_ARCHIVE);
+                Constants.CVAR_ARCHIVE);
 
         Buffer.Init(Globals.net_message, Globals.net_message_buffer,
                 Globals.net_message_buffer.length);
@@ -920,28 +920,28 @@ public class ServerMain {
         ClientData cl;
 
         Globals.net_message.clear();
-        Buffer.WriteByte(Globals.net_message, Defines.svc_print);
-        Buffer.WriteByte(Globals.net_message, Defines.PRINT_HIGH);
+        Buffer.WriteByte(Globals.net_message, Constants.svc_print);
+        Buffer.WriteByte(Globals.net_message, Constants.PRINT_HIGH);
         Buffer.WriteString(Globals.net_message, message);
 
         if (reconnect)
-            Buffer.WriteByte(Globals.net_message, Defines.svc_reconnect);
+            Buffer.WriteByte(Globals.net_message, Constants.svc_reconnect);
         else
-            Buffer.WriteByte(Globals.net_message, Defines.svc_disconnect);
+            Buffer.WriteByte(Globals.net_message, Constants.svc_disconnect);
 
         // send it twice
         // stagger the packets to crutch operating system limited buffers
 
         for (i = 0; i < ServerInit.svs.clients.length; i++) {
             cl = ServerInit.svs.clients[i];
-            if (cl.state >= Defines.cs_connected)
-                NetworkChannels.Transmit(cl.netchan, Globals.net_message.cursize,
+            if (cl.state >= Constants.cs_connected)
+                NetworkChannel.Transmit(cl.netchan, Globals.net_message.cursize,
                         Globals.net_message.data);
         }
         for (i = 0; i < ServerInit.svs.clients.length; i++) {
             cl = ServerInit.svs.clients[i];
-            if (cl.state >= Defines.cs_connected)
-                NetworkChannels.Transmit(cl.netchan, Globals.net_message.cursize,
+            if (cl.state >= Constants.cs_connected)
+                NetworkChannel.Transmit(cl.netchan, Globals.net_message.cursize,
                         Globals.net_message.data);
         }
     }
@@ -962,7 +962,7 @@ public class ServerMain {
         // free current level
         ServerInit.sv.demofile = null;
 
-        ServerInit.sv = new server_t();
+        ServerInit.sv = new ServerState();
 
         Globals.server_state = ServerInit.sv.state;
 

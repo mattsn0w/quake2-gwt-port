@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.client;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.Model;
 import com.googlecode.gwtquake.shared.game.UserCommand;
 import com.googlecode.gwtquake.shared.render.ModelImage;
@@ -34,16 +34,16 @@ import com.googlecode.gwtquake.shared.sound.*;
 public class ClientState {
 
 	public ClientState() {
-		for (int n = 0; n < Defines.CMD_BACKUP; n++)
+		for (int n = 0; n < Constants.CMD_BACKUP; n++)
 			cmds[n] = new UserCommand();
 		for (int i = 0; i < frames.length; i++) {
 			frames[i] = new FrameData();
 		}
 
-		for (int n = 0; n < Defines.MAX_CONFIGSTRINGS; n++)
+		for (int n = 0; n < Constants.MAX_CONFIGSTRINGS; n++)
 			configstrings[n] = new String();
 			
-		for (int n=0; n < Defines.MAX_CLIENTS; n++)
+		for (int n=0; n < Constants.MAX_CLIENTS; n++)
 			clientinfo[n] = new ClientInfo();
 	}
 	//
@@ -62,10 +62,10 @@ public class ClientState {
 	int parse_entities; // index (not anded off) into cl_parse_entities[]
 
 	UserCommand cmd = new UserCommand();
-	UserCommand cmds[] = new UserCommand[Defines.CMD_BACKUP]; // each mesage will send several old cmds
+	UserCommand cmds[] = new UserCommand[Constants.CMD_BACKUP]; // each mesage will send several old cmds
 
-	int cmd_time[] = new int[Defines.CMD_BACKUP]; // time sent, for calculating pings
-	short predicted_origins[][] = new short[Defines.CMD_BACKUP][3]; // for debug comparing against server
+	int cmd_time[] = new int[Constants.CMD_BACKUP]; // time sent, for calculating pings
+	short predicted_origins[][] = new short[Constants.CMD_BACKUP][3]; // for debug comparing against server
 
 	float predicted_step; // for stair up smoothing
 	int predicted_step_time;
@@ -76,7 +76,7 @@ public class ClientState {
 
 	public FrameData frame = new FrameData(); // received from server
 	int surpressCount; // number of messages rate supressed
-	FrameData frames[] = new FrameData[Defines.UPDATE_BACKUP];
+	FrameData frames[] = new FrameData[Constants.UPDATE_BACKUP];
 
 	// the client maintains its own idea of view angles, which are
 	// sent to the server each frame.  It is cleared to 0 upon entering each level.
@@ -100,7 +100,7 @@ public class ClientState {
 	//
 
 	String layout = ""; // general 2D overlay
-	int inventory[] = new int[Defines.MAX_ITEMS];
+	int inventory[] = new int[Constants.MAX_ITEMS];
 
 	int cinematictime; // cls.realtime for first cinematic frame
 	int cinematicframe;
@@ -115,18 +115,18 @@ public class ClientState {
 	String gamedir ="";
 	public int playernum;
 
-	public String configstrings[] = new String[Defines.MAX_CONFIGSTRINGS];
+	public String configstrings[] = new String[Constants.MAX_CONFIGSTRINGS];
 
 	//
 	// locally derived information from server state
 	//
-	RendererModel model_draw[] = new RendererModel[Defines.MAX_MODELS];
-	Model model_clip[] = new Model[Defines.MAX_MODELS];
+	RendererModel model_draw[] = new RendererModel[Constants.MAX_MODELS];
+	Model model_clip[] = new Model[Constants.MAX_MODELS];
 
-	public Sfx sound_precache[] = new Sfx[Defines.MAX_SOUNDS];
-	ModelImage image_precache[] = new ModelImage[Defines.MAX_IMAGES];
+	public Sfx sound_precache[] = new Sfx[Constants.MAX_SOUNDS];
+	ModelImage image_precache[] = new ModelImage[Constants.MAX_IMAGES];
 
-	ClientInfo clientinfo[] = new ClientInfo[Defines.MAX_CLIENTS];
+	ClientInfo clientinfo[] = new ClientInfo[Constants.MAX_CLIENTS];
 	ClientInfo baseclientinfo = new ClientInfo();
 
 }

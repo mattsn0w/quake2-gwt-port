@@ -31,13 +31,13 @@ import java.util.regex.PatternSyntaxException;
 
 import com.googlecode.gwtquake.shared.client.Client;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 
 /**
  * Sys
  */
-public final class Sys extends Defines {
+public final class Sys extends Constants {
 
     public static void Error(String error) {
 

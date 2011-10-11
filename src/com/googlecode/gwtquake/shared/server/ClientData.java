@@ -34,7 +34,7 @@ import com.googlecode.gwtquake.shared.server.*;
 public class ClientData {
 
 	public ClientData() {
-		for (int n = 0; n < Defines.UPDATE_BACKUP; n++) {
+		for (int n = 0; n < Constants.UPDATE_BACKUP; n++) {
 			frames[n] = new ClientFrame();
 		}
 	}
@@ -70,9 +70,9 @@ public class ClientData {
 	// The datagram is written to by sound calls, prints, temp ents, etc.
 	// It can be harmlessly overflowed.
 	Buffer datagram = new Buffer();
-	byte datagram_buf[] = new byte[Defines.MAX_MSGLEN];
+	byte datagram_buf[] = new byte[Constants.MAX_MSGLEN];
 
-	ClientFrame frames[] = new ClientFrame[Defines.UPDATE_BACKUP]; // updates can be delta'd from here
+	ClientFrame frames[] = new ClientFrame[Constants.UPDATE_BACKUP]; // updates can be delta'd from here
 
 	byte download[]; // file being downloaded
 	int downloadsize; // total bytes (can't use EOF because of paks)

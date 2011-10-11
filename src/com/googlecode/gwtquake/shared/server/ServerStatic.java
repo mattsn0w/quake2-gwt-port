@@ -27,12 +27,12 @@ package com.googlecode.gwtquake.shared.server;
 import java.io.RandomAccessFile;
 
 import com.googlecode.gwtquake.shared.common.Buffer;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.EntityState;
 
 public class ServerStatic {
     public ServerStatic() {
-        for (int n = 0; n < Defines.MAX_CHALLENGES; n++) {
+        for (int n = 0; n < Constants.MAX_CHALLENGES; n++) {
             challenges[n] = new Challenge();
         }
     }
@@ -57,7 +57,7 @@ public class ServerStatic {
 
     int last_heartbeat;
 
-    Challenge challenges[] = new Challenge[Defines.MAX_CHALLENGES]; // to
+    Challenge challenges[] = new Challenge[Constants.MAX_CHALLENGES]; // to
                                                                         // prevent
                                                                         // invalid
                                                                         // IPs
@@ -69,5 +69,5 @@ public class ServerStatic {
 
     Buffer demo_multicast = new Buffer();
 
-    byte demo_multicast_buf[] = new byte[Defines.MAX_MSGLEN];
+    byte demo_multicast_buf[] = new byte[Constants.MAX_MSGLEN];
 }

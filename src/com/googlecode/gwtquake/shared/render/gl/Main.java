@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.render.gl;
 
-import static com.googlecode.gwtquake.shared.common.Defines.CVAR_ARCHIVE;
-import static com.googlecode.gwtquake.shared.common.Defines.CVAR_USERINFO;
+import static com.googlecode.gwtquake.shared.common.Constants.CVAR_ARCHIVE;
+import static com.googlecode.gwtquake.shared.common.Constants.CVAR_USERINFO;
 
 
 import java.nio.FloatBuffer;
@@ -37,7 +37,7 @@ import com.googlecode.gwtquake.shared.client.RendererState;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.QuakeFiles;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
@@ -58,7 +58,7 @@ import com.googlecode.gwtquake.shared.util.Vargs;
  * 
  * @author cwei
  */
-public abstract class Main extends Base {
+public abstract class Main extends GlBase {
 
 	int c_visible_lightmaps;
 	int c_visible_textures;
@@ -290,7 +290,7 @@ public abstract class Main extends Base {
 
 		frame = psprite.frames[e.frame];
 
-		if ((e.flags & Defines.RF_TRANSLUCENT) != 0)
+		if ((e.flags & Constants.RF_TRANSLUCENT) != 0)
 			alpha = e.alpha;
 
 		if (alpha != 1.0F)
@@ -348,7 +348,7 @@ public abstract class Main extends Base {
 	 * R_DrawNullModel
 	*/
 	void R_DrawNullModel() {
-		if ((currententity.flags & Defines.RF_FULLBRIGHT) != 0) {
+		if ((currententity.flags & Constants.RF_FULLBRIGHT) != 0) {
 			// cwei wollte blau: shadelight[0] = shadelight[1] = shadelight[2] = 1.0F;
 			shadelight[0] = shadelight[1] = shadelight[2] = 0.0F;
 			shadelight[2] = 0.8F;
@@ -398,10 +398,10 @@ public abstract class Main extends Base {
 		int i;
 		for (i = 0; i < r_newrefdef.num_entities; i++) {
 			currententity = r_newrefdef.entities[i];
-			if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0)
+			if ((currententity.flags & Constants.RF_TRANSLUCENT) != 0)
 				continue; // solid
 
-			if ((currententity.flags & Defines.RF_BEAM) != 0) {
+			if ((currententity.flags & Constants.RF_BEAM) != 0) {
 				R_DrawBeam(currententity);
 			}
 			else {
@@ -411,17 +411,17 @@ public abstract class Main extends Base {
 					continue;
 				}
 				switch (currentmodel.type) {
-					case mod_alias :
+					case GlConstants.mod_alias :
 						R_DrawAliasModel(currententity);
 						break;
-					case mod_brush :
+					case GlConstants.mod_brush :
 						R_DrawBrushModel(currententity);
 						break;
-					case mod_sprite :
+					case GlConstants.mod_sprite :
 						R_DrawSpriteModel(currententity);
 						break;
 					default :
-						Com.Error(Defines.ERR_DROP, "Bad modeltype");
+						Com.Error(Constants.ERR_DROP, "Bad modeltype");
 						break;
 				}
 			}
@@ -431,10 +431,10 @@ public abstract class Main extends Base {
 		gl.glDepthMask(false); // no z writes
 		for (i = 0; i < r_newrefdef.num_entities; i++) {
 			currententity = r_newrefdef.entities[i];
-			if ((currententity.flags & Defines.RF_TRANSLUCENT) == 0)
+			if ((currententity.flags & Constants.RF_TRANSLUCENT) == 0)
 				continue; // solid
 
-			if ((currententity.flags & Defines.RF_BEAM) != 0) {
+			if ((currententity.flags & Constants.RF_BEAM) != 0) {
 				R_DrawBeam(currententity);
 			}
 			else {
@@ -445,17 +445,17 @@ public abstract class Main extends Base {
 					continue;
 				}
 				switch (currentmodel.type) {
-					case mod_alias :
+					case GlConstants.mod_alias :
 						R_DrawAliasModel(currententity);
 						break;
-					case mod_brush :
+					case GlConstants.mod_brush :
 						R_DrawBrushModel(currententity);
 						break;
-					case mod_sprite :
+					case GlConstants.mod_sprite :
 						R_DrawSpriteModel(currententity);
 						break;
 					default :
-						Com.Error(Defines.ERR_DROP, "Bad modeltype");
+						Com.Error(Constants.ERR_DROP, "Bad modeltype");
 						break;
 				}
 			}
@@ -625,7 +625,7 @@ public abstract class Main extends Base {
 		Math3D.RotatePointAroundVector(frustum[3].normal, vright, vpn, - (90f - r_newrefdef.fov_y / 2f));
 
 		for (int i = 0; i < 4; i++) {
-			frustum[i].type = Defines.PLANE_ANYZ;
+			frustum[i].type = Constants.PLANE_ANYZ;
 			frustum[i].dist = Math3D.DotProduct(r_origin, frustum[i].normal);
 			frustum[i].signbits = (byte) SignbitsForPlane(frustum[i]);
 		}
@@ -648,7 +648,7 @@ public abstract class Main extends Base {
 
 		//	current viewcluster
 		ModelLeaf leaf;
-		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) == 0) {
+		if ((r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0) {
 			r_oldviewcluster = r_viewcluster;
 			r_oldviewcluster2 = r_viewcluster2;
 			leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
@@ -659,14 +659,14 @@ public abstract class Main extends Base {
 				Math3D.VectorCopy(r_origin, temp);
 				temp[2] -= 16;
 				leaf = Mod_PointInLeaf(temp, r_worldmodel);
-				if ((leaf.contents & Defines.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
+				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
 					r_viewcluster2 = leaf.cluster;
 			}
 			else { // look up a bit
 				Math3D.VectorCopy(r_origin, temp);
 				temp[2] += 16;
 				leaf = Mod_PointInLeaf(temp, r_worldmodel);
-				if ((leaf.contents & Defines.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
+				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
 					r_viewcluster2 = leaf.cluster;
 			}
 		}
@@ -678,7 +678,7 @@ public abstract class Main extends Base {
 		c_alias_polys = 0;
 
 		// clear out the portion of the screen that the NOWORLDMODEL defines
-		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0) {
+		if ((r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0) {
 		  gl.glEnable(GlAdapter.GL_SCISSOR_TEST);
 		  gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		  gl.glScissor(
@@ -828,11 +828,11 @@ public abstract class Main extends Base {
 
 		// included by cwei
 		if (r_newrefdef == null) {
-			Com.Error(Defines.ERR_DROP, "R_RenderView: refdef_t fd is null");
+			Com.Error(Constants.ERR_DROP, "R_RenderView: refdef_t fd is null");
 		}
 
-		if (r_worldmodel == null && (r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) == 0)
-			Com.Error(Defines.ERR_DROP, "R_RenderView: NULL worldmodel");
+		if (r_worldmodel == null && (r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0)
+			Com.Error(Constants.ERR_DROP, "R_RenderView: NULL worldmodel");
 
 		if (r_speeds.value != 0.0f) {
 			c_brush_polys = 0;
@@ -866,7 +866,7 @@ public abstract class Main extends Base {
 
 		if (r_speeds.value != 0.0f) {
 			Window.Printf(
-				Defines.PRINT_ALL,
+				Constants.PRINT_ALL,
 				"%4i wpoly %4i epoly %i tex %i lmaps\n",
 				new Vargs(4).add(c_brush_polys).add(c_alias_polys).add(c_visible_textures).add(c_visible_lightmaps));
 		}
@@ -896,7 +896,7 @@ public abstract class Main extends Base {
 	 *	R_SetLightLevel
 	 */
 	void R_SetLightLevel() {
-		if ((r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0)
+		if ((r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0)
 			return;
 
 		// save off light value for server to look at (BIG HACK!)
@@ -1041,19 +1041,19 @@ public abstract class Main extends Base {
 			if (err == rserr_invalid_fullscreen) {
 				ConsoleVariables.SetValue("vid_fullscreen", 0);
 				vid_fullscreen.modified = false;
-				Window.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
+				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
 				if ((err = GLimp_SetMode(dim, (int) gl_mode.value, false)) == rserr_ok)
 					return true;
 			}
 			else if (err == rserr_invalid_mode) {
 				ConsoleVariables.SetValue("gl_mode", gl_state.prev_mode);
 				gl_mode.modified = false;
-				Window.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
+				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
 			}
 
 			// try setting it back to something safe
 			if ((err = GLimp_SetMode(dim, gl_state.prev_mode, false)) != rserr_ok) {
-				Window.Printf(Defines.PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
+				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
 				return false;
 			}
 		}
@@ -1074,7 +1074,7 @@ public abstract class Main extends Base {
 			r_turbsin[j] = Warp.SIN[j] * 0.5f;
 		}
 
-		Window.Printf(Defines.PRINT_ALL, "ref_gl version: " + REF_VERSION + '\n');
+		Window.Printf(Constants.PRINT_ALL, "ref_gl version: " + GlConstants.REF_VERSION + '\n');
 
 		Draw_GetPalette();
 
@@ -1085,7 +1085,7 @@ public abstract class Main extends Base {
 
 		// create the window and set up the context
 		if (!R_SetMode()) {
-			Window.Printf(Defines.PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n");
+			Window.Printf(Constants.PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n");
 			return false;
 		}
 		return true;
@@ -1113,7 +1113,7 @@ public abstract class Main extends Base {
 		int err = gl.glGetError();
 		if (err != GlAdapter.GL_NO_ERROR)
 			Window.Printf(
-				Defines.PRINT_ALL,
+				Constants.PRINT_ALL,
 				"glGetError() = 0x%x\n\t%s\n",
 				new Vargs(2).add(err).add("" + gl.glGetString(err)));
 

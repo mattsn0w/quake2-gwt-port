@@ -23,14 +23,14 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
-import static com.googlecode.gwtquake.shared.common.Defines.CVAR_ARCHIVE;
-import static com.googlecode.gwtquake.shared.common.Defines.ERR_DROP;
-import static com.googlecode.gwtquake.shared.common.Defines.MAX_DLIGHTS;
-import static com.googlecode.gwtquake.shared.common.Defines.MAX_ENTITIES;
-import static com.googlecode.gwtquake.shared.common.Defines.MAX_LIGHTSTYLES;
-import static com.googlecode.gwtquake.shared.common.Defines.MAX_PARTICLES;
-import static com.googlecode.gwtquake.shared.common.Defines.YAW;
-import static com.googlecode.gwtquake.shared.common.Defines.ca_active;
+import static com.googlecode.gwtquake.shared.common.Constants.CVAR_ARCHIVE;
+import static com.googlecode.gwtquake.shared.common.Constants.ERR_DROP;
+import static com.googlecode.gwtquake.shared.common.Constants.MAX_DLIGHTS;
+import static com.googlecode.gwtquake.shared.common.Constants.MAX_ENTITIES;
+import static com.googlecode.gwtquake.shared.common.Constants.MAX_LIGHTSTYLES;
+import static com.googlecode.gwtquake.shared.common.Constants.MAX_PARTICLES;
+import static com.googlecode.gwtquake.shared.common.Constants.YAW;
+import static com.googlecode.gwtquake.shared.common.Constants.ca_active;
 import static com.googlecode.gwtquake.shared.common.Globals.cl;
 import static com.googlecode.gwtquake.shared.common.Globals.cl_add_blend;
 import static com.googlecode.gwtquake.shared.common.Globals.cl_add_entities;

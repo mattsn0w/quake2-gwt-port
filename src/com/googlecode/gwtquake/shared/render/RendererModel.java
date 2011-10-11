@@ -27,7 +27,7 @@ package com.googlecode.gwtquake.shared.render;
 
 import java.util.Arrays;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeFiles;
 import com.googlecode.gwtquake.shared.game.Plane;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -100,7 +100,7 @@ public class RendererModel implements Cloneable {
 
 	// for alias models and skins
 	// was image_t *skins[]; (array of pointers)
-	public ModelImage skins[] = new ModelImage[Defines.MAX_MD2SKINS];
+	public ModelImage skins[] = new ModelImage[Constants.MAX_MD2SKINS];
 
 	public int extradatasize;
 

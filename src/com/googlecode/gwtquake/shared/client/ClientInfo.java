@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.client;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.render.*;
 
 
@@ -34,7 +34,7 @@ public class ClientInfo {
 	ModelImage icon;	// ptr
 	String iconname	="";
 	RendererModel model;	// ptr
-	RendererModel weaponmodel[] = new RendererModel[Defines.MAX_CLIENTWEAPONMODELS]; // arary of references
+	RendererModel weaponmodel[] = new RendererModel[Constants.MAX_CLIENTWEAPONMODELS]; // arary of references
 	
 //	public void reset()
 //	{
@@ -49,6 +49,6 @@ public class ClientInfo {
 		icon = from.icon;
 		iconname = from.iconname;
 		model = from.model;
-		System.arraycopy(from.weaponmodel,0, weaponmodel, 0 , Defines.MAX_CLIENTWEAPONMODELS);
+		System.arraycopy(from.weaponmodel,0, weaponmodel, 0 , Constants.MAX_CLIENTWEAPONMODELS);
 	}
 }

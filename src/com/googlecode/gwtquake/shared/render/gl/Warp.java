@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package com.googlecode.gwtquake.shared.render.gl;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
@@ -128,7 +128,7 @@ public abstract class Warp extends Models {
 		float	frac;
 
 		if (numverts > 60)
-			Com.Error(Defines.ERR_DROP, "numverts = " + numverts);
+			Com.Error(Constants.ERR_DROP, "numverts = " + numverts);
 
 		float[] mins = Vec3Cache.get();
 		float[] maxs = Vec3Cache.get();
@@ -282,7 +282,7 @@ public abstract class Warp extends Models {
 		float rdt = r_newrefdef.time;
 
 		float scroll;
-		if ((fa.texinfo.flags & Defines.SURF_FLOWING) != 0)
+		if ((fa.texinfo.flags & Constants.SURF_FLOWING) != 0)
 			scroll = -64 * ( (r_newrefdef.time*0.5f) - (int)(r_newrefdef.time*0.5f) );
 		else
 			scroll = 0;
@@ -455,7 +455,7 @@ public abstract class Warp extends Models {
 	void ClipSkyPolygon(int nump, float[][] vecs, int stage)
 	{
 		if (nump > MAX_CLIP_VERTS-2)
-			Com.Error(Defines.ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
+			Com.Error(Constants.ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
 		if (stage == 6)
 		{	// fully clipped, so draw it
 			DrawSkyPolygon(nump, vecs);

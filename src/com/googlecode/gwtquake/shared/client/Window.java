@@ -23,11 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.client;
 
-import static com.googlecode.gwtquake.shared.common.Defines.CVAR_ARCHIVE;
+import static com.googlecode.gwtquake.shared.common.Constants.CVAR_ARCHIVE;
 
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.sys.IN;
@@ -65,7 +65,7 @@ public class Window {
 
 	public static void Printf(int print_level, String fmt, Vargs vargs) {
 		// static qboolean inupdate;
-		if (print_level == Defines.PRINT_ALL)
+		if (print_level == Constants.PRINT_ALL)
 			Com.Printf(fmt, vargs);
 		else
 			Com.DPrintf(fmt, vargs);
@@ -105,9 +105,9 @@ public class Window {
 
 		Com.Printf( "------- Loading VID -------\n");
 
-		if (Globals.re.apiVersion() != Defines.API_VERSION) {
+		if (Globals.re.apiVersion() != Constants.API_VERSION) {
 			FreeReflib();
-			Com.Error(Defines.ERR_FATAL, "VID has incompatible api_version");
+			Com.Error(Constants.ERR_FATAL, "VID has incompatible api_version");
 		}
 
 		IN.Real_IN_Init();

@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.sound;
 
 import java.nio.ByteBuffer;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 
 /**
  * Sound
@@ -35,7 +35,7 @@ import com.googlecode.gwtquake.shared.common.Defines;
  */
 public interface SoundImpl {
     
-    static final int MAX_SFX = Defines.MAX_SOUNDS * 2;
+    static final int MAX_SFX = Constants.MAX_SOUNDS * 2;
     static final int STREAM_QUEUE = 8;
 	
 	String getName();

@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeFiles;
 
 public class TGAConverter extends Converter {
@@ -55,12 +55,12 @@ public class TGAConverter extends Converter {
     targa_header = new QuakeFiles.tga_t(raw);
 
     if (targa_header.image_type != 2 && targa_header.image_type != 10)
-      Com.Error(Defines.ERR_DROP,
+      Com.Error(Constants.ERR_DROP,
           "LoadTGA: Only type 2 and 10 targa RGB images supported\n");
 
     if (targa_header.colormap_type != 0
         || (targa_header.pixel_size != 32 && targa_header.pixel_size != 24))
-      Com.Error(Defines.ERR_DROP,
+      Com.Error(Constants.ERR_DROP,
           "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 
     columns = targa_header.width;

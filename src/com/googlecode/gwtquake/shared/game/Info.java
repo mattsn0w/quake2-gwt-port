@@ -27,7 +27,7 @@ package com.googlecode.gwtquake.shared.game;
 import java.util.StringTokenizer;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 
 public class Info {
 
@@ -77,15 +77,15 @@ public class Info {
             return s;
         }
 
-        if (key.length() > Defines.MAX_INFO_KEY - 1
-                || value.length() > Defines.MAX_INFO_KEY - 1) {
+        if (key.length() > Constants.MAX_INFO_KEY - 1
+                || value.length() > Constants.MAX_INFO_KEY - 1) {
             Com.Printf("Keys and values must be < 64 characters.\n");
             return s;
         }
 
         StringBuffer sb = new StringBuffer(Info_RemoveKey(s, key));
 
-        if (sb.length() + 2 + key.length() + value.length() > Defines.MAX_INFO_STRING) {
+        if (sb.length() + 2 + key.length() + value.length() > Constants.MAX_INFO_STRING) {
 
             Com.Printf("Info string length exceeded\n");
             return s;

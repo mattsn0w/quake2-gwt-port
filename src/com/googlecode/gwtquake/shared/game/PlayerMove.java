@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.game;
 
 import java.util.Arrays;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
 public class PlayerMove {
@@ -57,7 +57,7 @@ public class PlayerMove {
     // results (out)
     public int numtouch;
 
-    public Entity touchents[] = new Entity[Defines.MAXTOUCH];
+    public Entity touchents[] = new Entity[Constants.MAXTOUCH];
 
     public float[] viewangles = { 0, 0, 0 }; // clamped
 

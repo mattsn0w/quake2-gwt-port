@@ -31,7 +31,7 @@ import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Compatibility;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.NetworkAddress;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
@@ -47,7 +47,7 @@ public final class NET {
     private static NetworkAddress net_local_adr = new NetworkAddress();
 
     public static class loopmsg_t {
-        byte data[] = new byte[Defines.MAX_MSGLEN];
+        byte data[] = new byte[Constants.MAX_MSGLEN];
 
         int datalen;
     };
@@ -89,10 +89,10 @@ public final class NET {
         if (a.type != b.type)
             return false;
 
-        if (a.type == Defines.NA_LOOPBACK)
+        if (a.type == Constants.NA_LOOPBACK)
             return true;
 
-        if (a.type == Defines.NA_IP) {
+        if (a.type == Constants.NA_IP) {
             return (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1]
                     && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3]);
         }
@@ -134,7 +134,7 @@ public final class NET {
             String[] address = s.split(":");
             InetAddress ia = InetAddress.getByName(address[0]);
             a.ip = ia.getAddress();
-            a.type = Defines.NA_IP;
+            a.type = Constants.NA_IP;
             if (address.length == 2)
                 a.port = Lib.atoi(address[1]);
             return true;
@@ -224,7 +224,7 @@ public final class NET {
 
 //            net_from.ip = srcSocket.getAddress().getAddress();
 //            net_from.port = srcSocket.getPort();
-            net_from.type = Defines.NA_IP;
+            net_from.type = Constants.NA_IP;
 
 //            int packetLength = receiveBuffer.position();
 
@@ -251,7 +251,7 @@ public final class NET {
      */
     public static void SendPacket(int sock, int length, byte[] data, NetworkAddress to) {
     	    	
-        if (to.type == Defines.NA_LOOPBACK) {
+        if (to.type == Constants.NA_LOOPBACK) {
             SendLoopPacket(sock, length, data, to);
             return;
         }
@@ -260,8 +260,8 @@ public final class NET {
             return;
         }
         
-        if (to.type != Defines.NA_BROADCAST && to.type != Defines.NA_IP) {
-            Com.Error(Defines.ERR_FATAL, "NET_SendPacket: bad address type");
+        if (to.type != Constants.NA_BROADCAST && to.type != Constants.NA_IP) {
+            Com.Error(Constants.ERR_FATAL, "NET_SendPacket: bad address type");
             return;
         }
 
@@ -278,20 +278,20 @@ public final class NET {
     private static void OpenIP() {
         ConsoleVariable port, ip, clientport;
 
-        port = ConsoleVariables.Get("port", "" + Defines.PORT_SERVER, Defines.CVAR_NOSET);
-        ip = ConsoleVariables.Get("ip", "localhost", Defines.CVAR_NOSET);
-        clientport = ConsoleVariables.Get("clientport", "" + Defines.PORT_CLIENT, Defines.CVAR_NOSET);
+        port = ConsoleVariables.Get("port", "" + Constants.PORT_SERVER, Constants.CVAR_NOSET);
+        ip = ConsoleVariables.Get("ip", "localhost", Constants.CVAR_NOSET);
+        clientport = ConsoleVariables.Get("clientport", "" + Constants.PORT_CLIENT, Constants.CVAR_NOSET);
         
-        if (ip_sockets[Defines.NS_SERVER] == null)
-            ip_sockets[Defines.NS_SERVER] = Socket(Defines.NS_SERVER,
+        if (ip_sockets[Constants.NS_SERVER] == null)
+            ip_sockets[Constants.NS_SERVER] = Socket(Constants.NS_SERVER,
                     ip.string, (int) port.value);
         
-        if (ip_sockets[Defines.NS_CLIENT] == null)
-            ip_sockets[Defines.NS_CLIENT] = Socket(Defines.NS_CLIENT,
+        if (ip_sockets[Constants.NS_CLIENT] == null)
+            ip_sockets[Constants.NS_CLIENT] = Socket(Constants.NS_CLIENT,
                     ip.string, (int) clientport.value);
-        if (ip_sockets[Defines.NS_CLIENT] == null)
-            ip_sockets[Defines.NS_CLIENT] = Socket(Defines.NS_CLIENT,
-                    ip.string, Defines.PORT_ANY);
+        if (ip_sockets[Constants.NS_CLIENT] == null)
+            ip_sockets[Constants.NS_CLIENT] = Socket(Constants.NS_CLIENT,
+                    ip.string, Constants.PORT_ANY);
     }
 
     /**
@@ -332,7 +332,7 @@ public final class NET {
         QuakeSocket newsocket = null;
         try {
             if (ip == null || ip.length() == 0 || ip.equals("localhost")) {
-                if (port == Defines.PORT_ANY) {
+                if (port == Constants.PORT_ANY) {
                     newsocket = socketFactory.bind(null, 0);
                 } else {
                     newsocket = socketFactory.bind(null, port);
@@ -363,7 +363,7 @@ public final class NET {
 
     /** Sleeps msec or until net socket is ready. */
     public static void Sleep(int msec) {
-        if (ip_sockets[Defines.NS_SERVER] == null
+        if (ip_sockets[Constants.NS_SERVER] == null
                 || (Globals.dedicated != null && Globals.dedicated.value == 0))
             return; // we're not a server, just run full speed
 

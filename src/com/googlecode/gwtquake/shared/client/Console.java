@@ -23,12 +23,12 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
-import static com.googlecode.gwtquake.shared.common.Defines.NUM_CON_TIMES;
-import static com.googlecode.gwtquake.shared.common.Defines.ca_active;
-import static com.googlecode.gwtquake.shared.common.Defines.key_console;
-import static com.googlecode.gwtquake.shared.common.Defines.key_game;
-import static com.googlecode.gwtquake.shared.common.Defines.key_menu;
-import static com.googlecode.gwtquake.shared.common.Defines.key_message;
+import static com.googlecode.gwtquake.shared.common.Constants.NUM_CON_TIMES;
+import static com.googlecode.gwtquake.shared.common.Constants.ca_active;
+import static com.googlecode.gwtquake.shared.common.Constants.key_console;
+import static com.googlecode.gwtquake.shared.common.Constants.key_game;
+import static com.googlecode.gwtquake.shared.common.Constants.key_menu;
+import static com.googlecode.gwtquake.shared.common.Constants.key_message;
 import static com.googlecode.gwtquake.shared.common.Globals.chat_buffer;
 import static com.googlecode.gwtquake.shared.common.Globals.chat_bufferlen;
 import static com.googlecode.gwtquake.shared.common.Globals.chat_team;
@@ -47,7 +47,7 @@ import java.util.Arrays;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.CommandBuffer;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.Commands;
@@ -67,7 +67,7 @@ public final class Console {
                 return;
             }
 
-            if (Globals.cls.state == Defines.ca_disconnected) {
+            if (Globals.cls.state == Constants.ca_disconnected) {
                 // start the demo loop again
                 CommandBuffer.AddText("d1\n");
                 return;
@@ -76,12 +76,12 @@ public final class Console {
             Key.ClearTyping();
             Console.ClearNotify();
 
-            if (Globals.cls.key_dest == Defines.key_console) {
+            if (Globals.cls.key_dest == Constants.key_console) {
                 Menu.ForceMenuOff();
                 ConsoleVariables.Set("paused", "0");
             } else {
                 Menu.ForceMenuOff();
-                Globals.cls.key_dest = Defines.key_console;
+                Globals.cls.key_dest = Constants.key_console;
 
                 if (ConsoleVariables.VariableValue("maxclients") == 1
                         && Globals.server_state != 0)
@@ -124,7 +124,7 @@ public final class Console {
      */
     public static void CheckResize() {
         int width = (Globals.viddef.width >> 3) - 2;
-        if (width > Defines.MAXCMDLINE) width = Defines.MAXCMDLINE;
+        if (width > Constants.MAXCMDLINE) width = Constants.MAXCMDLINE;
 
         if (width == Globals.con.linewidth)
             return;
@@ -132,14 +132,14 @@ public final class Console {
         if (width < 1) { // video hasn't been initialized yet
             width = 38;
             Globals.con.linewidth = width;
-            Globals.con.totallines = Defines.CON_TEXTSIZE
+            Globals.con.totallines = Constants.CON_TEXTSIZE
                     / Globals.con.linewidth;
             Arrays.fill(Globals.con.text, (byte) ' ');
         } else {
             int oldwidth = Globals.con.linewidth;
             Globals.con.linewidth = width;
             int oldtotallines = Globals.con.totallines;
-            Globals.con.totallines = Defines.CON_TEXTSIZE
+            Globals.con.totallines = Constants.CON_TEXTSIZE
                     / Globals.con.linewidth;
             int numlines = oldtotallines;
 
@@ -151,10 +151,10 @@ public final class Console {
             if (Globals.con.linewidth < numchars)
                 numchars = Globals.con.linewidth;
 
-            byte[] tbuf = new byte[Defines.CON_TEXTSIZE];
+            byte[] tbuf = new byte[Constants.CON_TEXTSIZE];
             System
                     .arraycopy(Globals.con.text, 0, tbuf, 0,
-                            Defines.CON_TEXTSIZE);
+                            Constants.CON_TEXTSIZE);
             Arrays.fill(Globals.con.text, (byte) ' ');
 
             for (int i = 0; i < numlines; i++) {
@@ -175,7 +175,7 @@ public final class Console {
 
     public static void ClearNotify() {
         int i;
-        for (i = 0; i < Defines.NUM_CON_TIMES; i++)
+        for (i = 0; i < Constants.NUM_CON_TIMES; i++)
             Globals.con.times[i] = 0;
     }
 
@@ -454,7 +454,7 @@ public final class Console {
         Screen.AddDirtyPoint(0, 0);
         Screen.AddDirtyPoint(viddef.width - 1, lines - 1);
 
-        version = Com.sprintf("v%4.2f", new Vargs(1).add(Defines.VERSION));
+        version = Com.sprintf("v%4.2f", new Vargs(1).add(Constants.VERSION));
         re.DrawString(viddef.width - 44, lines - 12, version);
 
         // draw the text

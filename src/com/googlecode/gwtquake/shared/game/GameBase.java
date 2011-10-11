@@ -31,7 +31,10 @@ import java.util.StringTokenizer;
 import com.googlecode.gwtquake.*;
 import com.googlecode.gwtquake.shared.client.*;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.CommandBuffer;
+import com.googlecode.gwtquake.shared.common.ConsoleVariables;
+import com.googlecode.gwtquake.shared.common.Constants;
+import com.googlecode.gwtquake.shared.game.PlayerMove.PointContentsAdapter;
 import com.googlecode.gwtquake.shared.server.*;
 import com.googlecode.gwtquake.shared.util.*;
 
@@ -43,7 +46,6 @@ public class GameBase {
 
     public static LevelLocals level = new LevelLocals();
 
-    public static GameEngine gi = new GameEngine();
 
     public static SpawnTemp st = new SpawnTemp();
 
@@ -55,9 +57,9 @@ public class GameBase {
 
     public static int num_edicts;
 
-    public static Entity g_edicts[] = new Entity[Defines.MAX_EDICTS];
+    public static Entity g_edicts[] = new Entity[Constants.MAX_EDICTS];
     static {
-        for (int n = 0; n < Defines.MAX_EDICTS; n++)
+        for (int n = 0; n < Constants.MAX_EDICTS; n++)
             g_edicts[n] = new Entity(n);
     }
 
@@ -215,7 +217,7 @@ public class GameBase {
             if (!from.o.inuse)
                 continue;
 
-            if (from.o.solid == Defines.SOLID_NOT)
+            if (from.o.solid == Constants.SOLID_NOT)
                 continue;
 
             for (j = 0; j < 3; j++)
@@ -245,7 +247,7 @@ public class GameBase {
         Entity choice[] = new Entity[MAXCHOICES];
 
         if (targetname == null) {
-            gi.dprintf("G_PickTarget called with null targetname\n");
+            ServerGame.PF_dprintf("G_PickTarget called with null targetname\n");
             return null;
         }
 
@@ -258,7 +260,7 @@ public class GameBase {
         }
 
         if (num_choices == 0) {
-            gi.dprintf("G_PickTarget: target " + targetname + " not found\n");
+            ServerGame.PF_dprintf("G_PickTarget: target " + targetname + " not found\n");
             return null;
         }
 
@@ -293,19 +295,18 @@ public class GameBase {
      * G_TouchTriggers
      */
 
-    static Entity touch[] = new Entity[Defines.MAX_EDICTS];
+    static Entity touch[] = new Entity[Constants.MAX_EDICTS];
 
     public static void G_TouchTriggers(Entity ent) {
         int i, num;
         Entity hit;
 
         // dead things don't activate triggers!
-        if ((ent.client != null || (ent.svflags & Defines.SVF_MONSTER) != 0)
+        if ((ent.client != null || (ent.svflags & Constants.SVF_MONSTER) != 0)
                 && (ent.health <= 0))
             return;
 
-        num = gi.BoxEdicts(ent.absmin, ent.absmax, touch, Defines.MAX_EDICTS,
-                Defines.AREA_TRIGGERS);
+        num = World.SV_AreaEdicts(ent.absmin, ent.absmax, touch, Constants.MAX_EDICTS, Constants.AREA_TRIGGERS);
 
         // be careful, it is possible to have an entity in this
         // list removed before we get to it (killtriggered)
@@ -322,9 +323,9 @@ public class GameBase {
         }
     }
 
-    public static Pushed pushed[] = new Pushed[Defines.MAX_EDICTS];
+    public static Pushed pushed[] = new Pushed[Constants.MAX_EDICTS];
     static {
-        for (int n = 0; n < Defines.MAX_EDICTS; n++)
+        for (int n = 0; n < Constants.MAX_EDICTS; n++)
             pushed[n] = new Pushed();
     }
 
@@ -345,27 +346,27 @@ public class GameBase {
             ent.prethink.think(ent);
 
         switch ((int) ent.movetype) {
-        case Defines.MOVETYPE_PUSH:
-        case Defines.MOVETYPE_STOP:
+        case Constants.MOVETYPE_PUSH:
+        case Constants.MOVETYPE_STOP:
             SV.SV_Physics_Pusher(ent);
             break;
-        case Defines.MOVETYPE_NONE:
+        case Constants.MOVETYPE_NONE:
             SV.SV_Physics_None(ent);
             break;
-        case Defines.MOVETYPE_NOCLIP:
+        case Constants.MOVETYPE_NOCLIP:
             SV.SV_Physics_Noclip(ent);
             break;
-        case Defines.MOVETYPE_STEP:
+        case Constants.MOVETYPE_STEP:
             SV.SV_Physics_Step(ent);
             break;
-        case Defines.MOVETYPE_TOSS:
-        case Defines.MOVETYPE_BOUNCE:
-        case Defines.MOVETYPE_FLY:
-        case Defines.MOVETYPE_FLYMISSILE:
+        case Constants.MOVETYPE_TOSS:
+        case Constants.MOVETYPE_BOUNCE:
+        case Constants.MOVETYPE_FLY:
+        case Constants.MOVETYPE_FLYMISSILE:
             SV.SV_Physics_Toss(ent);
             break;
         default:
-            gi.error("SV_Physics: bad movetype " + (int) ent.movetype);
+          Com.Error(Constants.ERR_FATAL, "SV_Physics: bad movetype " + (int) ent.movetype);
         }
     }
 
@@ -402,7 +403,7 @@ public class GameBase {
     };
 
     public static void ShutdownGame() {
-        gi.dprintf("==== ShutdownGame ====\n");
+        ServerGame.PF_dprintf("==== ShutdownGame ====\n");
     }
 
     /**
@@ -447,7 +448,7 @@ public class GameBase {
         String seps = " ,\n\r";
 
         // stay on same level flag
-        if (((int) dmflags.value & Defines.DF_SAME_LEVEL) != 0) {
+        if (((int) dmflags.value & Constants.DF_SAME_LEVEL) != 0) {
             PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
             return;
         }
@@ -517,7 +518,7 @@ public class GameBase {
                     && 0 != Lib.Q_stricmp(spectator_password.string, "none"))
                 need |= 2;
 
-            gi.cvar_set("needpass", "" + need);
+            ConsoleVariables.Set("needpass", "" + need);
         }
     }
 
@@ -536,7 +537,7 @@ public class GameBase {
 
         if (timelimit.value != 0) {
             if (level.time >= timelimit.value * 60) {
-                gi.bprintf(Defines.PRINT_HIGH, "Timelimit hit.\n");
+                ServerSend.SV_BroadcastPrintf(Constants.PRINT_HIGH, "Timelimit hit.\n");
                 EndDMLevel();
                 return;
             }
@@ -549,7 +550,7 @@ public class GameBase {
                     continue;
 
                 if (cl.resp.score >= fraglimit.value) {
-                    gi.bprintf(Defines.PRINT_HIGH, "Fraglimit hit.\n");
+                    ServerSend.SV_BroadcastPrintf(Constants.PRINT_HIGH, "Fraglimit hit.\n");
                     EndDMLevel();
                     return;
                 }
@@ -565,7 +566,7 @@ public class GameBase {
         Entity ent;
 
         String command = "gamemap \"" + level.changemap + "\"\n";
-        gi.AddCommandString(command);
+        CommandBuffer.AddText(command);
         level.changemap = null;
         level.exitintermission = false;
         level.intermissiontime = 0;
@@ -591,7 +592,7 @@ public class GameBase {
         Entity ent;
 
         level.framenum++;
-        level.time = level.framenum * Defines.FRAMETIME;
+        level.time = level.framenum * Constants.FRAMETIME;
 
         // choose a client for monsters to target this frame
         GameAI.AI_SetSightClient();
@@ -621,8 +622,8 @@ public class GameBase {
             if ((ent.groundentity != null)
                     && (ent.groundentity.linkcount != ent.groundentity_linkcount)) {
                 ent.groundentity = null;
-                if (0 == (ent.flags & (Defines.FL_SWIM | Defines.FL_FLY))
-                        && (ent.svflags & Defines.SVF_MONSTER) != 0) {
+                if (0 == (ent.flags & (Constants.FL_SWIM | Constants.FL_FLY))
+                        && (ent.svflags & Constants.SVF_MONSTER) != 0) {
                     ClientMonsterMethods.M_CheckGround(ent);
                 }
             }
@@ -645,17 +646,9 @@ public class GameBase {
         ClientEndServerFrames();
     }
 
-    /**
-     * This return a pointer to the structure with all entry points and global
-     * variables. 
-     */
-
-    public static void GetGameApi(GameEngine imp) {
-        gi = imp;
-        gi.pointcontents = new PlayerMove.PointContentsAdapter() {
-            public int pointcontents(float[] o) {
-                return ServerWorld.SV_PointContents(o);
-            }
-        };
-    }
+    public static PlayerMove.PointContentsAdapter pointcontents = new PlayerMove.PointContentsAdapter() {
+        public int pointcontents(float[] o) {
+            return 0;
+        }
+    };
 }

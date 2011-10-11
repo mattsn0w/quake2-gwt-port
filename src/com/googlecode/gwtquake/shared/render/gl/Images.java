@@ -36,7 +36,7 @@ import com.googlecode.gwtquake.shared.client.Particles;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
@@ -56,7 +56,7 @@ public abstract class Images extends Main {
 	
 	ModelImage draw_chars;
 
-	ModelImage[] gltextures = new ModelImage[MAX_GLTEXTURES];
+	ModelImage[] gltextures = new ModelImage[GlConstants.MAX_GLTEXTURES];
 	//Map gltextures = new Hashtable(MAX_GLTEXTURES); // image_t
 	int numgltextures;
 	int base_textureid; // gltextures[i] = base_textureid+i
@@ -253,7 +253,7 @@ public abstract class Images extends Main {
 		}
 
 		if (i == NUM_GL_MODES) {
-			Window.Printf(Defines.PRINT_ALL, "bad filter name: [" + string + "]\n");
+			Window.Printf(Constants.PRINT_ALL, "bad filter name: [" + string + "]\n");
 			return;
 		}
 
@@ -287,7 +287,7 @@ public abstract class Images extends Main {
 		}
 
 		if (i == NUM_GL_ALPHA_MODES) {
-			Window.Printf(Defines.PRINT_ALL, "bad alpha texture mode name: [" + string + "]\n");
+			Window.Printf(Constants.PRINT_ALL, "bad alpha texture mode name: [" + string + "]\n");
 			return;
 		}
 
@@ -307,7 +307,7 @@ public abstract class Images extends Main {
 		}
 
 		if (i == NUM_GL_SOLID_MODES) {
-			Window.Printf(Defines.PRINT_ALL, "bad solid texture mode name: [" + string + "]\n");
+			Window.Printf(Constants.PRINT_ALL, "bad solid texture mode name: [" + string + "]\n");
 			return;
 		}
 
@@ -325,7 +325,7 @@ public abstract class Images extends Main {
 		int texels;
 		final String[] palstrings = { "RGB", "PAL" };
 
-		Window.Printf(Defines.PRINT_ALL, "------------------\n");
+		Window.Printf(Constants.PRINT_ALL, "------------------\n");
 		texels = 0;
 
 		for (int i = 0; i < numgltextures; i++) {
@@ -336,29 +336,29 @@ public abstract class Images extends Main {
 			texels += image.upload_width * image.upload_height;
 			switch (image.type) {
 				case QuakeImage.it_skin :
-					Window.Printf(Defines.PRINT_ALL, "M");
+					Window.Printf(Constants.PRINT_ALL, "M");
 					break;
 				case QuakeImage.it_sprite :
-					Window.Printf(Defines.PRINT_ALL, "S");
+					Window.Printf(Constants.PRINT_ALL, "S");
 					break;
 				case QuakeImage.it_wall :
-					Window.Printf(Defines.PRINT_ALL, "W");
+					Window.Printf(Constants.PRINT_ALL, "W");
 					break;
 				case QuakeImage.it_pic :
-					Window.Printf(Defines.PRINT_ALL, "P");
+					Window.Printf(Constants.PRINT_ALL, "P");
 					break;
 				default :
-					Window.Printf(Defines.PRINT_ALL, " ");
+					Window.Printf(Constants.PRINT_ALL, " ");
 					break;
 			}
 
 			Window.Printf(
-				Defines.PRINT_ALL,
+				Constants.PRINT_ALL,
 				" %3i %3i %s: %s\n",
 				new Vargs(4).add(image.upload_width).add(image.upload_height).add(palstrings[(image.paletted) ? 1 : 0]).add(
 					image.name));
 		}
-		Window.Printf(Defines.PRINT_ALL, "Total texel count (not counting mipmaps): " + texels + '\n');
+		Window.Printf(Constants.PRINT_ALL, "Total texel count (not counting mipmaps): " + texels + '\n');
 	}
 
 	static class pos_t {
@@ -682,7 +682,7 @@ public abstract class Images extends Main {
 		upload_height = scaled_height;
 
 		if (scaled_width * scaled_height > 256 * 256)
-			Com.Error(Defines.ERR_DROP, "GL_Upload32: too big");
+			Com.Error(Constants.ERR_DROP, "GL_Upload32: too big");
 
 		// scan the texture for any non-255 alpha
 		c = width * height;
@@ -700,7 +700,7 @@ public abstract class Images extends Main {
 		else if (samples == gl_alpha_format)
 			comp = gl_tex_alpha_format;
 		else {
-			Window.Printf(Defines.PRINT_ALL, "Unknown number of texture components " + samples + '\n');
+			Window.Printf(Constants.PRINT_ALL, "Unknown number of texture components " + samples + '\n');
 			comp = samples;
 		}
 
@@ -853,15 +853,15 @@ public abstract class Images extends Main {
 
 		if (i == numgltextures)
 		{
-			if (numgltextures == MAX_GLTEXTURES)
-				Com.Error (Defines.ERR_DROP, "MAX_GLTEXTURES");
+			if (numgltextures == GlConstants.MAX_GLTEXTURES)
+				Com.Error (Constants.ERR_DROP, "MAX_GLTEXTURES");
 			
 			numgltextures++;
 		}
 		image = gltextures[i];
 
-		if (name.length() > Defines.MAX_QPATH)
-			Com.Error(Defines.ERR_DROP, "Draw_LoadPic: \"" + name + "\" is too long");
+		if (name.length() > Constants.MAX_QPATH)
+			Com.Error(Constants.ERR_DROP, "Draw_LoadPic: \"" + name + "\" is too long");
 
 		image.name = name;
 		image.type = type;
@@ -869,7 +869,7 @@ public abstract class Images extends Main {
 		image.width = image.upload_width = 32;
 		image.height = image.upload_height = 32;
 		image.complete = false;
-		image.texnum = TEXNUM_IMAGES + image.getId();
+		image.texnum = GlConstants.TEXNUM_IMAGES + image.getId();
 		GL_Bind(image.texnum);
 		
 		return image;
@@ -953,7 +953,7 @@ public abstract class Images extends Main {
 		//
 		byte[] raw = QuakeFileSystem.LoadFile(name);
 		if (raw == null) {
-			Window.Printf(Defines.PRINT_ALL, "GL_FindImage: can't load " + name + '\n');
+			Window.Printf(Constants.PRINT_ALL, "GL_FindImage: can't load " + name + '\n');
 			return r_notexture;
 		}
 		

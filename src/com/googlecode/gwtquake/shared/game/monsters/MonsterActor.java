@@ -23,13 +23,16 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -1118,7 +1121,7 @@ public class MonsterActor {
                 return true;
             }
 
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0) {
                 actor_stand.think(self);
                 return true;
             }
@@ -1228,8 +1231,8 @@ public class MonsterActor {
                 // FIXME: does the ent-id work out ?
                 name = actor_names[(self.index) % MAX_ACTOR_NAMES];
 
-                GameBase.gi.cprintf(other, Defines.PRINT_CHAT, name + ": "
-                        + messages[Lib.rand() % 3] + "!\n");
+                ServerGame.PF_cprintf(other, Constants.PRINT_CHAT, name + ": "
+                + messages[Lib.rand() % 3] + "!\n");
                 return;
             }
 
@@ -1248,10 +1251,10 @@ public class MonsterActor {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -1298,24 +1301,24 @@ public class MonsterActor {
                 // 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             //	regular death
             //	 gi.sound (self, CHAN_VOICE, actor.sound_die, 1, ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
 
             n = Lib.rand() % 2;
             if (n == 0)
@@ -1331,9 +1334,9 @@ public class MonsterActor {
             actorMachineGun(self);
 
             if (GameBase.level.time >= self.monsterinfo.pausetime)
-                self.monsterinfo.aiflags &= ~Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags &= ~Constants.AI_HOLD_FRAME;
             else
-                self.monsterinfo.aiflags |= Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags |= Constants.AI_HOLD_FRAME;
 
             return true;
         }
@@ -1356,7 +1359,7 @@ public class MonsterActor {
             self.monsterinfo.currentmove = actor_move_attack;
             n = (Lib.rand() & 15) + 3 + 7;
             self.monsterinfo.pausetime = GameBase.level.time + n
-                    * Defines.FRAMETIME;
+                    * Constants.FRAMETIME;
 
             return true;
         }
@@ -1371,10 +1374,9 @@ public class MonsterActor {
                     .G_PickTarget(self.target);
             if ((null == self.movetarget)
                     || (Lib.strcmp(self.movetarget.classname, "target_actor") != 0)) {
-                GameBase.gi
-                        .dprintf(self.classname + " has bad target "
-                                + self.target + " at "
-                                + Lib.vtos(self.s.origin) + "\n");
+                ServerGame.PF_dprintf(self.classname + " has bad target "
+                + self.target + " at "
+                + Lib.vtos(self.s.origin) + "\n");
                 self.target = null;
                 self.monsterinfo.pausetime = 100000000;
                 self.monsterinfo.stand.think(self);
@@ -1382,7 +1384,7 @@ public class MonsterActor {
             }
 
             Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin, v);
-            self.ideal_yaw = self.s.angles[Defines.YAW] = Math3D.vectoyaw(v);
+            self.ideal_yaw = self.s.angles[Constants.YAW] = Math3D.vectoyaw(v);
             self.monsterinfo.walk.think(self);
             self.target = null;
         }
@@ -1424,9 +1426,8 @@ public class MonsterActor {
                     ent = GameBase.g_edicts[n];
                     if (!ent.inuse)
                         continue;
-                    GameBase.gi.cprintf(ent, Defines.PRINT_CHAT,
-                            actor_names[(other.index) % MAX_ACTOR_NAMES] + ": "
-                                    + self.message + "\n");
+                    ServerGame.PF_cprintf(ent, Constants.PRINT_CHAT, actor_names[(other.index) % MAX_ACTOR_NAMES] + ": "
+                    + self.message + "\n");
                 }
             }
 
@@ -1438,9 +1439,8 @@ public class MonsterActor {
                 if (other.groundentity != null) {
                     other.groundentity = null;
                     other.velocity[2] = self.movedir[2];
-                    GameBase.gi.sound(other, Defines.CHAN_VOICE, GameBase.gi
-                            .soundindex("player/male/jump1.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_StartSound(other, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/male/jump1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                 }
             }
 
@@ -1452,9 +1452,9 @@ public class MonsterActor {
                 if (other.enemy != null) {
                     other.goalentity = other.enemy;
                     if ((self.spawnflags & 32) != 0)
-                        other.monsterinfo.aiflags |= Defines.AI_BRUTAL;
+                        other.monsterinfo.aiflags |= Constants.AI_BRUTAL;
                     if ((self.spawnflags & 16) != 0) {
-                        other.monsterinfo.aiflags |= Defines.AI_STAND_GROUND;
+                        other.monsterinfo.aiflags |= Constants.AI_STAND_GROUND;
                         actor_stand.think(other);
                     } else {
                         actor_run.think(other);
@@ -1495,7 +1495,7 @@ public class MonsterActor {
         Math3D.AngleVectors(self.s.angles, forward, right, null);
 
         Math3D.G_ProjectSource(self.s.origin,
-                MonsterFlash.monster_flash_offset[Defines.MZ2_ACTOR_MACHINEGUN_1],
+                MonsterFlash.monster_flash_offset[Constants.MZ2_ACTOR_MACHINEGUN_1],
                 forward, right, start);
 
         if (self.enemy != null) {
@@ -1513,8 +1513,8 @@ public class MonsterActor {
             Math3D.AngleVectors(self.s.angles, forward, null, null);
         }
         Monster.monster_fire_bullet(self, start, forward, 3, 4,
-                Defines.DEFAULT_BULLET_HSPREAD, Defines.DEFAULT_BULLET_VSPREAD,
-                Defines.MZ2_ACTOR_MACHINEGUN_1);
+                Constants.DEFAULT_BULLET_HSPREAD, Constants.DEFAULT_BULLET_VSPREAD,
+                Constants.MZ2_ACTOR_MACHINEGUN_1);
     }
 
     /**
@@ -1528,22 +1528,22 @@ public class MonsterActor {
         }
 
         if (self.targetname != null) {
-            GameBase.gi.dprintf("untargeted " + self.classname + " at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf("untargeted " + self.classname + " at "
+            + Lib.vtos(self.s.origin) + "\n");
             GameUtil.G_FreeEdict(self);
             return;
         }
 
         if (self.target != null) {
-            GameBase.gi.dprintf(self.classname + " with no target at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf(self.classname + " with no target at "
+            + Lib.vtos(self.s.origin) + "\n");
             GameUtil.G_FreeEdict(self);
             return;
         }
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi.modelindex("players/male/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("players/male/tris.md2");
         Math3D.VectorSet(self.mins, -16, -16, -24);
         Math3D.VectorSet(self.maxs, 16, 16, 32);
 
@@ -1561,9 +1561,9 @@ public class MonsterActor {
         self.monsterinfo.melee = null;
         self.monsterinfo.sight = null;
 
-        self.monsterinfo.aiflags |= Defines.AI_GOOD_GUY;
+        self.monsterinfo.aiflags |= Constants.AI_GOOD_GUY;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = actor_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;
@@ -1577,26 +1577,26 @@ public class MonsterActor {
 
     public static void SP_target_actor(Entity self) {
         if (self.targetname != null)
-            GameBase.gi.dprintf(self.classname + " with no targetname at "
-                    + Lib.vtos(self.s.origin) + " \n");
+          ServerGame.PF_dprintf(self.classname + " with no targetname at "
+          + Lib.vtos(self.s.origin) + " \n");
 
-        self.solid = Defines.SOLID_TRIGGER;
+        self.solid = Constants.SOLID_TRIGGER;
         self.touch = target_actor_touch;
         Math3D.VectorSet(self.mins, -8, -8, -8);
         Math3D.VectorSet(self.maxs, 8, 8, 8);
-        self.svflags = Defines.SVF_NOCLIENT;
+        self.svflags = Constants.SVF_NOCLIENT;
 
         if ((self.spawnflags & 1) != 0) {
             if (0 == self.speed)
                 self.speed = 200;
             if (0 == GameBase.st.height)
                 GameBase.st.height = 200;
-            if (self.s.angles[Defines.YAW] == 0)
-                self.s.angles[Defines.YAW] = 360;
+            if (self.s.angles[Constants.YAW] == 0)
+                self.s.angles[Constants.YAW] = 360;
             GameBase.G_SetMovedir(self.s.angles, self.movedir);
             self.movedir[2] = GameBase.st.height;
         }
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 }

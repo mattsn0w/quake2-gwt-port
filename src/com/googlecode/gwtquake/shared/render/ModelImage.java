@@ -23,11 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.render;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 
 public class ModelImage {
 	
-	public static final int MAX_NAME_SIZE = Defines.MAX_QPATH;
+	public static final int MAX_NAME_SIZE = Constants.MAX_QPATH;
 	
 	// used to get the pos in array
 	// added by cwei

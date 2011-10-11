@@ -28,7 +28,7 @@ import java.io.RandomAccessFile;
 
 import com.googlecode.gwtquake.*;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityBlockedAdapter;
@@ -67,7 +67,7 @@ public class Entity {
     /** if -1, use headnode instead. */
     public int num_clusters;
 
-    public int clusternums[] = new int[Defines.MAX_ENT_CLUSTERS];
+    public int clusternums[] = new int[Constants.MAX_ENT_CLUSTERS];
 
     /** unused if num_clusters != -1. */
     public int headnode;
@@ -452,7 +452,7 @@ public class Entity {
         } // F_ANGLEHACK),
 
         if (key.equals("item")) {
-            GameBase.gi.error("ent.set(\"item\") called.");
+            Com.Error(Constants.ERR_FATAL, "ent.set(\"item\") called.");
             return true;
         } // F_ITEM)
 
@@ -472,8 +472,8 @@ public class Entity {
         if (clusternums == null)
             f.writeInt(-1);
         else {
-            f.writeInt(Defines.MAX_ENT_CLUSTERS);
-            for (int n = 0; n < Defines.MAX_ENT_CLUSTERS; n++)
+            f.writeInt(Constants.MAX_ENT_CLUSTERS);
+            for (int n = 0; n < Constants.MAX_ENT_CLUSTERS; n++)
                 f.writeInt(clusternums[n]);
 
         }
@@ -633,8 +633,8 @@ public class Entity {
         if (len == -1)
             clusternums = null;
         else {
-            clusternums = new int[Defines.MAX_ENT_CLUSTERS];
-            for (int n = 0; n < Defines.MAX_ENT_CLUSTERS; n++)
+            clusternums = new int[Constants.MAX_ENT_CLUSTERS];
+            for (int n = 0; n < Constants.MAX_ENT_CLUSTERS; n++)
                 clusternums[n] = f.readInt();
         }
 

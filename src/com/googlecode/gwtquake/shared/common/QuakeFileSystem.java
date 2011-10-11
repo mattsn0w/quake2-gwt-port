@@ -325,13 +325,13 @@ public final class QuakeFileSystem {
             try {
                 read = f.read(buffer, offset, block);
             } catch (IOException e) {
-                Com.Error(Defines.ERR_FATAL, e.toString());
+                Com.Error(Constants.ERR_FATAL, e.toString());
             }
 
             if (read == 0) {
-                Com.Error(Defines.ERR_FATAL, "FS_Read: 0 bytes read");
+                Com.Error(Constants.ERR_FATAL, "FS_Read: 0 bytes read");
             } else if (read == -1) {
-                Com.Error(Defines.ERR_FATAL, "FS_Read: -1 bytes read");
+                Com.Error(Constants.ERR_FATAL, "FS_Read: -1 bytes read");
             }
             //
             // do some progress bar thing here...
@@ -371,7 +371,7 @@ public final class QuakeFileSystem {
             file.readFully(buf);
             file.close();
         } catch (IOException e) {
-            Com.Error(Defines.ERR_FATAL, e.toString());
+            Com.Error(Constants.ERR_FATAL, e.toString());
         }
         return buf;
     }
@@ -637,7 +637,7 @@ public final class QuakeFileSystem {
      * this is modified to <user.home>/.jake2 
      */
     public static String Gamedir() {
-        return (fs_userdir != null) ? fs_userdir : Globals.BASEDIRNAME;
+        return (fs_userdir != null) ? fs_userdir : Constants.BASEDIRNAME;
     }
 
     /*
@@ -646,7 +646,7 @@ public final class QuakeFileSystem {
      * Called to find where to write a downloaded file
      */
     public static String BaseGamedir() {
-        return (fs_gamedir != null) ? fs_gamedir : Globals.BASEDIRNAME;
+        return (fs_gamedir != null) ? fs_gamedir : Constants.BASEDIRNAME;
     }
 
     /*
@@ -659,12 +659,12 @@ public final class QuakeFileSystem {
         if (dir != null && dir.length() > 0) {
             name = dir + "/autoexec.cfg";
         } else {
-            name = fs_basedir.string + '/' + Globals.BASEDIRNAME
+            name = fs_basedir.string + '/' + Constants.BASEDIRNAME
                     + "/autoexec.cfg";
         }
 
-        int canthave = Defines.SFF_SUBDIR | Defines.SFF_HIDDEN
-                | Defines.SFF_SYSTEM;
+        int canthave = Constants.SFF_SUBDIR | Constants.SFF_HIDDEN
+                | Constants.SFF_SYSTEM;
 
         if (Sys.FindAll(name, 0, canthave) != null) {
             CommandBuffer.AddText("exec autoexec.cfg\n");
@@ -713,11 +713,11 @@ public final class QuakeFileSystem {
 
         fs_gamedir = fs_basedir.string + '/' + dir;
 
-        if (dir.equals(Globals.BASEDIRNAME) || (dir.length() == 0)) {
-            ConsoleVariables.FullSet("gamedir", "", Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
-            ConsoleVariables.FullSet("game", "", Defines.CVAR_LATCH | Defines.CVAR_SERVERINFO);
+        if (dir.equals(Constants.BASEDIRNAME) || (dir.length() == 0)) {
+            ConsoleVariables.FullSet("gamedir", "", Constants.CVAR_SERVERINFO | Constants.CVAR_NOSET);
+            ConsoleVariables.FullSet("game", "", Constants.CVAR_LATCH | Constants.CVAR_SERVERINFO);
         } else {
-            ConsoleVariables.FullSet("gamedir", dir, Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
+            ConsoleVariables.FullSet("gamedir", dir, Constants.CVAR_SERVERINFO | Constants.CVAR_NOSET);
             if (fs_cddir.string != null && fs_cddir.string.length() > 0)
                 AddGameDirectory(fs_cddir.string + '/' + dir);
 
@@ -903,7 +903,7 @@ public final class QuakeFileSystem {
         // basedir <path>
         // allows the game to run from outside the data tree
         //
-        fs_basedir = ConsoleVariables.Get("basedir", ".", Defines.CVAR_NOSET);
+        fs_basedir = ConsoleVariables.Get("basedir", ".", Constants.CVAR_NOSET);
 
         //
         // cddir <path>
@@ -916,13 +916,13 @@ public final class QuakeFileSystem {
         //
         // start up with baseq2 by default
         //
-        AddGameDirectory(fs_basedir.string + '/' + Globals.BASEDIRNAME);
+        AddGameDirectory(fs_basedir.string + '/' + Constants.BASEDIRNAME);
 
         // any set gamedirs will be freed up to here
         markBaseSearchPaths();
 
         // check for game override
-        fs_gamedirvar = ConsoleVariables.Get("game", "", Defines.CVAR_LATCH | Defines.CVAR_SERVERINFO);
+        fs_gamedirvar = ConsoleVariables.Get("game", "", Constants.CVAR_LATCH | Constants.CVAR_SERVERINFO);
 
         if (fs_gamedirvar.string.length() > 0)
             SetGamedir(fs_gamedirvar.string);
@@ -932,7 +932,7 @@ public final class QuakeFileSystem {
      * set baseq2 directory
      */
     static void setCDDir() {
-        fs_cddir = ConsoleVariables.Get("cddir", "", Defines.CVAR_ARCHIVE);
+        fs_cddir = ConsoleVariables.Get("cddir", "", Constants.CVAR_ARCHIVE);
         if (fs_cddir.string.length() > 0)
             AddGameDirectory(fs_cddir.string);
     }

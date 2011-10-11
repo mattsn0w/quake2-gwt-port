@@ -23,13 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.game;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.CM;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityBlockedAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -46,29 +50,29 @@ public class GameFunc {
 
         if (ent.moveinfo.speed == ent.moveinfo.accel
                 && ent.moveinfo.speed == ent.moveinfo.decel) {
-            if (GameBase.level.current_entity == ((ent.flags & Defines.FL_TEAMSLAVE) != 0 ? ent.teammaster
+            if (GameBase.level.current_entity == ((ent.flags & Constants.FL_TEAMSLAVE) != 0 ? ent.teammaster
                     : ent)) {
                 Move_Begin.think(ent);
             } else {
-                ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
                 ent.think = Move_Begin;
             }
         } else {
             // accelerative
             ent.moveinfo.current_speed = 0;
             ent.think = Think_AccelMove;
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
         }
     }
 
     static void AngleMove_Calc(Entity ent, EntityThinkAdapter func) {
         Math3D.VectorClear(ent.avelocity);
         ent.moveinfo.endfunc = func;
-        if (GameBase.level.current_entity == ((ent.flags & Defines.FL_TEAMSLAVE) != 0 ? ent.teammaster
+        if (GameBase.level.current_entity == ((ent.flags & Constants.FL_TEAMSLAVE) != 0 ? ent.teammaster
                 : ent)) {
             AngleMove_Begin.think(ent);
         } else {
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             ent.think = AngleMove_Begin;
         }
     }
@@ -185,11 +189,11 @@ public class GameFunc {
     };
 
     static void plat_go_up(Entity ent) {
-        if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
+        if (0 == (ent.flags & Constants.FL_TEAMSLAVE)) {
             if (ent.moveinfo.sound_start != 0)
-                GameBase.gi.sound(ent, Defines.CHAN_NO_PHS_ADD
-                        + Defines.CHAN_VOICE, ent.moveinfo.sound_start, 1,
-                        Defines.ATTN_STATIC, 0);
+              ServerGame.PF_StartSound(ent, Constants.CHAN_NO_PHS_ADD
+                              + Constants.CHAN_VOICE, ent.moveinfo.sound_start, (float) 1, (float) Constants.ATTN_STATIC,
+              (float) 0);
             ent.s.sound = ent.moveinfo.sound_middle;
         }
         ent.moveinfo.state = STATE_UP;
@@ -205,8 +209,8 @@ public class GameFunc {
         //	
         trigger = GameUtil.G_Spawn();
         trigger.touch = Touch_Plat_Center;
-        trigger.movetype = Defines.MOVETYPE_NONE;
-        trigger.solid = Defines.SOLID_TRIGGER;
+        trigger.movetype = Constants.MOVETYPE_NONE;
+        trigger.solid = Constants.SOLID_TRIGGER;
         trigger.enemy = ent;
 
         tmin[0] = ent.mins[0] + 25;
@@ -234,7 +238,7 @@ public class GameFunc {
         Math3D.VectorCopy(tmin, trigger.mins);
         Math3D.VectorCopy(tmax, trigger.maxs);
 
-        GameBase.gi.linkentity(trigger);
+        World.SV_LinkEdict(trigger);
     }
 
     /**
@@ -258,10 +262,10 @@ public class GameFunc {
      */
     static void SP_func_plat(Entity ent) {
         Math3D.VectorClear(ent.s.angles);
-        ent.solid = Defines.SOLID_BSP;
-        ent.movetype = Defines.MOVETYPE_PUSH;
+        ent.solid = Constants.SOLID_BSP;
+        ent.movetype = Constants.MOVETYPE_PUSH;
 
-        GameBase.gi.setmodel(ent, ent.model);
+        ServerGame.PF_setmodel(ent, ent.model);
 
         ent.blocked = plat_blocked;
 
@@ -302,7 +306,7 @@ public class GameFunc {
             ent.moveinfo.state = STATE_UP;
         } else {
             Math3D.VectorCopy(ent.pos2, ent.s.origin);
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             ent.moveinfo.state = STATE_BOTTOM;
         }
 
@@ -315,9 +319,9 @@ public class GameFunc {
         Math3D.VectorCopy(ent.pos2, ent.moveinfo.end_origin);
         Math3D.VectorCopy(ent.s.angles, ent.moveinfo.end_angles);
 
-        ent.moveinfo.sound_start = GameBase.gi.soundindex("plats/pt1_strt.wav");
-        ent.moveinfo.sound_middle = GameBase.gi.soundindex("plats/pt1_mid.wav");
-        ent.moveinfo.sound_end = GameBase.gi.soundindex("plats/pt1_end.wav");
+        ent.moveinfo.sound_start = ServerInit.SV_SoundIndex("plats/pt1_strt.wav");
+        ent.moveinfo.sound_middle = ServerInit.SV_SoundIndex("plats/pt1_mid.wav");
+        ent.moveinfo.sound_end = ServerInit.SV_SoundIndex("plats/pt1_end.wav");
     }
 
     /**
@@ -358,7 +362,7 @@ public class GameFunc {
                 .G_Find(edit, GameBase.findByTarget, self.target)) != null) {
             t = edit.o;
             if (Lib.Q_stricmp(t.classname, "func_areaportal") == 0) {
-                GameBase.gi.SetAreaPortalState(t.style, open);
+                CM.CM_SetAreaPortalState(t.style, open);
             }
         }
     }
@@ -374,11 +378,11 @@ public class GameFunc {
             return;
         }
 
-        if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
+        if (0 == (self.flags & Constants.FL_TEAMSLAVE)) {
             if (self.moveinfo.sound_start != 0)
-                GameBase.gi.sound(self, Defines.CHAN_NO_PHS_ADD
-                        + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                        Defines.ATTN_STATIC, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_NO_PHS_ADD
+                              + Constants.CHAN_VOICE, self.moveinfo.sound_start, (float) 1, (float) Constants.ATTN_STATIC,
+              (float) 0);
             self.s.sound = self.moveinfo.sound_middle;
         }
         self.moveinfo.state = STATE_UP;
@@ -409,26 +413,22 @@ public class GameFunc {
         float[] abs_movedir = { 0, 0, 0 };
 
         GameBase.G_SetMovedir(self.s.angles, self.movedir);
-        self.movetype = Defines.MOVETYPE_PUSH;
-        self.solid = Defines.SOLID_BSP;
-        GameBase.gi.setmodel(self, self.model);
+        self.movetype = Constants.MOVETYPE_PUSH;
+        self.solid = Constants.SOLID_BSP;
+        ServerGame.PF_setmodel(self, self.model);
 
         switch (self.sounds) {
         default:
             break;
 
         case 1: // water
-            self.moveinfo.sound_start = GameBase.gi
-                    .soundindex("world/mov_watr.wav");
-            self.moveinfo.sound_end = GameBase.gi
-                    .soundindex("world/stp_watr.wav");
+            self.moveinfo.sound_start = ServerInit.SV_SoundIndex("world/mov_watr.wav");
+            self.moveinfo.sound_end = ServerInit.SV_SoundIndex("world/stp_watr.wav");
             break;
 
         case 2: // lava
-            self.moveinfo.sound_start = GameBase.gi
-                    .soundindex("world/mov_watr.wav");
-            self.moveinfo.sound_end = GameBase.gi
-                    .soundindex("world/stp_watr.wav");
+            self.moveinfo.sound_start = ServerInit.SV_SoundIndex("world/mov_watr.wav");
+            self.moveinfo.sound_end = ServerInit.SV_SoundIndex("world/stp_watr.wav");
             break;
         }
 
@@ -472,7 +472,7 @@ public class GameFunc {
 
         self.classname = "func_door";
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     static void train_resume(Entity self) {
@@ -491,7 +491,7 @@ public class GameFunc {
     }
 
     static void SP_func_train(Entity self) {
-        self.movetype = Defines.MOVETYPE_PUSH;
+        self.movetype = Constants.MOVETYPE_PUSH;
 
         Math3D.VectorClear(self.s.angles);
         self.blocked = train_blocked;
@@ -501,12 +501,11 @@ public class GameFunc {
             if (0 == self.dmg)
                 self.dmg = 100;
         }
-        self.solid = Defines.SOLID_BSP;
-        GameBase.gi.setmodel(self, self.model);
+        self.solid = Constants.SOLID_BSP;
+        ServerGame.PF_setmodel(self, self.model);
 
         if (GameBase.st.noise != null)
-            self.moveinfo.sound_middle = GameBase.gi
-                    .soundindex(GameBase.st.noise);
+            self.moveinfo.sound_middle = ServerInit.SV_SoundIndex(GameBase.st.noise);
 
         if (0 == self.speed)
             self.speed = 100;
@@ -516,17 +515,17 @@ public class GameFunc {
 
         self.use = train_use;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         if (self.target != null) {
             // start trains on the second frame, to make sure their targets have
             // had
             // a chance to spawn
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             self.think = func_train_find;
         } else {
-            GameBase.gi.dprintf("func_train without a target at "
-                    + Lib.vtos(self.absmin) + "\n");
+            ServerGame.PF_dprintf("func_train without a target at "
+            + Lib.vtos(self.absmin) + "\n");
         }
     }
 
@@ -538,9 +537,9 @@ public class GameFunc {
         self.think = func_timer_think;
 
         if (self.random >= self.wait) {
-            self.random = self.wait - Defines.FRAMETIME;
-            GameBase.gi.dprintf("func_timer at " + Lib.vtos(self.s.origin)
-                    + " has random >= wait\n");
+            self.random = self.wait - Constants.FRAMETIME;
+            ServerGame.PF_dprintf("func_timer at " + Lib.vtos(self.s.origin)
+            + " has random >= wait\n");
         }
 
         if ((self.spawnflags & 1) != 0) {
@@ -549,7 +548,7 @@ public class GameFunc {
             self.activator = self;
         }
 
-        self.svflags = Defines.SVF_NOCLIENT;
+        self.svflags = Constants.SVF_NOCLIENT;
     }
 
     /**
@@ -616,11 +615,11 @@ public class GameFunc {
             }
 
             Math3D.VectorScale(ent.moveinfo.dir,
-                    ent.moveinfo.remaining_distance / Defines.FRAMETIME,
+                    ent.moveinfo.remaining_distance / Constants.FRAMETIME,
                     ent.velocity);
 
             ent.think = Move_Done;
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
     };
@@ -631,7 +630,7 @@ public class GameFunc {
 
             float frames;
 
-            if ((ent.moveinfo.speed * Defines.FRAMETIME) >= ent.moveinfo.remaining_distance) {
+            if ((ent.moveinfo.speed * Constants.FRAMETIME) >= ent.moveinfo.remaining_distance) {
                 Move_Final.think(ent);
                 return true;
             }
@@ -639,10 +638,10 @@ public class GameFunc {
                     ent.velocity);
             frames = (float) Math
                     .floor((ent.moveinfo.remaining_distance / ent.moveinfo.speed)
-                            / Defines.FRAMETIME);
+                            / Constants.FRAMETIME);
             ent.moveinfo.remaining_distance -= frames * ent.moveinfo.speed
-                    * Defines.FRAMETIME;
-            ent.nextthink = GameBase.level.time + (frames * Defines.FRAMETIME);
+                    * Constants.FRAMETIME;
+            ent.nextthink = GameBase.level.time + (frames * Constants.FRAMETIME);
             ent.think = Move_Final;
             return true;
         }
@@ -678,10 +677,10 @@ public class GameFunc {
                 return true;
             }
 
-            Math3D.VectorScale(move, 1.0f / Defines.FRAMETIME, ent.avelocity);
+            Math3D.VectorScale(move, 1.0f / Constants.FRAMETIME, ent.avelocity);
 
             ent.think = AngleMove_Done;
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
     };
@@ -708,19 +707,19 @@ public class GameFunc {
             // divide by speed to get time to reach dest
             traveltime = len / ent.moveinfo.speed;
 
-            if (traveltime < Defines.FRAMETIME) {
+            if (traveltime < Constants.FRAMETIME) {
                 AngleMove_Final.think(ent);
                 return true;
             }
 
-            frames = (float) (Math.floor(traveltime / Defines.FRAMETIME));
+            frames = (float) (Math.floor(traveltime / Constants.FRAMETIME));
 
             // scale the destdelta vector by the time spent traveling to get
             // velocity
             Math3D.VectorScale(destdelta, 1.0f / traveltime, ent.avelocity);
 
             // set nextthink to trigger a think when dest is reached
-            ent.nextthink = GameBase.level.time + frames * Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + frames * Constants.FRAMETIME;
             ent.think = AngleMove_Final;
             return true;
         }
@@ -744,7 +743,7 @@ public class GameFunc {
 
             Math3D.VectorScale(ent.moveinfo.dir,
                     ent.moveinfo.current_speed * 10, ent.velocity);
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             ent.think = Think_AccelMove;
             return true;
         }
@@ -753,11 +752,11 @@ public class GameFunc {
     static EntityThinkAdapter plat_hit_top = new EntityThinkAdapter() {
         public String getID() { return "plat_hit_top";}
         public boolean think(Entity ent) {
-            if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
+            if (0 == (ent.flags & Constants.FL_TEAMSLAVE)) {
                 if (ent.moveinfo.sound_end != 0)
-                    GameBase.gi.sound(ent, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, ent.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                  ServerGame.PF_StartSound(ent, Constants.CHAN_NO_PHS_ADD
+                                      + Constants.CHAN_VOICE, ent.moveinfo.sound_end, (float) 1, (float) Constants.ATTN_STATIC,
+                  (float) 0);
                 ent.s.sound = 0;
             }
             ent.moveinfo.state = STATE_TOP;
@@ -772,11 +771,11 @@ public class GameFunc {
         public String getID() { return "plat_hit_bottom";}
         public boolean think(Entity ent) {
 
-            if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
+            if (0 == (ent.flags & Constants.FL_TEAMSLAVE)) {
                 if (ent.moveinfo.sound_end != 0)
-                    GameBase.gi.sound(ent, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, ent.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                  ServerGame.PF_StartSound(ent, Constants.CHAN_NO_PHS_ADD
+                                      + Constants.CHAN_VOICE, ent.moveinfo.sound_end, (float) 1, (float) Constants.ATTN_STATIC,
+                  (float) 0);
                 ent.s.sound = 0;
             }
             ent.moveinfo.state = STATE_BOTTOM;
@@ -787,11 +786,11 @@ public class GameFunc {
     static EntityThinkAdapter plat_go_down = new EntityThinkAdapter() {
         public String getID() { return "plat_go_down";}
         public boolean think(Entity ent) {
-            if (0 == (ent.flags & Defines.FL_TEAMSLAVE)) {
+            if (0 == (ent.flags & Constants.FL_TEAMSLAVE)) {
                 if (ent.moveinfo.sound_start != 0)
-                    GameBase.gi.sound(ent, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, ent.moveinfo.sound_start, 1,
-                            Defines.ATTN_STATIC, 0);
+                  ServerGame.PF_StartSound(ent, Constants.CHAN_NO_PHS_ADD
+                                      + Constants.CHAN_VOICE, ent.moveinfo.sound_start, (float) 1, (float) Constants.ATTN_STATIC,
+                  (float) 0);
                 ent.s.sound = ent.moveinfo.sound_middle;
             }
             ent.moveinfo.state = STATE_DOWN;
@@ -803,12 +802,12 @@ public class GameFunc {
     static EntityBlockedAdapter plat_blocked = new EntityBlockedAdapter() {
         public String getID() { return "plat_blocked";}
         public void blocked(Entity self, Entity other) {
-            if (0 == (other.svflags & Defines.SVF_MONSTER)
+            if (0 == (other.svflags & Constants.SVF_MONSTER)
                     && (null == other.client)) {
                 // give it a chance to go away on it's own terms (like gibs)
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
-                        Defines.MOD_CRUSH);
+                        Constants.MOD_CRUSH);
                 // if it's still there, nuke it
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
@@ -817,7 +816,7 @@ public class GameFunc {
 
             GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                    Defines.MOD_CRUSH);
+                    Constants.MOD_CRUSH);
 
             if (self.moveinfo.state == STATE_UP)
                 plat_go_down.think(self);
@@ -876,7 +875,7 @@ public class GameFunc {
         public void blocked(Entity self, Entity other) {
             GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                    Defines.MOD_CRUSH);
+                    Constants.MOD_CRUSH);
         }
     };
 
@@ -888,7 +887,7 @@ public class GameFunc {
                     || self.avelocity[2] != 0)
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                        Defines.MOD_CRUSH);
+                        Constants.MOD_CRUSH);
         }
     };
 
@@ -911,11 +910,11 @@ public class GameFunc {
     static EntityThinkAdapter SP_func_rotating = new EntityThinkAdapter() {
         public String getID() { return "sp_func_rotating";}
         public boolean think(Entity ent) {
-            ent.solid = Defines.SOLID_BSP;
+            ent.solid = Constants.SOLID_BSP;
             if ((ent.spawnflags & 32) != 0)
-                ent.movetype = Defines.MOVETYPE_STOP;
+                ent.movetype = Constants.MOVETYPE_STOP;
             else
-                ent.movetype = Defines.MOVETYPE_PUSH;
+                ent.movetype = Constants.MOVETYPE_PUSH;
 
             // set the axis of rotation
             Math3D.VectorClear(ent.movedir);
@@ -946,12 +945,12 @@ public class GameFunc {
                 ent.use.use(ent, null, null);
 
             if ((ent.spawnflags & 64) != 0)
-                ent.s.effects |= Defines.EF_ANIM_ALL;
+                ent.s.effects |= Constants.EF_ANIM_ALL;
             if ((ent.spawnflags & 128) != 0)
-                ent.s.effects |= Defines.EF_ANIM_ALLFAST;
+                ent.s.effects |= Constants.EF_ANIM_ALLFAST;
 
-            GameBase.gi.setmodel(ent, ent.model);
-            GameBase.gi.linkentity(ent);
+            ServerGame.PF_setmodel(ent, ent.model);
+            World.SV_LinkEdict(ent);
             return true;
         }
     };
@@ -983,8 +982,8 @@ public class GameFunc {
         public boolean think(Entity self) {
 
             self.moveinfo.state = STATE_BOTTOM;
-            self.s.effects &= ~Defines.EF_ANIM23;
-            self.s.effects |= Defines.EF_ANIM01;
+            self.s.effects &= ~Constants.EF_ANIM23;
+            self.s.effects |= Constants.EF_ANIM01;
             return true;
         }
     };
@@ -999,7 +998,7 @@ public class GameFunc {
             self.s.frame = 0;
 
             if (self.health != 0)
-                self.takedamage = Defines.DAMAGE_YES;
+                self.takedamage = Constants.DAMAGE_YES;
             return true;
         }
     };
@@ -1008,8 +1007,8 @@ public class GameFunc {
         public String getID() { return "button_wait";}
         public boolean think(Entity self) {
             self.moveinfo.state = STATE_TOP;
-            self.s.effects &= ~Defines.EF_ANIM01;
-            self.s.effects |= Defines.EF_ANIM23;
+            self.s.effects &= ~Constants.EF_ANIM01;
+            self.s.effects |= Constants.EF_ANIM23;
 
             GameUtil.G_UseTargets(self, self.activator);
             self.s.frame = 1;
@@ -1030,10 +1029,10 @@ public class GameFunc {
 
             self.moveinfo.state = STATE_UP;
             if (self.moveinfo.sound_start != 0
-                    && 0 == (self.flags & Defines.FL_TEAMSLAVE))
-                GameBase.gi.sound(self, Defines.CHAN_NO_PHS_ADD
-                        + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                        Defines.ATTN_STATIC, 0);
+                    && 0 == (self.flags & Constants.FL_TEAMSLAVE))
+              ServerGame.PF_StartSound(self, Constants.CHAN_NO_PHS_ADD
+                              + Constants.CHAN_VOICE, self.moveinfo.sound_start, (float) 1, (float) Constants.ATTN_STATIC,
+              (float) 0);
             Move_Calc(self, self.moveinfo.end_origin, button_wait);
             return true;
         }
@@ -1070,7 +1069,7 @@ public class GameFunc {
                 int damage, float[] point) {
             self.activator = attacker;
             self.health = self.max_health;
-            self.takedamage = Defines.DAMAGE_NO;
+            self.takedamage = Constants.DAMAGE_NO;
             button_fire.think(self);
 
         }
@@ -1083,13 +1082,12 @@ public class GameFunc {
             float dist;
 
             GameBase.G_SetMovedir(ent.s.angles, ent.movedir);
-            ent.movetype = Defines.MOVETYPE_STOP;
-            ent.solid = Defines.SOLID_BSP;
-            GameBase.gi.setmodel(ent, ent.model);
+            ent.movetype = Constants.MOVETYPE_STOP;
+            ent.solid = Constants.SOLID_BSP;
+            ServerGame.PF_setmodel(ent, ent.model);
 
             if (ent.sounds != 1)
-                ent.moveinfo.sound_start = GameBase.gi
-                        .soundindex("switches/butn2.wav");
+                ent.moveinfo.sound_start = ServerInit.SV_SoundIndex("switches/butn2.wav");
 
             if (0 == ent.speed)
                 ent.speed = 40;
@@ -1112,12 +1110,12 @@ public class GameFunc {
             Math3D.VectorMA(ent.pos1, dist, ent.movedir, ent.pos2);
 
             ent.use = button_use;
-            ent.s.effects |= Defines.EF_ANIM01;
+            ent.s.effects |= Constants.EF_ANIM01;
 
             if (ent.health != 0) {
                 ent.max_health = ent.health;
                 ent.die = button_killed;
-                ent.takedamage = Defines.DAMAGE_YES;
+                ent.takedamage = Constants.DAMAGE_YES;
             } else if (null == ent.targetname)
                 ent.touch = button_touch;
 
@@ -1132,7 +1130,7 @@ public class GameFunc {
             Math3D.VectorCopy(ent.pos2, ent.moveinfo.end_origin);
             Math3D.VectorCopy(ent.s.angles, ent.moveinfo.end_angles);
 
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             return true;
         }
     };
@@ -1140,11 +1138,11 @@ public class GameFunc {
     static EntityThinkAdapter door_hit_top = new EntityThinkAdapter() {
         public String getID() { return "door_hit_top";}
         public boolean think(Entity self) {
-            if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
+            if (0 == (self.flags & Constants.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_end != 0)
-                    GameBase.gi.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                  ServerGame.PF_StartSound(self, Constants.CHAN_NO_PHS_ADD
+                                      + Constants.CHAN_VOICE, self.moveinfo.sound_end, (float) 1, (float) Constants.ATTN_STATIC,
+                  (float) 0);
                 self.s.sound = 0;
             }
             self.moveinfo.state = STATE_TOP;
@@ -1161,11 +1159,11 @@ public class GameFunc {
     static EntityThinkAdapter door_hit_bottom = new EntityThinkAdapter() {
         public String getID() { return "door_hit_bottom";}
         public boolean think(Entity self) {
-            if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
+            if (0 == (self.flags & Constants.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_end != 0)
-                    GameBase.gi.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_end, 1,
-                            Defines.ATTN_STATIC, 0);
+                  ServerGame.PF_StartSound(self, Constants.CHAN_NO_PHS_ADD
+                                      + Constants.CHAN_VOICE, self.moveinfo.sound_end, (float) 1, (float) Constants.ATTN_STATIC,
+                  (float) 0);
                 self.s.sound = 0;
             }
             self.moveinfo.state = STATE_BOTTOM;
@@ -1177,15 +1175,15 @@ public class GameFunc {
     static EntityThinkAdapter door_go_down = new EntityThinkAdapter() {
         public String getID() { return "door_go_down";}
         public boolean think(Entity self) {
-            if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
+            if (0 == (self.flags & Constants.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_start != 0)
-                    GameBase.gi.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                            Defines.ATTN_STATIC, 0);
+                  ServerGame.PF_StartSound(self, Constants.CHAN_NO_PHS_ADD
+                                      + Constants.CHAN_VOICE, self.moveinfo.sound_start, (float) 1, (float) Constants.ATTN_STATIC,
+                  (float) 0);
                 self.s.sound = self.moveinfo.sound_middle;
             }
             if (self.max_health != 0) {
-                self.takedamage = Defines.DAMAGE_YES;
+                self.takedamage = Constants.DAMAGE_YES;
                 self.health = self.max_health;
             }
 
@@ -1204,7 +1202,7 @@ public class GameFunc {
         public void use(Entity self, Entity other, Entity activator) {
             Entity ent;
 
-            if ((self.flags & Defines.FL_TEAMSLAVE) != 0)
+            if ((self.flags & Constants.FL_TEAMSLAVE) != 0)
                 return;
 
             if ((self.spawnflags & DOOR_TOGGLE) != 0) {
@@ -1236,12 +1234,12 @@ public class GameFunc {
             if (other.health <= 0)
                 return;
 
-            if (0 == (other.svflags & Defines.SVF_MONSTER)
+            if (0 == (other.svflags & Constants.SVF_MONSTER)
                     && (null == other.client))
                 return;
 
             if (0 != (self.owner.spawnflags & DOOR_NOMONSTER)
-                    && 0 != (other.svflags & Defines.SVF_MONSTER))
+                    && 0 != (other.svflags & Constants.SVF_MONSTER))
                 return;
 
             if (GameBase.level.time < self.touch_debounce_time)
@@ -1262,7 +1260,7 @@ public class GameFunc {
             float ratio;
             float dist;
 
-            if ((self.flags & Defines.FL_TEAMSLAVE) != 0)
+            if ((self.flags & Constants.FL_TEAMSLAVE) != 0)
                 return true; // only the team master does this
 
             // find the smallest distance any member of the team will be moving
@@ -1299,7 +1297,7 @@ public class GameFunc {
             Entity other;
             float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
 
-            if ((ent.flags & Defines.FL_TEAMSLAVE) != 0)
+            if ((ent.flags & Constants.FL_TEAMSLAVE) != 0)
                 return true; // only the team leader spawns a trigger
 
             Math3D.VectorCopy(ent.absmin, mins);
@@ -1320,10 +1318,10 @@ public class GameFunc {
             Math3D.VectorCopy(mins, other.mins);
             Math3D.VectorCopy(maxs, other.maxs);
             other.owner = ent;
-            other.solid = Defines.SOLID_TRIGGER;
-            other.movetype = Defines.MOVETYPE_NONE;
+            other.solid = Constants.SOLID_TRIGGER;
+            other.movetype = Constants.MOVETYPE_NONE;
             other.touch = Touch_DoorTrigger;
-            GameBase.gi.linkentity(other);
+            World.SV_LinkEdict(other);
 
             if ((ent.spawnflags & DOOR_START_OPEN) != 0)
                 door_use_areaportals(ent, true);
@@ -1338,12 +1336,12 @@ public class GameFunc {
         public void blocked(Entity self, Entity other) {
             Entity ent;
 
-            if (0 == (other.svflags & Defines.SVF_MONSTER)
+            if (0 == (other.svflags & Constants.SVF_MONSTER)
                     && (null == other.client)) {
                 // give it a chance to go away on it's own terms (like gibs)
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
-                        Defines.MOD_CRUSH);
+                        Constants.MOD_CRUSH);
                 // if it's still there, nuke it
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
@@ -1352,7 +1350,7 @@ public class GameFunc {
 
             GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                    Defines.MOD_CRUSH);
+                    Constants.MOD_CRUSH);
 
             if ((self.spawnflags & DOOR_CRUSHER) != 0)
                 return;
@@ -1380,7 +1378,7 @@ public class GameFunc {
 
             for (ent = self.teammaster; ent != null; ent = ent.teamchain) {
                 ent.health = ent.max_health;
-                ent.takedamage = Defines.DAMAGE_NO;
+                ent.takedamage = Constants.DAMAGE_NO;
             }
             door_use.use(self.teammaster, attacker, attacker);
         }
@@ -1397,9 +1395,9 @@ public class GameFunc {
                 return;
             self.touch_debounce_time = GameBase.level.time + 5.0f;
 
-            GameBase.gi.centerprintf(other, self.message);
-            GameBase.gi.sound(other, Defines.CHAN_AUTO, GameBase.gi
-                    .soundindex("misc/talk1.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_centerprintf(other, self.message);
+            ServerGame.PF_StartSound(other, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/talk1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
     };
 
@@ -1409,18 +1407,15 @@ public class GameFunc {
             float[] abs_movedir = { 0, 0, 0 };
 
             if (ent.sounds != 1) {
-                ent.moveinfo.sound_start = GameBase.gi
-                        .soundindex("doors/dr1_strt.wav");
-                ent.moveinfo.sound_middle = GameBase.gi
-                        .soundindex("doors/dr1_mid.wav");
-                ent.moveinfo.sound_end = GameBase.gi
-                        .soundindex("doors/dr1_end.wav");
+                ent.moveinfo.sound_start = ServerInit.SV_SoundIndex("doors/dr1_strt.wav");
+                ent.moveinfo.sound_middle = ServerInit.SV_SoundIndex("doors/dr1_mid.wav");
+                ent.moveinfo.sound_end = ServerInit.SV_SoundIndex("doors/dr1_end.wav");
             }
 
             GameBase.G_SetMovedir(ent.s.angles, ent.movedir);
-            ent.movetype = Defines.MOVETYPE_PUSH;
-            ent.solid = Defines.SOLID_BSP;
-            GameBase.gi.setmodel(ent, ent.model);
+            ent.movetype = Constants.MOVETYPE_PUSH;
+            ent.solid = Constants.SOLID_BSP;
+            ServerGame.PF_setmodel(ent, ent.model);
 
             ent.blocked = door_blocked;
             ent.use = door_use;
@@ -1464,11 +1459,11 @@ public class GameFunc {
             ent.moveinfo.state = STATE_BOTTOM;
 
             if (ent.health != 0) {
-                ent.takedamage = Defines.DAMAGE_YES;
+                ent.takedamage = Constants.DAMAGE_YES;
                 ent.die = door_killed;
                 ent.max_health = ent.health;
             } else if (ent.targetname != null && ent.message != null) {
-                GameBase.gi.soundindex("misc/talk.wav");
+                ServerInit.SV_SoundIndex("misc/talk.wav");
                 ent.touch = door_touch;
             }
 
@@ -1482,18 +1477,18 @@ public class GameFunc {
             Math3D.VectorCopy(ent.s.angles, ent.moveinfo.end_angles);
 
             if ((ent.spawnflags & 16) != 0)
-                ent.s.effects |= Defines.EF_ANIM_ALL;
+                ent.s.effects |= Constants.EF_ANIM_ALL;
             if ((ent.spawnflags & 64) != 0)
-                ent.s.effects |= Defines.EF_ANIM_ALLFAST;
+                ent.s.effects |= Constants.EF_ANIM_ALLFAST;
 
             // to simplify logic elsewhere, make non-teamed doors into a team of
             // one
             if (null == ent.team)
                 ent.teammaster = ent;
 
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
 
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             if (ent.health != 0 || ent.targetname != null)
                 ent.think = Think_CalcMoveSpeed;
             else
@@ -1551,8 +1546,8 @@ public class GameFunc {
                 Math3D.VectorNegate(ent.movedir, ent.movedir);
 
             if (0 == GameBase.st.distance) {
-                GameBase.gi.dprintf(ent.classname + " at "
-                        + Lib.vtos(ent.s.origin) + " with no distance set\n");
+                ServerGame.PF_dprintf(ent.classname + " at "
+                + Lib.vtos(ent.s.origin) + " with no distance set\n");
                 GameBase.st.distance = 90;
             }
 
@@ -1561,9 +1556,9 @@ public class GameFunc {
                     ent.pos2);
             ent.moveinfo.distance = GameBase.st.distance;
 
-            ent.movetype = Defines.MOVETYPE_PUSH;
-            ent.solid = Defines.SOLID_BSP;
-            GameBase.gi.setmodel(ent, ent.model);
+            ent.movetype = Constants.MOVETYPE_PUSH;
+            ent.solid = Constants.SOLID_BSP;
+            ServerGame.PF_setmodel(ent, ent.model);
 
             ent.blocked = door_blocked;
             ent.use = door_use;
@@ -1581,12 +1576,9 @@ public class GameFunc {
                 ent.dmg = 2;
 
             if (ent.sounds != 1) {
-                ent.moveinfo.sound_start = GameBase.gi
-                        .soundindex("doors/dr1_strt.wav");
-                ent.moveinfo.sound_middle = GameBase.gi
-                        .soundindex("doors/dr1_mid.wav");
-                ent.moveinfo.sound_end = GameBase.gi
-                        .soundindex("doors/dr1_end.wav");
+                ent.moveinfo.sound_start = ServerInit.SV_SoundIndex("doors/dr1_strt.wav");
+                ent.moveinfo.sound_middle = ServerInit.SV_SoundIndex("doors/dr1_mid.wav");
+                ent.moveinfo.sound_end = ServerInit.SV_SoundIndex("doors/dr1_end.wav");
             }
 
             // if it starts open, switch the positions
@@ -1598,13 +1590,13 @@ public class GameFunc {
             }
 
             if (ent.health != 0) {
-                ent.takedamage = Defines.DAMAGE_YES;
+                ent.takedamage = Constants.DAMAGE_YES;
                 ent.die = door_killed;
                 ent.max_health = ent.health;
             }
 
             if (ent.targetname != null && ent.message != null) {
-                GameBase.gi.soundindex("misc/talk.wav");
+                ServerInit.SV_SoundIndex("misc/talk.wav");
                 ent.touch = door_touch;
             }
 
@@ -1619,16 +1611,16 @@ public class GameFunc {
             Math3D.VectorCopy(ent.pos2, ent.moveinfo.end_angles);
 
             if ((ent.spawnflags & 16) != 0)
-                ent.s.effects |= Defines.EF_ANIM_ALL;
+                ent.s.effects |= Constants.EF_ANIM_ALL;
 
             // to simplify logic elsewhere, make non-teamed doors into a team of
             // one
             if (ent.team == null)
                 ent.teammaster = ent;
 
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
 
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             if (ent.health != 0 || ent.targetname != null)
                 ent.think = Think_CalcMoveSpeed;
             else
@@ -1656,12 +1648,12 @@ public class GameFunc {
     static EntityBlockedAdapter train_blocked = new EntityBlockedAdapter() {
         public String getID() { return "train_blocked";}
         public void blocked(Entity self, Entity other) {
-            if (0 == (other.svflags & Defines.SVF_MONSTER)
+            if (0 == (other.svflags & Constants.SVF_MONSTER)
                     && (null == other.client)) {
                 // give it a chance to go away on it's own terms (like gibs)
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
-                        Defines.MOD_CRUSH);
+                        Constants.MOD_CRUSH);
                 // if it's still there, nuke it
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
@@ -1676,7 +1668,7 @@ public class GameFunc {
             self.touch_debounce_time = GameBase.level.time + 0.5f;
             GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                    Defines.MOD_CRUSH);
+                    Constants.MOD_CRUSH);
         }
     };
 
@@ -1710,11 +1702,11 @@ public class GameFunc {
                     self.nextthink = 0;
                 }
 
-                if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
+                if (0 == (self.flags & Constants.FL_TEAMSLAVE)) {
                     if (self.moveinfo.sound_end != 0)
-                        GameBase.gi.sound(self, Defines.CHAN_NO_PHS_ADD
-                                + Defines.CHAN_VOICE, self.moveinfo.sound_end,
-                                1, Defines.ATTN_STATIC, 0);
+                      ServerGame.PF_StartSound(self, Constants.CHAN_NO_PHS_ADD
+                                              + Constants.CHAN_VOICE, self.moveinfo.sound_end, (float) 1, (float) Constants.ATTN_STATIC,
+                      (float) 0);
                     self.s.sound = 0;
                 }
             } else {
@@ -1742,8 +1734,8 @@ public class GameFunc {
 
                 ent = GameBase.G_PickTarget(self.target);
                 if (null == ent) {
-                    GameBase.gi.dprintf("train_next: bad target " + self.target
-                            + "\n");
+                    ServerGame.PF_dprintf("train_next: bad target " + self.target
+                    + "\n");
                     return true;
                 }
 
@@ -1752,30 +1744,29 @@ public class GameFunc {
                 // check for a teleport path_corner
                 if ((ent.spawnflags & 1) != 0) {
                     if (!first) {
-                        GameBase.gi
-                                .dprintf("connected teleport path_corners, see "
-                                        + ent.classname
-                                        + " at "
-                                        + Lib.vtos(ent.s.origin) + "\n");
+                        ServerGame.PF_dprintf("connected teleport path_corners, see "
+                        + ent.classname
+                        + " at "
+                        + Lib.vtos(ent.s.origin) + "\n");
                         return true;
                     }
                     first = false;
                     Math3D.VectorSubtract(ent.s.origin, self.mins,
                             self.s.origin);
                     Math3D.VectorCopy(self.s.origin, self.s.old_origin);
-                    self.s.event = Defines.EV_OTHER_TELEPORT;
-                    GameBase.gi.linkentity(self);
+                    self.s.event = Constants.EV_OTHER_TELEPORT;
+                    World.SV_LinkEdict(self);
                     dogoto = true;
                 }
             }
             self.moveinfo.wait = ent.wait;
             self.target_ent = ent;
 
-            if (0 == (self.flags & Defines.FL_TEAMSLAVE)) {
+            if (0 == (self.flags & Constants.FL_TEAMSLAVE)) {
                 if (self.moveinfo.sound_start != 0)
-                    GameBase.gi.sound(self, Defines.CHAN_NO_PHS_ADD
-                            + Defines.CHAN_VOICE, self.moveinfo.sound_start, 1,
-                            Defines.ATTN_STATIC, 0);
+                  ServerGame.PF_StartSound(self, Constants.CHAN_NO_PHS_ADD
+                                      + Constants.CHAN_VOICE, self.moveinfo.sound_start, (float) 1, (float) Constants.ATTN_STATIC,
+                  (float) 0);
                 self.s.sound = self.moveinfo.sound_middle;
             }
 
@@ -1795,26 +1786,26 @@ public class GameFunc {
             Entity ent;
 
             if (null == self.target) {
-                GameBase.gi.dprintf("train_find: no target\n");
+                ServerGame.PF_dprintf("train_find: no target\n");
                 return true;
             }
             ent = GameBase.G_PickTarget(self.target);
             if (null == ent) {
-                GameBase.gi.dprintf("train_find: target " + self.target
-                        + " not found\n");
+                ServerGame.PF_dprintf("train_find: target " + self.target
+                + " not found\n");
                 return true;
             }
             self.target = ent.target;
 
             Math3D.VectorSubtract(ent.s.origin, self.mins, self.s.origin);
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
 
             // if not triggered, start immediately
             if (null == self.targetname)
                 self.spawnflags |= TRAIN_START_ON;
 
             if ((self.spawnflags & TRAIN_START_ON) != 0) {
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
                 self.think = train_next;
                 self.activator = self;
             }
@@ -1857,14 +1848,14 @@ public class GameFunc {
             }
 
             if (null == other.pathtarget) {
-                GameBase.gi.dprintf("elevator used with no pathtarget\n");
+                ServerGame.PF_dprintf("elevator used with no pathtarget\n");
                 return;
             }
 
             target = GameBase.G_PickTarget(other.pathtarget);
             if (null == target) {
-                GameBase.gi.dprintf("elevator used with bad pathtarget: "
-                        + other.pathtarget + "\n");
+                ServerGame.PF_dprintf("elevator used with bad pathtarget: "
+                + other.pathtarget + "\n");
                 return;
             }
 
@@ -1877,23 +1868,23 @@ public class GameFunc {
         public String getID() { return "trigger_elevator_init";}
         public boolean think(Entity self) {
             if (null == self.target) {
-                GameBase.gi.dprintf("trigger_elevator has no target\n");
+                ServerGame.PF_dprintf("trigger_elevator has no target\n");
                 return true;
             }
             self.movetarget = GameBase.G_PickTarget(self.target);
             if (null == self.movetarget) {
-                GameBase.gi.dprintf("trigger_elevator unable to find target "
-                        + self.target + "\n");
+                ServerGame.PF_dprintf("trigger_elevator unable to find target "
+                + self.target + "\n");
                 return true;
             }
             if (Lib.strcmp(self.movetarget.classname, "func_train") != 0) {
-                GameBase.gi.dprintf("trigger_elevator target " + self.target
-                        + " is not a train\n");
+                ServerGame.PF_dprintf("trigger_elevator target " + self.target
+                + " is not a train\n");
                 return true;
             }
 
             self.use = trigger_elevator_use;
-            self.svflags = Defines.SVF_NOCLIENT;
+            self.svflags = Constants.SVF_NOCLIENT;
             return true;
         }
     };
@@ -1902,7 +1893,7 @@ public class GameFunc {
         public String getID() { return "sp_trigger_elevator";}
         public boolean think(Entity self) {
             self.think = trigger_elevator_init;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
     };
@@ -1988,9 +1979,9 @@ public class GameFunc {
 
             self.use = func_conveyor_use;
 
-            GameBase.gi.setmodel(self, self.model);
-            self.solid = Defines.SOLID_BSP;
-            GameBase.gi.linkentity(self);
+            ServerGame.PF_setmodel(self, self.model);
+            self.solid = Constants.SOLID_BSP;
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -2085,7 +2076,7 @@ public class GameFunc {
             if (null == (self.targetname)
                     || 0 != (self.spawnflags & SECRET_ALWAYS_SHOOT)) {
                 self.health = 0;
-                self.takedamage = Defines.DAMAGE_YES;
+                self.takedamage = Constants.DAMAGE_YES;
             }
             door_use_areaportals(self, false);
             return true;
@@ -2095,12 +2086,12 @@ public class GameFunc {
     static EntityBlockedAdapter door_secret_blocked = new EntityBlockedAdapter() {
         public String getID() { return "door_secret_blocked";}
         public void blocked(Entity self, Entity other) {
-            if (0 == (other.svflags & Defines.SVF_MONSTER)
+            if (0 == (other.svflags & Constants.SVF_MONSTER)
                     && (null == other.client)) {
                 // give it a chance to go away on it's own terms (like gibs)
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
-                        Defines.MOD_CRUSH);
+                        Constants.MOD_CRUSH);
                 // if it's still there, nuke it
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
@@ -2113,7 +2104,7 @@ public class GameFunc {
 
             GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                    Defines.MOD_CRUSH);
+                    Constants.MOD_CRUSH);
         }
     };
 
@@ -2121,7 +2112,7 @@ public class GameFunc {
         public String getID() { return "door_secret_die";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
-            self.takedamage = Defines.DAMAGE_NO;
+            self.takedamage = Constants.DAMAGE_NO;
             door_secret_use.use(self, attacker, attacker);
         }
     };
@@ -2134,16 +2125,13 @@ public class GameFunc {
             float width;
             float length;
 
-            ent.moveinfo.sound_start = GameBase.gi
-                    .soundindex("doors/dr1_strt.wav");
-            ent.moveinfo.sound_middle = GameBase.gi
-                    .soundindex("doors/dr1_mid.wav");
-            ent.moveinfo.sound_end = GameBase.gi
-                    .soundindex("doors/dr1_end.wav");
+            ent.moveinfo.sound_start = ServerInit.SV_SoundIndex("doors/dr1_strt.wav");
+            ent.moveinfo.sound_middle = ServerInit.SV_SoundIndex("doors/dr1_mid.wav");
+            ent.moveinfo.sound_end = ServerInit.SV_SoundIndex("doors/dr1_end.wav");
 
-            ent.movetype = Defines.MOVETYPE_PUSH;
-            ent.solid = Defines.SOLID_BSP;
-            GameBase.gi.setmodel(ent, ent.model);
+            ent.movetype = Constants.MOVETYPE_PUSH;
+            ent.solid = Constants.SOLID_BSP;
+            ServerGame.PF_setmodel(ent, ent.model);
 
             ent.blocked = door_secret_blocked;
             ent.use = door_secret_use;
@@ -2151,7 +2139,7 @@ public class GameFunc {
             if (null == (ent.targetname)
                     || 0 != (ent.spawnflags & SECRET_ALWAYS_SHOOT)) {
                 ent.health = 0;
-                ent.takedamage = Defines.DAMAGE_YES;
+                ent.takedamage = Constants.DAMAGE_YES;
                 ent.die = door_secret_die;
             }
 
@@ -2179,17 +2167,17 @@ public class GameFunc {
             Math3D.VectorMA(ent.pos1, length, forward, ent.pos2);
 
             if (ent.health != 0) {
-                ent.takedamage = Defines.DAMAGE_YES;
+                ent.takedamage = Constants.DAMAGE_YES;
                 ent.die = door_killed;
                 ent.max_health = ent.health;
             } else if (ent.targetname != null && ent.message != null) {
-                GameBase.gi.soundindex("misc/talk.wav");
+                ServerInit.SV_SoundIndex("misc/talk.wav");
                 ent.touch = door_touch;
             }
 
             ent.classname = "func_door";
 
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             return true;
         }
     };
@@ -2208,9 +2196,9 @@ public class GameFunc {
     static EntityThinkAdapter SP_func_killbox = new EntityThinkAdapter() {
         public String getID() { return "sp_func_killbox";}
         public boolean think(Entity ent) {
-            GameBase.gi.setmodel(ent, ent.model);
+            ServerGame.PF_setmodel(ent, ent.model);
             ent.use = use_killbox;
-            ent.svflags = Defines.SVF_NOCLIENT;
+            ent.svflags = Constants.SVF_NOCLIENT;
             return true;
         }
     };

@@ -47,7 +47,7 @@ public class ConsoleVariables {
     public static ConsoleVariable Get(String var_name, String var_value, int flags) {
         ConsoleVariable var;
 
-        if ((flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
+        if ((flags & (Constants.CVAR_USERINFO | Constants.CVAR_SERVERINFO)) != 0) {
             if (!InfoValidate(var_name)) {
                 Com.Printf("invalid info cvar name\n");
                 return null;
@@ -63,7 +63,7 @@ public class ConsoleVariables {
         if (var_value == null)
             return null;
 
-        if ((flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
+        if ((flags & (Constants.CVAR_USERINFO | Constants.CVAR_SERVERINFO)) != 0) {
             if (!InfoValidate(var_value)) {
                 Com.Printf("invalid info cvar value\n");
                 return null;
@@ -123,7 +123,7 @@ public class ConsoleVariables {
 
         var.modified = true;
 
-        if ((var.flags & Defines.CVAR_USERINFO) != 0)
+        if ((var.flags & Constants.CVAR_USERINFO) != 0)
             Globals.userinfo_modified = true; // transmit at next oportunity
 
         var.string = value;
@@ -164,7 +164,7 @@ public class ConsoleVariables {
             return ConsoleVariables.Get(var_name, value, 0);
         }
 
-        if ((var.flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
+        if ((var.flags & (Constants.CVAR_USERINFO | Constants.CVAR_SERVERINFO)) != 0) {
             if (!InfoValidate(value)) {
                 Com.Printf("invalid info cvar value\n");
                 return var;
@@ -172,12 +172,12 @@ public class ConsoleVariables {
         }
 
         if (!force) {
-            if ((var.flags & Defines.CVAR_NOSET) != 0) {
+            if ((var.flags & Constants.CVAR_NOSET) != 0) {
                 Com.Printf(var_name + " is write protected.\n");
                 return var;
             }
 
-            if ((var.flags & Defines.CVAR_LATCH) != 0) {
+            if ((var.flags & Constants.CVAR_LATCH) != 0) {
                 if (var.latched_string != null) {
                     if (value.equals(var.latched_string))
                         return var;
@@ -215,7 +215,7 @@ public class ConsoleVariables {
 
         var.modified = true;
 
-        if ((var.flags & Defines.CVAR_USERINFO) != 0)
+        if ((var.flags & Constants.CVAR_USERINFO) != 0)
             Globals.userinfo_modified = true; // transmit at next oportunity
 
         var.string = value;
@@ -245,9 +245,9 @@ public class ConsoleVariables {
 
             if (c == 4) {
                 if (Commands.Argv(3).equals("u"))
-                    flags = Defines.CVAR_USERINFO;
+                    flags = Constants.CVAR_USERINFO;
                 else if (Commands.Argv(3).equals("s"))
-                    flags = Defines.CVAR_SERVERINFO;
+                    flags = Constants.CVAR_SERVERINFO;
                 else {
                     Com.Printf("flags can only be 'u' or 's'\n");
                     return;
@@ -270,21 +270,21 @@ public class ConsoleVariables {
 
             i = 0;
             for (var = Globals.cvar_vars; var != null; var = var.next, i++) {
-                if ((var.flags & Defines.CVAR_ARCHIVE) != 0)
+                if ((var.flags & Constants.CVAR_ARCHIVE) != 0)
                     Com.Printf("*");
                 else
                     Com.Printf(" ");
-                if ((var.flags & Defines.CVAR_USERINFO) != 0)
+                if ((var.flags & Constants.CVAR_USERINFO) != 0)
                     Com.Printf("U");
                 else
                     Com.Printf(" ");
-                if ((var.flags & Defines.CVAR_SERVERINFO) != 0)
+                if ((var.flags & Constants.CVAR_SERVERINFO) != 0)
                     Com.Printf("S");
                 else
                     Com.Printf(" ");
-                if ((var.flags & Defines.CVAR_NOSET) != 0)
+                if ((var.flags & Constants.CVAR_NOSET) != 0)
                     Com.Printf("-");
-                else if ((var.flags & Defines.CVAR_LATCH) != 0)
+                else if ((var.flags & Constants.CVAR_LATCH) != 0)
                     Com.Printf("L");
                 else
                     Com.Printf(" ");
@@ -367,7 +367,7 @@ public class ConsoleVariables {
      * Returns an info string containing all the CVAR_SERVERINFO cvars. 
      */
     public static String Serverinfo() {
-        return BitInfo(Defines.CVAR_SERVERINFO);
+        return BitInfo(Constants.CVAR_SERVERINFO);
     }
 
     
@@ -398,7 +398,7 @@ public class ConsoleVariables {
      * Returns an info string containing all the CVAR_USERINFO cvars.
      */
     public static String Userinfo() {
-        return BitInfo(Defines.CVAR_USERINFO);
+        return BitInfo(Constants.CVAR_USERINFO);
     }
     
     /**
@@ -422,7 +422,7 @@ public class ConsoleVariables {
             return;
         }
         for (var = Globals.cvar_vars; var != null; var = var.next) {
-            if ((var.flags & Defines.CVAR_ARCHIVE) != 0) {
+            if ((var.flags & Constants.CVAR_ARCHIVE) != 0) {
                 buffer = "set " + var.name + " \"" + var.string + "\"\n";
                 try {
                     f.writeBytes(buffer);

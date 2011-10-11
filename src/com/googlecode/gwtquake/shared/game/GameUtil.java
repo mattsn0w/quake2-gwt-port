@@ -24,11 +24,15 @@
 package com.googlecode.gwtquake.shared.game;
 
 import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
+import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -71,7 +75,7 @@ public class GameUtil {
             t.think = Think_Delay;
             t.activator = activator;
             if (activator == null)
-                GameBase.gi.dprintf("Think_Delay with no activator\n");
+              ServerGame.PF_dprintf("Think_Delay with no activator\n");
             t.message = ent.message;
             t.target = ent.target;
             t.killtarget = ent.killtarget;
@@ -81,14 +85,14 @@ public class GameUtil {
 
         // print the message
         if ((ent.message != null)
-                && (activator.svflags & Defines.SVF_MONSTER) == 0) {
-            GameBase.gi.centerprintf(activator, "" + ent.message);
+                && (activator.svflags & Constants.SVF_MONSTER) == 0) {
+            ServerGame.PF_centerprintf(activator, "" + ent.message);
             if (ent.noise_index != 0)
-                GameBase.gi.sound(activator, Defines.CHAN_AUTO,
-                        ent.noise_index, 1, Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(activator, Constants.CHAN_AUTO, ent.noise_index, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else
-                GameBase.gi.sound(activator, Defines.CHAN_AUTO, GameBase.gi
-                        .soundindex("misc/talk1.wav"), 1, Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(activator, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/talk1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
         }
 
         // kill killtargets
@@ -100,8 +104,7 @@ public class GameUtil {
                 t = edit.o;
                 G_FreeEdict(t);
                 if (!ent.inuse) {
-                    GameBase.gi
-                            .dprintf("entity was removed while using killtargets\n");
+                    ServerGame.PF_dprintf("entity was removed while using killtargets\n");
                     return;
                 }
             }
@@ -120,14 +123,13 @@ public class GameUtil {
                     continue;
 
                 if (t == ent) {
-                    GameBase.gi.dprintf("WARNING: Entity used itself.\n");
+                    ServerGame.PF_dprintf("WARNING: Entity used itself.\n");
                 } else {
                     if (t.use != null)
                         t.use.use(t, ent, activator);
                 }
                 if (!ent.inuse) {
-                    GameBase.gi
-                            .dprintf("entity was removed while using targets\n");
+                    ServerGame.PF_dprintf("entity was removed while using targets\n");
                     return;
                 }
             }
@@ -167,7 +169,7 @@ public class GameUtil {
         }
 
         if (i == GameBase.game.maxentities)
-            GameBase.gi.error("ED_Alloc: no free edicts");
+          Com.Error(Constants.ERR_FATAL, "ED_Alloc: no free edicts");
 
         e = GameBase.g_edicts[i] = new Entity(i);
         GameBase.num_edicts++;
@@ -179,10 +181,10 @@ public class GameUtil {
      * Marks the edict as free
      */
     public static void G_FreeEdict(Entity ed) {
-        GameBase.gi.unlinkentity(ed); // unlink from world
+        World.SV_UnlinkEdict(ed); // unlink from world
 
         //if ((ed - g_edicts) <= (maxclients.value + BODY_QUEUE_SIZE))
-        if (ed.index <= (GameBase.maxclients.value + Defines.BODY_QUEUE_SIZE)) {
+        if (ed.index <= (GameBase.maxclients.value + Constants.BODY_QUEUE_SIZE)) {
             // gi.dprintf("tried to free special edict\n");
             return;
         }
@@ -213,15 +215,14 @@ public class GameUtil {
         Trace tr;
 
         while (true) {
-            tr = GameBase.gi.trace(ent.s.origin, ent.mins, ent.maxs,
-                    ent.s.origin, null, Defines.MASK_PLAYERSOLID);
+            tr = World.SV_Trace(ent.s.origin, ent.mins, ent.maxs, ent.s.origin, null, Constants.MASK_PLAYERSOLID);
             if (tr.ent == null || tr.ent == GameBase.g_edicts[0])
                 break;
 
             // nail it
             GameCombat.T_Damage(tr.ent, ent, ent, Globals.vec3_origin, ent.s.origin,
                     Globals.vec3_origin, 100000, 0,
-                    Defines.DAMAGE_NO_PROTECTION, Defines.MOD_TELEFRAG);
+                    Constants.DAMAGE_NO_PROTECTION, Constants.MOD_TELEFRAG);
 
             // if we didn't kill it, fail
             if (tr.ent.solid != 0)
@@ -235,7 +236,7 @@ public class GameUtil {
      * Returns true, if two edicts are on the same team. 
      */
     public static boolean OnSameTeam(Entity ent1, Entity ent2) {
-        if (0 == ((int) (GameBase.dmflags.value) & (Defines.DF_MODELTEAMS | Defines.DF_SKINTEAMS)))
+        if (0 == ((int) (GameBase.dmflags.value) & (Constants.DF_MODELTEAMS | Constants.DF_SKINTEAMS)))
             return false;
 
         if (ClientTeam(ent1).equals(ClientTeam(ent2)))
@@ -260,7 +261,7 @@ public class GameUtil {
         if (p == -1)
             return value;
 
-        if (((int) (GameBase.dmflags.value) & Defines.DF_MODELTEAMS) != 0) {
+        if (((int) (GameBase.dmflags.value) & Constants.DF_MODELTEAMS) != 0) {
             return value.substring(0, p);
         }
 
@@ -290,13 +291,13 @@ public class GameUtil {
 
         Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
         len = Math3D.VectorLength(v);
-        if (len < Defines.MELEE_DISTANCE)
-            return Defines.RANGE_MELEE;
+        if (len < Constants.MELEE_DISTANCE)
+            return Constants.RANGE_MELEE;
         if (len < 500)
-            return Defines.RANGE_NEAR;
+            return Constants.RANGE_NEAR;
         if (len < 1000)
-            return Defines.RANGE_MID;
-        return Defines.RANGE_FAR;
+            return Constants.RANGE_MID;
+        return Constants.RANGE_FAR;
     }
 
     static void AttackFinished(Entity self, float time) {
@@ -333,8 +334,7 @@ public class GameUtil {
         spot1[2] += self.viewheight;
         Math3D.VectorCopy(other.s.origin, spot2);
         spot2[2] += other.viewheight;
-        trace = GameBase.gi.trace(spot1, Globals.vec3_origin,
-                Globals.vec3_origin, spot2, self, Defines.MASK_OPAQUE);
+        trace = World.SV_Trace(spot1, Globals.vec3_origin, Globals.vec3_origin, spot2, self, Constants.MASK_OPAQUE);
 
         if (trace.fraction == 1.0)
             return true;
@@ -361,7 +361,7 @@ public class GameUtil {
         boolean heardit;
         int r;
 
-        if ((self.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0) {
+        if ((self.monsterinfo.aiflags & Constants.AI_GOOD_GUY) != 0) {
             if (self.goalentity != null && self.goalentity.inuse
                     && self.goalentity.classname != null) {
                 if (self.goalentity.classname.equals("target_actor"))
@@ -373,7 +373,7 @@ public class GameUtil {
         }
 
         // if we're going to a combat point, just proceed
-        if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0)
+        if ((self.monsterinfo.aiflags & Constants.AI_COMBAT_POINT) != 0)
             return false;
 
         // if the first spawnflag bit is set, the monster will only wake up on
@@ -407,15 +407,15 @@ public class GameUtil {
             return false;
 
         if (client.client != null) {
-            if ((client.flags & Defines.FL_NOTARGET) != 0)
+            if ((client.flags & Constants.FL_NOTARGET) != 0)
                 return false;
-        } else if ((client.svflags & Defines.SVF_MONSTER) != 0) {
+        } else if ((client.svflags & Constants.SVF_MONSTER) != 0) {
             if (client.enemy == null)
                 return false;
-            if ((client.enemy.flags & Defines.FL_NOTARGET) != 0)
+            if ((client.enemy.flags & Constants.FL_NOTARGET) != 0)
                 return false;
         } else if (heardit) {
-            if ((client.owner.flags & Defines.FL_NOTARGET) != 0)
+            if ((client.owner.flags & Constants.FL_NOTARGET) != 0)
                 return false;
         } else
             return false;
@@ -423,7 +423,7 @@ public class GameUtil {
         if (!heardit) {
             r = range(self, client);
 
-            if (r == Defines.RANGE_FAR)
+            if (r == Constants.RANGE_FAR)
                 return false;
 
             // this is where we would check invisibility
@@ -436,11 +436,11 @@ public class GameUtil {
                 return false;
            
 
-            if (r == Defines.RANGE_NEAR) {
+            if (r == Constants.RANGE_NEAR) {
                 if (client.show_hostile < GameBase.level.time
                         && !infront(self, client))               
                     return false;                
-            } else if (r == Defines.RANGE_MID) {
+            } else if (r == Constants.RANGE_MID) {
                 if (!infront(self, client)) 
                     return false;               
             }
@@ -451,7 +451,7 @@ public class GameUtil {
             self.enemy = client;
 
             if (!self.enemy.classname.equals("player_noise")) {
-                self.monsterinfo.aiflags &= ~Defines.AI_SOUND_TARGET;
+                self.monsterinfo.aiflags &= ~Constants.AI_SOUND_TARGET;
 
                 if (self.enemy.client == null) {
                     self.enemy = self.enemy.enemy;
@@ -469,7 +469,7 @@ public class GameUtil {
                 if (!visible(self, client))
                     return false;
             } else {
-                if (!GameBase.gi.inPHS(self.s.origin, client.s.origin))
+                if (!ServerGame.PF_inPHS(self.s.origin, client.s.origin))
                     return false;
             }
 
@@ -482,14 +482,14 @@ public class GameUtil {
             // check area portals - if they are different and not connected then
             // we can't hear it
             if (client.areanum != self.areanum)
-                if (!GameBase.gi.AreasConnected(self.areanum, client.areanum))
+                if (!CM.CM_AreasConnected(self.areanum, client.areanum))
                     return false;
 
             self.ideal_yaw = Math3D.vectoyaw(temp);
             ClientMonsterMethods.M_ChangeYaw(self);
 
             // hunt the sound for a bit; hopefully find the real player
-            self.monsterinfo.aiflags |= Defines.AI_SOUND_TARGET;
+            self.monsterinfo.aiflags |= Constants.AI_SOUND_TARGET;
             
             if (client == self.enemy)
                 return true; // JDC false;
@@ -500,7 +500,7 @@ public class GameUtil {
         // got one
         FoundTarget(self);
 
-        if (0 == (self.monsterinfo.aiflags & Defines.AI_SOUND_TARGET)
+        if (0 == (self.monsterinfo.aiflags & Constants.AI_SOUND_TARGET)
                 && (self.monsterinfo.sight != null))
             self.monsterinfo.sight.interact(self, self.enemy);
 
@@ -531,15 +531,15 @@ public class GameUtil {
         if (self.movetarget == null) {
             self.goalentity = self.movetarget = self.enemy;
             GameAI.HuntTarget(self);
-            GameBase.gi.dprintf("" + self.classname + "at "
-                    + Lib.vtos(self.s.origin) + ", combattarget "
-                    + self.combattarget + " not found\n");
+            ServerGame.PF_dprintf("" + self.classname + "at "
+            + Lib.vtos(self.s.origin) + ", combattarget "
+            + self.combattarget + " not found\n");
             return;
         }
 
         // clear out our combattarget, these are a one shot deal
         self.combattarget = null;
-        self.monsterinfo.aiflags |= Defines.AI_COMBAT_POINT;
+        self.monsterinfo.aiflags |= Constants.AI_COMBAT_POINT;
 
         // clear the targetname, that point is ours!
         self.movetarget.targetname = null;
@@ -575,7 +575,7 @@ public class GameUtil {
                 return false;
             }
 
-            if (!((self.spawnflags & Defines.DROPPED_ITEM) != 0)
+            if (!((self.spawnflags & Constants.DROPPED_ITEM) != 0)
                     && (GameBase.deathmatch.value != 0))
                 GameItems.SetRespawn(self, 20);
             else
@@ -603,11 +603,10 @@ public class GameUtil {
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                tr = GameBase.gi.trace(spot1, null, null, spot2, self,
-                        Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
-                                | Defines.CONTENTS_SLIME
-                                | Defines.CONTENTS_LAVA
-                                | Defines.CONTENTS_WINDOW);
+                tr = World.SV_Trace(spot1, null, null, spot2, self, Constants.CONTENTS_SOLID | Constants.CONTENTS_MONSTER
+                | Constants.CONTENTS_SLIME
+                | Constants.CONTENTS_LAVA
+                | Constants.CONTENTS_WINDOW);
 
                 // do we have a clear shot?
                 if (tr.ent != self.enemy)
@@ -615,14 +614,14 @@ public class GameUtil {
             }
 
             // melee attack
-            if (GameAI.enemy_range == Defines.RANGE_MELEE) {
+            if (GameAI.enemy_range == Constants.RANGE_MELEE) {
                 // don't always melee in easy mode
                 if (GameBase.skill.value == 0 && (Lib.rand() & 3) != 0)
                     return false;
                 if (self.monsterinfo.melee != null)
-                    self.monsterinfo.attack_state = Defines.AS_MELEE;
+                    self.monsterinfo.attack_state = Constants.AS_MELEE;
                 else
-                    self.monsterinfo.attack_state = Defines.AS_MISSILE;
+                    self.monsterinfo.attack_state = Constants.AS_MISSILE;
                 return true;
             }
 
@@ -633,16 +632,16 @@ public class GameUtil {
             if (GameBase.level.time < self.monsterinfo.attack_finished)
                 return false;
 
-            if (GameAI.enemy_range == Defines.RANGE_FAR)
+            if (GameAI.enemy_range == Constants.RANGE_FAR)
                 return false;
 
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0) {
                 chance = 0.4f;
-            } else if (GameAI.enemy_range == Defines.RANGE_MELEE) {
+            } else if (GameAI.enemy_range == Constants.RANGE_MELEE) {
                 chance = 0.2f;
-            } else if (GameAI.enemy_range == Defines.RANGE_NEAR) {
+            } else if (GameAI.enemy_range == Constants.RANGE_NEAR) {
                 chance = 0.1f;
-            } else if (GameAI.enemy_range == Defines.RANGE_MID) {
+            } else if (GameAI.enemy_range == Constants.RANGE_MID) {
                 chance = 0.02f;
             } else {
                 return false;
@@ -654,17 +653,17 @@ public class GameUtil {
                 chance *= 2;
 
             if (Lib.random() < chance) {
-                self.monsterinfo.attack_state = Defines.AS_MISSILE;
+                self.monsterinfo.attack_state = Constants.AS_MISSILE;
                 self.monsterinfo.attack_finished = GameBase.level.time + 2
                         * Lib.random();
                 return true;
             }
 
-            if ((self.flags & Defines.FL_FLY) != 0) {
+            if ((self.flags & Constants.FL_FLY) != 0) {
                 if (Lib.random() < 0.3f)
-                    self.monsterinfo.attack_state = Defines.AS_SLIDING;
+                    self.monsterinfo.attack_state = Constants.AS_SLIDING;
                 else
-                    self.monsterinfo.attack_state = Defines.AS_STRAIGHT;
+                    self.monsterinfo.attack_state = Constants.AS_STRAIGHT;
             }
 
             return false;
@@ -679,10 +678,10 @@ public class GameUtil {
                 return;
             if (self.health <= 0)
                 return;
-            if ((activator.flags & Defines.FL_NOTARGET) != 0)
+            if ((activator.flags & Constants.FL_NOTARGET) != 0)
                 return;
             if ((null == activator.client)
-                    && 0 == (activator.monsterinfo.aiflags & Defines.AI_GOOD_GUY))
+                    && 0 == (activator.monsterinfo.aiflags & Constants.AI_GOOD_GUY))
                 return;
 
             // delay reaction so if the monster is teleported, its sound is

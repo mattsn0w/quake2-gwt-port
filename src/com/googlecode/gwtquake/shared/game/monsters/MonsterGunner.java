@@ -23,13 +23,16 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -474,8 +477,8 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_idlesound = new EntityThinkAdapter() {
     	public String getID() { return "gunner_idlesound"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_idle, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -483,8 +486,8 @@ public class MonsterGunner {
     static EntInteractAdapter gunner_sight = new EntInteractAdapter() {
     	public String getID() { return "gunner_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -492,8 +495,8 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_search = new EntityThinkAdapter() {
     	public String getID() { return "gunner_search"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -563,7 +566,7 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_fidget = new EntityThinkAdapter() {
     	public String getID() { return "gunner_fidget"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 return true;
             if (Lib.random() <= 0.05)
                 self.monsterinfo.currentmove = gunner_move_fidget;
@@ -648,7 +651,7 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_run = new EntityThinkAdapter() {
     	public String getID() { return "gunner_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = gunner_move_stand;
             else
                 self.monsterinfo.currentmove = gunner_move_run;
@@ -733,11 +736,11 @@ public class MonsterGunner {
             self.pain_debounce_time = GameBase.level.time + 3;
 
             if ((Lib.rand() & 1) != 0)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
 
             if (GameBase.skill.value == 3)
                 return; // no pain anims in nightmare
@@ -757,10 +760,10 @@ public class MonsterGunner {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -789,31 +792,29 @@ public class MonsterGunner {
 
             //	check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             //	regular death
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death, 1,
-                    Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
             self.monsterinfo.currentmove = gunner_move_death;
         }
     };
@@ -821,18 +822,18 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_duck_down = new EntityThinkAdapter() {
     	public String getID() { return "gunner_duck_down"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_DUCKED) != 0)
                 return true;
-            self.monsterinfo.aiflags |= Defines.AI_DUCKED;
+            self.monsterinfo.aiflags |= Constants.AI_DUCKED;
             if (GameBase.skill.value >= 2) {
                 if (Lib.random() > 0.5)
                     GunnerGrenade.think(self);
             }
 
             self.maxs[2] -= 32;
-            self.takedamage = Defines.DAMAGE_YES;
+            self.takedamage = Constants.DAMAGE_YES;
             self.monsterinfo.pausetime = GameBase.level.time + 1;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -841,9 +842,9 @@ public class MonsterGunner {
     	public String getID() { return "gunner_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
-                self.monsterinfo.aiflags &= ~Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags &= ~Constants.AI_HOLD_FRAME;
             else
-                self.monsterinfo.aiflags |= Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags |= Constants.AI_HOLD_FRAME;
             return true;
         }
     };
@@ -851,10 +852,10 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_duck_up = new EntityThinkAdapter() {
     	public String getID() { return "gunner_duck_up"; }
         public boolean think(Entity self) {
-            self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
+            self.monsterinfo.aiflags &= ~Constants.AI_DUCKED;
             self.maxs[2] += 32;
-            self.takedamage = Defines.DAMAGE_AIM;
-            GameBase.gi.linkentity(self);
+            self.takedamage = Constants.DAMAGE_AIM;
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -888,8 +889,8 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_opengun = new EntityThinkAdapter() {
     	public String getID() { return "gunner_opengun"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_open, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_open, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -903,7 +904,7 @@ public class MonsterGunner {
             float[] aim = { 0, 0, 0 };
             int flash_number;
 
-            flash_number = Defines.MZ2_GUNNER_MACHINEGUN_1
+            flash_number = Constants.MZ2_GUNNER_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak216);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
@@ -919,8 +920,8 @@ public class MonsterGunner {
             Math3D.VectorSubtract(target, start, aim);
             Math3D.VectorNormalize(aim);
             Monster.monster_fire_bullet(self, start, aim, 3, 4,
-                    Defines.DEFAULT_BULLET_HSPREAD,
-                    Defines.DEFAULT_BULLET_VSPREAD, flash_number);
+                    Constants.DEFAULT_BULLET_HSPREAD,
+                    Constants.DEFAULT_BULLET_VSPREAD, flash_number);
 
             return true;
         }
@@ -935,14 +936,14 @@ public class MonsterGunner {
             int flash_number;
 
             if (self.s.frame == FRAME_attak105)
-                flash_number = Defines.MZ2_GUNNER_GRENADE_1;
+                flash_number = Constants.MZ2_GUNNER_GRENADE_1;
             else if (self.s.frame == FRAME_attak108)
-                flash_number = Defines.MZ2_GUNNER_GRENADE_2;
+                flash_number = Constants.MZ2_GUNNER_GRENADE_2;
             else if (self.s.frame == FRAME_attak111)
-                flash_number = Defines.MZ2_GUNNER_GRENADE_3;
+                flash_number = Constants.MZ2_GUNNER_GRENADE_3;
             else
                 // (self.s.frame == FRAME_attak114)
-                flash_number = Defines.MZ2_GUNNER_GRENADE_4;
+                flash_number = Constants.MZ2_GUNNER_GRENADE_4;
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
@@ -961,7 +962,7 @@ public class MonsterGunner {
     static EntityThinkAdapter gunner_attack = new EntityThinkAdapter() {
     	public String getID() { return "gunner_attack"; }
         public boolean think(Entity self) {
-            if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE) {
+            if (GameUtil.range(self, self.enemy) == Constants.RANGE_MELEE) {
                 self.monsterinfo.currentmove = gunner_move_attack_chain;
             } else {
                 if (Lib.random() <= 0.5)
@@ -1068,21 +1069,20 @@ public class MonsterGunner {
             return;
         }
 
-        sound_death = GameBase.gi.soundindex("gunner/death1.wav");
-        sound_pain = GameBase.gi.soundindex("gunner/gunpain2.wav");
-        sound_pain2 = GameBase.gi.soundindex("gunner/gunpain1.wav");
-        sound_idle = GameBase.gi.soundindex("gunner/gunidle1.wav");
-        sound_open = GameBase.gi.soundindex("gunner/gunatck1.wav");
-        sound_search = GameBase.gi.soundindex("gunner/gunsrch1.wav");
-        sound_sight = GameBase.gi.soundindex("gunner/sight1.wav");
+        sound_death = ServerInit.SV_SoundIndex("gunner/death1.wav");
+        sound_pain = ServerInit.SV_SoundIndex("gunner/gunpain2.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("gunner/gunpain1.wav");
+        sound_idle = ServerInit.SV_SoundIndex("gunner/gunidle1.wav");
+        sound_open = ServerInit.SV_SoundIndex("gunner/gunatck1.wav");
+        sound_search = ServerInit.SV_SoundIndex("gunner/gunsrch1.wav");
+        sound_sight = ServerInit.SV_SoundIndex("gunner/sight1.wav");
 
-        GameBase.gi.soundindex("gunner/gunatck2.wav");
-        GameBase.gi.soundindex("gunner/gunatck3.wav");
+        ServerInit.SV_SoundIndex("gunner/gunatck2.wav");
+        ServerInit.SV_SoundIndex("gunner/gunatck3.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/gunner/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/gunner/tris.md2");
         Math3D.VectorSet(self.mins, -16, -16, -24);
         Math3D.VectorSet(self.maxs, 16, 16, 32);
 
@@ -1102,7 +1102,7 @@ public class MonsterGunner {
         self.monsterinfo.sight = gunner_sight;
         self.monsterinfo.search = gunner_search;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = gunner_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;

@@ -23,14 +23,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.server;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.PlayerState;
 
 
 public class ClientFrame {
 
 	int					areabytes;
-	byte				areabits[] = new byte[Defines.MAX_MAP_AREAS/8];		// portalarea visibility bits
+	byte				areabits[] = new byte[Constants.MAX_MAP_AREAS/8];		// portalarea visibility bits
 	PlayerState		ps = new PlayerState();
 	int					num_entities;
 	int					first_entity;		// into the circular sv_packet_entities[]

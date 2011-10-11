@@ -29,9 +29,12 @@ import java.util.*;
 import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.*;
 
 public class Monster {
@@ -44,12 +47,12 @@ public class Monster {
             float[] dir, int damage, int kick, int hspread, int vspread,
             int flashtype) {
         GameWeapon.fire_bullet(self, start, dir, damage, kick, hspread, vspread,
-                Defines.MOD_UNKNOWN);
+                Constants.MOD_UNKNOWN);
 
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash2);
-        GameBase.gi.WriteShort(self.index);
-        GameBase.gi.WriteByte(flashtype);
-        GameBase.gi.multicast(start, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash2);
+        ServerGame.PF_WriteShort(self.index);
+        ServerGame.PF_WriteByte(flashtype);
+        ServerSend.SV_Multicast(start, Constants.MULTICAST_PVS);
     }
 
     /** The Moster fires the shotgun. */
@@ -57,12 +60,12 @@ public class Monster {
             float[] aimdir, int damage, int kick, int hspread, int vspread,
             int count, int flashtype) {
         GameWeapon.fire_shotgun(self, start, aimdir, damage, kick, hspread, vspread,
-                count, Defines.MOD_UNKNOWN);
+                count, Constants.MOD_UNKNOWN);
 
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash2);
-        GameBase.gi.WriteShort(self.index);
-        GameBase.gi.WriteByte(flashtype);
-        GameBase.gi.multicast(start, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash2);
+        ServerGame.PF_WriteShort(self.index);
+        ServerGame.PF_WriteByte(flashtype);
+        ServerSend.SV_Multicast(start, Constants.MULTICAST_PVS);
     }
 
     /** The Moster fires the blaster. */
@@ -70,10 +73,10 @@ public class Monster {
             float[] dir, int damage, int speed, int flashtype, int effect) {
         GameWeapon.fire_blaster(self, start, dir, damage, speed, effect, false);
 
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash2);
-        GameBase.gi.WriteShort(self.index);
-        GameBase.gi.WriteByte(flashtype);
-        GameBase.gi.multicast(start, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash2);
+        ServerGame.PF_WriteShort(self.index);
+        ServerGame.PF_WriteByte(flashtype);
+        ServerSend.SV_Multicast(start, Constants.MULTICAST_PVS);
     }
 
     /** The Moster fires the grenade. */
@@ -83,10 +86,10 @@ public class Monster {
                 .fire_grenade(self, start, aimdir, damage, speed, 2.5f,
                         damage + 40);
 
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash2);
-        GameBase.gi.WriteShort(self.index);
-        GameBase.gi.WriteByte(flashtype);
-        GameBase.gi.multicast(start, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash2);
+        ServerGame.PF_WriteShort(self.index);
+        ServerGame.PF_WriteByte(flashtype);
+        ServerSend.SV_Multicast(start, Constants.MULTICAST_PVS);
     }
 
     /** The Moster fires the rocket. */
@@ -94,10 +97,10 @@ public class Monster {
             float[] dir, int damage, int speed, int flashtype) {
         GameWeapon.fire_rocket(self, start, dir, damage, speed, damage + 20, damage);
 
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash2);
-        GameBase.gi.WriteShort(self.index);
-        GameBase.gi.WriteByte(flashtype);
-        GameBase.gi.multicast(start, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash2);
+        ServerGame.PF_WriteShort(self.index);
+        ServerGame.PF_WriteByte(flashtype);
+        ServerSend.SV_Multicast(start, Constants.MULTICAST_PVS);
     }
 
     /** The Moster fires the railgun. */
@@ -105,10 +108,10 @@ public class Monster {
             float[] aimdir, int damage, int kick, int flashtype) {
         GameWeapon.fire_rail(self, start, aimdir, damage, kick);
 
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash2);
-        GameBase.gi.WriteShort(self.index);
-        GameBase.gi.WriteByte(flashtype);
-        GameBase.gi.multicast(start, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash2);
+        ServerGame.PF_WriteShort(self.index);
+        ServerGame.PF_WriteByte(flashtype);
+        ServerSend.SV_Multicast(start, Constants.MULTICAST_PVS);
     }
 
     /** The Moster fires the bfg. */
@@ -117,10 +120,10 @@ public class Monster {
             float damage_radius, int flashtype) {
         GameWeapon.fire_bfg(self, start, aimdir, damage, speed, damage_radius);
 
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash2);
-        GameBase.gi.WriteShort(self.index);
-        GameBase.gi.WriteByte(flashtype);
-        GameBase.gi.multicast(start, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash2);
+        ServerGame.PF_WriteShort(self.index);
+        ServerGame.PF_WriteByte(flashtype);
+        ServerSend.SV_Multicast(start, Constants.MULTICAST_PVS);
     }
 
     /*
@@ -130,8 +133,8 @@ public class Monster {
      * as activator. ================
      */
     public static void monster_death_use(Entity self) {
-        self.flags &= ~(Defines.FL_FLY | Defines.FL_SWIM);
-        self.monsterinfo.aiflags &= Defines.AI_GOOD_GUY;
+        self.flags &= ~(Constants.FL_FLY | Constants.FL_SWIM);
+        self.monsterinfo.aiflags &= Constants.AI_GOOD_GUY;
 
         if (self.item != null) {
             GameItems.Drop_Item(self, self.item);
@@ -155,28 +158,28 @@ public class Monster {
         }
 
         if ((self.spawnflags & 4) != 0
-                && 0 == (self.monsterinfo.aiflags & Defines.AI_GOOD_GUY)) {
+                && 0 == (self.monsterinfo.aiflags & Constants.AI_GOOD_GUY)) {
             self.spawnflags &= ~4;
             self.spawnflags |= 1;
             //		 gi.dprintf("fixed spawnflags on %s at %s\n", self.classname,
             // vtos(self.s.origin));
         }
 
-        if (0 == (self.monsterinfo.aiflags & Defines.AI_GOOD_GUY))
+        if (0 == (self.monsterinfo.aiflags & Constants.AI_GOOD_GUY))
             GameBase.level.total_monsters++;
 
-        self.nextthink = GameBase.level.time + Defines.FRAMETIME;
-        self.svflags |= Defines.SVF_MONSTER;
-        self.s.renderfx |= Defines.RF_FRAMELERP;
-        self.takedamage = Defines.DAMAGE_AIM;
+        self.nextthink = GameBase.level.time + Constants.FRAMETIME;
+        self.svflags |= Constants.SVF_MONSTER;
+        self.s.renderfx |= Constants.RF_FRAMELERP;
+        self.takedamage = Constants.DAMAGE_AIM;
         self.air_finished = GameBase.level.time + 12;
         self.use = GameUtil.monster_use;
         self.max_health = self.health;
-        self.clipmask = Defines.MASK_MONSTERSOLID;
+        self.clipmask = Constants.MASK_MONSTERSOLID;
 
         self.s.skinnum = 0;
-        self.deadflag = Defines.DEAD_NO;
-        self.svflags &= ~Defines.SVF_DEADMONSTER;
+        self.deadflag = Constants.DEAD_NO;
+        self.svflags &= ~Constants.SVF_DEADMONSTER;
 
         if (null == self.monsterinfo.checkattack)
             self.monsterinfo.checkattack = GameUtil.M_CheckAttack;
@@ -185,9 +188,9 @@ public class Monster {
         if (GameBase.st.item != null && GameBase.st.item.length() > 0) {
             self.item = GameItems.FindItemByClassname(GameBase.st.item);
             if (self.item == null)
-                GameBase.gi.dprintf("monster_start:" + self.classname + " at "
-                        + Lib.vtos(self.s.origin) + " has bad item: "
-                        + GameBase.st.item + "\n");
+              ServerGame.PF_dprintf("monster_start:" + self.classname + " at "
+              + Lib.vtos(self.s.origin) + " has bad item: "
+              + GameBase.st.item + "\n");
         }
 
         // randomize what frame they start on
@@ -239,9 +242,9 @@ public class Monster {
                 }
             }
             if (notcombat && self.combattarget != null)
-                GameBase.gi.dprintf(self.classname + " at "
-                        + Lib.vtos(self.s.origin)
-                        + " has target with mixed types\n");
+              ServerGame.PF_dprintf(self.classname + " at "
+              + Lib.vtos(self.s.origin)
+              + " has target with mixed types\n");
             if (fixup)
                 self.target = null;
         }
@@ -256,11 +259,11 @@ public class Monster {
                 target = edit.o;
 
                 if (Lib.strcmp(target.classname, "point_combat") != 0) {
-                    GameBase.gi.dprintf(self.classname + " at "
-                            + Lib.vtos(self.s.origin)
-                            + " has bad combattarget " + self.combattarget
-                            + " : " + target.classname + " at "
-                            + Lib.vtos(target.s.origin));
+                    ServerGame.PF_dprintf(self.classname + " at "
+                    + Lib.vtos(self.s.origin)
+                    + " has bad combattarget " + self.combattarget
+                    + " : " + target.classname + " at "
+                    + Lib.vtos(target.s.origin));
                 }
             }
         }
@@ -269,17 +272,16 @@ public class Monster {
             self.goalentity = self.movetarget = GameBase
                     .G_PickTarget(self.target);
             if (null == self.movetarget) {
-                GameBase.gi
-                        .dprintf(self.classname + " can't find target "
-                                + self.target + " at "
-                                + Lib.vtos(self.s.origin) + "\n");
+                ServerGame.PF_dprintf(self.classname + " can't find target "
+                + self.target + " at "
+                + Lib.vtos(self.s.origin) + "\n");
                 self.target = null;
                 self.monsterinfo.pausetime = 100000000;
                 self.monsterinfo.stand.think(self);
             } else if (Lib.strcmp(self.movetarget.classname, "path_corner") == 0) {
                 Math3D.VectorSubtract(self.goalentity.s.origin, self.s.origin,
                         v);
-                self.ideal_yaw = self.s.angles[Defines.YAW] = Math3D
+                self.ideal_yaw = self.s.angles[Constants.YAW] = Math3D
                         .vectoyaw(v);
                 self.monsterinfo.walk.think(self);
                 self.target = null;
@@ -294,7 +296,7 @@ public class Monster {
         }
 
         self.think = Monster.monster_think;
-        self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+        self.nextthink = GameBase.level.time + Constants.FRAMETIME;
     }
 
     public static EntityThinkAdapter monster_think = new EntityThinkAdapter() {
@@ -320,16 +322,16 @@ public class Monster {
             self.s.origin[2] += 1;
             GameUtil.KillBox(self);
 
-            self.solid = Defines.SOLID_BBOX;
-            self.movetype = Defines.MOVETYPE_STEP;
-            self.svflags &= ~Defines.SVF_NOCLIENT;
+            self.solid = Constants.SOLID_BBOX;
+            self.movetype = Constants.MOVETYPE_STEP;
+            self.svflags &= ~Constants.SVF_NOCLIENT;
             self.air_finished = GameBase.level.time + 12;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
 
             Monster.monster_start_go(self);
 
             if (self.enemy != null && 0 == (self.spawnflags & 1)
-                    && 0 == (self.enemy.flags & Defines.FL_NOTARGET)) {
+                    && 0 == (self.enemy.flags & Constants.FL_NOTARGET)) {
                 GameUtil.FoundTarget(self);
             } else {
                 self.enemy = null;
@@ -344,7 +346,7 @@ public class Monster {
         public String getID() { return "monster_trigger_spawn_use";}
         public void use(Entity self, Entity other, Entity activator) {
             self.think = monster_triggered_spawn;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             if (activator.client != null)
                 self.enemy = activator;
             self.use = GameUtil.monster_use;
@@ -356,9 +358,9 @@ public class Monster {
         public boolean think(Entity self) {
             if (self.index == 312)
                 Com.Printf("monster_triggered_start\n");
-            self.solid = Defines.SOLID_NOT;
-            self.movetype = Defines.MOVETYPE_NONE;
-            self.svflags |= Defines.SVF_NOCLIENT;
+            self.solid = Constants.SOLID_NOT;
+            self.movetype = Constants.MOVETYPE_NONE;
+            self.svflags |= Constants.SVF_NOCLIENT;
             self.nextthink = 0;
             self.use = monster_triggered_spawn_use;
             return true;

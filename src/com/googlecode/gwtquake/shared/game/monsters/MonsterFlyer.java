@@ -23,12 +23,15 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -369,8 +372,8 @@ public class MonsterFlyer {
     public static EntInteractAdapter flyer_sight = new EntInteractAdapter() {
     	public String getID() { return "flyer_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -378,8 +381,8 @@ public class MonsterFlyer {
     static EntityThinkAdapter flyer_idle = new EntityThinkAdapter() {
     	public String getID() { return "flyer_idle"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_idle, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -387,8 +390,8 @@ public class MonsterFlyer {
     static EntityThinkAdapter flyer_pop_blades = new EntityThinkAdapter() {
     	public String getID() { return "flyer_pop_blades"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sproing, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sproing, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -546,7 +549,7 @@ public class MonsterFlyer {
     static EntityThinkAdapter flyer_run = new EntityThinkAdapter() {
     	public String getID() { return "flyer_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = flyer_move_stand;
             else
                 self.monsterinfo.currentmove = flyer_move_run;
@@ -721,7 +724,7 @@ public class MonsterFlyer {
     static EntityThinkAdapter flyer_fireleft = new EntityThinkAdapter() {
     	public String getID() { return "flyer_fireleft"; }
         public boolean think(Entity self) {
-            flyer_fire(self, Defines.MZ2_FLYER_BLASTER_1);
+            flyer_fire(self, Constants.MZ2_FLYER_BLASTER_1);
             return true;
         }
     };
@@ -729,7 +732,7 @@ public class MonsterFlyer {
     static EntityThinkAdapter flyer_fireright = new EntityThinkAdapter() {
     	public String getID() { return "flyer_fireright"; }
         public boolean think(Entity self) {
-            flyer_fire(self, Defines.MZ2_FLYER_BLASTER_2);
+            flyer_fire(self, Constants.MZ2_FLYER_BLASTER_2);
             return true;
         }
     };
@@ -762,10 +765,10 @@ public class MonsterFlyer {
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], 0);
+            Math3D.VectorSet(aim, Constants.MELEE_DISTANCE, self.mins[0], 0);
             GameWeapon.fire_hit(self, aim, 5, 0);
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_slash, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_slash, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -775,10 +778,10 @@ public class MonsterFlyer {
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.maxs[0], 0);
+            Math3D.VectorSet(aim, Constants.MELEE_DISTANCE, self.maxs[0], 0);
             GameWeapon.fire_hit(self, aim, 5, 0);
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_slash, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_slash, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -835,7 +838,7 @@ public class MonsterFlyer {
     static EntityThinkAdapter flyer_check_melee = new EntityThinkAdapter() {
     	public String getID() { return "flyer_check_melee"; }
         public boolean think(Entity self) {
-            if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)
+            if (GameUtil.range(self, self.enemy) == Constants.RANGE_MELEE)
                 if (Lib.random() <= 0.8)
                     self.monsterinfo.currentmove = flyer_move_loop_melee;
                 else
@@ -898,16 +901,16 @@ public class MonsterFlyer {
 
             n = Lib.rand() % 3;
             if (n == 0) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = flyer_move_pain1;
             } else if (n == 1) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = flyer_move_pain2;
             } else {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = flyer_move_pain3;
             }
 
@@ -918,8 +921,8 @@ public class MonsterFlyer {
     	public String getID() { return "flyer_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_die, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             GameMisc.BecomeExplosion1(self);
         }
     };
@@ -935,7 +938,7 @@ public class MonsterFlyer {
         if ((self.s.frame == FRAME_attak204)
                 || (self.s.frame == FRAME_attak207)
                 || (self.s.frame == FRAME_attak210))
-            effect = Defines.EF_HYPERBLASTER;
+            effect = Constants.EF_HYPERBLASTER;
         else
             effect = 0;
         Math3D.AngleVectors(self.s.angles, forward, right, null);
@@ -968,24 +971,23 @@ public class MonsterFlyer {
             self.target = null;
         }
 
-        sound_sight = GameBase.gi.soundindex("flyer/flysght1.wav");
-        sound_idle = GameBase.gi.soundindex("flyer/flysrch1.wav");
-        sound_pain1 = GameBase.gi.soundindex("flyer/flypain1.wav");
-        sound_pain2 = GameBase.gi.soundindex("flyer/flypain2.wav");
-        sound_slash = GameBase.gi.soundindex("flyer/flyatck2.wav");
-        sound_sproing = GameBase.gi.soundindex("flyer/flyatck1.wav");
-        sound_die = GameBase.gi.soundindex("flyer/flydeth1.wav");
+        sound_sight = ServerInit.SV_SoundIndex("flyer/flysght1.wav");
+        sound_idle = ServerInit.SV_SoundIndex("flyer/flysrch1.wav");
+        sound_pain1 = ServerInit.SV_SoundIndex("flyer/flypain1.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("flyer/flypain2.wav");
+        sound_slash = ServerInit.SV_SoundIndex("flyer/flyatck2.wav");
+        sound_sproing = ServerInit.SV_SoundIndex("flyer/flyatck1.wav");
+        sound_die = ServerInit.SV_SoundIndex("flyer/flydeth1.wav");
 
-        GameBase.gi.soundindex("flyer/flyatck3.wav");
+        ServerInit.SV_SoundIndex("flyer/flyatck3.wav");
 
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/flyer/tris.md2");
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/flyer/tris.md2");
         Math3D.VectorSet(self.mins, -16, -16, -24);
         Math3D.VectorSet(self.maxs, 16, 16, 32);
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
 
-        self.s.sound = GameBase.gi.soundindex("flyer/flyidle1.wav");
+        self.s.sound = ServerInit.SV_SoundIndex("flyer/flyidle1.wav");
 
         self.health = 50;
         self.mass = 50;
@@ -1001,7 +1003,7 @@ public class MonsterFlyer {
         self.monsterinfo.sight = flyer_sight;
         self.monsterinfo.idle = flyer_idle;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = flyer_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;

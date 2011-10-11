@@ -23,7 +23,7 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.Entity;
 import com.googlecode.gwtquake.shared.game.Frame;
 import com.googlecode.gwtquake.shared.game.GameAI;
@@ -35,6 +35,9 @@ import com.googlecode.gwtquake.shared.game.Trace;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -426,7 +429,7 @@ public class MonsterBoss2 {
     static EntityThinkAdapter boss2_run = new EntityThinkAdapter() {
     	public String getID() { return "boss2_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = boss2_move_stand;
             else
                 self.monsterinfo.currentmove = boss2_move_run;
@@ -500,16 +503,16 @@ public class MonsterBoss2 {
             self.pain_debounce_time = GameBase.level.time + 3;
             //	   American wanted these at no attenuation
             if (damage < 10) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain3, 1,
-                        Defines.ATTN_NONE, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain3, (float) 1, (float) Constants.ATTN_NONE,
+                (float) 0);
                 self.monsterinfo.currentmove = boss2_move_pain_light;
             } else if (damage < 30) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NONE, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NONE,
+                (float) 0);
                 self.monsterinfo.currentmove = boss2_move_pain_light;
             } else {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NONE, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NONE,
+                (float) 0);
                 self.monsterinfo.currentmove = boss2_move_pain_heavy;
             }
         }
@@ -520,10 +523,10 @@ public class MonsterBoss2 {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -56, -56, 0);
             Math3D.VectorSet(self.maxs, 56, 56, 80);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -532,10 +535,10 @@ public class MonsterBoss2 {
     	public String getID() { return "boss2_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death, 1,
-                    Defines.ATTN_NONE, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_NO;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death, (float) 1, (float) Constants.ATTN_NONE,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_NO;
             self.count = 0;
             self.monsterinfo.currentmove = boss2_move_death;
 
@@ -560,10 +563,9 @@ public class MonsterBoss2 {
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
                 spot2[2] += self.enemy.viewheight;
 
-                tr = GameBase.gi.trace(spot1, null, null, spot2, self,
-                        Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
-                                | Defines.CONTENTS_SLIME
-                                | Defines.CONTENTS_LAVA);
+                tr = World.SV_Trace(spot1, null, null, spot2, self, Constants.CONTENTS_SOLID | Constants.CONTENTS_MONSTER
+                | Constants.CONTENTS_SLIME
+                | Constants.CONTENTS_LAVA);
 
                 // do we have a clear shot?
                 if (tr.ent != self.enemy)
@@ -578,11 +580,11 @@ public class MonsterBoss2 {
             self.ideal_yaw = enemy_yaw;
 
             // melee attack
-            if (enemy_range == Defines.RANGE_MELEE) {
+            if (enemy_range == Constants.RANGE_MELEE) {
                 if (self.monsterinfo.melee != null)
-                    self.monsterinfo.attack_state = Defines.AS_MELEE;
+                    self.monsterinfo.attack_state = Constants.AS_MELEE;
                 else
-                    self.monsterinfo.attack_state = Defines.AS_MISSILE;
+                    self.monsterinfo.attack_state = Constants.AS_MISSILE;
                 return true;
             }
 
@@ -593,33 +595,33 @@ public class MonsterBoss2 {
             if (GameBase.level.time < self.monsterinfo.attack_finished)
                 return false;
 
-            if (enemy_range == Defines.RANGE_FAR)
+            if (enemy_range == Constants.RANGE_FAR)
                 return false;
 
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0) {
                 chance = 0.4f;
-            } else if (enemy_range == Defines.RANGE_MELEE) {
+            } else if (enemy_range == Constants.RANGE_MELEE) {
                 chance = 0.8f;
-            } else if (enemy_range == Defines.RANGE_NEAR) {
+            } else if (enemy_range == Constants.RANGE_NEAR) {
                 chance = 0.8f;
-            } else if (enemy_range == Defines.RANGE_MID) {
+            } else if (enemy_range == Constants.RANGE_MID) {
                 chance = 0.8f;
             } else {
                 return false;
             }
 
             if (Lib.random() < chance) {
-                self.monsterinfo.attack_state = Defines.AS_MISSILE;
+                self.monsterinfo.attack_state = Constants.AS_MISSILE;
                 self.monsterinfo.attack_finished = GameBase.level.time + 2
                         * Lib.random();
                 return true;
             }
 
-            if ((self.flags & Defines.FL_FLY) != 0) {
+            if ((self.flags & Constants.FL_FLY) != 0) {
                 if (Lib.random() < 0.3)
-                    self.monsterinfo.attack_state = Defines.AS_SLIDING;
+                    self.monsterinfo.attack_state = Constants.AS_SLIDING;
                 else
-                    self.monsterinfo.attack_state = Defines.AS_STRAIGHT;
+                    self.monsterinfo.attack_state = Constants.AS_STRAIGHT;
             }
 
             return false;
@@ -630,8 +632,8 @@ public class MonsterBoss2 {
     	public String getID() { return "boss2_search"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search1, 1,
-                        Defines.ATTN_NONE, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search1, (float) 1, (float) Constants.ATTN_NONE,
+              (float) 0);
             return true;
         }
     };
@@ -648,47 +650,47 @@ public class MonsterBoss2 {
 
             //	  1
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_1],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_BOSS2_ROCKET_1],
                     forward, right, start);
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
-                    Defines.MZ2_BOSS2_ROCKET_1);
+                    Constants.MZ2_BOSS2_ROCKET_1);
 
             //	  2
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_2],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_BOSS2_ROCKET_2],
                     forward, right, start);
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
-                    Defines.MZ2_BOSS2_ROCKET_2);
+                    Constants.MZ2_BOSS2_ROCKET_2);
 
             //	  3
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_3],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_BOSS2_ROCKET_3],
                     forward, right, start);
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
-                    Defines.MZ2_BOSS2_ROCKET_3);
+                    Constants.MZ2_BOSS2_ROCKET_3);
 
             //	  4
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_4],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_BOSS2_ROCKET_4],
                     forward, right, start);
             Math3D.VectorCopy(self.enemy.s.origin, vec);
             vec[2] += self.enemy.viewheight;
             Math3D.VectorSubtract(vec, start, dir);
             Math3D.VectorNormalize(dir);
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
-                    Defines.MZ2_BOSS2_ROCKET_4);
+                    Constants.MZ2_BOSS2_ROCKET_4);
             return true;
         }
     };
@@ -704,7 +706,7 @@ public class MonsterBoss2 {
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
-                            MonsterFlash.monster_flash_offset[Defines.MZ2_BOSS2_MACHINEGUN_R1],
+                            MonsterFlash.monster_flash_offset[Constants.MZ2_BOSS2_MACHINEGUN_R1],
                             forward, right, start);
 
             Math3D.VectorMA(self.enemy.s.origin, -0.2f, self.enemy.velocity,
@@ -714,9 +716,9 @@ public class MonsterBoss2 {
             Math3D.VectorNormalize(forward);
 
             Monster.monster_fire_bullet(self, start, forward, 6, 4,
-                    Defines.DEFAULT_BULLET_HSPREAD,
-                    Defines.DEFAULT_BULLET_VSPREAD,
-                    Defines.MZ2_BOSS2_MACHINEGUN_R1);
+                    Constants.DEFAULT_BULLET_HSPREAD,
+                    Constants.DEFAULT_BULLET_VSPREAD,
+                    Constants.MZ2_BOSS2_MACHINEGUN_R1);
 
             return true;
         }
@@ -733,7 +735,7 @@ public class MonsterBoss2 {
             Math3D
                     .G_ProjectSource(
                             self.s.origin,
-                            MonsterFlash.monster_flash_offset[Defines.MZ2_BOSS2_MACHINEGUN_L1],
+                            MonsterFlash.monster_flash_offset[Constants.MZ2_BOSS2_MACHINEGUN_L1],
                             forward, right, start);
 
             Math3D.VectorMA(self.enemy.s.origin, -0.2f, self.enemy.velocity,
@@ -744,9 +746,9 @@ public class MonsterBoss2 {
             Math3D.VectorNormalize(forward);
 
             Monster.monster_fire_bullet(self, start, forward, 6, 4,
-                    Defines.DEFAULT_BULLET_HSPREAD,
-                    Defines.DEFAULT_BULLET_VSPREAD,
-                    Defines.MZ2_BOSS2_MACHINEGUN_L1);
+                    Constants.DEFAULT_BULLET_HSPREAD,
+                    Constants.DEFAULT_BULLET_VSPREAD,
+                    Constants.MZ2_BOSS2_MACHINEGUN_L1);
 
             return true;
         }
@@ -1050,18 +1052,17 @@ public class MonsterBoss2 {
             return;
         }
 
-        sound_pain1 = GameBase.gi.soundindex("bosshovr/bhvpain1.wav");
-        sound_pain2 = GameBase.gi.soundindex("bosshovr/bhvpain2.wav");
-        sound_pain3 = GameBase.gi.soundindex("bosshovr/bhvpain3.wav");
-        sound_death = GameBase.gi.soundindex("bosshovr/bhvdeth1.wav");
-        sound_search1 = GameBase.gi.soundindex("bosshovr/bhvunqv1.wav");
+        sound_pain1 = ServerInit.SV_SoundIndex("bosshovr/bhvpain1.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("bosshovr/bhvpain2.wav");
+        sound_pain3 = ServerInit.SV_SoundIndex("bosshovr/bhvpain3.wav");
+        sound_death = ServerInit.SV_SoundIndex("bosshovr/bhvdeth1.wav");
+        sound_search1 = ServerInit.SV_SoundIndex("bosshovr/bhvunqv1.wav");
 
-        self.s.sound = GameBase.gi.soundindex("bosshovr/bhvengn1.wav");
+        self.s.sound = ServerInit.SV_SoundIndex("bosshovr/bhvengn1.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/boss2/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/boss2/tris.md2");
         Math3D.VectorSet(self.mins, -56, -56, 0);
         Math3D.VectorSet(self.maxs, 56, 56, 80);
 
@@ -1069,7 +1070,7 @@ public class MonsterBoss2 {
         self.gib_health = -200;
         self.mass = 1000;
 
-        self.flags |= Defines.FL_IMMUNE_LASER;
+        self.flags |= Constants.FL_IMMUNE_LASER;
 
         self.pain = boss2_pain;
         self.die = boss2_die;
@@ -1080,7 +1081,7 @@ public class MonsterBoss2 {
         self.monsterinfo.attack = boss2_attack;
         self.monsterinfo.search = boss2_search;
         self.monsterinfo.checkattack = Boss2_CheckAttack;
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = boss2_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;

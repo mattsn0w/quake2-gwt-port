@@ -28,11 +28,16 @@ package com.googlecode.gwtquake.shared.game;
 import java.util.StringTokenizer;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.ItemDropAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.ItemUseAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -40,11 +45,11 @@ import com.googlecode.gwtquake.shared.util.Math3D;
 public class GameItems {
 
     public static GameItemArmor jacketarmor_info = new GameItemArmor(25, 50,
-    .30f, .00f, Defines.ARMOR_JACKET);
+    .30f, .00f, Constants.ARMOR_JACKET);
     public static GameItemArmor combatarmor_info = new GameItemArmor(50, 100,
-    .60f, .30f, Defines.ARMOR_COMBAT);
+    .60f, .30f, Constants.ARMOR_COMBAT);
     public static GameItemArmor bodyarmor_info = new GameItemArmor(100, 200,
-    .80f, .60f, Defines.ARMOR_BODY);
+    .80f, .60f, Constants.ARMOR_BODY);
     static int quad_drop_timeout_hack = 0;
     static int jacket_armor_index;
     static int combat_armor_index;
@@ -72,12 +77,12 @@ public class GameItems {
                     ;
             }
     
-            ent.svflags &= ~Defines.SVF_NOCLIENT;
-            ent.solid = Defines.SOLID_TRIGGER;
-            GameBase.gi.linkentity(ent);
+            ent.svflags &= ~Constants.SVF_NOCLIENT;
+            ent.solid = Constants.SOLID_TRIGGER;
+            World.SV_LinkEdict(ent);
     
             // send an effect
-            ent.s.event = Defines.EV_ITEM_RESPAWN;
+            ent.s.event = Constants.EV_ITEM_RESPAWN;
     
             return false;
         }
@@ -150,7 +155,7 @@ public class GameItems {
                     other.client.pers.inventory[index] = other.client.pers.max_slugs;
             }
     
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
+            if (0 == (ent.spawnflags & Constants.DROPPED_ITEM)
                     && (GameBase.deathmatch.value != 0))
                 SetRespawn(ent, ent.item.quantity);
     
@@ -161,26 +166,26 @@ public class GameItems {
         public String getID() { return "pickup_health";}
         public boolean interact(Entity ent, Entity other) {
     
-            if (0 == (ent.style & Defines.HEALTH_IGNORE_MAX))
+            if (0 == (ent.style & Constants.HEALTH_IGNORE_MAX))
                 if (other.health >= other.max_health)
                     return false;
     
             other.health += ent.count;
     
-            if (0 == (ent.style & Defines.HEALTH_IGNORE_MAX)) {
+            if (0 == (ent.style & Constants.HEALTH_IGNORE_MAX)) {
                 if (other.health > other.max_health)
                     other.health = other.max_health;
             }
     
-            if (0 != (ent.style & Defines.HEALTH_TIMED)) {
+            if (0 != (ent.style & Constants.HEALTH_TIMED)) {
                 ent.think = GameUtil.MegaHealth_think;
                 ent.nextthink = GameBase.level.time + 5f;
                 ent.owner = other;
-                ent.flags |= Defines.FL_RESPAWN;
-                ent.svflags |= Defines.SVF_NOCLIENT;
-                ent.solid = Defines.SOLID_NOT;
+                ent.flags |= Constants.FL_RESPAWN;
+                ent.svflags |= Constants.SVF_NOCLIENT;
+                ent.solid = Constants.SOLID_NOT;
             } else {
-                if (!((ent.spawnflags & Defines.DROPPED_ITEM) != 0)
+                if (!((ent.spawnflags & Constants.DROPPED_ITEM) != 0)
                         && (GameBase.deathmatch.value != 0))
                     SetRespawn(ent, 30);
             }
@@ -212,43 +217,36 @@ public class GameItems {
                 other.client.bonus_alpha = 0.25f;
     
                 // show icon and name on status bar
-                other.client.ps.stats[Defines.STAT_PICKUP_ICON] = (short) GameBase.gi
-                        .imageindex(ent.item.icon);
-                other.client.ps.stats[Defines.STAT_PICKUP_STRING] = (short) (Defines.CS_ITEMS + ITEM_INDEX(ent.item));
+                other.client.ps.stats[Constants.STAT_PICKUP_ICON] = (short) ServerInit.SV_ImageIndex(ent.item.icon);
+                other.client.ps.stats[Constants.STAT_PICKUP_STRING] = (short) (Constants.CS_ITEMS + ITEM_INDEX(ent.item));
                 other.client.pickup_msg_time = GameBase.level.time + 3.0f;
     
                 // change selected item
                 if (ent.item.use != null)
-                    other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
+                    other.client.pers.selected_item = other.client.ps.stats[Constants.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
                 if (ent.item.pickup == Pickup_Health) {
                     if (ent.count == 2)
-                        GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                                .soundindex("items/s_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/s_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else if (ent.count == 10)
-                        GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                                .soundindex("items/n_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/n_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else if (ent.count == 25)
-                        GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                                .soundindex("items/l_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/l_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else
-                        // (ent.count == 100)
-                        GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                                .soundindex("items/m_health.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/m_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                 } else if (ent.item.pickup_sound != null) {
-                    GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                            .soundindex(ent.item.pickup_sound), 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex(ent.item.pickup_sound), (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                 }
             }
     
-            if (0 == (ent.spawnflags & Defines.ITEM_TARGETS_USED)) {
+            if (0 == (ent.spawnflags & Constants.ITEM_TARGETS_USED)) {
                 GameUtil.G_UseTargets(ent, other);
-                ent.spawnflags |= Defines.ITEM_TARGETS_USED;
+                ent.spawnflags |= Constants.ITEM_TARGETS_USED;
             }
     
             if (!taken)
@@ -256,10 +254,10 @@ public class GameItems {
             
             Com.dprintln("Picked up:" + ent.classname);
     
-            if (!((GameBase.coop.value != 0) && (ent.item.flags & Defines.IT_STAY_COOP) != 0)
-                    || 0 != (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM))) {
-                if ((ent.flags & Defines.FL_RESPAWN) != 0)
-                    ent.flags &= ~Defines.FL_RESPAWN;
+            if (!((GameBase.coop.value != 0) && (ent.item.flags & Constants.IT_STAY_COOP) != 0)
+                    || 0 != (ent.spawnflags & (Constants.DROPPED_ITEM | Constants.DROPPED_PLAYER_ITEM))) {
+                if ((ent.flags & Constants.FL_RESPAWN) != 0)
+                    ent.flags &= ~Constants.FL_RESPAWN;
                 else
                     GameUtil.G_FreeEdict(ent);
             }
@@ -306,8 +304,8 @@ public class GameItems {
             else
                 ent.client.quad_framenum = GameBase.level.framenum + timeout;
     
-            GameBase.gi.sound(ent, Defines.CHAN_ITEM, GameBase.gi
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/damage.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
     };
     
@@ -322,8 +320,8 @@ public class GameItems {
             else
                 ent.client.invincible_framenum = GameBase.level.framenum + 300;
     
-            GameBase.gi.sound(ent, Defines.CHAN_ITEM, GameBase.gi
-                    .soundindex("items/protect.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/protect.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
     };
     static ItemUseAdapter Use_Breather = new ItemUseAdapter() {
@@ -338,8 +336,8 @@ public class GameItems {
             else
                 ent.client.breather_framenum = GameBase.level.framenum + 300;
     
-            GameBase.gi.sound(ent, Defines.CHAN_ITEM, GameBase.gi
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/damage.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
     };
     static ItemUseAdapter Use_Envirosuit = new ItemUseAdapter() {
@@ -353,8 +351,8 @@ public class GameItems {
             else
                 ent.client.enviro_framenum = GameBase.level.framenum + 300;
     
-            GameBase.gi.sound(ent, Defines.CHAN_ITEM, GameBase.gi
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/damage.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
     };
     static ItemUseAdapter Use_Silencer = new ItemUseAdapter() {
@@ -365,8 +363,8 @@ public class GameItems {
             GameUtil.ValidateSelectedItem(ent);
             ent.client.silencer_shots += 30;
     
-            GameBase.gi.sound(ent, Defines.CHAN_ITEM, GameBase.gi
-                    .soundindex("items/damage.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/damage.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
     };
     static EntInteractAdapter Pickup_Key = new EntInteractAdapter() {
@@ -396,9 +394,9 @@ public class GameItems {
             int count;
             boolean weapon;
     
-            weapon = (ent.item.flags & Defines.IT_WEAPON) != 0;
+            weapon = (ent.item.flags & Constants.IT_WEAPON) != 0;
             if ((weapon)
-                    && ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
+                    && ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO) != 0)
                 count = 1000;
             else if (ent.count != 0)
                 count = ent.count;
@@ -416,7 +414,7 @@ public class GameItems {
                     other.client.newweapon = ent.item;
             }
     
-            if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM))
+            if (0 == (ent.spawnflags & (Constants.DROPPED_ITEM | Constants.DROPPED_PLAYER_ITEM))
                     && (GameBase.deathmatch.value != 0))
                 SetRespawn(ent, 30);
             return true;
@@ -438,7 +436,7 @@ public class GameItems {
             old_armor_index = ArmorIndex(other);
     
             // handle armor shards specially
-            if (ent.item.tag == Defines.ARMOR_SHARD) {
+            if (ent.item.tag == Constants.ARMOR_SHARD) {
                 if (0 == old_armor_index)
                     other.client.pers.inventory[jacket_armor_index] = 2;
                 else
@@ -498,7 +496,7 @@ public class GameItems {
                 }
             }
     
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
+            if (0 == (ent.spawnflags & Constants.DROPPED_ITEM)
                     && (GameBase.deathmatch.value != 0))
                 SetRespawn(ent, 20);
     
@@ -516,7 +514,7 @@ public class GameItems {
             other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
             if (GameBase.deathmatch.value != 0) {
-                if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
+                if (0 == (ent.spawnflags & Constants.DROPPED_ITEM))
                     SetRespawn(ent, ent.item.quantity);
                 // auto-use for DM only if we didn't already have one
                 if (0 == quantity)
@@ -536,20 +534,20 @@ public class GameItems {
                 return false;
     
             if ((GameBase.coop.value != 0)
-                    && (ent.item.flags & Defines.IT_STAY_COOP) != 0
+                    && (ent.item.flags & Constants.IT_STAY_COOP) != 0
                     && (quantity > 0))
                 return false;
     
             other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
             if (GameBase.deathmatch.value != 0) {
-                if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
+                if (0 == (ent.spawnflags & Constants.DROPPED_ITEM))
                     SetRespawn(ent, ent.item.quantity);
-                if (((int) GameBase.dmflags.value & Defines.DF_INSTANT_ITEMS) != 0
-                        || ((ent.item.use == Use_Quad) && 0 != (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM))) {
+                if (((int) GameBase.dmflags.value & Constants.DF_INSTANT_ITEMS) != 0
+                        || ((ent.item.use == Use_Quad) && 0 != (ent.spawnflags & Constants.DROPPED_PLAYER_ITEM))) {
                     if ((ent.item.use == Use_Quad)
-                            && 0 != (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM))
-                        quad_drop_timeout_hack = (int) ((ent.nextthink - GameBase.level.time) / Defines.FRAMETIME);
+                            && 0 != (ent.spawnflags & Constants.DROPPED_PLAYER_ITEM))
+                        quad_drop_timeout_hack = (int) ((ent.nextthink - GameBase.level.time) / Constants.FRAMETIME);
     
                     ent.item.use.use(other, ent.item);
                 }
@@ -567,7 +565,7 @@ public class GameItems {
             if (other.health < other.max_health)
                 other.health = other.max_health;
     
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
+            if (0 == (ent.spawnflags & Constants.DROPPED_ITEM)
                     && (GameBase.deathmatch.value != 0))
                 SetRespawn(ent, ent.item.quantity);
     
@@ -580,7 +578,7 @@ public class GameItems {
         public boolean interact(Entity ent, Entity other) {
             other.max_health += 2;
     
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
+            if (0 == (ent.spawnflags & Constants.DROPPED_ITEM)
                     && (GameBase.deathmatch.value != 0))
                 SetRespawn(ent, ent.item.quantity);
     
@@ -618,7 +616,7 @@ public class GameItems {
                     other.client.pers.inventory[index] = other.client.pers.max_shells;
             }
     
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)
+            if (0 == (ent.spawnflags & Constants.DROPPED_ITEM)
                     && (GameBase.deathmatch.value != 0))
                 SetRespawn(ent, ent.item.quantity);
     
@@ -640,11 +638,10 @@ public class GameItems {
                 dropped.count = ent.client.pers.inventory[index];
     
             if (ent.client.pers.weapon != null
-                    && ent.client.pers.weapon.tag == Defines.AMMO_GRENADES
-                    && item.tag == Defines.AMMO_GRENADES
+                    && ent.client.pers.weapon.tag == Constants.AMMO_GRENADES
+                    && item.tag == Constants.AMMO_GRENADES
                     && ent.client.pers.inventory[index] - dropped.count <= 0) {
-                GameBase.gi.cprintf(ent, Defines.PRINT_HIGH,
-                        "Can't drop current weapon\n");
+                ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, "Can't drop current weapon\n");
                 GameUtil.G_FreeEdict(dropped);
                 return;
             }
@@ -665,7 +662,7 @@ public class GameItems {
     public static ItemDropAdapter Drop_PowerArmor = new ItemDropAdapter() {
         public String getID() { return "drop_powerarmor";}
         public void drop(Entity ent, GameItem item) {
-            if (0 != (ent.flags & Defines.FL_POWER_ARMOR)
+            if (0 != (ent.flags & Constants.FL_POWER_ARMOR)
                     && (ent.client.pers.inventory[ITEM_INDEX(item)] == 1))
                 Use_PowerArmor.use(ent, item);
             Drop_General.drop(ent, item);
@@ -688,21 +685,20 @@ public class GameItems {
             ent.maxs[0] = ent.maxs[1] = ent.maxs[2] = 15;
     
             if (ent.model != null)
-                GameBase.gi.setmodel(ent, ent.model);
+              ServerGame.PF_setmodel(ent, ent.model);
             else
-                GameBase.gi.setmodel(ent, ent.item.world_model);
-            ent.solid = Defines.SOLID_TRIGGER;
-            ent.movetype = Defines.MOVETYPE_TOSS;
+              ServerGame.PF_setmodel(ent, ent.item.world_model);
+            ent.solid = Constants.SOLID_TRIGGER;
+            ent.movetype = Constants.MOVETYPE_TOSS;
             ent.touch = Touch_Item;
     
             float v[] = { 0, 0, -128 };
             Math3D.VectorAdd(ent.s.origin, v, dest);
     
-            tr = GameBase.gi.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,
-                    Defines.MASK_SOLID);
+            tr = World.SV_Trace(ent.s.origin, ent.mins, ent.maxs, dest, ent, Constants.MASK_SOLID);
             if (tr.startsolid) {
-                GameBase.gi.dprintf("droptofloor: " + ent.classname
-                        + " startsolid at " + Lib.vtos(ent.s.origin) + "\n");
+                ServerGame.PF_dprintf("droptofloor: " + ent.classname
+                + " startsolid at " + Lib.vtos(ent.s.origin) + "\n");
                 GameUtil.G_FreeEdict(ent);
                 return true;
             }
@@ -710,32 +706,32 @@ public class GameItems {
             Math3D.VectorCopy(tr.endpos, ent.s.origin);
     
             if (ent.team != null) {
-                ent.flags &= ~Defines.FL_TEAMSLAVE;
+                ent.flags &= ~Constants.FL_TEAMSLAVE;
                 ent.chain = ent.teamchain;
                 ent.teamchain = null;
     
-                ent.svflags |= Defines.SVF_NOCLIENT;
-                ent.solid = Defines.SOLID_NOT;
+                ent.svflags |= Constants.SVF_NOCLIENT;
+                ent.solid = Constants.SOLID_NOT;
                 if (ent == ent.teammaster) {
-                    ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                    ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
                     ent.think = DoRespawn;
                 }
             }
     
-            if ((ent.spawnflags & Defines.ITEM_NO_TOUCH) != 0) {
-                ent.solid = Defines.SOLID_BBOX;
+            if ((ent.spawnflags & Constants.ITEM_NO_TOUCH) != 0) {
+                ent.solid = Constants.SOLID_BBOX;
                 ent.touch = null;
-                ent.s.effects &= ~Defines.EF_ROTATE;
-                ent.s.renderfx &= ~Defines.RF_GLOW;
+                ent.s.effects &= ~Constants.EF_ROTATE;
+                ent.s.renderfx &= ~Constants.RF_GLOW;
             }
     
-            if ((ent.spawnflags & Defines.ITEM_TRIGGER_SPAWN) != 0) {
-                ent.svflags |= Defines.SVF_NOCLIENT;
-                ent.solid = Defines.SOLID_NOT;
+            if ((ent.spawnflags & Constants.ITEM_TRIGGER_SPAWN) != 0) {
+                ent.svflags |= Constants.SVF_NOCLIENT;
+                ent.solid = Constants.SOLID_NOT;
                 ent.use = Use_Item;
             }
     
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             return true;
         }
     };
@@ -744,42 +740,37 @@ public class GameItems {
         public void use(Entity ent, GameItem item) {
             int index;
     
-            if ((ent.flags & Defines.FL_POWER_ARMOR) != 0) {
-                ent.flags &= ~Defines.FL_POWER_ARMOR;
-                GameBase.gi
-                        .sound(ent, Defines.CHAN_AUTO, GameBase.gi
-                                .soundindex("misc/power2.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+            if ((ent.flags & Constants.FL_POWER_ARMOR) != 0) {
+                ent.flags &= ~Constants.FL_POWER_ARMOR;
+                ServerGame.PF_StartSound(ent, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/power2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             } else {
                 index = ITEM_INDEX(FindItem("cells"));
                 if (0 == ent.client.pers.inventory[index]) {
-                    GameBase.gi.cprintf(ent, Defines.PRINT_HIGH,
-                            "No cells for power armor.\n");
+                    ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, "No cells for power armor.\n");
                     return;
                 }
-                ent.flags |= Defines.FL_POWER_ARMOR;
-                GameBase.gi
-                        .sound(ent, Defines.CHAN_AUTO, GameBase.gi
-                                .soundindex("misc/power1.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ent.flags |= Constants.FL_POWER_ARMOR;
+                ServerGame.PF_StartSound(ent, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/power1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             }
         }
     };
     public static EntityUseAdapter Use_Item = new EntityUseAdapter() {
         public String getID() { return "use_item";}
         public void use(Entity ent, Entity other, Entity activator) {
-            ent.svflags &= ~Defines.SVF_NOCLIENT;
+            ent.svflags &= ~Constants.SVF_NOCLIENT;
             ent.use = null;
     
-            if ((ent.spawnflags & Defines.ITEM_NO_TOUCH) != 0) {
-                ent.solid = Defines.SOLID_BBOX;
+            if ((ent.spawnflags & Constants.ITEM_NO_TOUCH) != 0) {
+                ent.solid = Constants.SOLID_BBOX;
                 ent.touch = null;
             } else {
-                ent.solid = Defines.SOLID_TRIGGER;
+                ent.solid = Constants.SOLID_TRIGGER;
                 ent.touch = Touch_Item;
             }
     
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
         }
     };
 
@@ -830,12 +821,12 @@ public class GameItems {
     }
 
     static void SetRespawn(Entity ent, float delay) {
-        ent.flags |= Defines.FL_RESPAWN;
-        ent.svflags |= Defines.SVF_NOCLIENT;
-        ent.solid = Defines.SOLID_NOT;
+        ent.flags |= Constants.FL_RESPAWN;
+        ent.svflags |= Constants.SVF_NOCLIENT;
+        ent.solid = Constants.SOLID_NOT;
         ent.nextthink = GameBase.level.time + delay;
         ent.think = DoRespawn;
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     static int ITEM_INDEX(GameItem item) {
@@ -852,14 +843,14 @@ public class GameItems {
     
         dropped.classname = item.classname;
         dropped.item = item;
-        dropped.spawnflags = Defines.DROPPED_ITEM;
+        dropped.spawnflags = Constants.DROPPED_ITEM;
         dropped.s.effects = item.world_model_flags;
-        dropped.s.renderfx = Defines.RF_GLOW;
+        dropped.s.renderfx = Constants.RF_GLOW;
         Math3D.VectorSet(dropped.mins, -15, -15, -15);
         Math3D.VectorSet(dropped.maxs, 15, 15, 15);
-        GameBase.gi.setmodel(dropped, dropped.item.world_model);
-        dropped.solid = Defines.SOLID_TRIGGER;
-        dropped.movetype = Defines.MOVETYPE_TOSS;
+        ServerGame.PF_setmodel(dropped, dropped.item.world_model);
+        dropped.solid = Constants.SOLID_TRIGGER;
+        dropped.movetype = Constants.MOVETYPE_TOSS;
     
         dropped.touch = drop_temp_touch;
     
@@ -872,8 +863,7 @@ public class GameItems {
             Math3D.VectorSet(offset, 24, 0, -16);
             Math3D.G_ProjectSource(ent.s.origin, offset, forward, right,
                     dropped.s.origin);
-            trace = GameBase.gi.trace(ent.s.origin, dropped.mins, dropped.maxs,
-                    dropped.s.origin, ent, Defines.CONTENTS_SOLID);
+            trace = World.SV_Trace(ent.s.origin, dropped.mins, dropped.maxs, dropped.s.origin, ent, Constants.CONTENTS_SOLID);
             Math3D.VectorCopy(trace.endpos, dropped.s.origin);
         } else {
             Math3D.AngleVectors(ent.s.angles, forward, right, null);
@@ -886,40 +876,40 @@ public class GameItems {
         dropped.think = drop_make_touchable;
         dropped.nextthink = GameBase.level.time + 1;
     
-        GameBase.gi.linkentity(dropped);
+        World.SV_LinkEdict(dropped);
     
         return dropped;
     }
 
     static void Use_Item(Entity ent, Entity other, Entity activator) {
-        ent.svflags &= ~Defines.SVF_NOCLIENT;
+        ent.svflags &= ~Constants.SVF_NOCLIENT;
         ent.use = null;
     
-        if ((ent.spawnflags & Defines.ITEM_NO_TOUCH) != 0) {
-            ent.solid = Defines.SOLID_BBOX;
+        if ((ent.spawnflags & Constants.ITEM_NO_TOUCH) != 0) {
+            ent.solid = Constants.SOLID_BBOX;
             ent.touch = null;
         } else {
-            ent.solid = Defines.SOLID_TRIGGER;
+            ent.solid = Constants.SOLID_TRIGGER;
             ent.touch = Touch_Item;
         }
     
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     static int PowerArmorType(Entity ent) {
         if (ent.client == null)
-            return Defines.POWER_ARMOR_NONE;
+            return Constants.POWER_ARMOR_NONE;
     
-        if (0 == (ent.flags & Defines.FL_POWER_ARMOR))
-            return Defines.POWER_ARMOR_NONE;
+        if (0 == (ent.flags & Constants.FL_POWER_ARMOR))
+            return Constants.POWER_ARMOR_NONE;
     
         if (ent.client.pers.inventory[power_shield_index] > 0)
-            return Defines.POWER_ARMOR_SHIELD;
+            return Constants.POWER_ARMOR_SHIELD;
     
         if (ent.client.pers.inventory[power_screen_index] > 0)
-            return Defines.POWER_ARMOR_SCREEN;
+            return Constants.POWER_ARMOR_SCREEN;
     
-        return Defines.POWER_ARMOR_NONE;
+        return Constants.POWER_ARMOR_NONE;
     }
 
     static int ArmorIndex(Entity ent) {
@@ -946,7 +936,7 @@ public class GameItems {
         other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
         if (GameBase.deathmatch.value != 0) {
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
+            if (0 == (ent.spawnflags & Constants.DROPPED_ITEM))
                 SetRespawn(ent, ent.item.quantity);
             // auto-use for DM only if we didn't already have one
             if (0 == quantity)
@@ -963,17 +953,17 @@ public class GameItems {
         if (null == ent.client)
             return false;
     
-        if (item.tag == Defines.AMMO_BULLETS)
+        if (item.tag == Constants.AMMO_BULLETS)
             max = ent.client.pers.max_bullets;
-        else if (item.tag == Defines.AMMO_SHELLS)
+        else if (item.tag == Constants.AMMO_SHELLS)
             max = ent.client.pers.max_shells;
-        else if (item.tag == Defines.AMMO_ROCKETS)
+        else if (item.tag == Constants.AMMO_ROCKETS)
             max = ent.client.pers.max_rockets;
-        else if (item.tag == Defines.AMMO_GRENADES)
+        else if (item.tag == Constants.AMMO_GRENADES)
             max = ent.client.pers.max_grenades;
-        else if (item.tag == Defines.AMMO_CELLS)
+        else if (item.tag == Constants.AMMO_CELLS)
             max = ent.client.pers.max_cells;
-        else if (item.tag == Defines.AMMO_SLUGS)
+        else if (item.tag == Constants.AMMO_SLUGS)
             max = ent.client.pers.max_slugs;
         else
             return false;
@@ -1006,7 +996,7 @@ public class GameItems {
     
         for (i = 1; i < GameBase.game.num_items; i++) {
             it = GameItemList.itemlist[i];
-            GameBase.gi.configstring(Defines.CS_ITEMS + i, it.pickup_name);
+            ServerGame.PF_Configstring(Constants.CS_ITEMS + i, it.pickup_name);
         }
     
         jacket_armor_index = ITEM_INDEX(FindItem("Jacket Armor"));
@@ -1029,8 +1019,8 @@ public class GameItems {
         }
     
         // scan for the next valid one
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (cl.pers.selected_item + i) % Defines.MAX_ITEMS;
+        for (i = 1; i <= Constants.MAX_ITEMS; i++) {
+            index = (cl.pers.selected_item + i) % Constants.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
             it = GameItemList.itemlist[index];
@@ -1059,9 +1049,9 @@ public class GameItems {
         }
     
         // scan for the next valid one
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (cl.pers.selected_item + Defines.MAX_ITEMS - i)
-                    % Defines.MAX_ITEMS;
+        for (i = 1; i <= Constants.MAX_ITEMS; i++) {
+            index = (cl.pers.selected_item + Constants.MAX_ITEMS - i)
+                    % Constants.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
             it = GameItemList.itemlist[index];
@@ -1094,16 +1084,16 @@ public class GameItems {
             return;
     
         if (it.pickup_sound != null)
-            GameBase.gi.soundindex(it.pickup_sound);
+          ServerInit.SV_SoundIndex(it.pickup_sound);
     
         if (it.world_model != null)
-            GameBase.gi.modelindex(it.world_model);
+          ServerInit.SV_ModelIndex(it.world_model);
     
         if (it.view_model != null)
-            GameBase.gi.modelindex(it.view_model);
+          ServerInit.SV_ModelIndex(it.view_model);
     
         if (it.icon != null)
-            GameBase.gi.imageindex(it.icon);
+          ServerInit.SV_ImageIndex(it.icon);
     
         // parse everything for its ammo
         if (it.ammo != null && it.ammo.length() != 0) {
@@ -1124,22 +1114,21 @@ public class GameItems {
     
             len = data.length();
     
-            if (len >= Defines.MAX_QPATH || len < 5)
-                GameBase.gi
-                        .error("PrecacheItem: it.classname has bad precache string: "
-                                + s);
+            if (len >= Constants.MAX_QPATH || len < 5)
+              Com.Error(Constants.ERR_FATAL, "PrecacheItem: it.classname has bad precache string: "
+              + s);
     
             // determine type based on extension
             if (data.endsWith("md2"))
-                GameBase.gi.modelindex(data);
+              ServerInit.SV_ModelIndex(data);
             else if (data.endsWith("sp2"))
-                GameBase.gi.modelindex(data);
+              ServerInit.SV_ModelIndex(data);
             else if (data.endsWith("wav"))
-                GameBase.gi.soundindex(data);
+              ServerInit.SV_SoundIndex(data);
             else if (data.endsWith("pcx"))
-                GameBase.gi.imageindex(data);
+              ServerInit.SV_ImageIndex(data);
             else
-                GameBase.gi.error("PrecacheItem: bad precache string: " + data);
+              Com.Error(Constants.ERR_FATAL, "PrecacheItem: bad precache string: " + data);
         }
     }
 
@@ -1157,28 +1146,28 @@ public class GameItems {
         if (ent.spawnflags != 0) {
             if (Lib.strcmp(ent.classname, "key_power_cube") != 0) {
                 ent.spawnflags = 0;
-                GameBase.gi.dprintf("" + ent.classname + " at "
-                        + Lib.vtos(ent.s.origin)
-                        + " has invalid spawnflags set\n");
+                ServerGame.PF_dprintf("" + ent.classname + " at "
+                + Lib.vtos(ent.s.origin)
+                + " has invalid spawnflags set\n");
             }
         }
     
         // some items will be prevented in deathmatch
         if (GameBase.deathmatch.value != 0) {
-            if (((int) GameBase.dmflags.value & Defines.DF_NO_ARMOR) != 0) {
+            if (((int) GameBase.dmflags.value & Constants.DF_NO_ARMOR) != 0) {
                 if (item.pickup == Pickup_Armor
                         || item.pickup == Pickup_PowerArmor) {
                     GameUtil.G_FreeEdict(ent);
                     return;
                 }
             }
-            if (((int) GameBase.dmflags.value & Defines.DF_NO_ITEMS) != 0) {
+            if (((int) GameBase.dmflags.value & Constants.DF_NO_ITEMS) != 0) {
                 if (item.pickup == Pickup_Powerup) {
                     GameUtil.G_FreeEdict(ent);
                     return;
                 }
             }
-            if (((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
+            if (((int) GameBase.dmflags.value & Constants.DF_NO_HEALTH) != 0) {
                 if (item.pickup == Pickup_Health
                         || item.pickup == Pickup_Adrenaline
                         || item.pickup == Pickup_AncientHead) {
@@ -1186,8 +1175,8 @@ public class GameItems {
                     return;
                 }
             }
-            if (((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0) {
-                if ((item.flags == Defines.IT_AMMO)
+            if (((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO) != 0) {
+                if ((item.flags == Constants.IT_AMMO)
                         || (Lib.strcmp(ent.classname, "weapon_bfg") == 0)) {
                     GameUtil.G_FreeEdict(ent);
                     return;
@@ -1203,19 +1192,19 @@ public class GameItems {
     
         // don't let them drop items that stay in a coop game
         if ((GameBase.coop.value != 0)
-                && (item.flags & Defines.IT_STAY_COOP) != 0) {
+                && (item.flags & Constants.IT_STAY_COOP) != 0) {
             item.drop = null;
         }
     
         ent.item = item;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
         // items start after other solids
         ent.think = droptofloor;
         ent.s.effects = item.world_model_flags;
-        ent.s.renderfx = Defines.RF_GLOW;
+        ent.s.renderfx = Constants.RF_GLOW;
     
         if (ent.model != null)
-            GameBase.gi.modelindex(ent.model);
+          ServerInit.SV_ModelIndex(ent.model);
     }
 
     /*
@@ -1223,14 +1212,14 @@ public class GameItems {
      */
     public static void SP_item_health(Entity self) {
         if (GameBase.deathmatch.value != 0
-                && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
+                && ((int) GameBase.dmflags.value & Constants.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
         }
     
         self.model = "models/items/healing/medium/tris.md2";
         self.count = 10;
         SpawnItem(self, FindItem("Health"));
-        GameBase.gi.soundindex("items/n_health.wav");
+        ServerInit.SV_SoundIndex("items/n_health.wav");
     }
 
     /*
@@ -1238,7 +1227,7 @@ public class GameItems {
      */
     static void SP_item_health_small(Entity self) {
         if (GameBase.deathmatch.value != 0
-                && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
+                && ((int) GameBase.dmflags.value & Constants.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -1246,8 +1235,8 @@ public class GameItems {
         self.model = "models/items/healing/stimpack/tris.md2";
         self.count = 2;
         SpawnItem(self, FindItem("Health"));
-        self.style = Defines.HEALTH_IGNORE_MAX;
-        GameBase.gi.soundindex("items/s_health.wav");
+        self.style = Constants.HEALTH_IGNORE_MAX;
+        ServerInit.SV_SoundIndex("items/s_health.wav");
     }
 
     /*
@@ -1255,7 +1244,7 @@ public class GameItems {
      */
     static void SP_item_health_large(Entity self) {
         if (GameBase.deathmatch.value != 0
-                && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
+                && ((int) GameBase.dmflags.value & Constants.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -1263,7 +1252,7 @@ public class GameItems {
         self.model = "models/items/healing/large/tris.md2";
         self.count = 25;
         SpawnItem(self, FindItem("Health"));
-        GameBase.gi.soundindex("items/l_health.wav");
+        ServerInit.SV_SoundIndex("items/l_health.wav");
     }
 
     /*
@@ -1271,7 +1260,7 @@ public class GameItems {
      */
     static void SP_item_health_mega(Entity self) {
         if (GameBase.deathmatch.value != 0
-                && ((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
+                && ((int) GameBase.dmflags.value & Constants.DF_NO_HEALTH) != 0) {
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -1279,8 +1268,8 @@ public class GameItems {
         self.model = "models/items/mega_h/tris.md2";
         self.count = 100;
         SpawnItem(self, FindItem("Health"));
-        GameBase.gi.soundindex("items/m_health.wav");
-        self.style = Defines.HEALTH_IGNORE_MAX | Defines.HEALTH_TIMED;
+        ServerInit.SV_SoundIndex("items/m_health.wav");
+        self.style = Constants.HEALTH_IGNORE_MAX | Constants.HEALTH_TIMED;
     }
 
     /*
@@ -1307,52 +1296,45 @@ public class GameItems {
             other.client.bonus_alpha = 0.25f;
     
             // show icon and name on status bar
-            other.client.ps.stats[Defines.STAT_PICKUP_ICON] = (short) GameBase.gi
-                    .imageindex(ent.item.icon);
-            other.client.ps.stats[Defines.STAT_PICKUP_STRING] = (short) (Defines.CS_ITEMS + ITEM_INDEX(ent.item));
+            other.client.ps.stats[Constants.STAT_PICKUP_ICON] = (short) ServerInit.SV_ImageIndex(ent.item.icon);
+            other.client.ps.stats[Constants.STAT_PICKUP_STRING] = (short) (Constants.CS_ITEMS + ITEM_INDEX(ent.item));
             other.client.pickup_msg_time = GameBase.level.time + 3.0f;
     
             // change selected item
             if (ent.item.use != null)
-                other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
+                other.client.pers.selected_item = other.client.ps.stats[Constants.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
             if (ent.item.pickup == Pickup_Health) {
                 if (ent.count == 2)
-                    GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                            .soundindex("items/s_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/s_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
                 else if (ent.count == 10)
-                    GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                            .soundindex("items/n_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/n_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
                 else if (ent.count == 25)
-                    GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                            .soundindex("items/l_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/l_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
                 else
-                    // (ent.count == 100)
-                    GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                            .soundindex("items/m_health.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/m_health.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
             } else if (ent.item.pickup_sound != null) {
-                GameBase.gi.sound(other, Defines.CHAN_ITEM, GameBase.gi
-                        .soundindex(ent.item.pickup_sound), 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(other, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex(ent.item.pickup_sound), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             }
         }
     
-        if (0 == (ent.spawnflags & Defines.ITEM_TARGETS_USED)) {
+        if (0 == (ent.spawnflags & Constants.ITEM_TARGETS_USED)) {
             GameUtil.G_UseTargets(ent, other);
-            ent.spawnflags |= Defines.ITEM_TARGETS_USED;
+            ent.spawnflags |= Constants.ITEM_TARGETS_USED;
         }
     
         if (!taken)
             return;
     
-        if (!((GameBase.coop.value != 0) && (ent.item.flags & Defines.IT_STAY_COOP) != 0)
-                || 0 != (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM))) {
-            if ((ent.flags & Defines.FL_RESPAWN) != 0)
-                ent.flags &= ~Defines.FL_RESPAWN;
+        if (!((GameBase.coop.value != 0) && (ent.item.flags & Constants.IT_STAY_COOP) != 0)
+                || 0 != (ent.spawnflags & (Constants.DROPPED_ITEM | Constants.DROPPED_PLAYER_ITEM))) {
+            if ((ent.flags & Constants.FL_RESPAWN) != 0)
+                ent.flags &= ~Constants.FL_RESPAWN;
             else
                 GameUtil.G_FreeEdict(ent);
         }

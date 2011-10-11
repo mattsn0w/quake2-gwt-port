@@ -87,7 +87,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 	}
 	
 	static final int IMAGE_CHECK_TIME = 250;
-	static final int MAX_IMAGE_REQUEST_COUNT = 24;
+	static final int MAX_IMAGE_REQUEST_COUNT = 12;
 	static int HOLODECK_TEXTURE_SIZE = 128;
 	static int MASK = 15;
 	static int HIT = MASK/2;
@@ -227,9 +227,9 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 
 	      final ImageElement img = doc.createImageElement();
               String picUrl = convertPicName(image.name, image.type);
-              if (picUrl.endsWith("ggrat6_2.png")) {
+          /*    if (picUrl.endsWith("ggrat6_2.png")) {
                 picUrl = convertPicName("textures/tron_poster.jpg", 0);
-              }
+              }*/
               img.setSrc(picUrl);
 	      img.getStyle().setDisplay(Display.NONE);
 	      doc.getBody().appendChild(img);
@@ -248,14 +248,14 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 	        });
 	        imgWidget.addErrorHandler(new ErrorHandler() {
 	          public void onError(ErrorEvent event) {
-	            String src = finalImg.getSrc();
-	            if (src.endsWith("&rt&rt&rt&rt")) {
-	              gl.log("too many load errors for " + finalImg.getSrc() + "; giving up!");
+	           // String src = finalImg.getSrc();
+	           // if (src.endsWith("&rt&rt&rt&rt")) {
+	              gl.log("load errors for " + finalImg.getSrc() );
 	              waitingForImages(-1);
 	              image.complete = true;
-	            } else {
-	            	finalImg.setSrc(finalImg.getSrc() + "&rt");
-	            }
+	//            } else {
+	 //           	finalImg.setSrc(finalImg.getSrc() + "&rt");
+	  //          }
 	          }
 	        });	
 	      } // else

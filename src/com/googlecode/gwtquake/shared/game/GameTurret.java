@@ -86,15 +86,14 @@ public class GameTurret {
         speed = (int) (550 + 50 * GameBase.skill.value);
         GameWeapon.fire_rocket(self.teammaster.owner, start, f, damage, speed, 150,
                 damage);
-        GameBase.gi.positioned_sound(start, self, Defines.CHAN_WEAPON,
-                GameBase.gi.soundindex("weapons/rocklf1a.wav"), 1,
-                Defines.ATTN_NORM, 0);
+        ServerSend.SV_StartSound(start, self, Constants.CHAN_WEAPON, ServerInit.SV_SoundIndex("weapons/rocklf1a.wav"), (float) 1,
+        (float) Constants.ATTN_NORM, (float) 0);
     }
 
     public static void SP_turret_breach(Entity self) {
-        self.solid = Defines.SOLID_BSP;
-        self.movetype = Defines.MOVETYPE_PUSH;
-        GameBase.gi.setmodel(self, self.model);
+        self.solid = Constants.SOLID_BSP;
+        self.movetype = Constants.MOVETYPE_PUSH;
+        ServerGame.PF_setmodel(self, self.model);
 
         if (self.speed == 0)
             self.speed = 50;
@@ -108,19 +107,19 @@ public class GameTurret {
         if (GameBase.st.maxyaw == 0)
             GameBase.st.maxyaw = 360;
 
-        self.pos1[Defines.PITCH] = -1 * GameBase.st.minpitch;
-        self.pos1[Defines.YAW] = GameBase.st.minyaw;
-        self.pos2[Defines.PITCH] = -1 * GameBase.st.maxpitch;
-        self.pos2[Defines.YAW] = GameBase.st.maxyaw;
+        self.pos1[Constants.PITCH] = -1 * GameBase.st.minpitch;
+        self.pos1[Constants.YAW] = GameBase.st.minyaw;
+        self.pos2[Constants.PITCH] = -1 * GameBase.st.maxpitch;
+        self.pos2[Constants.YAW] = GameBase.st.maxyaw;
 
-        self.ideal_yaw = self.s.angles[Defines.YAW];
-        self.move_angles[Defines.YAW] = self.ideal_yaw;
+        self.ideal_yaw = self.s.angles[Constants.YAW];
+        self.move_angles[Constants.YAW] = self.ideal_yaw;
 
         self.blocked = turret_blocked;
 
         self.think = turret_breach_finish_init;
-        self.nextthink = GameBase.level.time + Defines.FRAMETIME;
-        GameBase.gi.linkentity(self);
+        self.nextthink = GameBase.level.time + Constants.FRAMETIME;
+        World.SV_LinkEdict(self);
     }
 
     /**
@@ -129,11 +128,11 @@ public class GameTurret {
      */
 
     public static void SP_turret_base(Entity self) {
-        self.solid = Defines.SOLID_BSP;
-        self.movetype = Defines.MOVETYPE_PUSH;
-        GameBase.gi.setmodel(self, self.model);
+        self.solid = Constants.SOLID_BSP;
+        self.movetype = Constants.MOVETYPE_PUSH;
+        ServerGame.PF_setmodel(self, self.model);
         self.blocked = turret_blocked;
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_turret_driver(Entity self) {
@@ -142,10 +141,9 @@ public class GameTurret {
             return;
         }
 
-        self.movetype = Defines.MOVETYPE_PUSH;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/infantry/tris.md2");
+        self.movetype = Constants.MOVETYPE_PUSH;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/infantry/tris.md2");
         Math3D.VectorSet(self.mins, -16, -16, -24);
         Math3D.VectorSet(self.maxs, 16, 16, 32);
 
@@ -157,30 +155,30 @@ public class GameTurret {
         self.die = turret_driver_die;
         self.monsterinfo.stand = MonsterInfantry.infantry_stand;
 
-        self.flags |= Defines.FL_NO_KNOCKBACK;
+        self.flags |= Constants.FL_NO_KNOCKBACK;
 
         GameBase.level.total_monsters++;
 
-        self.svflags |= Defines.SVF_MONSTER;
-        self.s.renderfx |= Defines.RF_FRAMELERP;
-        self.takedamage = Defines.DAMAGE_AIM;
+        self.svflags |= Constants.SVF_MONSTER;
+        self.s.renderfx |= Constants.RF_FRAMELERP;
+        self.takedamage = Constants.DAMAGE_AIM;
         self.use = GameUtil.monster_use;
-        self.clipmask = Defines.MASK_MONSTERSOLID;
+        self.clipmask = Constants.MASK_MONSTERSOLID;
         Math3D.VectorCopy(self.s.origin, self.s.old_origin);
-        self.monsterinfo.aiflags |= Defines.AI_STAND_GROUND | Defines.AI_DUCKED;
+        self.monsterinfo.aiflags |= Constants.AI_STAND_GROUND | Constants.AI_DUCKED;
 
         if (GameBase.st.item != null) {
             self.item = GameItems.FindItemByClassname(GameBase.st.item);
             if (self.item == null)
-                GameBase.gi.dprintf(self.classname + " at "
-                        + Lib.vtos(self.s.origin) + " has bad item: "
-                        + GameBase.st.item + "\n");
+              ServerGame.PF_dprintf(self.classname + " at "
+              + Lib.vtos(self.s.origin) + " has bad item: "
+              + GameBase.st.item + "\n");
         }
 
         self.think = turret_driver_link;
-        self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+        self.nextthink = GameBase.level.time + Constants.FRAMETIME;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     static EntityBlockedAdapter turret_blocked = new EntityBlockedAdapter() {
@@ -195,7 +193,7 @@ public class GameTurret {
                     attacker = self.teammaster;
                 GameCombat.T_Damage(other, self, attacker, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin,
-                        self.teammaster.dmg, 10, 0, Defines.MOD_CRUSH);
+                        self.teammaster.dmg, 10, 0, Constants.MOD_CRUSH);
             }
         }
     };
@@ -212,35 +210,35 @@ public class GameTurret {
             AnglesNormalize(current_angles);
 
             AnglesNormalize(self.move_angles);
-            if (self.move_angles[Defines.PITCH] > 180)
-                self.move_angles[Defines.PITCH] -= 360;
+            if (self.move_angles[Constants.PITCH] > 180)
+                self.move_angles[Constants.PITCH] -= 360;
 
             // clamp angles to mins & maxs
-            if (self.move_angles[Defines.PITCH] > self.pos1[Defines.PITCH])
-                self.move_angles[Defines.PITCH] = self.pos1[Defines.PITCH];
-            else if (self.move_angles[Defines.PITCH] < self.pos2[Defines.PITCH])
-                self.move_angles[Defines.PITCH] = self.pos2[Defines.PITCH];
+            if (self.move_angles[Constants.PITCH] > self.pos1[Constants.PITCH])
+                self.move_angles[Constants.PITCH] = self.pos1[Constants.PITCH];
+            else if (self.move_angles[Constants.PITCH] < self.pos2[Constants.PITCH])
+                self.move_angles[Constants.PITCH] = self.pos2[Constants.PITCH];
 
-            if ((self.move_angles[Defines.YAW] < self.pos1[Defines.YAW])
-                    || (self.move_angles[Defines.YAW] > self.pos2[Defines.YAW])) {
+            if ((self.move_angles[Constants.YAW] < self.pos1[Constants.YAW])
+                    || (self.move_angles[Constants.YAW] > self.pos2[Constants.YAW])) {
                 float dmin, dmax;
 
-                dmin = Math.abs(self.pos1[Defines.YAW]
-                        - self.move_angles[Defines.YAW]);
+                dmin = Math.abs(self.pos1[Constants.YAW]
+                        - self.move_angles[Constants.YAW]);
                 if (dmin < -180)
                     dmin += 360;
                 else if (dmin > 180)
                     dmin -= 360;
-                dmax = Math.abs(self.pos2[Defines.YAW]
-                        - self.move_angles[Defines.YAW]);
+                dmax = Math.abs(self.pos2[Constants.YAW]
+                        - self.move_angles[Constants.YAW]);
                 if (dmax < -180)
                     dmax += 360;
                 else if (dmax > 180)
                     dmax -= 360;
                 if (Math.abs(dmin) < Math.abs(dmax))
-                    self.move_angles[Defines.YAW] = self.pos1[Defines.YAW];
+                    self.move_angles[Constants.YAW] = self.pos1[Constants.YAW];
                 else
-                    self.move_angles[Defines.YAW] = self.pos2[Defines.YAW];
+                    self.move_angles[Constants.YAW] = self.pos2[Constants.YAW];
             }
 
             Math3D.VectorSubtract(self.move_angles, current_angles, delta);
@@ -254,18 +252,18 @@ public class GameTurret {
                 delta[1] -= 360;
             delta[2] = 0;
 
-            if (delta[0] > self.speed * Defines.FRAMETIME)
-                delta[0] = self.speed * Defines.FRAMETIME;
-            if (delta[0] < -1 * self.speed * Defines.FRAMETIME)
-                delta[0] = -1 * self.speed * Defines.FRAMETIME;
-            if (delta[1] > self.speed * Defines.FRAMETIME)
-                delta[1] = self.speed * Defines.FRAMETIME;
-            if (delta[1] < -1 * self.speed * Defines.FRAMETIME)
-                delta[1] = -1 * self.speed * Defines.FRAMETIME;
+            if (delta[0] > self.speed * Constants.FRAMETIME)
+                delta[0] = self.speed * Constants.FRAMETIME;
+            if (delta[0] < -1 * self.speed * Constants.FRAMETIME)
+                delta[0] = -1 * self.speed * Constants.FRAMETIME;
+            if (delta[1] > self.speed * Constants.FRAMETIME)
+                delta[1] = self.speed * Constants.FRAMETIME;
+            if (delta[1] < -1 * self.speed * Constants.FRAMETIME)
+                delta[1] = -1 * self.speed * Constants.FRAMETIME;
 
-            Math3D.VectorScale(delta, 1.0f / Defines.FRAMETIME, self.avelocity);
+            Math3D.VectorScale(delta, 1.0f / Constants.FRAMETIME, self.avelocity);
 
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
 
             for (ent = self.teammaster; ent != null; ent = ent.teamchain)
                 ent.avelocity[1] = self.avelocity[1];
@@ -292,16 +290,16 @@ public class GameTurret {
                 target[2] = self.owner.s.origin[2];
 
                 Math3D.VectorSubtract(target, self.owner.s.origin, dir);
-                self.owner.velocity[0] = dir[0] * 1.0f / Defines.FRAMETIME;
-                self.owner.velocity[1] = dir[1] * 1.0f / Defines.FRAMETIME;
+                self.owner.velocity[0] = dir[0] * 1.0f / Constants.FRAMETIME;
+                self.owner.velocity[1] = dir[1] * 1.0f / Constants.FRAMETIME;
 
                 // z
-                angle = self.s.angles[Defines.PITCH] * (float) (Math.PI * 2f / 360f);
+                angle = self.s.angles[Constants.PITCH] * (float) (Math.PI * 2f / 360f);
                 target_z = GameTurret.SnapToEights((float) (self.s.origin[2]
                                 + self.owner.move_origin[0] * Math.tan(angle) + self.owner.move_origin[2]));
 
                 diff = target_z - self.owner.s.origin[2];
-                self.owner.velocity[2] = diff * 1.0f / Defines.FRAMETIME;
+                self.owner.velocity[2] = diff * 1.0f / Constants.FRAMETIME;
 
                 if ((self.spawnflags & 65536) != 0) {
                     turret_breach_fire(self);
@@ -318,8 +316,8 @@ public class GameTurret {
 
             // get and save info for muzzle location
             if (self.target == null) {
-                GameBase.gi.dprintf(self.classname + " at "
-                        + Lib.vtos(self.s.origin) + " needs a target\n");
+                ServerGame.PF_dprintf(self.classname + " at "
+                + Lib.vtos(self.s.origin) + " needs a target\n");
             } else {
                 self.target_ent = GameBase.G_PickTarget(self.target);
                 Math3D.VectorSubtract(self.target_ent.s.origin, self.s.origin,
@@ -354,7 +352,7 @@ public class GameTurret {
                 ;
             ent.teamchain = null;
             self.teammaster = null;
-            self.flags &= ~Defines.FL_TEAMSLAVE;
+            self.flags &= ~Constants.FL_TEAMSLAVE;
 
             self.target_ent.owner = null;
             self.target_ent.teammaster.owner = null;
@@ -371,7 +369,7 @@ public class GameTurret {
             float[] dir = { 0, 0, 0 };
             float reaction_time;
 
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
 
             if (self.enemy != null
                     && (!self.enemy.inuse || self.enemy.health <= 0))
@@ -381,15 +379,15 @@ public class GameTurret {
                 if (!GameUtil.FindTarget(self))
                     return true;
                 self.monsterinfo.trail_time = GameBase.level.time;
-                self.monsterinfo.aiflags &= ~Defines.AI_LOST_SIGHT;
+                self.monsterinfo.aiflags &= ~Constants.AI_LOST_SIGHT;
             } else {
                 if (GameUtil.visible(self, self.enemy)) {
-                    if ((self.monsterinfo.aiflags & Defines.AI_LOST_SIGHT) != 0) {
+                    if ((self.monsterinfo.aiflags & Constants.AI_LOST_SIGHT) != 0) {
                         self.monsterinfo.trail_time = GameBase.level.time;
-                        self.monsterinfo.aiflags &= ~Defines.AI_LOST_SIGHT;
+                        self.monsterinfo.aiflags &= ~Constants.AI_LOST_SIGHT;
                     }
                 } else {
-                    self.monsterinfo.aiflags |= Defines.AI_LOST_SIGHT;
+                    self.monsterinfo.aiflags |= Constants.AI_LOST_SIGHT;
                     return true;
                 }
             }
@@ -424,7 +422,7 @@ public class GameTurret {
             Entity ent;
 
             self.think = turret_driver_think;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
 
             self.target_ent = GameBase.G_PickTarget(self.target);
             self.target_ent.owner = self;
@@ -448,7 +446,7 @@ public class GameTurret {
                 ;
             ent.teamchain = self;
             self.teammaster = self.target_ent.teammaster;
-            self.flags |= Defines.FL_TEAMSLAVE;
+            self.flags |= Constants.FL_TEAMSLAVE;
             return true;
         }
     };

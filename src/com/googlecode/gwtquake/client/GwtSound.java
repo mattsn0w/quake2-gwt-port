@@ -23,7 +23,7 @@ import com.googlecode.gwtquake.client.GwtQuake.BrowserType;
 import com.googlecode.gwtquake.shared.client.Console;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.Commands;
@@ -45,7 +45,7 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 
-import static com.googlecode.gwtquake.shared.common.Defines.CS_PLAYERSKINS;
+import static com.googlecode.gwtquake.shared.common.Constants.CS_PLAYERSKINS;
 
 public class GwtSound implements SoundImpl {
 
@@ -170,7 +170,7 @@ public class GwtSound implements SoundImpl {
     }
 
     // set the listerner (master) volume
-    s_volume = ConsoleVariables.Get("s_volume", "0.7", Defines.CVAR_ARCHIVE);
+    s_volume = ConsoleVariables.Get("s_volume", "0.7", Constants.CVAR_ARCHIVE);
     ALAdapter.impl.alGenBuffers(buffers);
     int count = Channel.init(buffers);
     Com.Printf("... using " + count + " channels\n");
@@ -339,7 +339,7 @@ public class GwtSound implements SoundImpl {
       return;
     } // can't load sound
 
-    if (attenuation != Defines.ATTN_STATIC) {
+    if (attenuation != Constants.ATTN_STATIC) {
       attenuation *= 0.5f;
     }
 
@@ -411,7 +411,7 @@ public class GwtSound implements SoundImpl {
 
     if (i == num_sfx) {
       if (num_sfx == MAX_SFX) {
-        Com.Error(Defines.ERR_FATAL, "S_FindName: out of sfx_t");
+        Com.Error(Constants.ERR_FATAL, "S_FindName: out of sfx_t");
       }
       num_sfx++;
     }
@@ -441,14 +441,14 @@ public class GwtSound implements SoundImpl {
     Sfx sfx = null;
 
     if (name == null) {
-      Com.Error(Defines.ERR_FATAL, "S_FindName: NULL\n");
+      Com.Error(Constants.ERR_FATAL, "S_FindName: NULL\n");
     }
     if (name.length() == 0) {
-      Com.Error(Defines.ERR_FATAL, "S_FindName: empty name\n");
+      Com.Error(Constants.ERR_FATAL, "S_FindName: empty name\n");
     }
 
-    if (name.length() >= Defines.MAX_QPATH) {
-      Com.Error(Defines.ERR_FATAL, "Sound name too long: " + name);
+    if (name.length() >= Constants.MAX_QPATH) {
+      Com.Error(Constants.ERR_FATAL, "Sound name too long: " + name);
     }
 
     // see if already loaded
@@ -473,7 +473,7 @@ public class GwtSound implements SoundImpl {
 
     if (i == num_sfx) {
       if (num_sfx == MAX_SFX) {
-        Com.Error(Defines.ERR_FATAL, "S_FindName: out of sfx_t");
+        Com.Error(Constants.ERR_FATAL, "S_FindName: out of sfx_t");
       }
       num_sfx++;
     }

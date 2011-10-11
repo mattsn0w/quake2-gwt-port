@@ -26,15 +26,15 @@ package com.googlecode.gwtquake.shared.client;
 
 import java.nio.*;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.util.Lib;
 
 public class Particles {
 	
 	// lwjgl renderer needs a ByteBuffer
-	private static ByteBuffer colorByteArray = Lib.newByteBuffer(Defines.MAX_PARTICLES * Lib.SIZEOF_INT, ByteOrder.LITTLE_ENDIAN);
+	private static ByteBuffer colorByteArray = Lib.newByteBuffer(Constants.MAX_PARTICLES * Lib.SIZEOF_INT, ByteOrder.LITTLE_ENDIAN);
 
-	public static FloatBuffer vertexArray = Lib.newFloatBuffer(Defines.MAX_PARTICLES * 3);
+	public static FloatBuffer vertexArray = Lib.newFloatBuffer(Constants.MAX_PARTICLES * 3);
 	public static int[] colorTable = new int[256];
 	public static IntBuffer colorArray = colorByteArray.asIntBuffer();  
 	

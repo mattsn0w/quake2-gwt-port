@@ -23,13 +23,17 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -542,9 +546,9 @@ public class MonsterMedic {
             ent = edit.o;
             if (ent == self)
                 continue;
-            if (0 == (ent.svflags & Defines.SVF_MONSTER))
+            if (0 == (ent.svflags & Constants.SVF_MONSTER))
                 continue;
-            if ((ent.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0)
+            if ((ent.monsterinfo.aiflags & Constants.AI_GOOD_GUY) != 0)
                 continue;
             if (ent.owner == null)
                 continue;
@@ -571,14 +575,14 @@ public class MonsterMedic {
         public boolean think(Entity self) {
             Entity ent;
 
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle1, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_idle1, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
 
             ent = medic_FindDeadMonster(self);
             if (ent != null) {
                 self.enemy = ent;
                 self.enemy.owner = self;
-                self.monsterinfo.aiflags |= Defines.AI_MEDIC;
+                self.monsterinfo.aiflags |= Constants.AI_MEDIC;
                 GameUtil.FoundTarget(self);
             }
             return true;
@@ -590,8 +594,8 @@ public class MonsterMedic {
         public boolean think(Entity self) {
             Entity ent;
 
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
 
             if (self.oldenemy == null) {
                 ent = medic_FindDeadMonster(self);
@@ -599,7 +603,7 @@ public class MonsterMedic {
                     self.oldenemy = self.enemy;
                     self.enemy = ent;
                     self.enemy.owner = self;
-                    self.monsterinfo.aiflags |= Defines.AI_MEDIC;
+                    self.monsterinfo.aiflags |= Constants.AI_MEDIC;
                     GameUtil.FoundTarget(self);
                 }
             }
@@ -610,8 +614,8 @@ public class MonsterMedic {
     static EntInteractAdapter medic_sight = new EntInteractAdapter() {
     	public String getID(){ return "medic_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -758,7 +762,7 @@ public class MonsterMedic {
     static EntityThinkAdapter medic_run = new EntityThinkAdapter() {
     	public String getID(){ return "medic_run"; }
         public boolean think(Entity self) {
-            if (0 == (self.monsterinfo.aiflags & Defines.AI_MEDIC)) {
+            if (0 == (self.monsterinfo.aiflags & Constants.AI_MEDIC)) {
                 Entity ent;
 
                 ent = medic_FindDeadMonster(self);
@@ -766,13 +770,13 @@ public class MonsterMedic {
                     self.oldenemy = self.enemy;
                     self.enemy = ent;
                     self.enemy.owner = self;
-                    self.monsterinfo.aiflags |= Defines.AI_MEDIC;
+                    self.monsterinfo.aiflags |= Constants.AI_MEDIC;
                     GameUtil.FoundTarget(self);
                     return true;
                 }
             }
 
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = medic_move_stand;
             else
                 self.monsterinfo.currentmove = medic_move_run;
@@ -830,12 +834,12 @@ public class MonsterMedic {
 
             if (Lib.random() < 0.5) {
                 self.monsterinfo.currentmove = medic_move_pain1;
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             } else {
                 self.monsterinfo.currentmove = medic_move_pain2;
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             }
         }
     };
@@ -851,18 +855,18 @@ public class MonsterMedic {
 
             if ((self.s.frame == FRAME_attack9)
                     || (self.s.frame == FRAME_attack12))
-                effect = Defines.EF_BLASTER;
+                effect = Constants.EF_BLASTER;
             else if ((self.s.frame == FRAME_attack19)
                     || (self.s.frame == FRAME_attack22)
                     || (self.s.frame == FRAME_attack25)
                     || (self.s.frame == FRAME_attack28))
-                effect = Defines.EF_HYPERBLASTER;
+                effect = Constants.EF_HYPERBLASTER;
             else
                 effect = 0;
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_MEDIC_BLASTER_1],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_MEDIC_BLASTER_1],
                     forward, right, start);
 
             Math3D.VectorCopy(self.enemy.s.origin, end);
@@ -870,7 +874,7 @@ public class MonsterMedic {
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 2, 1000,
-                    Defines.MZ2_MEDIC_BLASTER_1, effect);
+                    Constants.MZ2_MEDIC_BLASTER_1, effect);
             return true;
         }
     };
@@ -880,10 +884,10 @@ public class MonsterMedic {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -936,31 +940,29 @@ public class MonsterMedic {
 
             //	check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             //	regular death
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_die, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
 
             self.monsterinfo.currentmove = medic_move_death;
         }
@@ -969,13 +971,13 @@ public class MonsterMedic {
     static EntityThinkAdapter medic_duck_down = new EntityThinkAdapter() {
     	public String getID(){ return "medic_duck_down"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_DUCKED) != 0)
                 return true;
-            self.monsterinfo.aiflags |= Defines.AI_DUCKED;
+            self.monsterinfo.aiflags |= Constants.AI_DUCKED;
             self.maxs[2] -= 32;
-            self.takedamage = Defines.DAMAGE_YES;
+            self.takedamage = Constants.DAMAGE_YES;
             self.monsterinfo.pausetime = GameBase.level.time + 1;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -984,9 +986,9 @@ public class MonsterMedic {
     	public String getID(){ return "medic_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
-                self.monsterinfo.aiflags &= ~Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags &= ~Constants.AI_HOLD_FRAME;
             else
-                self.monsterinfo.aiflags |= Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags |= Constants.AI_HOLD_FRAME;
             return true;
         }
     };
@@ -994,10 +996,10 @@ public class MonsterMedic {
     static EntityThinkAdapter medic_duck_up = new EntityThinkAdapter() {
     	public String getID(){ return "medic_duck_up"; }
         public boolean think(Entity self) {
-            self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
+            self.monsterinfo.aiflags &= ~Constants.AI_DUCKED;
             self.maxs[2] += 32;
-            self.takedamage = Defines.DAMAGE_AIM;
-            GameBase.gi.linkentity(self);
+            self.takedamage = Constants.DAMAGE_AIM;
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -1093,8 +1095,8 @@ public class MonsterMedic {
     static EntityThinkAdapter medic_hook_launch = new EntityThinkAdapter() {
     	public String getID(){ return "medic_hook_launch"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_hook_launch, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_hook_launch, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1136,15 +1138,14 @@ public class MonsterMedic {
             if (Math.abs(angles[0]) > 45)
                 return true;
 
-            tr = GameBase.gi.trace(start, null, null, self.enemy.s.origin,
-                    self, Defines.MASK_SHOT);
+            tr = World.SV_Trace(start, null, null, self.enemy.s.origin, self, Constants.MASK_SHOT);
             if (tr.fraction != 1.0 && tr.ent != self.enemy)
                 return true;
 
             if (self.s.frame == FRAME_attack43) {
-                GameBase.gi.sound(self.enemy, Defines.CHAN_AUTO,
-                        sound_hook_hit, 1, Defines.ATTN_NORM, 0);
-                self.enemy.monsterinfo.aiflags |= Defines.AI_RESURRECTING;
+                ServerGame.PF_StartSound(self.enemy, Constants.CHAN_AUTO, sound_hook_hit, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
+                self.enemy.monsterinfo.aiflags |= Constants.AI_RESURRECTING;
             } else if (self.s.frame == FRAME_attack50) {
                 self.enemy.spawnflags = 0;
                 self.enemy.monsterinfo.aiflags = 0;
@@ -1159,15 +1160,15 @@ public class MonsterMedic {
                     self.enemy.nextthink = GameBase.level.time;
                     self.enemy.think.think(self.enemy);
                 }
-                self.enemy.monsterinfo.aiflags |= Defines.AI_RESURRECTING;
+                self.enemy.monsterinfo.aiflags |= Constants.AI_RESURRECTING;
                 if (self.oldenemy != null && self.oldenemy.client != null) {
                     self.enemy.enemy = self.oldenemy;
                     GameUtil.FoundTarget(self.enemy);
                 }
             } else {
                 if (self.s.frame == FRAME_attack44)
-                    GameBase.gi.sound(self, Defines.CHAN_WEAPON,
-                            sound_hook_heal, 1, Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_hook_heal, (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
             }
 
             // adjust start for beam origin being in middle of a segment
@@ -1177,12 +1178,12 @@ public class MonsterMedic {
             Math3D.VectorCopy(self.enemy.s.origin, end);
             end[2] = self.enemy.absmin[2] + self.enemy.size[2] / 2;
 
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_MEDIC_CABLE_ATTACK);
-            GameBase.gi.WriteShort(self.index);
-            GameBase.gi.WritePosition(start);
-            GameBase.gi.WritePosition(end);
-            GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_MEDIC_CABLE_ATTACK);
+            ServerGame.PF_WriteShort(self.index);
+            ServerGame.PF_WritePos(start);
+            ServerGame.PF_WritePos(end);
+            ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PVS);
             return true;
         }
     };
@@ -1190,9 +1191,9 @@ public class MonsterMedic {
     static EntityThinkAdapter medic_hook_retract = new EntityThinkAdapter() {
     	public String getID(){ return "medic_hook_retract"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_hook_retract, 1,
-                    Defines.ATTN_NORM, 0);
-            self.enemy.monsterinfo.aiflags &= ~Defines.AI_RESURRECTING;
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_hook_retract, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.enemy.monsterinfo.aiflags &= ~Constants.AI_RESURRECTING;
             return true;
         }
     };
@@ -1233,7 +1234,7 @@ public class MonsterMedic {
     static EntityThinkAdapter medic_attack = new EntityThinkAdapter() {
     	public String getID(){ return "medic_attack"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_MEDIC) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_MEDIC) != 0)
                 self.monsterinfo.currentmove = medic_move_attackCable;
             else
                 self.monsterinfo.currentmove = medic_move_attackBlaster;
@@ -1244,7 +1245,7 @@ public class MonsterMedic {
     static EntityThinkAdapter medic_checkattack = new EntityThinkAdapter() {
     	public String getID(){ return "medic_checkattack"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_MEDIC) != 0) {
+            if ((self.monsterinfo.aiflags & Constants.AI_MEDIC) != 0) {
                 medic_attack.think(self);
                 return true;
             }
@@ -1264,23 +1265,22 @@ public class MonsterMedic {
             return;
         }
 
-        sound_idle1 = GameBase.gi.soundindex("medic/idle.wav");
-        sound_pain1 = GameBase.gi.soundindex("medic/medpain1.wav");
-        sound_pain2 = GameBase.gi.soundindex("medic/medpain2.wav");
-        sound_die = GameBase.gi.soundindex("medic/meddeth1.wav");
-        sound_sight = GameBase.gi.soundindex("medic/medsght1.wav");
-        sound_search = GameBase.gi.soundindex("medic/medsrch1.wav");
-        sound_hook_launch = GameBase.gi.soundindex("medic/medatck2.wav");
-        sound_hook_hit = GameBase.gi.soundindex("medic/medatck3.wav");
-        sound_hook_heal = GameBase.gi.soundindex("medic/medatck4.wav");
-        sound_hook_retract = GameBase.gi.soundindex("medic/medatck5.wav");
+        sound_idle1 = ServerInit.SV_SoundIndex("medic/idle.wav");
+        sound_pain1 = ServerInit.SV_SoundIndex("medic/medpain1.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("medic/medpain2.wav");
+        sound_die = ServerInit.SV_SoundIndex("medic/meddeth1.wav");
+        sound_sight = ServerInit.SV_SoundIndex("medic/medsght1.wav");
+        sound_search = ServerInit.SV_SoundIndex("medic/medsrch1.wav");
+        sound_hook_launch = ServerInit.SV_SoundIndex("medic/medatck2.wav");
+        sound_hook_hit = ServerInit.SV_SoundIndex("medic/medatck3.wav");
+        sound_hook_heal = ServerInit.SV_SoundIndex("medic/medatck4.wav");
+        sound_hook_retract = ServerInit.SV_SoundIndex("medic/medatck5.wav");
 
-        GameBase.gi.soundindex("medic/medatck1.wav");
+        ServerInit.SV_SoundIndex("medic/medatck1.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/medic/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/medic/tris.md2");
         Math3D.VectorSet(self.mins, -24, -24, -24);
         Math3D.VectorSet(self.maxs, 24, 24, 32);
 
@@ -1302,7 +1302,7 @@ public class MonsterMedic {
         self.monsterinfo.search = medic_search;
         self.monsterinfo.checkattack = medic_checkattack;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = medic_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;

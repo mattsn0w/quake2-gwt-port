@@ -34,7 +34,7 @@ import com.googlecode.gwtquake.shared.client.DynamicLightData;
 import com.googlecode.gwtquake.shared.client.EntityType;
 import com.googlecode.gwtquake.shared.client.Lightstyle;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.Plane;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
 import com.googlecode.gwtquake.shared.render.GlPolygon;
@@ -212,7 +212,7 @@ public abstract class Surfaces extends Drawing {
 
 		ModelImage image = R_TextureAnimation(fa.texinfo);
 
-		if ((fa.flags & Defines.SURF_DRAWTURB) != 0)
+		if ((fa.flags & Constants.SURF_DRAWTURB) != 0)
 		{	
 			GL_Bind( image.texnum );
 
@@ -235,7 +235,7 @@ public abstract class Surfaces extends Drawing {
 
 		//	  ======
 		//	  PGM
-		if((fa.texinfo.flags & Defines.SURF_FLOWING) != 0)
+		if((fa.texinfo.flags & Constants.SURF_FLOWING) != 0)
 			DrawGLFlowingPoly(fa.polys);
 		else
 			DrawGLPoly (fa.polys);
@@ -248,7 +248,7 @@ public abstract class Surfaces extends Drawing {
 		** check for lightmap modification
 		*/
 		int maps;
-		for ( maps = 0; maps < Defines.MAXLIGHTMAPS && fa.styles[maps] != (byte)255; maps++ )
+		for ( maps = 0; maps < Constants.MAXLIGHTMAPS && fa.styles[maps] != (byte)255; maps++ )
 		{
 			if ( r_newrefdef.lightstyles[fa.styles[maps] & 0xFF].white != fa.cached_light[maps] ) {
 				gotoDynamic = true;
@@ -266,7 +266,7 @@ public abstract class Surfaces extends Drawing {
 			//	label dynamic:
 			if ( gl_dynamic.value != 0 )
 			{
-				if (( fa.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33 | Defines.SURF_TRANS66 | Defines.SURF_WARP ) ) == 0)
+				if (( fa.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33 | Constants.SURF_TRANS66 | Constants.SURF_WARP ) ) == 0)
 				{
 					is_dynamic = true;
 				}
@@ -339,15 +339,15 @@ public abstract class Surfaces extends Drawing {
 		{
 			GL_Bind(s.texinfo.image.texnum);
 			c_brush_polys++;
-			if ((s.texinfo.flags & Defines.SURF_TRANS33) != 0)
+			if ((s.texinfo.flags & Constants.SURF_TRANS33) != 0)
 			  gl.glColor4f (intens, intens, intens, 0.33f);
-			else if ((s.texinfo.flags & Defines.SURF_TRANS66) != 0)
+			else if ((s.texinfo.flags & Constants.SURF_TRANS66) != 0)
 			  gl.glColor4f (intens, intens, intens, 0.66f);
 			else
 			  gl.glColor4f (intens,intens,intens,1);
-			if ((s.flags & Defines.SURF_DRAWTURB) != 0)
+			if ((s.flags & Constants.SURF_DRAWTURB) != 0)
 				EmitWaterPolys(s);
-			else if((s.texinfo.flags & Defines.SURF_FLOWING) != 0)			// PGM	9/16/98
+			else if((s.texinfo.flags & Constants.SURF_FLOWING) != 0)			// PGM	9/16/98
 				DrawGLFlowingPoly(s.polys);							// PGM
 			else
 				DrawGLPoly(s.polys);
@@ -404,7 +404,7 @@ public abstract class Surfaces extends Drawing {
 
 			for ( s = image.texturechain; s != null ; s=s.texturechain)
 			{
-				if ( ( s.flags & Defines.SURF_DRAWTURB) == 0 )
+				if ( ( s.flags & Constants.SURF_DRAWTURB) == 0 )
 					R_RenderBrushPoly(s);
 			}
 		}
@@ -422,7 +422,7 @@ public abstract class Surfaces extends Drawing {
 
 			for ( ; s != null ; s=s.texturechain)
 			{
-				if ( (s.flags & Defines.SURF_DRAWTURB) != 0 )
+				if ( (s.flags & Constants.SURF_DRAWTURB) != 0 )
 					R_RenderBrushPoly(s);
 			}
 
@@ -445,7 +445,7 @@ public abstract class Surfaces extends Drawing {
 		// ersetzt goto
 		boolean gotoDynamic = false;
 		int map;
-		for ( map = 0; map < Defines.MAXLIGHTMAPS && (surf.styles[map] != (byte)255); map++ )
+		for ( map = 0; map < Constants.MAXLIGHTMAPS && (surf.styles[map] != (byte)255); map++ )
 		{
 			if ( r_newrefdef.lightstyles[surf.styles[map] & 0xFF].white != surf.cached_light[map] ) {
 				gotoDynamic = true;
@@ -463,7 +463,7 @@ public abstract class Surfaces extends Drawing {
 			//	label dynamic:
 			if ( gl_dynamic.value != 0 )
 			{
-				if ( (surf.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33 | Defines.SURF_TRANS66 | Defines.SURF_WARP )) == 0 )
+				if ( (surf.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33 | Constants.SURF_TRANS66 | Constants.SURF_WARP )) == 0 )
 				{
 					is_dynamic = true;
 				}
@@ -505,7 +505,7 @@ public abstract class Surfaces extends Drawing {
 
 			// ==========
 			//	  PGM
-			if ((surf.texinfo.flags & Defines.SURF_FLOWING) != 0)
+			if ((surf.texinfo.flags & Constants.SURF_FLOWING) != 0)
 			{
 				float scroll;
 		
@@ -592,7 +592,7 @@ public abstract class Surfaces extends Drawing {
 		ModelSurface[] surfaces = currentmodel.surfaces;
 		//psurf = surfaces[psurfp];
 
-		if ( (currententity.flags & Defines.RF_TRANSLUCENT) != 0 )
+		if ( (currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
 		{
 		  gl.glEnable (GlAdapter.GL_BLEND);
 		  gl.glColor4f (1,1,1,0.25f);
@@ -614,15 +614,15 @@ public abstract class Surfaces extends Drawing {
 			dot = Math3D.DotProduct(modelorg, pplane.normal) - pplane.dist;
 
 			// draw the polygon
-			if (((psurf.flags & Defines.SURF_PLANEBACK) != 0 && (dot < -BACKFACE_EPSILON)) ||
-				((psurf.flags & Defines.SURF_PLANEBACK) == 0 && (dot > BACKFACE_EPSILON)))
+			if (((psurf.flags & Constants.SURF_PLANEBACK) != 0 && (dot < -GlConstants.BACKFACE_EPSILON)) ||
+				((psurf.flags & Constants.SURF_PLANEBACK) == 0 && (dot > GlConstants.BACKFACE_EPSILON)))
 			{
-				if ((psurf.texinfo.flags & (Defines.SURF_TRANS33 | Defines.SURF_TRANS66)) != 0 )
+				if ((psurf.texinfo.flags & (Constants.SURF_TRANS33 | Constants.SURF_TRANS66)) != 0 )
 				{	// add to the translucent chain
 					psurf.texturechain = r_alpha_surfaces;
 					r_alpha_surfaces = psurf;
 				}
-				else if ( (psurf.flags & Defines.SURF_DRAWTURB) == 0 )
+				else if ( (psurf.flags & Constants.SURF_DRAWTURB) == 0 )
 				{
 					GL_RenderLightmappedPoly( psurf );
 				}
@@ -635,7 +635,7 @@ public abstract class Surfaces extends Drawing {
 			}
 		}
 		
-		if ( (currententity.flags & Defines.RF_TRANSLUCENT) != 0 ) {
+		if ( (currententity.flags & Constants.RF_TRANSLUCENT) != 0 ) {
 		  gl.glDisable (GlAdapter.GL_BLEND);
 		  gl.glColor4f (1,1,1,1);
 			GL_TexEnv( GlAdapter.GL_REPLACE );
@@ -738,7 +738,7 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void R_RecursiveWorldNode (ModelNode node)
 	{
-		if (node.contents == Defines.CONTENTS_SOLID)
+		if (node.contents == Constants.CONTENTS_SOLID)
 			return;		// solid
 		
 		if (node.visframe != r_visframecount)
@@ -785,13 +785,13 @@ public abstract class Surfaces extends Drawing {
 		float dot;
 		switch (plane.type)
 		{
-		case Defines.PLANE_X:
+		case Constants.PLANE_X:
 			dot = modelorg[0] - plane.dist;
 			break;
-		case Defines.PLANE_Y:
+		case Constants.PLANE_Y:
 			dot = modelorg[1] - plane.dist;
 			break;
-		case Defines.PLANE_Z:
+		case Constants.PLANE_Z:
 			dot = modelorg[2] - plane.dist;
 			break;
 		default:
@@ -808,7 +808,7 @@ public abstract class Surfaces extends Drawing {
 		else
 		{
 			side = 1;
-			sidebit = Defines.SURF_PLANEBACK;
+			sidebit = Constants.SURF_PLANEBACK;
 		}
 
 		// recurse down the children, front side first
@@ -824,21 +824,21 @@ public abstract class Surfaces extends Drawing {
 			if (surf.visframe != r_framecount)
 				continue;
 
-			if ( (surf.flags & Defines.SURF_PLANEBACK) != sidebit )
+			if ( (surf.flags & Constants.SURF_PLANEBACK) != sidebit )
 				continue;		// wrong side
 
-			if ((surf.texinfo.flags & Defines.SURF_SKY) != 0)
+			if ((surf.texinfo.flags & Constants.SURF_SKY) != 0)
 			{	// just adds to visible sky bounds
 				R_AddSkySurface(surf);
 			}
-			else if ((surf.texinfo.flags & (Defines.SURF_TRANS33 | Defines.SURF_TRANS66)) != 0)
+			else if ((surf.texinfo.flags & (Constants.SURF_TRANS33 | Constants.SURF_TRANS66)) != 0)
 			{	// add to the translucent chain
 				surf.texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = surf;
 			}
 			else
 			{
-				if (  ( surf.flags & Defines.SURF_DRAWTURB) == 0 )
+				if (  ( surf.flags & Constants.SURF_DRAWTURB) == 0 )
 				{
 					GL_RenderLightmappedPoly( surf );
 				}
@@ -867,7 +867,7 @@ public abstract class Surfaces extends Drawing {
 		if (r_drawworld.value == 0)
 			return;
 
-		if ( (r_newrefdef.rdflags & Defines.RDF_NOWORLDMODEL) != 0 )
+		if ( (r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0 )
 			return;
 
 		currentmodel = r_worldmodel;
@@ -921,7 +921,7 @@ public abstract class Surfaces extends Drawing {
 		R_DrawTriangleOutlines();
 	}
 
-	final byte[] fatvis = new byte[Defines.MAX_MAP_LEAFS / 8];
+	final byte[] fatvis = new byte[Constants.MAX_MAP_LEAFS / 8];
 
 	/**
 	 * R_MarkLeaves
@@ -1053,7 +1053,7 @@ public abstract class Surfaces extends Drawing {
 						   GlAdapter.GL_UNSIGNED_BYTE, 
 						   gl_lms.lightmap_buffer );
 			if ( ++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS )
-				Com.Error( Defines.ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n" );
+				Com.Error( Constants.ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n" );
 				
 //			debugLightmap(gl_lms.lightmap_buffer, 128, 128, 4);
 		}
@@ -1179,7 +1179,7 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void GL_CreateSurfaceLightmap(ModelSurface surf)
 	{
-		if ( (surf.flags & (Defines.SURF_DRAWSKY | Defines.SURF_DRAWTURB)) != 0)
+		if ( (surf.flags & (Constants.SURF_DRAWSKY | Constants.SURF_DRAWTURB)) != 0)
 			return;
 
 		int smax = (surf.extents[0]>>4)+1;
@@ -1194,7 +1194,7 @@ public abstract class Surfaces extends Drawing {
 			lightPos = new pos_t(surf.light_s, surf.light_t);
 			if ( !LM_AllocBlock( smax, tmax, lightPos ) )
 			{
-				Com.Error( Defines.ERR_FATAL, "Consecutive calls to LM_AllocBlock(" + smax +"," + tmax +") failed\n");
+				Com.Error( Constants.ERR_FATAL, "Consecutive calls to LM_AllocBlock(" + smax +"," + tmax +") failed\n");
 			}
 		}
 		
@@ -1225,7 +1225,7 @@ public abstract class Surfaces extends Drawing {
 
 		// init lightstyles
 		if ( lightstyles == null ) {
-			lightstyles = new Lightstyle[Defines.MAX_LIGHTSTYLES];
+			lightstyles = new Lightstyle[Constants.MAX_LIGHTSTYLES];
 			for (int i = 0; i < lightstyles.length; i++)
 			{
 				lightstyles[i] = new Lightstyle();				
@@ -1244,7 +1244,7 @@ public abstract class Surfaces extends Drawing {
 		** setup the base lightstyles so the lightmaps won't have to be regenerated
 		** the first time they're seen
 		*/
-		for (int i=0 ; i < Defines.MAX_LIGHTSTYLES ; i++)
+		for (int i=0 ; i < Constants.MAX_LIGHTSTYLES ; i++)
 		{
 			lightstyles[i].rgb[0] = 1;
 			lightstyles[i].rgb[1] = 1;
@@ -1255,7 +1255,7 @@ public abstract class Surfaces extends Drawing {
 
 		if (gl_state.lightmap_textures == 0)
 		{
-			gl_state.lightmap_textures = TEXNUM_LIGHTMAPS;
+			gl_state.lightmap_textures = GlConstants.TEXNUM_LIGHTMAPS;
 		}
 
 		gl_lms.current_lightmap_texture = 1;

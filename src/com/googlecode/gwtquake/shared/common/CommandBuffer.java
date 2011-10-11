@@ -214,17 +214,17 @@ public final class CommandBuffer {
 
     public static void ExecuteText(int exec_when, String text) {
         switch (exec_when) {
-        case Defines.EXEC_NOW:
+        case Constants.EXEC_NOW:
             Commands.ExecuteString(text);
             break;
-        case Defines.EXEC_INSERT:
+        case Constants.EXEC_INSERT:
             CommandBuffer.InsertText(text);
             break;
-        case Defines.EXEC_APPEND:
+        case Constants.EXEC_APPEND:
             CommandBuffer.AddText(text);
             break;
         default:
-            Com.Error(Defines.ERR_FATAL, "Cbuf_ExecuteText: bad exec_when");
+            Com.Error(Constants.ERR_FATAL, "Cbuf_ExecuteText: bad exec_when");
         }
     }
 

@@ -30,7 +30,7 @@ import com.googlecode.gwtquake.shared.common.AsyncCallback;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Compatibility;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Lump;
 import com.googlecode.gwtquake.shared.common.QuakeFiles;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
@@ -74,7 +74,7 @@ public abstract class Models extends Surfaces {
 	RendererModel	loadmodel;
 	int modfilelen;
 
-	byte[] mod_novis = new byte[Defines.MAX_MAP_LEAFS/8];
+	byte[] mod_novis = new byte[Constants.MAX_MAP_LEAFS/8];
 
 	static final int MAX_MOD_KNOWN = 512;
 	RendererModel world_model;
@@ -96,7 +96,7 @@ public abstract class Models extends Surfaces {
 		Plane plane;
 	
 		if (model == null || model.nodes == null)
-			Com.Error (Defines.ERR_DROP, "Mod_PointInLeaf: bad model");
+			Com.Error (Constants.ERR_DROP, "Mod_PointInLeaf: bad model");
 
 		node = model.nodes[0]; // root node
 		while (true)
@@ -115,8 +115,8 @@ public abstract class Models extends Surfaces {
 	}
 
 
-	byte[] decompressed = new byte[Defines.MAX_MAP_LEAFS / 8];
-	byte[] model_visibility = new byte[Defines.MAX_MAP_VISIBILITY]; 
+	byte[] decompressed = new byte[Constants.MAX_MAP_LEAFS / 8];
+	byte[] model_visibility = new byte[Constants.MAX_MAP_VISIBILITY]; 
 
 	/*
 	===================
@@ -175,7 +175,7 @@ public abstract class Models extends Surfaces {
 		if (cluster == -1 || model.vis == null)
 			return mod_novis;
 		//return Mod_DecompressVis( (byte *)model.vis + model.vis.bitofs[cluster][Defines.DVIS_PVS], model);
-		return Mod_DecompressVis(model_visibility, model.vis.bitofs[cluster][Defines.DVIS_PVS], model);
+		return Mod_DecompressVis(model_visibility, model.vis.bitofs[cluster][Constants.DVIS_PVS], model);
 	}
 
 
@@ -204,7 +204,7 @@ public abstract class Models extends Surfaces {
 		int total;
 
 		total = 0;
-		Window.Printf(Defines.PRINT_ALL,"Loaded models:\n");
+		Window.Printf(Constants.PRINT_ALL,"Loaded models:\n");
 
 //		for (i=0; i < mod_numknown ; i++) {
 //			mod = mod_known[i];
@@ -217,10 +217,10 @@ public abstract class Models extends Surfaces {
 
 		for (String name : modelReqs.keySet()) {
 		  ModelRequest req = modelReqs.get(name);
-		  Window.Printf (Defines.PRINT_ALL, "%8i : %s\n", new Vargs(2).add(req.model.extradatasize).add(req.model.name));
+		  Window.Printf (Constants.PRINT_ALL, "%8i : %s\n", new Vargs(2).add(req.model.extradatasize).add(req.model.name));
 		  total += req.model.extradatasize;
 		}
-		Window.Printf (Defines.PRINT_ALL, "Total resident: " + total +'\n');
+		Window.Printf (Constants.PRINT_ALL, "Total resident: " + total +'\n');
 	}
 
 	/*
@@ -251,7 +251,7 @@ public abstract class Models extends Surfaces {
     int i;
 	
 		if (name == null || name.length() == 0)
-			Com.Error(Defines.ERR_DROP, "Mod_ForName: NULL name");
+			Com.Error(Constants.ERR_DROP, "Mod_ForName: NULL name");
 		
 		//
 		// inline models are grabbed only from worldmodel
@@ -261,7 +261,7 @@ public abstract class Models extends Surfaces {
 			i = Integer.parseInt(name.substring(1));
 			if (i < 1 || r_worldmodel == null || i >= r_worldmodel.numsubmodels) {
 	            Compatibility.printStackTrace(new Exception("inline model number issue; world model: " + world_model));
-	            Com.Error (Defines.ERR_DROP, "bad inline model number " + i + "; worldmodel: " + r_worldmodel + " numsubmodels: " + r_worldmodel.numsubmodels);
+	            Com.Error (Constants.ERR_DROP, "bad inline model number " + i + "; worldmodel: " + r_worldmodel + " numsubmodels: " + r_worldmodel.numsubmodels);
 			}
 			callback.onSuccess(mod_inline[i]);
 			return;
@@ -330,7 +330,7 @@ public abstract class Models extends Surfaces {
           Mod_LoadBrushModel(model, bb);
           break;
         default:
-          Com.Error(Defines.ERR_DROP,"Mod_NumForName: unknown fileid for " + model);
+          Com.Error(Constants.ERR_DROP,"Mod_NumForName: unknown fileid for " + model);
           break;
         }
 
@@ -423,7 +423,7 @@ public abstract class Models extends Surfaces {
 		int i, count;
 
 		if ( (l.filelen % ModelVertex.DISK_SIZE) != 0)
-			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / ModelVertex.DISK_SIZE;
 		
@@ -466,7 +466,7 @@ public abstract class Models extends Surfaces {
 	void Mod_LoadSubmodels(Lump l) {
 	    
 	    if ((l.filelen % QuakeFiles.dmodel_t.SIZE) != 0)
-	        Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in "
+	        Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in "
 	                + loadmodel.name);
 	    
 	    int i, j;
@@ -514,7 +514,7 @@ public abstract class Models extends Surfaces {
 		int i, count;
 
 		if ( (l.filelen % ModelEdge.DISK_SIZE) != 0)
-			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / ModelEdge.DISK_SIZE;
 		// out = Hunk_Alloc ( (count + 1) * sizeof(*out));	
@@ -547,7 +547,7 @@ public abstract class Models extends Surfaces {
 		String name;
 
 		if ((l.filelen % TextureInfo.SIZE) != 0)
-			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error (Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		int count = l.filelen / TextureInfo.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
@@ -577,7 +577,7 @@ public abstract class Models extends Surfaces {
 
 			out[i].image = GL_FindImage(name, QuakeImage.it_wall);
 			if (out[i].image == null) {
-				Window.Printf(Defines.PRINT_ALL, "Couldn't load " + name + '\n');
+				Window.Printf(Constants.PRINT_ALL, "Couldn't load " + name + '\n');
 				out[i].image = r_notexture;
 			}
 		}
@@ -657,7 +657,7 @@ public abstract class Models extends Surfaces {
 	    int ti;
 	    
 	    if ((l.filelen % QuakeFiles.dface_t.SIZE) != 0)
-	        Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in "
+	        Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in "
 	                + loadmodel.name);
 	    
 	    int count = l.filelen / QuakeFiles.dface_t.SIZE;
@@ -691,13 +691,13 @@ public abstract class Models extends Surfaces {
 	        planenum = in.planenum;
 	        side = in.side;
 	        if (side != 0)
-	            out.flags |= Defines.SURF_PLANEBACK;
+	            out.flags |= Constants.SURF_PLANEBACK;
 	        
 	        out.plane = loadmodel.planes[planenum];
 	        
 	        ti = in.texinfo;
 	        if (ti < 0 || ti >= loadmodel.numtexinfo)
-	            Com.Error(Defines.ERR_DROP,
+	            Com.Error(Constants.ERR_DROP,
 	            "MOD_LoadBmodel: bad texinfo number");
 	        
 	        out.texinfo = loadmodel.texinfo[ti];
@@ -706,7 +706,7 @@ public abstract class Models extends Surfaces {
 	        
 	        // lighting info
 	        
-	        for (i = 0; i < Defines.MAXLIGHTMAPS; i++)
+	        for (i = 0; i < Constants.MAXLIGHTMAPS; i++)
 	            out.styles[i] = in.styles[i];
 	        
 	        i = in.lightofs;
@@ -722,8 +722,8 @@ public abstract class Models extends Surfaces {
 	        
 	        // set the drawing flags
 	        
-	        if ((out.texinfo.flags & Defines.SURF_WARP) != 0) {
-	            out.flags |= Defines.SURF_DRAWTURB;
+	        if ((out.texinfo.flags & Constants.SURF_WARP) != 0) {
+	            out.flags |= Constants.SURF_DRAWTURB;
 	            for (i = 0; i < 2; i++) {
 	                out.extents[i] = 16384;
 	                out.texturemins[i] = -8192;
@@ -732,11 +732,11 @@ public abstract class Models extends Surfaces {
 	        }
 	        
 	        // create lightmaps and polygons
-	        if ((out.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33
-	                | Defines.SURF_TRANS66 | Defines.SURF_WARP)) == 0)
+	        if ((out.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33
+	                | Constants.SURF_TRANS66 | Constants.SURF_WARP)) == 0)
 	            GL_CreateSurfaceLightmap(out);
 	        
-	        if ((out.texinfo.flags & Defines.SURF_WARP) == 0)
+	        if ((out.texinfo.flags & Constants.SURF_WARP) == 0)
 	            GL_BuildPolygonFromSurface(out);
 	        
 	    }
@@ -769,7 +769,7 @@ public abstract class Models extends Surfaces {
 		ModelNode[] out;
 
 		if ((l.filelen % QuakeFiles.dnode_t.SIZE) != 0)
-			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 		
 		count = l.filelen / QuakeFiles.dnode_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));	
@@ -826,7 +826,7 @@ public abstract class Models extends Surfaces {
 		int i, j, count;
 
 		if ((l.filelen % QuakeFiles.dleaf_t.SIZE) != 0)
-			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error (Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / QuakeFiles.dleaf_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
@@ -870,9 +870,9 @@ public abstract class Models extends Surfaces {
 
 		ModelSurface[] out; 
 
-		if ((l.filelen % Defines.SIZE_OF_SHORT) != 0)
-			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
-		count = l.filelen / Defines.SIZE_OF_SHORT;
+		if ((l.filelen % Constants.SIZE_OF_SHORT) != 0)
+			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+		count = l.filelen / Constants.SIZE_OF_SHORT;
 		// out = Hunk_Alloc ( count*sizeof(*out));	
 		out = new ModelSurface[count];
 
@@ -886,7 +886,7 @@ public abstract class Models extends Surfaces {
 		{
 			j = bb.getShort();
 			if (j < 0 ||  j >= loadmodel.numsurfaces)
-				Com.Error(Defines.ERR_DROP, "Mod_ParseMarksurfaces: bad surface number");
+				Com.Error(Constants.ERR_DROP, "Mod_ParseMarksurfaces: bad surface number");
 
 			out[i] = loadmodel.surfaces[j];
 		}
@@ -903,12 +903,12 @@ public abstract class Models extends Surfaces {
 		int i, count;
 		int[] offsets;
 	
-		if ( (l.filelen % Defines.SIZE_OF_INT) != 0)
-			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+		if ( (l.filelen % Constants.SIZE_OF_INT) != 0)
+			Com.Error (Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-		count = l.filelen / Defines.SIZE_OF_INT;
-		if (count < 1 || count >= Defines.MAX_MAP_SURFEDGES)
-			Com.Error (Defines.ERR_DROP, "MOD_LoadBmodel: bad surfedges count in " + loadmodel.name + ": " + count);
+		count = l.filelen / Constants.SIZE_OF_INT;
+		if (count < 1 || count >= Constants.MAX_MAP_SURFEDGES)
+			Com.Error (Constants.ERR_DROP, "MOD_LoadBmodel: bad surfedges count in " + loadmodel.name + ": " + count);
 
 		offsets = new int[count];
 
@@ -936,7 +936,7 @@ public abstract class Models extends Surfaces {
 		int bits;
 
 		if ((l.filelen % QuakeFiles.dplane_t.SIZE) != 0)
-			Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
+			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
 		count = l.filelen / QuakeFiles.dplane_t.SIZE;
 		// out = Hunk_Alloc ( count*2*sizeof(*out));
@@ -979,31 +979,31 @@ public abstract class Models extends Surfaces {
 		QuakeFiles.dheader_t	header;
 		SubModel bm;
 	
-		loadmodel.type = mod_brush;
+		loadmodel.type = GlConstants.mod_brush;
 		world_model = loadmodel;
 
 		header = new QuakeFiles.dheader_t(buffer);
 
 		i = header.version;
-		if (i != Defines.BSPVERSION)
-			Com.Error (Defines.ERR_DROP, "Mod_LoadBrushModel: " + mod.name + " has wrong version number (" + i + " should be " + Defines.BSPVERSION + ")");
+		if (i != Constants.BSPVERSION)
+			Com.Error (Constants.ERR_DROP, "Mod_LoadBrushModel: " + mod.name + " has wrong version number (" + i + " should be " + Constants.BSPVERSION + ")");
 
 		mod_base = fileBuffer; //(byte *)header;
 		mod_base.order(ByteOrder.LITTLE_ENDIAN);
 
 		// load into heap
-		Mod_LoadVertexes(header.lumps[Defines.LUMP_VERTEXES]); // ok
-		Mod_LoadEdges(header.lumps[Defines.LUMP_EDGES]); // ok
-		Mod_LoadSurfedges(header.lumps[Defines.LUMP_SURFEDGES]); // ok
-		Mod_LoadLighting(header.lumps[Defines.LUMP_LIGHTING]); // ok
-		Mod_LoadPlanes(header.lumps[Defines.LUMP_PLANES]); // ok
-		Mod_LoadTexinfo(header.lumps[Defines.LUMP_TEXINFO]); // ok
-		Mod_LoadFaces(header.lumps[Defines.LUMP_FACES]); // ok
-		Mod_LoadMarksurfaces(header.lumps[Defines.LUMP_LEAFFACES]);
-		Mod_LoadVisibility(header.lumps[Defines.LUMP_VISIBILITY]); // ok
-		Mod_LoadLeafs(header.lumps[Defines.LUMP_LEAFS]); // ok
-		Mod_LoadNodes(header.lumps[Defines.LUMP_NODES]); // ok
-		Mod_LoadSubmodels(header.lumps[Defines.LUMP_MODELS]);
+		Mod_LoadVertexes(header.lumps[Constants.LUMP_VERTEXES]); // ok
+		Mod_LoadEdges(header.lumps[Constants.LUMP_EDGES]); // ok
+		Mod_LoadSurfedges(header.lumps[Constants.LUMP_SURFEDGES]); // ok
+		Mod_LoadLighting(header.lumps[Constants.LUMP_LIGHTING]); // ok
+		Mod_LoadPlanes(header.lumps[Constants.LUMP_PLANES]); // ok
+		Mod_LoadTexinfo(header.lumps[Constants.LUMP_TEXINFO]); // ok
+		Mod_LoadFaces(header.lumps[Constants.LUMP_FACES]); // ok
+		Mod_LoadMarksurfaces(header.lumps[Constants.LUMP_LEAFFACES]);
+		Mod_LoadVisibility(header.lumps[Constants.LUMP_VISIBILITY]); // ok
+		Mod_LoadLeafs(header.lumps[Constants.LUMP_LEAFS]); // ok
+		Mod_LoadNodes(header.lumps[Constants.LUMP_NODES]); // ok
+		Mod_LoadSubmodels(header.lumps[Constants.LUMP_MODELS]);
 		mod.numframes = 2;		// regular and alternate animation
 	
 		//
@@ -1021,7 +1021,7 @@ public abstract class Models extends Surfaces {
 			starmod.nummodelsurfaces = bm.numfaces;
 			starmod.firstnode = bm.headnode;
 			if (starmod.firstnode >= loadmodel.numnodes)
-				Com.Error(Defines.ERR_DROP, "Inline model " + i + " has bad firstnode");
+				Com.Error(Constants.ERR_DROP, "Inline model " + i + " has bad firstnode");
 
 			Math3D.VectorCopy(bm.maxs, starmod.maxs);
 			Math3D.VectorCopy(bm.mins, starmod.mins);
@@ -1060,26 +1060,26 @@ public abstract class Models extends Surfaces {
 		pheader = new QuakeFiles.dmdl_t(buffer);
 
 		if (pheader.version != QuakeFiles.ALIAS_VERSION)
-			Com.Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
+			Com.Error(Constants.ERR_DROP, "%s has wrong version number (%i should be %i)",
 					 new Vargs(3).add(mod.name).add(pheader.version).add(QuakeFiles.ALIAS_VERSION));
 
-		if (pheader.skinheight > MAX_LBM_HEIGHT)
-			Com.Error(Defines.ERR_DROP, "model "+ mod.name +" has a skin taller than " + MAX_LBM_HEIGHT);
+		if (pheader.skinheight > GlConstants.MAX_LBM_HEIGHT)
+			Com.Error(Constants.ERR_DROP, "model "+ mod.name +" has a skin taller than " + GlConstants.MAX_LBM_HEIGHT);
 
 		if (pheader.num_xyz <= 0)
-			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no vertices");
+			Com.Error(Constants.ERR_DROP, "model " + mod.name + " has no vertices");
 
 		if (pheader.num_xyz > QuakeFiles.MAX_VERTS)
-			Com.Error(Defines.ERR_DROP, "model " + mod.name +" has too many vertices");
+			Com.Error(Constants.ERR_DROP, "model " + mod.name +" has too many vertices");
 
 		if (pheader.num_st <= 0)
-			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no st vertices");
+			Com.Error(Constants.ERR_DROP, "model " + mod.name + " has no st vertices");
 
 		if (pheader.num_tris <= 0)
-			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no triangles");
+			Com.Error(Constants.ERR_DROP, "model " + mod.name + " has no triangles");
 
 		if (pheader.num_frames <= 0)
-			Com.Error(Defines.ERR_DROP, "model " + mod.name + " has no frames");
+			Com.Error(Constants.ERR_DROP, "model " + mod.name + " has no frames");
 
 		//
 		// load base s and t vertices (not used in gl version)
@@ -1116,7 +1116,7 @@ public abstract class Models extends Surfaces {
 			}
 		}
 
-		mod.type = mod_alias;
+		mod.type = GlConstants.mod_alias;
 
 		//
 		// load the glcmds
@@ -1178,11 +1178,11 @@ public abstract class Models extends Surfaces {
 		QuakeFiles.dsprite_t sprout = new QuakeFiles.dsprite_t(buffer);
 		
 		if (sprout.version != QuakeFiles.SPRITE_VERSION)
-			Com.Error(Defines.ERR_DROP, "%s has wrong version number (%i should be %i)",
+			Com.Error(Constants.ERR_DROP, "%s has wrong version number (%i should be %i)",
 				new Vargs(3).add(mod.name).add(sprout.version).add(QuakeFiles.SPRITE_VERSION));
 
 		if (sprout.numframes > QuakeFiles.MAX_MD2SKINS)
-			Com.Error(Defines.ERR_DROP, "%s has too many frames (%i > %i)",
+			Com.Error(Constants.ERR_DROP, "%s has too many frames (%i > %i)",
 				new Vargs(3).add(mod.name).add(sprout.numframes).add(QuakeFiles.MAX_MD2SKINS));
 
 		for (int i=0 ; i<sprout.numframes ; i++)
@@ -1190,7 +1190,7 @@ public abstract class Models extends Surfaces {
 			mod.skins[i] = GL_FindImage(sprout.frames[i].name,	QuakeImage.it_sprite);
 		}
 
-		mod.type = mod_sprite;
+		mod.type = GlConstants.mod_sprite;
 		mod.extradata = sprout;
 	}
 
@@ -1234,7 +1234,7 @@ public abstract class Models extends Surfaces {
       }
 
       public void onFailure(Throwable e) {
-        Com.Error(Defines.ERR_DROP, "Mod_NumForName: " + fullname + " not found");
+        Com.Error(Constants.ERR_DROP, "Mod_NumForName: " + fullname + " not found");
       }
     });
 
@@ -1257,13 +1257,13 @@ public abstract class Models extends Surfaces {
         mod.registration_sequence = registration_sequence;
 
         // register any images used by the models
-        if (mod.type == mod_sprite)
+        if (mod.type == GlConstants.mod_sprite)
         {
           sprout = (QuakeFiles.dsprite_t)mod.extradata;
           for (i=0 ; i<sprout.numframes ; i++)
             mod.skins[i] = GL_FindImage(sprout.frames[i].name, QuakeImage.it_sprite);
         }
-        else if (mod.type == mod_alias)
+        else if (mod.type == GlConstants.mod_alias)
         {
           pheader = (QuakeFiles.dmdl_t)mod.extradata;
           for (i=0 ; i<pheader.num_skins ; i++)
@@ -1272,7 +1272,7 @@ public abstract class Models extends Surfaces {
           mod.numframes = pheader.num_frames;
           // PGM
         }
-        else if (mod.type == mod_brush)
+        else if (mod.type == GlConstants.mod_brush)
         {
           for (i=0 ; i<mod.numtexinfo ; i++)
             mod.texinfo[i].image.registration_sequence = registration_sequence;
@@ -1325,7 +1325,7 @@ public abstract class Models extends Surfaces {
         Mod_Free(mod);
       } else {
         // precompile AliasModels
-        if (mod.type == mod_alias)
+        if (mod.type == GlConstants.mod_alias)
           precompileGLCmds((QuakeFiles.dmdl_t)mod.extradata);
       }
 		}

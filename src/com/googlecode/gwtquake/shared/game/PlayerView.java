@@ -23,9 +23,11 @@
 */
 package com.googlecode.gwtquake.shared.game;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.monsters.MonsterPlayer;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -85,13 +87,13 @@ public class PlayerView {
         client = player.client;
 
         // flash the backgrounds behind the status numbers
-        client.ps.stats[Defines.STAT_FLASHES] = 0;
+        client.ps.stats[Constants.STAT_FLASHES] = 0;
         if (client.damage_blood != 0)
-            client.ps.stats[Defines.STAT_FLASHES] |= 1;
+            client.ps.stats[Constants.STAT_FLASHES] |= 1;
         if (client.damage_armor != 0
-                && 0 == (player.flags & Defines.FL_GODMODE)
+                && 0 == (player.flags & Constants.FL_GODMODE)
                 && (client.invincible_framenum <= GameBase.level.framenum))
-            client.ps.stats[Defines.STAT_FLASHES] |= 2;
+            client.ps.stats[Constants.STAT_FLASHES] |= 2;
 
         // total points of damage shot at the player this frame
         count = (client.damage_blood + client.damage_armor + client.damage_parmor);
@@ -100,9 +102,9 @@ public class PlayerView {
             return; // didn't take any damage
 
         // start a pain animation if still in the player model
-        if ((client.anim_priority < Defines.ANIM_PAIN)
+        if ((client.anim_priority < Constants.ANIM_PAIN)
                 & (player.s.modelindex == 255)) {
-            client.anim_priority = Defines.ANIM_PAIN;
+            client.anim_priority = Constants.ANIM_PAIN;
             if ((client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
                 player.s.frame = MonsterPlayer.FRAME_crpain1 - 1;
                 client.anim_end = MonsterPlayer.FRAME_crpain4;
@@ -132,7 +134,7 @@ public class PlayerView {
 
         // play an apropriate pain sound
         if ((GameBase.level.time > player.pain_debounce_time)
-                && 0 == (player.flags & Defines.FL_GODMODE)
+                && 0 == (player.flags & Constants.FL_GODMODE)
                 && (client.invincible_framenum <= GameBase.level.framenum)) {
             r = 1 + (Lib.rand() & 1);
             player.pain_debounce_time = GameBase.level.time + 0.7f;
@@ -144,9 +146,8 @@ public class PlayerView {
                 l = 75;
             else
                 l = 100;
-            GameBase.gi.sound(player, Defines.CHAN_VOICE, GameBase.gi
-                    .soundindex("*pain" + l + "_" + r + ".wav"), 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("*pain" + l + "_" + r + ".wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
 
         // the total alpha of the blend is always proportional to count
@@ -199,7 +200,7 @@ public class PlayerView {
             side = -Math3D.DotProduct(v, forward);
             client.v_dmg_pitch = kick * side * 0.3f;
 
-            client.v_dmg_time = GameBase.level.time + Defines.DAMAGE_TIME;
+            client.v_dmg_time = GameBase.level.time + Constants.DAMAGE_TIME;
         }
 
         //
@@ -234,9 +235,9 @@ public class PlayerView {
         if (ent.deadflag != 0) {
             Math3D.VectorClear(angles);
 
-            ent.client.ps.viewangles[Defines.ROLL] = 40;
-            ent.client.ps.viewangles[Defines.PITCH] = -15;
-            ent.client.ps.viewangles[Defines.YAW] = ent.client.killer_yaw;
+            ent.client.ps.viewangles[Constants.ROLL] = 40;
+            ent.client.ps.viewangles[Constants.PITCH] = -15;
+            ent.client.ps.viewangles[Constants.YAW] = ent.client.killer_yaw;
         } else {
         	
             // add angles based on weapon kick
@@ -244,40 +245,40 @@ public class PlayerView {
 
             // add angles based on damage kick
             ratio = (ent.client.v_dmg_time - GameBase.level.time)
-                    / Defines.DAMAGE_TIME;
+                    / Constants.DAMAGE_TIME;
             if (ratio < 0) {
                 ratio = 0;
                 ent.client.v_dmg_pitch = 0;
                 ent.client.v_dmg_roll = 0;
             }
-            angles[Defines.PITCH] += ratio * ent.client.v_dmg_pitch;
-            angles[Defines.ROLL] += ratio * ent.client.v_dmg_roll;
+            angles[Constants.PITCH] += ratio * ent.client.v_dmg_pitch;
+            angles[Constants.ROLL] += ratio * ent.client.v_dmg_roll;
 
             // add pitch based on fall kick
             ratio = (ent.client.fall_time - GameBase.level.time)
-                    / Defines.FALL_TIME;
+                    / Constants.FALL_TIME;
             if (ratio < 0)
                 ratio = 0;
-            angles[Defines.PITCH] += ratio * ent.client.fall_value;
+            angles[Constants.PITCH] += ratio * ent.client.fall_value;
 
             // add angles based on velocity
             delta = Math3D.DotProduct(ent.velocity, forward);
-            angles[Defines.PITCH] += delta * GameBase.run_pitch.value;
+            angles[Constants.PITCH] += delta * GameBase.run_pitch.value;
 
             delta = Math3D.DotProduct(ent.velocity, right);
-            angles[Defines.ROLL] += delta * GameBase.run_roll.value;
+            angles[Constants.ROLL] += delta * GameBase.run_roll.value;
 
             // add angles based on bob
             delta = bobfracsin * GameBase.bob_pitch.value * xyspeed;
             if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
                 delta *= 6; // crouching
-            angles[Defines.PITCH] += delta;
+            angles[Constants.PITCH] += delta;
             delta = bobfracsin * GameBase.bob_roll.value * xyspeed;
             if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
                 delta *= 6; // crouching
             if ((bobcycle & 1) != 0)
                 delta = -delta;
-            angles[Defines.ROLL] += delta;
+            angles[Constants.ROLL] += delta;
         }
 
         // base origin
@@ -288,7 +289,7 @@ public class PlayerView {
 
         // add fall height
         ratio = (ent.client.fall_time - GameBase.level.time)
-                / Defines.FALL_TIME;
+                / Constants.FALL_TIME;
         if (ratio < 0)
             ratio = 0;
         v[2] -= ratio * ent.client.fall_value * 0.4;
@@ -332,14 +333,14 @@ public class PlayerView {
         float delta;
 
         // gun angles from bobbing
-        ent.client.ps.gunangles[Defines.ROLL] = xyspeed * bobfracsin * 0.005f;
-        ent.client.ps.gunangles[Defines.YAW] = xyspeed * bobfracsin * 0.01f;
+        ent.client.ps.gunangles[Constants.ROLL] = xyspeed * bobfracsin * 0.005f;
+        ent.client.ps.gunangles[Constants.YAW] = xyspeed * bobfracsin * 0.01f;
         if ((bobcycle & 1) != 0) {
-            ent.client.ps.gunangles[Defines.ROLL] = -ent.client.ps.gunangles[Defines.ROLL];
-            ent.client.ps.gunangles[Defines.YAW] = -ent.client.ps.gunangles[Defines.YAW];
+            ent.client.ps.gunangles[Constants.ROLL] = -ent.client.ps.gunangles[Constants.ROLL];
+            ent.client.ps.gunangles[Constants.YAW] = -ent.client.ps.gunangles[Constants.YAW];
         }
 
-        ent.client.ps.gunangles[Defines.PITCH] = xyspeed * bobfracsin * 0.005f;
+        ent.client.ps.gunangles[Constants.PITCH] = xyspeed * bobfracsin * 0.005f;
 
         // gun angles from delta movement
         for (i = 0; i < 3; i++) {
@@ -352,8 +353,8 @@ public class PlayerView {
                 delta = 45;
             if (delta < -45)
                 delta = -45;
-            if (i == Defines.YAW)
-                ent.client.ps.gunangles[Defines.ROLL] += 0.1 * delta;
+            if (i == Constants.YAW)
+                ent.client.ps.gunangles[Constants.ROLL] += 0.1 * delta;
             ent.client.ps.gunangles[i] += 0.2 * delta;
         }
 
@@ -399,49 +400,48 @@ public class PlayerView {
 
         // add for contents
         Math3D.VectorAdd(ent.s.origin, ent.client.ps.viewoffset, vieworg);
-        contents = GameBase.gi.pointcontents.pointcontents(vieworg);
-        if ((contents & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME | Defines.CONTENTS_WATER)) != 0)
-            ent.client.ps.rdflags |= Defines.RDF_UNDERWATER;
+        contents = GameBase.pointcontents.pointcontents(vieworg);
+        if ((contents & (Constants.CONTENTS_LAVA | Constants.CONTENTS_SLIME | Constants.CONTENTS_WATER)) != 0)
+            ent.client.ps.rdflags |= Constants.RDF_UNDERWATER;
         else
-            ent.client.ps.rdflags &= ~Defines.RDF_UNDERWATER;
+            ent.client.ps.rdflags &= ~Constants.RDF_UNDERWATER;
 
-        if ((contents & (Defines.CONTENTS_SOLID | Defines.CONTENTS_LAVA)) != 0)
+        if ((contents & (Constants.CONTENTS_SOLID | Constants.CONTENTS_LAVA)) != 0)
             SV_AddBlend(1.0f, 0.3f, 0.0f, 0.6f, ent.client.ps.blend);
-        else if ((contents & Defines.CONTENTS_SLIME) != 0)
+        else if ((contents & Constants.CONTENTS_SLIME) != 0)
             SV_AddBlend(0.0f, 0.1f, 0.05f, 0.6f, ent.client.ps.blend);
-        else if ((contents & Defines.CONTENTS_WATER) != 0)
+        else if ((contents & Constants.CONTENTS_WATER) != 0)
             SV_AddBlend(0.5f, 0.3f, 0.2f, 0.4f, ent.client.ps.blend);
 
         // add for powerups
         if (ent.client.quad_framenum > GameBase.level.framenum) {
             remaining = (int) (ent.client.quad_framenum - GameBase.level.framenum);
-            if (remaining == 30) // beginning to fade
-                GameBase.gi.sound(ent, Defines.CHAN_ITEM, 
-                	GameBase.gi.soundindex("items/damage2.wav"), 1, Defines.ATTN_NORM, 0);
+            if (remaining == 30)
+              ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/damage2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             if (remaining > 30 || (remaining & 4) != 0)
                 SV_AddBlend(0, 0, 1, 0.08f, ent.client.ps.blend);
         } else if (ent.client.invincible_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.invincible_framenum - GameBase.level.framenum;
-            if (remaining == 30) // beginning to fade
-                GameBase.gi.sound(ent, Defines.CHAN_ITEM, 
-                	GameBase.gi.soundindex("items/protect2.wav"), 1, Defines.ATTN_NORM, 0);
+            if (remaining == 30)
+              ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/protect2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             if (remaining > 30 || (remaining & 4) != 0)
                 SV_AddBlend(1, 1, 0, 0.08f, ent.client.ps.blend);
         } else if (ent.client.enviro_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.enviro_framenum
                     - GameBase.level.framenum;
-            if (remaining == 30) // beginning to fade
-                GameBase.gi.sound(ent, Defines.CHAN_ITEM, 
-                		GameBase.gi.soundindex("items/airout.wav"), 1, Defines.ATTN_NORM, 0);
+            if (remaining == 30)
+              ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/airout.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             if (remaining > 30 || (remaining & 4) != 0)
                 SV_AddBlend(0, 1, 0, 0.08f, ent.client.ps.blend);
         } else if (ent.client.breather_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.breather_framenum
                     - GameBase.level.framenum;
-            if (remaining == 30) // beginning to fade
-                GameBase.gi.sound(ent, Defines.CHAN_ITEM, GameBase.gi
-                        .soundindex("items/airout.wav"), 1, Defines.ATTN_NORM,
-                        0);
+            if (remaining == 30)
+              ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/airout.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             if (remaining > 30 || (remaining & 4) != 0)
                 SV_AddBlend(0.4f, 1, 0.4f, 0.04f, ent.client.ps.blend);
         }
@@ -478,7 +478,7 @@ public class PlayerView {
         if (ent.s.modelindex != 255)
             return; // not in the player model
 
-        if (ent.movetype == Defines.MOVETYPE_NOCLIP)
+        if (ent.movetype == Constants.MOVETYPE_NOCLIP)
             return;
 
         if ((ent.client.oldvelocity[2] < 0)
@@ -504,21 +504,21 @@ public class PlayerView {
             return;
 
         if (delta < 15) {
-            ent.s.event = Defines.EV_FOOTSTEP;
+            ent.s.event = Constants.EV_FOOTSTEP;
             return;
         }
 
         ent.client.fall_value = delta * 0.5f;
         if (ent.client.fall_value > 40)
             ent.client.fall_value = 40;
-        ent.client.fall_time = GameBase.level.time + Defines.FALL_TIME;
+        ent.client.fall_time = GameBase.level.time + Constants.FALL_TIME;
 
         if (delta > 30) {
             if (ent.health > 0) {
                 if (delta >= 55)
-                    ent.s.event = Defines.EV_FALLFAR;
+                    ent.s.event = Constants.EV_FALLFAR;
                 else
-                    ent.s.event = Defines.EV_FALL;
+                    ent.s.event = Constants.EV_FALL;
             }
             ent.pain_debounce_time = GameBase.level.time; // no normal pain
                                                           // sound
@@ -528,12 +528,12 @@ public class PlayerView {
             Math3D.VectorSet(dir, 0, 0, 1);
 
             if (GameBase.deathmatch.value == 0
-                    || 0 == ((int) GameBase.dmflags.value & Defines.DF_NO_FALLING))
+                    || 0 == ((int) GameBase.dmflags.value & Constants.DF_NO_FALLING))
                 GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                         GameBase.g_edicts[0], dir, ent.s.origin,
-                        Globals.vec3_origin, damage, 0, 0, Defines.MOD_FALLING);
+                        Globals.vec3_origin, damage, 0, 0, Constants.MOD_FALLING);
         } else {
-            ent.s.event = Defines.EV_FALLSHORT;
+            ent.s.event = Constants.EV_FALLSHORT;
             return;
         }
     }
@@ -546,7 +546,7 @@ public class PlayerView {
         boolean envirosuit;
         int waterlevel, old_waterlevel;
 
-        if (current_player.movetype == Defines.MOVETYPE_NOCLIP) {
+        if (current_player.movetype == Constants.MOVETYPE_NOCLIP) {
             current_player.air_finished = GameBase.level.time + 12; // don't
                                                                     // need air
             return;
@@ -564,20 +564,17 @@ public class PlayerView {
         //
         if (old_waterlevel == 0 && waterlevel != 0) {
             PlayerWeapon.PlayerNoise(current_player, current_player.s.origin,
-                    Defines.PNOISE_SELF);
-            if ((current_player.watertype & Defines.CONTENTS_LAVA) != 0)
-                GameBase.gi.sound(current_player, Defines.CHAN_BODY,
-                        GameBase.gi.soundindex("player/lava_in.wav"), 1,
-                        Defines.ATTN_NORM, 0);
-            else if ((current_player.watertype & Defines.CONTENTS_SLIME) != 0)
-                GameBase.gi.sound(current_player, Defines.CHAN_BODY,
-                        GameBase.gi.soundindex("player/watr_in.wav"), 1,
-                        Defines.ATTN_NORM, 0);
-            else if ((current_player.watertype & Defines.CONTENTS_WATER) != 0)
-                GameBase.gi.sound(current_player, Defines.CHAN_BODY,
-                        GameBase.gi.soundindex("player/watr_in.wav"), 1,
-                        Defines.ATTN_NORM, 0);
-            current_player.flags |= Defines.FL_INWATER;
+                    Constants.PNOISE_SELF);
+            if ((current_player.watertype & Constants.CONTENTS_LAVA) != 0)
+              ServerGame.PF_StartSound(current_player, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/lava_in.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
+            else if ((current_player.watertype & Constants.CONTENTS_SLIME) != 0)
+              ServerGame.PF_StartSound(current_player, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/watr_in.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
+            else if ((current_player.watertype & Constants.CONTENTS_WATER) != 0)
+              ServerGame.PF_StartSound(current_player, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/watr_in.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
+            current_player.flags |= Constants.FL_INWATER;
 
             // clear damage_debounce, so the pain sound will play immediately
             current_player.damage_debounce_time = GameBase.level.time - 1;
@@ -588,20 +585,18 @@ public class PlayerView {
         //
         if (old_waterlevel != 0 && waterlevel == 0) {
             PlayerWeapon.PlayerNoise(current_player, current_player.s.origin,
-                    Defines.PNOISE_SELF);
-            GameBase.gi
-                    .sound(current_player, Defines.CHAN_BODY, GameBase.gi
-                            .soundindex("player/watr_out.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-            current_player.flags &= ~Defines.FL_INWATER;
+                    Constants.PNOISE_SELF);
+            ServerGame.PF_StartSound(current_player, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/watr_out.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            current_player.flags &= ~Constants.FL_INWATER;
         }
 
         //
         // check for head just going under water
         //
         if (old_waterlevel != 3 && waterlevel == 3) {
-            GameBase.gi.sound(current_player, Defines.CHAN_BODY, GameBase.gi
-                    .soundindex("player/watr_un.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(current_player, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/watr_un.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
 
         //
@@ -610,17 +605,15 @@ public class PlayerView {
         if (old_waterlevel == 3 && waterlevel != 3) {
             if (current_player.air_finished < GameBase.level.time) { // gasp for
                                                                      // air
-                GameBase.gi.sound(current_player, Defines.CHAN_VOICE,
-                        GameBase.gi.soundindex("player/gasp1.wav"), 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(current_player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/gasp1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 PlayerWeapon.PlayerNoise(current_player, current_player.s.origin,
-                        Defines.PNOISE_SELF);
+                        Constants.PNOISE_SELF);
             } else if (current_player.air_finished < GameBase.level.time + 11) { // just
                                                                                  // break
                                                                                  // surface
-                GameBase.gi.sound(current_player, Defines.CHAN_VOICE,
-                        GameBase.gi.soundindex("player/gasp2.wav"), 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(current_player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/gasp2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             }
         }
 
@@ -634,16 +627,14 @@ public class PlayerView {
 
                 if (((int) (current_client.breather_framenum - GameBase.level.framenum) % 25) == 0) {
                     if (current_client.breather_sound == 0)
-                        GameBase.gi.sound(current_player, Defines.CHAN_AUTO,
-                                GameBase.gi.soundindex("player/u_breath1.wav"),
-                                1, Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(current_player, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("player/u_breath1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else
-                        GameBase.gi.sound(current_player, Defines.CHAN_AUTO,
-                                GameBase.gi.soundindex("player/u_breath2.wav"),
-                                1, Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(current_player, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("player/u_breath2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     current_client.breather_sound ^= 1;
                     PlayerWeapon.PlayerNoise(current_player,
-                            current_player.s.origin, Defines.PNOISE_SELF);
+                            current_player.s.origin, Constants.PNOISE_SELF);
                     //FIXME: release a bubble?
                 }
             }
@@ -661,25 +652,22 @@ public class PlayerView {
 
                     // play a gurp sound instead of a normal pain sound
                     if (current_player.health <= current_player.dmg)
-                        GameBase.gi.sound(current_player, Defines.CHAN_VOICE,
-                                GameBase.gi.soundindex("player/drown1.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(current_player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/drown1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else if ((Lib.rand() & 1) != 0)
-                        GameBase.gi.sound(current_player, Defines.CHAN_VOICE,
-                                GameBase.gi.soundindex("*gurp1.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(current_player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("*gurp1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else
-                        GameBase.gi.sound(current_player, Defines.CHAN_VOICE,
-                                GameBase.gi.soundindex("*gurp2.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(current_player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("*gurp2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
 
                     current_player.pain_debounce_time = GameBase.level.time;
 
                     GameCombat.T_Damage(current_player, GameBase.g_edicts[0],
                             GameBase.g_edicts[0], Globals.vec3_origin,
                             current_player.s.origin, Globals.vec3_origin,
-                            current_player.dmg, 0, Defines.DAMAGE_NO_ARMOR,
-                            Defines.MOD_WATER);
+                            current_player.dmg, 0, Constants.DAMAGE_NO_ARMOR,
+                            Constants.MOD_WATER);
                 }
             }
         } else {
@@ -691,19 +679,17 @@ public class PlayerView {
         // check for sizzle damage
         //
         if (waterlevel != 0
-                && 0 != (current_player.watertype & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME))) {
-            if ((current_player.watertype & Defines.CONTENTS_LAVA) != 0) {
+                && 0 != (current_player.watertype & (Constants.CONTENTS_LAVA | Constants.CONTENTS_SLIME))) {
+            if ((current_player.watertype & Constants.CONTENTS_LAVA) != 0) {
                 if (current_player.health > 0
                         && current_player.pain_debounce_time <= GameBase.level.time
                         && current_client.invincible_framenum < GameBase.level.framenum) {
                     if ((Lib.rand() & 1) != 0)
-                        GameBase.gi.sound(current_player, Defines.CHAN_VOICE,
-                                GameBase.gi.soundindex("player/burn1.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(current_player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/burn1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else
-                        GameBase.gi.sound(current_player, Defines.CHAN_VOICE,
-                                GameBase.gi.soundindex("player/burn2.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(current_player, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/burn2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     current_player.pain_debounce_time = GameBase.level.time + 1;
                 }
 
@@ -711,20 +697,20 @@ public class PlayerView {
                     GameCombat.T_Damage(current_player, GameBase.g_edicts[0],
                             GameBase.g_edicts[0], Globals.vec3_origin,
                             current_player.s.origin, Globals.vec3_origin,
-                            1 * waterlevel, 0, 0, Defines.MOD_LAVA);
+                            1 * waterlevel, 0, 0, Constants.MOD_LAVA);
                 else
                     GameCombat.T_Damage(current_player, GameBase.g_edicts[0],
                             GameBase.g_edicts[0], Globals.vec3_origin,
                             current_player.s.origin, Globals.vec3_origin,
-                            3 * waterlevel, 0, 0, Defines.MOD_LAVA);
+                            3 * waterlevel, 0, 0, Constants.MOD_LAVA);
             }
 
-            if ((current_player.watertype & Defines.CONTENTS_SLIME) != 0) {
+            if ((current_player.watertype & Constants.CONTENTS_SLIME) != 0) {
                 if (!envirosuit) { // no damage from slime with envirosuit
                     GameCombat.T_Damage(current_player, GameBase.g_edicts[0],
                             GameBase.g_edicts[0], Globals.vec3_origin,
                             current_player.s.origin, Globals.vec3_origin,
-                            1 * waterlevel, 0, 0, Defines.MOD_SLIME);
+                            1 * waterlevel, 0, 0, Constants.MOD_SLIME);
                 }
             }
         }
@@ -747,11 +733,11 @@ public class PlayerView {
 
         if (ent.powerarmor_time > GameBase.level.time) {
             pa_type = GameItems.PowerArmorType(ent);
-            if (pa_type == Defines.POWER_ARMOR_SCREEN) {
-                ent.s.effects |= Defines.EF_POWERSCREEN;
-            } else if (pa_type == Defines.POWER_ARMOR_SHIELD) {
-                ent.s.effects |= Defines.EF_COLOR_SHELL;
-                ent.s.renderfx |= Defines.RF_SHELL_GREEN;
+            if (pa_type == Constants.POWER_ARMOR_SCREEN) {
+                ent.s.effects |= Constants.EF_POWERSCREEN;
+            } else if (pa_type == Constants.POWER_ARMOR_SHIELD) {
+                ent.s.effects |= Constants.EF_COLOR_SHELL;
+                ent.s.renderfx |= Constants.RF_SHELL_GREEN;
             }
         }
 
@@ -759,20 +745,20 @@ public class PlayerView {
             remaining = (int) ent.client.quad_framenum
                     - GameBase.level.framenum;
             if (remaining > 30 || 0 != (remaining & 4))
-                ent.s.effects |= Defines.EF_QUAD;
+                ent.s.effects |= Constants.EF_QUAD;
         }
 
         if (ent.client.invincible_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.invincible_framenum
                     - GameBase.level.framenum;
             if (remaining > 30 || 0 != (remaining & 4))
-                ent.s.effects |= Defines.EF_PENT;
+                ent.s.effects |= Constants.EF_PENT;
         }
 
         // show cheaters!!!
-        if ((ent.flags & Defines.FL_GODMODE) != 0) {
-            ent.s.effects |= Defines.EF_COLOR_SHELL;
-            ent.s.renderfx |= (Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE);
+        if ((ent.flags & Constants.FL_GODMODE) != 0) {
+            ent.s.effects |= Constants.EF_COLOR_SHELL;
+            ent.s.renderfx |= (Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE);
         }
     }
 
@@ -787,7 +773,7 @@ public class PlayerView {
 
         if (ent.groundentity != null && xyspeed > 225) {
             if ((int) (current_client.bobtime + bobmove) != bobcycle)
-                ent.s.event = Defines.EV_FOOTSTEP;
+                ent.s.event = Constants.EV_FOOTSTEP;
         }
     }
 
@@ -809,8 +795,8 @@ public class PlayerView {
                 && ent.client.pers.helpchanged <= 3
                 && 0 == (GameBase.level.framenum & 63)) {
             ent.client.pers.helpchanged++;
-            GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                    .soundindex("misc/pc_up.wav"), 1, Defines.ATTN_STATIC, 0);
+            ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/pc_up.wav"), (float) 1, (float) Constants.ATTN_STATIC,
+            (float) 0);
         }
 
         if (ent.client.pers.weapon != null)
@@ -819,12 +805,12 @@ public class PlayerView {
             weap = "";
 
         if (ent.waterlevel != 0
-                && 0 != (ent.watertype & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME)))
+                && 0 != (ent.watertype & (Constants.CONTENTS_LAVA | Constants.CONTENTS_SLIME)))
             ent.s.sound = GameBase.snd_fry;
         else if (Lib.strcmp(weap, "weapon_railgun") == 0)
-            ent.s.sound = GameBase.gi.soundindex("weapons/rg_hum.wav");
+            ent.s.sound = ServerInit.SV_SoundIndex("weapons/rg_hum.wav");
         else if (Lib.strcmp(weap, "weapon_bfg") == 0)
-            ent.s.sound = GameBase.gi.soundindex("weapons/bfg_hum.wav");
+            ent.s.sound = ServerInit.SV_SoundIndex("weapons/bfg_hum.wav");
         else if (ent.client.weapon_sound != 0)
             ent.s.sound = ent.client.weapon_sound;
         else
@@ -857,19 +843,19 @@ public class PlayerView {
         boolean skip = false;
         // check for stand/duck and stop/go transitions
         if (duck != client.anim_duck
-                && client.anim_priority < Defines.ANIM_DEATH)
+                && client.anim_priority < Constants.ANIM_DEATH)
             skip = true;
 
         if (run != client.anim_run
-                && client.anim_priority == Defines.ANIM_BASIC)
+                && client.anim_priority == Constants.ANIM_BASIC)
             skip = true;
 
         if (null == ent.groundentity
-                && client.anim_priority <= Defines.ANIM_WAVE)
+                && client.anim_priority <= Constants.ANIM_WAVE)
             skip = true;
 
         if (!skip) {
-            if (client.anim_priority == Defines.ANIM_REVERSE) {
+            if (client.anim_priority == Constants.ANIM_REVERSE) {
                 if (ent.s.frame > client.anim_end) {
                     ent.s.frame--;
                     return;
@@ -879,12 +865,12 @@ public class PlayerView {
                 return;
             }
 
-            if (client.anim_priority == Defines.ANIM_DEATH)
+            if (client.anim_priority == Constants.ANIM_DEATH)
                 return; // stay there
-            if (client.anim_priority == Defines.ANIM_JUMP) {
+            if (client.anim_priority == Constants.ANIM_JUMP) {
                 if (null == ent.groundentity)
                     return; // stay there
-                ent.client.anim_priority = Defines.ANIM_WAVE;
+                ent.client.anim_priority = Constants.ANIM_WAVE;
                 ent.s.frame = MonsterPlayer.FRAME_jump3;
                 ent.client.anim_end = MonsterPlayer.FRAME_jump6;
                 return;
@@ -892,12 +878,12 @@ public class PlayerView {
         }
 
         // return to either a running or standing frame
-        client.anim_priority = Defines.ANIM_BASIC;
+        client.anim_priority = Constants.ANIM_BASIC;
         client.anim_duck = duck;
         client.anim_run = run;
 
         if (null == ent.groundentity) {
-            client.anim_priority = Defines.ANIM_JUMP;
+            client.anim_priority = Constants.ANIM_JUMP;
             if (ent.s.frame != MonsterPlayer.FRAME_jump2)
                 ent.s.frame = MonsterPlayer.FRAME_jump1;
             client.anim_end = MonsterPlayer.FRAME_jump2;
@@ -966,13 +952,13 @@ public class PlayerView {
         // set model angles from view angles so other things in
         // the world can tell which direction you are looking
         //
-        if (ent.client.v_angle[Defines.PITCH] > 180)
-            ent.s.angles[Defines.PITCH] = (-360 + ent.client.v_angle[Defines.PITCH]) / 3;
+        if (ent.client.v_angle[Constants.PITCH] > 180)
+            ent.s.angles[Constants.PITCH] = (-360 + ent.client.v_angle[Constants.PITCH]) / 3;
         else
-            ent.s.angles[Defines.PITCH] = ent.client.v_angle[Defines.PITCH] / 3;
-        ent.s.angles[Defines.YAW] = ent.client.v_angle[Defines.YAW];
-        ent.s.angles[Defines.ROLL] = 0;
-        ent.s.angles[Defines.ROLL] = SV_CalcRoll(ent.s.angles, ent.velocity) * 4;
+            ent.s.angles[Constants.PITCH] = ent.client.v_angle[Constants.PITCH] / 3;
+        ent.s.angles[Constants.YAW] = ent.client.v_angle[Constants.YAW];
+        ent.s.angles[Constants.ROLL] = 0;
+        ent.s.angles[Constants.ROLL] = SV_CalcRoll(ent.s.angles, ent.velocity) * 4;
 
         //
         // calculate speed and cycle to be used for
@@ -1046,7 +1032,7 @@ public class PlayerView {
         // if the scoreboard is up, update it
         if (ent.client.showscores && 0 == (GameBase.level.framenum & 31)) {
             PlayerHud.DeathmatchScoreboardMessage(ent, ent.enemy);
-            GameBase.gi.unicast(ent, false);
+            ServerGame.PF_Unicast(ent, false);
         }
     }
 

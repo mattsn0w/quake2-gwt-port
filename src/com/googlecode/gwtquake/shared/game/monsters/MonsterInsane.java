@@ -23,11 +23,14 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -612,8 +615,8 @@ public class MonsterInsane {
     static EntityThinkAdapter insane_fist = new EntityThinkAdapter() {
     	public String getID() { return "insane_fist"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_fist, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_fist, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -621,8 +624,8 @@ public class MonsterInsane {
     static EntityThinkAdapter insane_shake = new EntityThinkAdapter() {
     	public String getID() { return "insane_shake"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_shake, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_shake, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -630,8 +633,8 @@ public class MonsterInsane {
     static EntityThinkAdapter insane_moan = new EntityThinkAdapter() {
     	public String getID() { return "insane_moan"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_moan, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_moan, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -639,8 +642,8 @@ public class MonsterInsane {
     static EntityThinkAdapter insane_scream = new EntityThinkAdapter() {
     	public String getID() { return "insane_scream"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE,
-                    sound_scream[Lib.rand() % 8], 1, Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_scream[Lib.rand() % 8], (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -714,9 +717,8 @@ public class MonsterInsane {
                 l = 75;
             else
                 l = 100;
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, GameBase.gi
-                    .soundindex("player/male/pain" + l + "_" + r + ".wav"), 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/male/pain" + l + "_" + r + ".wav"), (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
 
             if (GameBase.skill.value == 3)
                 return; // no pain anims in nightmare
@@ -777,7 +779,7 @@ public class MonsterInsane {
             if ((self.spawnflags & 8) != 0) // If crucified
             {
                 self.monsterinfo.currentmove = insane_move_cross;
-                self.monsterinfo.aiflags |= Defines.AI_STAND_GROUND;
+                self.monsterinfo.aiflags |= Constants.AI_STAND_GROUND;
             }
             // If Hold_Ground and Crawl are set
             else if ((self.spawnflags & 4) != 0 && (self.spawnflags & 16) != 0)
@@ -794,15 +796,15 @@ public class MonsterInsane {
     	public String getID() { return "insane_dead"; }
         public boolean think(Entity self) {
             if ((self.spawnflags & 8) != 0) {
-                self.flags |= Defines.FL_FLY;
+                self.flags |= Constants.FL_FLY;
             } else {
                 Math3D.VectorSet(self.mins, -16, -16, -24);
                 Math3D.VectorSet(self.maxs, 16, 16, -8);
-                self.movetype = Defines.MOVETYPE_TOSS;
+                self.movetype = Constants.MOVETYPE_TOSS;
             }
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -814,32 +816,30 @@ public class MonsterInsane {
             int n;
 
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_IDLE, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_IDLE,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, GameBase.gi
-                    .soundindex("player/male/death" + ((Lib.rand() % 4) + 1)
-                            + ".wav"), 1, Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("player/male/death" + ((Lib.rand() % 4) + 1)
+            + ".wav"), (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
 
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
 
             if ((self.spawnflags & 8) != 0) {
                 insane_dead.think(self);
@@ -1241,22 +1241,21 @@ public class MonsterInsane {
             return;
         }
 
-        sound_fist = GameBase.gi.soundindex("insane/insane11.wav");
-        sound_shake = GameBase.gi.soundindex("insane/insane5.wav");
-        sound_moan = GameBase.gi.soundindex("insane/insane7.wav");
-        sound_scream[0] = GameBase.gi.soundindex("insane/insane1.wav");
-        sound_scream[1] = GameBase.gi.soundindex("insane/insane2.wav");
-        sound_scream[2] = GameBase.gi.soundindex("insane/insane3.wav");
-        sound_scream[3] = GameBase.gi.soundindex("insane/insane4.wav");
-        sound_scream[4] = GameBase.gi.soundindex("insane/insane6.wav");
-        sound_scream[5] = GameBase.gi.soundindex("insane/insane8.wav");
-        sound_scream[6] = GameBase.gi.soundindex("insane/insane9.wav");
-        sound_scream[7] = GameBase.gi.soundindex("insane/insane10.wav");
+        sound_fist = ServerInit.SV_SoundIndex("insane/insane11.wav");
+        sound_shake = ServerInit.SV_SoundIndex("insane/insane5.wav");
+        sound_moan = ServerInit.SV_SoundIndex("insane/insane7.wav");
+        sound_scream[0] = ServerInit.SV_SoundIndex("insane/insane1.wav");
+        sound_scream[1] = ServerInit.SV_SoundIndex("insane/insane2.wav");
+        sound_scream[2] = ServerInit.SV_SoundIndex("insane/insane3.wav");
+        sound_scream[3] = ServerInit.SV_SoundIndex("insane/insane4.wav");
+        sound_scream[4] = ServerInit.SV_SoundIndex("insane/insane6.wav");
+        sound_scream[5] = ServerInit.SV_SoundIndex("insane/insane8.wav");
+        sound_scream[6] = ServerInit.SV_SoundIndex("insane/insane9.wav");
+        sound_scream[7] = ServerInit.SV_SoundIndex("insane/insane10.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/insane/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/insane/tris.md2");
 
         Math3D.VectorSet(self.mins, -16, -16, -24);
         Math3D.VectorSet(self.maxs, 16, 16, 32);
@@ -1275,7 +1274,7 @@ public class MonsterInsane {
         self.monsterinfo.attack = null;
         self.monsterinfo.melee = null;
         self.monsterinfo.sight = null;
-        self.monsterinfo.aiflags |= Defines.AI_GOOD_GUY;
+        self.monsterinfo.aiflags |= Constants.AI_GOOD_GUY;
 
         // @@
         //	 self.s.skinnum = skin;
@@ -1283,10 +1282,10 @@ public class MonsterInsane {
         //	 if (skin > 12)
         //		 skin = 0;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         if ((self.spawnflags & 16) != 0) // Stand Ground
-            self.monsterinfo.aiflags |= Defines.AI_STAND_GROUND;
+            self.monsterinfo.aiflags |= Constants.AI_STAND_GROUND;
 
         self.monsterinfo.currentmove = insane_move_stand_normal;
 
@@ -1295,7 +1294,7 @@ public class MonsterInsane {
         {
             Math3D.VectorSet(self.mins, -16, 0, 0);
             Math3D.VectorSet(self.maxs, 16, 8, 32);
-            self.flags |= Defines.FL_NO_KNOCKBACK;
+            self.flags |= Constants.FL_NO_KNOCKBACK;
             GameAI.flymonster_start.think(self);
         } else {
             GameAI.walkmonster_start.think(self);

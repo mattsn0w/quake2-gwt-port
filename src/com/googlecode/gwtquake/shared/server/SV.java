@@ -25,7 +25,7 @@ package com.googlecode.gwtquake.shared.server;
 
 import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.Entity;
 import com.googlecode.gwtquake.shared.game.GameBase;
@@ -48,10 +48,9 @@ public final class SV {
         if (ent.clipmask != 0)
             mask = ent.clipmask;
         else
-            mask = Defines.MASK_SOLID;
+            mask = Constants.MASK_SOLID;
 
-        trace = GameBase.gi.trace(ent.s.origin, ent.mins, ent.maxs,
-                ent.s.origin, ent, mask);
+        trace = World.SV_Trace(ent.s.origin, ent.mins, ent.maxs, ent.s.origin, ent, mask);
 
         if (trace.startsolid)
             return GameBase.g_edicts;
@@ -89,7 +88,7 @@ public final class SV {
         ent.nextthink = 0;
 
         if (ent.think == null)
-            Com.Error(Defines.ERR_FATAL, "NULL ent.think");
+            Com.Error(Constants.ERR_FATAL, "NULL ent.think");
 
         ent.think.think(ent);
 
@@ -104,10 +103,10 @@ public final class SV {
 
         e2 = trace.ent;
 
-        if (e1.touch != null && e1.solid != Defines.SOLID_NOT)
+        if (e1.touch != null && e1.solid != Constants.SOLID_NOT)
             e1.touch.touch(e1, e2, trace.plane, trace.surface);
 
-        if (e2.touch != null && e2.solid != Defines.SOLID_NOT)
+        if (e2.touch != null && e2.solid != Constants.SOLID_NOT)
             e2.touch.touch(e2, e1, GameBase.dummyplane, null);
     }
     
@@ -150,8 +149,7 @@ public final class SV {
             for (i = 0; i < 3; i++)
                 end[i] = ent.s.origin[i] + time_left * ent.velocity[i];
 
-            trace = GameBase.gi.trace(ent.s.origin, ent.mins, ent.maxs, end,
-                    ent, mask);
+            trace = World.SV_Trace(ent.s.origin, ent.mins, ent.maxs, end, ent, mask);
 
             if (trace.allsolid) { // entity is trapped in another solid
                 Math3D.VectorCopy(Globals.vec3_origin, ent.velocity);
@@ -171,7 +169,7 @@ public final class SV {
 
             if (trace.plane.normal[2] > 0.7) {
                 blocked |= 1; // floor
-                if (hit.solid == Defines.SOLID_BSP) {
+                if (hit.solid == Constants.SOLID_BSP) {
                     ent.groundentity = hit;
                     ent.groundentity_linkcount = hit.linkcount;
                 }
@@ -248,7 +246,7 @@ public final class SV {
      */
     public static void SV_AddGravity(Entity ent) {
         ent.velocity[2] -= ent.gravity * GameBase.sv_gravity.value
-                * Defines.FRAMETIME;
+                * Constants.FRAMETIME;
     }
 
     /**
@@ -271,13 +269,12 @@ public final class SV {
             if (ent.clipmask != 0)
                 mask = ent.clipmask;
             else
-                mask = Defines.MASK_SOLID;
+                mask = Constants.MASK_SOLID;
 
-            trace = GameBase.gi
-                    .trace(start, ent.mins, ent.maxs, end, ent, mask);
+            trace = World.SV_Trace(start, ent.mins, ent.maxs, end, ent, mask);
 
             Math3D.VectorCopy(trace.endpos, ent.s.origin);
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
 
             retry = false;
             if (trace.fraction != 1.0) {
@@ -287,7 +284,7 @@ public final class SV {
                 if (!trace.ent.inuse && ent.inuse) {
                     // move the pusher back and try again
                     Math3D.VectorCopy(start, ent.s.origin);
-                    GameBase.gi.linkentity(ent);
+                    World.SV_LinkEdict(ent);
                     //goto retry;
                     retry = true;
                 }
@@ -347,14 +344,14 @@ public final class SV {
                 GameBase.pushed[GameBase.pushed_p].angles);
 
         if (pusher.client != null)
-            GameBase.pushed[GameBase.pushed_p].deltayaw = pusher.client.ps.pmove.delta_angles[Defines.YAW];
+            GameBase.pushed[GameBase.pushed_p].deltayaw = pusher.client.ps.pmove.delta_angles[Constants.YAW];
 
         GameBase.pushed_p++;
 
         //	   move the pusher to it's final position
         Math3D.VectorAdd(pusher.s.origin, move, pusher.s.origin);
         Math3D.VectorAdd(pusher.s.angles, amove, pusher.s.angles);
-        GameBase.gi.linkentity(pusher);
+        World.SV_LinkEdict(pusher);
 
         //	   see if any solid entities are inside the final position
 
@@ -363,10 +360,10 @@ public final class SV {
             check = GameBase.g_edicts[e];
             if (!check.inuse)
                 continue;
-            if (check.movetype == Defines.MOVETYPE_PUSH
-                    || check.movetype == Defines.MOVETYPE_STOP
-                    || check.movetype == Defines.MOVETYPE_NONE
-                    || check.movetype == Defines.MOVETYPE_NOCLIP)
+            if (check.movetype == Constants.MOVETYPE_PUSH
+                    || check.movetype == Constants.MOVETYPE_STOP
+                    || check.movetype == Constants.MOVETYPE_NONE
+                    || check.movetype == Constants.MOVETYPE_NOCLIP)
                 continue;
 
             if (check.area.prev == null)
@@ -388,7 +385,7 @@ public final class SV {
                     continue;
             }
 
-            if ((pusher.movetype == Defines.MOVETYPE_PUSH)
+            if ((pusher.movetype == Constants.MOVETYPE_PUSH)
                     || (check.groundentity == pusher)) {
                 // move this entity
                 GameBase.pushed[GameBase.pushed_p].ent = check;
@@ -401,7 +398,7 @@ public final class SV {
                 // try moving the contacted entity
                 Math3D.VectorAdd(check.s.origin, move, check.s.origin);
                 if (check.client != null) { // FIXME: doesn't rotate monsters?
-                    check.client.ps.pmove.delta_angles[Defines.YAW] += amove[Defines.YAW];
+                    check.client.ps.pmove.delta_angles[Constants.YAW] += amove[Constants.YAW];
                 }
 
                 // figure movement due to the pusher's amove
@@ -418,7 +415,7 @@ public final class SV {
 
                 block = SV_TestEntityPosition(check);
                 if (block == null) { // pushed ok
-                    GameBase.gi.linkentity(check);
+                    World.SV_LinkEdict(check);
                     // impact?
                     continue;
                 }
@@ -446,9 +443,9 @@ public final class SV {
                 Math3D.VectorCopy(p.origin, p.ent.s.origin);
                 Math3D.VectorCopy(p.angles, p.ent.s.angles);
                 if (p.ent.client != null) {
-                    p.ent.client.ps.pmove.delta_angles[Defines.YAW] = (short) p.deltayaw;
+                    p.ent.client.ps.pmove.delta_angles[Constants.YAW] = (short) p.deltayaw;
                 }
-                GameBase.gi.linkentity(p.ent);
+                World.SV_LinkEdict(p.ent);
             }
             return false;
         }
@@ -471,7 +468,7 @@ public final class SV {
         Entity part, mv;
 
         // if not a team captain, so movement will be handled elsewhere
-        if ((ent.flags & Defines.FL_TEAMSLAVE) != 0)
+        if ((ent.flags & Constants.FL_TEAMSLAVE) != 0)
             return;
 
         // make sure all team slaves can move before commiting
@@ -485,22 +482,22 @@ public final class SV {
                     || part.avelocity[1] != 0 || part.avelocity[2] != 0) { // object
                                                                            // is
                                                                            // moving
-                Math3D.VectorScale(part.velocity, Defines.FRAMETIME, move);
-                Math3D.VectorScale(part.avelocity, Defines.FRAMETIME, amove);
+                Math3D.VectorScale(part.velocity, Constants.FRAMETIME, move);
+                Math3D.VectorScale(part.avelocity, Constants.FRAMETIME, amove);
 
                 if (!SV_Push(part, move, amove))
                     break; // move was blocked
             }
         }
-        if (GameBase.pushed_p > Defines.MAX_EDICTS)
-            ServerGame.PF_error(Defines.ERR_FATAL,
+        if (GameBase.pushed_p > Constants.MAX_EDICTS)
+            ServerGame.PF_error(Constants.ERR_FATAL,
                     "pushed_p > &pushed[MAX_EDICTS], memory corrupted");
 
         if (part != null) {
             // the move failed, bump all nextthink times and back out moves
             for (mv = ent; mv != null; mv = mv.teamchain) {
                 if (mv.nextthink > 0)
-                    mv.nextthink += Defines.FRAMETIME;
+                    mv.nextthink += Constants.FRAMETIME;
             }
 
             // if the pusher has a "blocked" function, call it
@@ -531,12 +528,12 @@ public final class SV {
         if (!SV_RunThink(ent))
             return;
 
-        Math3D.VectorMA(ent.s.angles, Defines.FRAMETIME, ent.avelocity,
+        Math3D.VectorMA(ent.s.angles, Constants.FRAMETIME, ent.avelocity,
                 ent.s.angles);
-        Math3D.VectorMA(ent.s.origin, Defines.FRAMETIME, ent.velocity,
+        Math3D.VectorMA(ent.s.origin, Constants.FRAMETIME, ent.velocity,
                 ent.s.origin);
 
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     /**
@@ -556,7 +553,7 @@ public final class SV {
         SV_RunThink(ent);
 
         // if not a team captain, so movement will be handled elsewhere
-        if ((ent.flags & Defines.FL_TEAMSLAVE) != 0)
+        if ((ent.flags & Constants.FL_TEAMSLAVE) != 0)
             return;
 
         if (ent.velocity[2] > 0)
@@ -576,22 +573,22 @@ public final class SV {
         SV_CheckVelocity(ent);
 
         //	   add gravity
-        if (ent.movetype != Defines.MOVETYPE_FLY
-                && ent.movetype != Defines.MOVETYPE_FLYMISSILE)
+        if (ent.movetype != Constants.MOVETYPE_FLY
+                && ent.movetype != Constants.MOVETYPE_FLYMISSILE)
             SV_AddGravity(ent);
 
         //	   move angles
-        Math3D.VectorMA(ent.s.angles, Defines.FRAMETIME, ent.avelocity,
+        Math3D.VectorMA(ent.s.angles, Constants.FRAMETIME, ent.avelocity,
                 ent.s.angles);
 
         //	   move origin
-        Math3D.VectorScale(ent.velocity, Defines.FRAMETIME, move);
+        Math3D.VectorScale(ent.velocity, Constants.FRAMETIME, move);
         trace = SV_PushEntity(ent, move);
         if (!ent.inuse)
             return;
 
         if (trace.fraction < 1) {
-            if (ent.movetype == Defines.MOVETYPE_BOUNCE)
+            if (ent.movetype == Constants.MOVETYPE_BOUNCE)
                 backoff = 1.5f;
             else
                 backoff = 1;
@@ -602,7 +599,7 @@ public final class SV {
             // stop if on ground
             if (trace.plane.normal[2] > 0.7) {
                 if (ent.velocity[2] < 60
-                        || ent.movetype != Defines.MOVETYPE_BOUNCE) {
+                        || ent.movetype != Constants.MOVETYPE_BOUNCE) {
                     ent.groundentity = trace.ent;
                     ent.groundentity_linkcount = trace.ent.linkcount;
                     Math3D.VectorCopy(Globals.vec3_origin, ent.velocity);
@@ -615,9 +612,9 @@ public final class SV {
         }
 
         //	   check for water transition
-        wasinwater = (ent.watertype & Defines.MASK_WATER) != 0;
-        ent.watertype = GameBase.gi.pointcontents.pointcontents(ent.s.origin);
-        isinwater = (ent.watertype & Defines.MASK_WATER) != 0;
+        wasinwater = (ent.watertype & Constants.MASK_WATER) != 0;
+        ent.watertype = GameBase.pointcontents.pointcontents(ent.s.origin);
+        isinwater = (ent.watertype & Constants.MASK_WATER) != 0;
 
         if (isinwater)
             ent.waterlevel = 1;
@@ -625,16 +622,16 @@ public final class SV {
             ent.waterlevel = 0;
 
         if (!wasinwater && isinwater)
-            GameBase.gi.positioned_sound(old_origin, ent, Defines.CHAN_AUTO,
-                    GameBase.gi.soundindex("misc/h2ohit1.wav"), 1, 1, 0);
+          ServerSend.SV_StartSound(old_origin, ent, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/h2ohit1.wav"), (float) 1,
+          (float) 1, (float) 0);
         else if (wasinwater && !isinwater)
-            GameBase.gi.positioned_sound(ent.s.origin, ent, Defines.CHAN_AUTO,
-                    GameBase.gi.soundindex("misc/h2ohit1.wav"), 1, 1, 0);
+          ServerSend.SV_StartSound(ent.s.origin, ent, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/h2ohit1.wav"), (float) 1,
+          (float) 1, (float) 0);
 
         //	   move teamslaves
         for (slave = ent.teamchain; slave != null; slave = slave.teamchain) {
             Math3D.VectorCopy(ent.s.origin, slave.s.origin);
-            GameBase.gi.linkentity(slave);
+            World.SV_LinkEdict(slave);
         }
     }
 
@@ -644,10 +641,10 @@ public final class SV {
         int n;
         float adjustment;
 
-        Math3D.VectorMA(ent.s.angles, Defines.FRAMETIME, ent.avelocity,
+        Math3D.VectorMA(ent.s.angles, Constants.FRAMETIME, ent.avelocity,
                 ent.s.angles);
-        adjustment = Defines.FRAMETIME * Defines.sv_stopspeed
-                * Defines.sv_friction;
+        adjustment = Constants.FRAMETIME * Constants.sv_stopspeed
+                * Constants.sv_friction;
         for (n = 0; n < 3; n++) {
             if (ent.avelocity[n] > 0) {
                 ent.avelocity[n] -= adjustment;
@@ -700,8 +697,8 @@ public final class SV {
         //   flying monsters
         //   swimming monsters who are in the water
         if (!wasonground)
-            if (0 == (ent.flags & Defines.FL_FLY))
-                if (!((ent.flags & Defines.FL_SWIM) != 0 && (ent.waterlevel > 2))) {
+            if (0 == (ent.flags & Constants.FL_FLY))
+                if (!((ent.flags & Constants.FL_SWIM) != 0 && (ent.waterlevel > 2))) {
                     if (ent.velocity[2] < GameBase.sv_gravity.value * -0.1)
                         hitsound = true;
                     if (ent.waterlevel == 0)
@@ -709,12 +706,12 @@ public final class SV {
                 }
 
         // friction for flying monsters that have been given vertical velocity
-        if ((ent.flags & Defines.FL_FLY) != 0 && (ent.velocity[2] != 0)) {
+        if ((ent.flags & Constants.FL_FLY) != 0 && (ent.velocity[2] != 0)) {
             speed = Math.abs(ent.velocity[2]);
-            control = speed < Defines.sv_stopspeed ? Defines.sv_stopspeed
+            control = speed < Constants.sv_stopspeed ? Constants.sv_stopspeed
                     : speed;
-            friction = Defines.sv_friction / 3;
-            newspeed = speed - (Defines.FRAMETIME * control * friction);
+            friction = Constants.sv_friction / 3;
+            newspeed = speed - (Constants.FRAMETIME * control * friction);
             if (newspeed < 0)
                 newspeed = 0;
             newspeed /= speed;
@@ -722,12 +719,12 @@ public final class SV {
         }
 
         // friction for flying monsters that have been given vertical velocity
-        if ((ent.flags & Defines.FL_SWIM) != 0 && (ent.velocity[2] != 0)) {
+        if ((ent.flags & Constants.FL_SWIM) != 0 && (ent.velocity[2] != 0)) {
             speed = Math.abs(ent.velocity[2]);
-            control = speed < Defines.sv_stopspeed ? Defines.sv_stopspeed
+            control = speed < Constants.sv_stopspeed ? Constants.sv_stopspeed
                     : speed;
             newspeed = speed
-                    - (Defines.FRAMETIME * control * Defines.sv_waterfriction * ent.waterlevel);
+                    - (Constants.FRAMETIME * control * Constants.sv_waterfriction * ent.waterlevel);
             if (newspeed < 0)
                 newspeed = 0;
             newspeed /= speed;
@@ -739,17 +736,17 @@ public final class SV {
             // apply friction
             // let dead monsters who aren't completely onground slide
             if ((wasonground)
-                    || 0 != (ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)))
+                    || 0 != (ent.flags & (Constants.FL_SWIM | Constants.FL_FLY)))
                 if (!(ent.health <= 0.0 && !ClientMonsterMethods.M_CheckBottom(ent))) {
                     vel = ent.velocity;
                     speed = (float) Math
                             .sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
                     if (speed != 0) {
-                        friction = Defines.sv_friction;
+                        friction = Constants.sv_friction;
 
-                        control = speed < Defines.sv_stopspeed ? Defines.sv_stopspeed
+                        control = speed < Constants.sv_stopspeed ? Constants.sv_stopspeed
                                 : speed;
-                        newspeed = speed - Defines.FRAMETIME * control
+                        newspeed = speed - Constants.FRAMETIME * control
                                 * friction;
 
                         if (newspeed < 0)
@@ -761,14 +758,14 @@ public final class SV {
                     }
                 }
 
-            if ((ent.svflags & Defines.SVF_MONSTER) != 0)
-                mask = Defines.MASK_MONSTERSOLID;
+            if ((ent.svflags & Constants.SVF_MONSTER) != 0)
+                mask = Constants.MASK_MONSTERSOLID;
             else
-                mask = Defines.MASK_SOLID;
+                mask = Constants.MASK_SOLID;
 
-            SV_FlyMove(ent, Defines.FRAMETIME, mask);
+            SV_FlyMove(ent, Constants.FRAMETIME, mask);
 
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             GameBase.G_TouchTriggers(ent);
             if (!ent.inuse)
                 return;
@@ -776,8 +773,8 @@ public final class SV {
             if (ent.groundentity != null)
                 if (!wasonground)
                     if (hitsound)
-                        GameBase.gi.sound(ent, 0, 
-                        		GameBase.gi.soundindex("world/land.wav"), 1, 1, 0);
+                      ServerGame.PF_StartSound(ent, 0, ServerInit.SV_SoundIndex("world/land.wav"), (float) 1, (float) 1,
+                      (float) 0);
         }
 
         // regular thinking
@@ -810,7 +807,7 @@ public final class SV {
         Math3D.VectorAdd(ent.s.origin, move, neworg);
 
         //	   flying monsters don't step up
-        if ((ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)) != 0) {
+        if ((ent.flags & (Constants.FL_SWIM | Constants.FL_FLY)) != 0) {
             // try one move with vertical motion, then one without
             for (i = 0; i < 2; i++) {
                 Math3D.VectorAdd(ent.s.origin, move, neworg);
@@ -821,7 +818,7 @@ public final class SV {
                     if (ent.goalentity.client != null) {
                         if (dz > 40)
                             neworg[2] -= 8;
-                        if (!((ent.flags & Defines.FL_SWIM) != 0 && (ent.waterlevel < 2)))
+                        if (!((ent.flags & Constants.FL_SWIM) != 0 && (ent.waterlevel < 2)))
                             if (dz < 30)
                                 neworg[2] += 8;
                     } else {
@@ -835,29 +832,28 @@ public final class SV {
                             neworg[2] += dz;
                     }
                 }
-                trace = GameBase.gi.trace(ent.s.origin, ent.mins, ent.maxs,
-                        neworg, ent, Defines.MASK_MONSTERSOLID);
+                trace = World.SV_Trace(ent.s.origin, ent.mins, ent.maxs, neworg, ent, Constants.MASK_MONSTERSOLID);
 
                 // fly monsters don't enter water voluntarily
-                if ((ent.flags & Defines.FL_FLY) != 0) {
+                if ((ent.flags & Constants.FL_FLY) != 0) {
                     if (ent.waterlevel == 0) {
                         test[0] = trace.endpos[0];
                         test[1] = trace.endpos[1];
                         test[2] = trace.endpos[2] + ent.mins[2] + 1;
-                        contents = GameBase.gi.pointcontents.pointcontents(test);
-                        if ((contents & Defines.MASK_WATER) != 0)
+                        contents = GameBase.pointcontents.pointcontents(test);
+                        if ((contents & Constants.MASK_WATER) != 0)
                             return false;
                     }
                 }
 
                 // swim monsters don't exit water voluntarily
-                if ((ent.flags & Defines.FL_SWIM) != 0) {
+                if ((ent.flags & Constants.FL_SWIM) != 0) {
                     if (ent.waterlevel < 2) {
                         test[0] = trace.endpos[0];
                         test[1] = trace.endpos[1];
                         test[2] = trace.endpos[2] + ent.mins[2] + 1;
-                        contents = GameBase.gi.pointcontents.pointcontents(test);
-                        if ((contents & Defines.MASK_WATER) == 0)
+                        contents = GameBase.pointcontents.pointcontents(test);
+                        if ((contents & Constants.MASK_WATER) == 0)
                             return false;
                     }
                 }
@@ -865,7 +861,7 @@ public final class SV {
                 if (trace.fraction == 1) {
                     Math3D.VectorCopy(trace.endpos, ent.s.origin);
                     if (relink) {
-                        GameBase.gi.linkentity(ent);
+                        World.SV_LinkEdict(ent);
                         GameBase.G_TouchTriggers(ent);
                     }
                     return true;
@@ -879,7 +875,7 @@ public final class SV {
         }
 
         //	   push down from a step height above the wished position
-        if ((ent.monsterinfo.aiflags & Defines.AI_NOSTEP) == 0)
+        if ((ent.monsterinfo.aiflags & Constants.AI_NOSTEP) == 0)
             stepsize = GameBase.STEPSIZE;
         else
             stepsize = 1;
@@ -888,16 +884,14 @@ public final class SV {
         Math3D.VectorCopy(neworg, end);
         end[2] -= stepsize * 2;
 
-        trace = GameBase.gi.trace(neworg, ent.mins, ent.maxs, end, ent,
-                Defines.MASK_MONSTERSOLID);
+        trace = World.SV_Trace(neworg, ent.mins, ent.maxs, end, ent, Constants.MASK_MONSTERSOLID);
 
         if (trace.allsolid)
             return false;
 
         if (trace.startsolid) {
             neworg[2] -= stepsize;
-            trace = GameBase.gi.trace(neworg, ent.mins, ent.maxs, end, ent,
-                    Defines.MASK_MONSTERSOLID);
+            trace = World.SV_Trace(neworg, ent.mins, ent.maxs, end, ent, Constants.MASK_MONSTERSOLID);
             if (trace.allsolid || trace.startsolid)
                 return false;
         }
@@ -907,18 +901,18 @@ public final class SV {
             test[0] = trace.endpos[0];
             test[1] = trace.endpos[1];
             test[2] = trace.endpos[2] + ent.mins[2] + 1;
-            contents = GameBase.gi.pointcontents.pointcontents(test);
+            contents = GameBase.pointcontents.pointcontents(test);
 
-            if ((contents & Defines.MASK_WATER) != 0)
+            if ((contents & Constants.MASK_WATER) != 0)
                 return false;
         }
 
         if (trace.fraction == 1) {
             // if monster had the ground pulled out, go ahead and fall
-            if ((ent.flags & Defines.FL_PARTIALGROUND) != 0) {
+            if ((ent.flags & Constants.FL_PARTIALGROUND) != 0) {
                 Math3D.VectorAdd(ent.s.origin, move, ent.s.origin);
                 if (relink) {
-                    GameBase.gi.linkentity(ent);
+                    World.SV_LinkEdict(ent);
                     GameBase.G_TouchTriggers(ent);
                 }
                 ent.groundentity = null;
@@ -932,11 +926,11 @@ public final class SV {
         Math3D.VectorCopy(trace.endpos, ent.s.origin);
 
         if (!ClientMonsterMethods.M_CheckBottom(ent)) {
-            if ((ent.flags & Defines.FL_PARTIALGROUND) != 0) {
+            if ((ent.flags & Constants.FL_PARTIALGROUND) != 0) {
                 // entity had floor mostly pulled out from underneath it
                 // and is trying to correct
                 if (relink) {
-                    GameBase.gi.linkentity(ent);
+                    World.SV_LinkEdict(ent);
                     GameBase.G_TouchTriggers(ent);
                 }
                 return true;
@@ -945,15 +939,15 @@ public final class SV {
             return false;
         }
 
-        if ((ent.flags & Defines.FL_PARTIALGROUND) != 0) {
-            ent.flags &= ~Defines.FL_PARTIALGROUND;
+        if ((ent.flags & Constants.FL_PARTIALGROUND) != 0) {
+            ent.flags &= ~Constants.FL_PARTIALGROUND;
         }
         ent.groundentity = trace.ent;
         ent.groundentity_linkcount = trace.ent.linkcount;
 
         //	   the move is ok
         if (relink) {
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             GameBase.G_TouchTriggers(ent);
         }
         return true;
@@ -978,16 +972,16 @@ public final class SV {
 
         Math3D.VectorCopy(ent.s.origin, oldorigin);
         if (SV_movestep(ent, move, false)) {
-            delta = ent.s.angles[Defines.YAW] - ent.ideal_yaw;
+            delta = ent.s.angles[Constants.YAW] - ent.ideal_yaw;
             if (delta > 45 && delta < 315) { // not turned far enough, so don't
                                              // take the step
                 Math3D.VectorCopy(oldorigin, ent.s.origin);
             }
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             GameBase.G_TouchTriggers(ent);
             return true;
         }
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
         GameBase.G_TouchTriggers(ent);
         return false;
     }
@@ -997,7 +991,7 @@ public final class SV {
      * 
      */
     public static void SV_FixCheckBottom(Entity ent) {
-        ent.flags |= Defines.FL_PARTIALGROUND;
+        ent.flags |= Constants.FL_PARTIALGROUND;
     }
 
     public static void SV_NewChaseDir(Entity actor, Entity enemy, float dist) {

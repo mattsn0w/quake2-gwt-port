@@ -95,8 +95,8 @@ public class PlayerMovements {
         for (i = 0; i < 3; i++) {
             change = normal[i] * backoff;
             out[i] = in[i] - change;
-            if (out[i] > -Defines.MOVE_STOP_EPSILON
-                    && out[i] < Defines.MOVE_STOP_EPSILON)
+            if (out[i] > -Constants.MOVE_STOP_EPSILON
+                    && out[i] < Constants.MOVE_STOP_EPSILON)
                 out[i] = 0;
         }
     }
@@ -144,7 +144,7 @@ public class PlayerMovements {
                 break; // moved the entire distance
 
             // save entity for contact
-            if (pm.numtouch < Defines.MAXTOUCH && trace.ent != null) {
+            if (pm.numtouch < Constants.MAXTOUCH && trace.ent != null) {
                 pm.touchents[pm.numtouch] = trace.ent;
                 pm.numtouch++;
             }
@@ -226,7 +226,7 @@ public class PlayerMovements {
         Math3D.VectorCopy(pml.velocity, down_v);
 
         Math3D.VectorCopy(start_o, up);
-        up[2] += Defines.STEPSIZE;
+        up[2] += Constants.STEPSIZE;
 
         trace = pm.trace.trace(up, pm.mins, pm.maxs, up);
         if (trace.allsolid)
@@ -240,7 +240,7 @@ public class PlayerMovements {
 
         // push down the final amount
         Math3D.VectorCopy(pml.origin, down);
-        down[2] -= Defines.STEPSIZE;
+        down[2] -= Constants.STEPSIZE;
         trace = pm.trace.trace(pml.origin, pm.mins,
                 pm.maxs, down);
         if (!trace.allsolid) {
@@ -255,7 +255,7 @@ public class PlayerMovements {
         up_dist = (up[0] - start_o[0]) * (up[0] - start_o[0])
                 + (up[1] - start_o[1]) * (up[1] - start_o[1]);
 
-        if (down_dist > up_dist || trace.plane.normal[2] < Defines.MIN_STEP_NORMAL) {
+        if (down_dist > up_dist || trace.plane.normal[2] < Constants.MIN_STEP_NORMAL) {
             Math3D.VectorCopy(down_o, pml.origin);
             Math3D.VectorCopy(down_v, pml.velocity);
             return;
@@ -287,7 +287,7 @@ public class PlayerMovements {
 
         // apply ground friction
         if ((pm.groundentity != null && pml.groundsurface != null && 
-        		0 == (pml.groundsurface.flags & Defines.SURF_SLICK))
+        		0 == (pml.groundsurface.flags & Constants.SURF_SLICK))
                 || (pml.ladder)) {
             friction = pm_friction;
             control = speed < pm_stopspeed ? pm_stopspeed : speed;
@@ -363,10 +363,10 @@ public class PlayerMovements {
 
         // account for ladders
         if (pml.ladder && Math.abs(pml.velocity[2]) <= 200) {
-            if ((pm.viewangles[Defines.PITCH] <= -15)
+            if ((pm.viewangles[Constants.PITCH] <= -15)
                     && (pm.cmd.forwardmove > 0))
                 wishvel[2] = 200;
-            else if ((pm.viewangles[Defines.PITCH] >= 15)
+            else if ((pm.viewangles[Constants.PITCH] >= 15)
                     && (pm.cmd.forwardmove > 0))
                 wishvel[2] = -200;
             else if (pm.cmd.upmove > 0)
@@ -389,20 +389,20 @@ public class PlayerMovements {
         }
 
         // add water currents
-        if ((pm.watertype & Defines.MASK_CURRENT) != 0) {
+        if ((pm.watertype & Constants.MASK_CURRENT) != 0) {
             Math3D.VectorClear(v);
 
-            if ((pm.watertype & Defines.CONTENTS_CURRENT_0) != 0)
+            if ((pm.watertype & Constants.CONTENTS_CURRENT_0) != 0)
                 v[0] += 1;
-            if ((pm.watertype & Defines.CONTENTS_CURRENT_90) != 0)
+            if ((pm.watertype & Constants.CONTENTS_CURRENT_90) != 0)
                 v[1] += 1;
-            if ((pm.watertype & Defines.CONTENTS_CURRENT_180) != 0)
+            if ((pm.watertype & Constants.CONTENTS_CURRENT_180) != 0)
                 v[0] -= 1;
-            if ((pm.watertype & Defines.CONTENTS_CURRENT_270) != 0)
+            if ((pm.watertype & Constants.CONTENTS_CURRENT_270) != 0)
                 v[1] -= 1;
-            if ((pm.watertype & Defines.CONTENTS_CURRENT_UP) != 0)
+            if ((pm.watertype & Constants.CONTENTS_CURRENT_UP) != 0)
                 v[2] += 1;
-            if ((pm.watertype & Defines.CONTENTS_CURRENT_DOWN) != 0)
+            if ((pm.watertype & Constants.CONTENTS_CURRENT_DOWN) != 0)
                 v[2] -= 1;
 
             s = pm_waterspeed;
@@ -416,17 +416,17 @@ public class PlayerMovements {
         if (pm.groundentity != null) {
             Math3D.VectorClear(v);
 
-            if ((pml.groundcontents & Defines.CONTENTS_CURRENT_0) != 0)
+            if ((pml.groundcontents & Constants.CONTENTS_CURRENT_0) != 0)
                 v[0] += 1;
-            if ((pml.groundcontents & Defines.CONTENTS_CURRENT_90) != 0)
+            if ((pml.groundcontents & Constants.CONTENTS_CURRENT_90) != 0)
                 v[1] += 1;
-            if ((pml.groundcontents & Defines.CONTENTS_CURRENT_180) != 0)
+            if ((pml.groundcontents & Constants.CONTENTS_CURRENT_180) != 0)
                 v[0] -= 1;
-            if ((pml.groundcontents & Defines.CONTENTS_CURRENT_270) != 0)
+            if ((pml.groundcontents & Constants.CONTENTS_CURRENT_270) != 0)
                 v[1] -= 1;
-            if ((pml.groundcontents & Defines.CONTENTS_CURRENT_UP) != 0)
+            if ((pml.groundcontents & Constants.CONTENTS_CURRENT_UP) != 0)
                 v[2] += 1;
-            if ((pml.groundcontents & Defines.CONTENTS_CURRENT_DOWN) != 0)
+            if ((pml.groundcontents & Constants.CONTENTS_CURRENT_DOWN) != 0)
                 v[2] -= 1;
 
             Math3D.VectorMA(wishvel, 100 /* pm.groundentity.speed */, v, wishvel);
@@ -599,7 +599,7 @@ public class PlayerMovements {
                 }
             }
 
-            if (pm.numtouch < Defines.MAXTOUCH && trace.ent != null) {
+            if (pm.numtouch < Constants.MAXTOUCH && trace.ent != null) {
                 pm.touchents[pm.numtouch] = trace.ent;
                 pm.numtouch++;
             }
@@ -617,16 +617,16 @@ public class PlayerMovements {
         point[2] = pml.origin[2] + pm.mins[2] + 1;
         cont = pm.pointcontents.pointcontents(point);
 
-        if ((cont & Defines.MASK_WATER) != 0) {
+        if ((cont & Constants.MASK_WATER) != 0) {
             pm.watertype = cont;
             pm.waterlevel = 1;
             point[2] = pml.origin[2] + pm.mins[2] + sample1;
             cont = pm.pointcontents.pointcontents(point);
-            if ((cont & Defines.MASK_WATER) != 0) {
+            if ((cont & Constants.MASK_WATER) != 0) {
                 pm.waterlevel = 2;
                 point[2] = pml.origin[2] + pm.mins[2] + sample2;
                 cont = pm.pointcontents.pointcontents(point);
-                if ((cont & Defines.MASK_WATER) != 0)
+                if ((cont & Constants.MASK_WATER) != 0)
                     pm.waterlevel = 3;
             }
         }
@@ -651,7 +651,7 @@ public class PlayerMovements {
         if ((pm.s.pm_flags & PlayerMove.PMF_JUMP_HELD) != 0)
             return;
 
-        if (pm.s.pm_type == Defines.PM_DEAD)
+        if (pm.s.pm_type == Constants.PM_DEAD)
             return;
 
         if (pm.waterlevel >= 2) { // swimming, not jumping
@@ -660,9 +660,9 @@ public class PlayerMovements {
             if (pml.velocity[2] <= -300)
                 return;
 
-            if (pm.watertype == Defines.CONTENTS_WATER)
+            if (pm.watertype == Constants.CONTENTS_WATER)
                 pml.velocity[2] = 100;
-            else if (pm.watertype == Defines.CONTENTS_SLIME)
+            else if (pm.watertype == Constants.CONTENTS_SLIME)
                 pml.velocity[2] = 80;
             else
                 pml.velocity[2] = 50;
@@ -704,7 +704,7 @@ public class PlayerMovements {
         trace = pm.trace.trace(pml.origin, pm.mins,
                 pm.maxs, spot);
         if ((trace.fraction < 1)
-                && (trace.contents & Defines.CONTENTS_LADDER) != 0)
+                && (trace.contents & Constants.CONTENTS_LADDER) != 0)
             pml.ladder = true;
 
         // check for water jump
@@ -714,7 +714,7 @@ public class PlayerMovements {
         Math3D.VectorMA(pml.origin, 30, flatforward, spot);
         spot[2] += 4;
         cont = pm.pointcontents.pointcontents(spot);
-        if (0 == (cont & Defines.CONTENTS_SOLID))
+        if (0 == (cont & Constants.CONTENTS_SOLID))
             return;
 
         spot[2] += 16;
@@ -823,7 +823,7 @@ public class PlayerMovements {
         pm.maxs[0] = 16;
         pm.maxs[1] = 16;
 
-        if (pm.s.pm_type == Defines.PM_GIB) {
+        if (pm.s.pm_type == Constants.PM_GIB) {
             pm.mins[2] = 0;
             pm.maxs[2] = 16;
             pm.viewheight = 8;
@@ -832,7 +832,7 @@ public class PlayerMovements {
 
         pm.mins[2] = -24;
 
-        if (pm.s.pm_type == Defines.PM_DEAD) {
+        if (pm.s.pm_type == Constants.PM_DEAD) {
             pm.s.pm_flags |= PlayerMove.PMF_DUCKED;
         } else if (pm.cmd.upmove < 0 && (pm.s.pm_flags & PlayerMove.PMF_ON_GROUND) != 0) { // duck
             pm.s.pm_flags |= PlayerMove.PMF_DUCKED;
@@ -880,7 +880,7 @@ public class PlayerMovements {
         float[] origin = { 0, 0, 0 }, end = { 0, 0, 0 };
         int i;
 
-        if (pm.s.pm_type == Defines.PM_SPECTATOR)
+        if (pm.s.pm_type == Constants.PM_SPECTATOR)
             return true;
 
         for (i = 0; i < 3; i++)
@@ -970,11 +970,11 @@ public class PlayerMovements {
         int i;
 
         if ((pm.s.pm_flags & PlayerMove.PMF_TIME_TELEPORT) != 0) {
-            pm.viewangles[Defines.YAW] = Math3D
-                    .SHORT2ANGLE(pm.cmd.angles[Defines.YAW]
-                            + pm.s.delta_angles[Defines.YAW]);
-            pm.viewangles[Defines.PITCH] = 0;
-            pm.viewangles[Defines.ROLL] = 0;
+            pm.viewangles[Constants.YAW] = Math3D
+                    .SHORT2ANGLE(pm.cmd.angles[Constants.YAW]
+                            + pm.s.delta_angles[Constants.YAW]);
+            pm.viewangles[Constants.PITCH] = 0;
+            pm.viewangles[Constants.ROLL] = 0;
         } else {
             // circularly clamp the angles with deltas
             for (i = 0; i < 3; i++) {
@@ -983,10 +983,10 @@ public class PlayerMovements {
             }
 
             // don't let the player look up or down more than 90 degrees
-            if (pm.viewangles[Defines.PITCH] > 89 && pm.viewangles[Defines.PITCH] < 180)
-                pm.viewangles[Defines.PITCH] = 89;
-            else if (pm.viewangles[Defines.PITCH] < 271 && pm.viewangles[Defines.PITCH] >= 180)
-                pm.viewangles[Defines.PITCH] = 271;
+            if (pm.viewangles[Constants.PITCH] > 89 && pm.viewangles[Constants.PITCH] < 180)
+                pm.viewangles[Constants.PITCH] = 89;
+            else if (pm.viewangles[Constants.PITCH] < 271 && pm.viewangles[Constants.PITCH] >= 180)
+                pm.viewangles[Constants.PITCH] = 271;
         }
         Math3D.AngleVectors(pm.viewangles, pml.forward, pml.right, pml.up);
     }
@@ -1024,19 +1024,19 @@ public class PlayerMovements {
 
         PM_ClampAngles();
 
-        if (pm.s.pm_type == Defines.PM_SPECTATOR) {
+        if (pm.s.pm_type == Constants.PM_SPECTATOR) {
             PM_FlyMove(false);
             PM_SnapPosition();
             return;
         }
 
-        if (pm.s.pm_type >= Defines.PM_DEAD) {
+        if (pm.s.pm_type >= Constants.PM_DEAD) {
             pm.cmd.forwardmove = 0;
             pm.cmd.sidemove = 0;
             pm.cmd.upmove = 0;
         }
 
-        if (pm.s.pm_type == Defines.PM_FREEZE)
+        if (pm.s.pm_type == Constants.PM_FREEZE)
             return; // no movement at all
 
         // set mins, maxs, and viewheight
@@ -1048,7 +1048,7 @@ public class PlayerMovements {
         // set groundentity, watertype, and waterlevel
         PM_CatagorizePosition();
 
-        if (pm.s.pm_type == Defines.PM_DEAD)
+        if (pm.s.pm_type == Constants.PM_DEAD)
             PM_DeadMove();
 
         PM_CheckSpecialMovement();
@@ -1094,10 +1094,10 @@ public class PlayerMovements {
 
                 Math3D.VectorCopy(pm.viewangles, angles);
                 
-                if (angles[Defines.PITCH] > 180)
-                    angles[Defines.PITCH] = angles[Defines.PITCH] - 360;
+                if (angles[Constants.PITCH] > 180)
+                    angles[Constants.PITCH] = angles[Constants.PITCH] - 360;
                 
-                angles[Defines.PITCH] /= 3;
+                angles[Constants.PITCH] /= 3;
 
                 Math3D.AngleVectors(angles, pml.forward, pml.right, pml.up);
 

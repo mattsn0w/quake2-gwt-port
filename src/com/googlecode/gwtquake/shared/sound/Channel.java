@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.sound;
 
-import static com.googlecode.gwtquake.shared.common.Defines.ca_active;
+import static com.googlecode.gwtquake.shared.common.Constants.ca_active;
 
 
 import java.nio.ByteBuffer;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 import com.googlecode.gwtquake.shared.client.ClientEntities;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.EntityState;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -368,7 +368,7 @@ public class Channel {
 		int sound = 0;
 
 		for (int i=0 ; i < Globals.cl.frame.num_entities ; i++) {
-			num = (Globals.cl.frame.parse_entities + i)&(Defines.MAX_PARSE_ENTITIES-1);
+			num = (Globals.cl.frame.parse_entities + i)&(Constants.MAX_PARSE_ENTITIES-1);
 			ent = Globals.cl_parse_entities[num];
 			sound = ent.sound;
 

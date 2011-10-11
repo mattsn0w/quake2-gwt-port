@@ -23,13 +23,16 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -648,11 +651,11 @@ public class MonsterChick {
     	public String getID() { return "ChickMoan"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle1, 1,
-                        Defines.ATTN_IDLE, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_idle1, (float) 1, (float) Constants.ATTN_IDLE,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle2, 1,
-                        Defines.ATTN_IDLE, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_idle2, (float) 1, (float) Constants.ATTN_IDLE,
+              (float) 0);
             return true;
         }
     };
@@ -703,7 +706,7 @@ public class MonsterChick {
     static EntityThinkAdapter chick_fidget = new EntityThinkAdapter() {
     	public String getID() { return "chick_fidget"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 return true;
             if (Lib.random() <= 0.3)
                 self.monsterinfo.currentmove = chick_move_fidget;
@@ -749,7 +752,7 @@ public class MonsterChick {
     static EntityThinkAdapter chick_run = new EntityThinkAdapter() {
     	public String getID() { return "chick_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0) {
                 self.monsterinfo.currentmove = chick_move_stand;
                 return true;
             }
@@ -878,14 +881,14 @@ public class MonsterChick {
 
             r = Lib.random();
             if (r < 0.33)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else if (r < 0.66)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain3, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain3, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
 
             if (GameBase.skill.value == 3)
                 return; // no pain anims in nightmare
@@ -905,10 +908,10 @@ public class MonsterChick {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, 0);
             Math3D.VectorSet(self.maxs, 16, 16, 16);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -967,39 +970,37 @@ public class MonsterChick {
 
             //		   check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             //		   regular death
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
 
             n = Lib.rand() % 2;
             if (n == 0) {
                 self.monsterinfo.currentmove = chick_move_death1;
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             } else {
                 self.monsterinfo.currentmove = chick_move_death2;
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death2, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death2, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             }
         }
 
@@ -1008,13 +1009,13 @@ public class MonsterChick {
     static EntityThinkAdapter chick_duck_down = new EntityThinkAdapter() {
     	public String getID() { return "chick_duck_down"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_DUCKED) != 0)
                 return true;
-            self.monsterinfo.aiflags |= Defines.AI_DUCKED;
+            self.monsterinfo.aiflags |= Constants.AI_DUCKED;
             self.maxs[2] -= 32;
-            self.takedamage = Defines.DAMAGE_YES;
+            self.takedamage = Constants.DAMAGE_YES;
             self.monsterinfo.pausetime = GameBase.level.time + 1;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -1023,9 +1024,9 @@ public class MonsterChick {
     	public String getID() { return "chick_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
-                self.monsterinfo.aiflags &= ~Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags &= ~Constants.AI_HOLD_FRAME;
             else
-                self.monsterinfo.aiflags |= Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags |= Constants.AI_HOLD_FRAME;
             return true;
         }
     };
@@ -1033,10 +1034,10 @@ public class MonsterChick {
     static EntityThinkAdapter chick_duck_up = new EntityThinkAdapter() {
     	public String getID() { return "chick_duck_up"; }
         public boolean think(Entity self) {
-            self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
+            self.monsterinfo.aiflags &= ~Constants.AI_DUCKED;
             self.maxs[2] += 32;
-            self.takedamage = Defines.DAMAGE_AIM;
-            GameBase.gi.linkentity(self);
+            self.takedamage = Constants.DAMAGE_AIM;
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -1072,9 +1073,9 @@ public class MonsterChick {
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], 10);
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_melee_swing, 1,
-                    Defines.ATTN_NORM, 0);
+            Math3D.VectorSet(aim, Constants.MELEE_DISTANCE, self.mins[0], 10);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_melee_swing, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             GameWeapon.fire_hit(self, aim, (10 + (Lib.rand() % 6)), 100);
             return true;
         }
@@ -1090,7 +1091,7 @@ public class MonsterChick {
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_CHICK_ROCKET_1],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_CHICK_ROCKET_1],
                     forward, right, start);
 
             Math3D.VectorCopy(self.enemy.s.origin, vec);
@@ -1099,7 +1100,7 @@ public class MonsterChick {
             Math3D.VectorNormalize(dir);
 
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
-                    Defines.MZ2_CHICK_ROCKET_1);
+                    Constants.MZ2_CHICK_ROCKET_1);
             return true;
         }
     };
@@ -1107,8 +1108,8 @@ public class MonsterChick {
     static EntityThinkAdapter Chick_PreAttack1 = new EntityThinkAdapter() {
     	public String getID() { return "Chick_PreAttack1"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE,
-                    sound_missile_prelaunch, 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_missile_prelaunch, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1116,8 +1117,8 @@ public class MonsterChick {
     static EntityThinkAdapter ChickReload = new EntityThinkAdapter() {
     	public String getID() { return "ChickReload"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_missile_reload,
-                    1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_missile_reload, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1134,7 +1135,7 @@ public class MonsterChick {
     	public String getID() { return "chick_rerocket"; }
         public boolean think(Entity self) {
             if (self.enemy.health > 0) {
-                if (GameUtil.range(self, self.enemy) > Defines.RANGE_MELEE)
+                if (GameUtil.range(self, self.enemy) > Constants.RANGE_MELEE)
                     if (GameUtil.visible(self, self.enemy))
                         if (Lib.random() <= 0.6) {
                             self.monsterinfo.currentmove = chick_move_attack1;
@@ -1197,7 +1198,7 @@ public class MonsterChick {
     	public String getID() { return "chick_reslash"; }
         public boolean think(Entity self) {
             if (self.enemy.health > 0) {
-                if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)
+                if (GameUtil.range(self, self.enemy) == Constants.RANGE_MELEE)
                     if (Lib.random() <= 0.9) {
                         self.monsterinfo.currentmove = chick_move_slash;
                         return true;
@@ -1269,8 +1270,8 @@ public class MonsterChick {
     static EntInteractAdapter chick_sight = new EntInteractAdapter() {
     	public String getID() { return "chick_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -1285,26 +1286,25 @@ public class MonsterChick {
             return;
         }
 
-        sound_missile_prelaunch = GameBase.gi.soundindex("chick/chkatck1.wav");
-        sound_missile_launch = GameBase.gi.soundindex("chick/chkatck2.wav");
-        sound_melee_swing = GameBase.gi.soundindex("chick/chkatck3.wav");
-        sound_melee_hit = GameBase.gi.soundindex("chick/chkatck4.wav");
-        sound_missile_reload = GameBase.gi.soundindex("chick/chkatck5.wav");
-        sound_death1 = GameBase.gi.soundindex("chick/chkdeth1.wav");
-        sound_death2 = GameBase.gi.soundindex("chick/chkdeth2.wav");
-        sound_fall_down = GameBase.gi.soundindex("chick/chkfall1.wav");
-        sound_idle1 = GameBase.gi.soundindex("chick/chkidle1.wav");
-        sound_idle2 = GameBase.gi.soundindex("chick/chkidle2.wav");
-        sound_pain1 = GameBase.gi.soundindex("chick/chkpain1.wav");
-        sound_pain2 = GameBase.gi.soundindex("chick/chkpain2.wav");
-        sound_pain3 = GameBase.gi.soundindex("chick/chkpain3.wav");
-        sound_sight = GameBase.gi.soundindex("chick/chksght1.wav");
-        sound_search = GameBase.gi.soundindex("chick/chksrch1.wav");
+        sound_missile_prelaunch = ServerInit.SV_SoundIndex("chick/chkatck1.wav");
+        sound_missile_launch = ServerInit.SV_SoundIndex("chick/chkatck2.wav");
+        sound_melee_swing = ServerInit.SV_SoundIndex("chick/chkatck3.wav");
+        sound_melee_hit = ServerInit.SV_SoundIndex("chick/chkatck4.wav");
+        sound_missile_reload = ServerInit.SV_SoundIndex("chick/chkatck5.wav");
+        sound_death1 = ServerInit.SV_SoundIndex("chick/chkdeth1.wav");
+        sound_death2 = ServerInit.SV_SoundIndex("chick/chkdeth2.wav");
+        sound_fall_down = ServerInit.SV_SoundIndex("chick/chkfall1.wav");
+        sound_idle1 = ServerInit.SV_SoundIndex("chick/chkidle1.wav");
+        sound_idle2 = ServerInit.SV_SoundIndex("chick/chkidle2.wav");
+        sound_pain1 = ServerInit.SV_SoundIndex("chick/chkpain1.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("chick/chkpain2.wav");
+        sound_pain3 = ServerInit.SV_SoundIndex("chick/chkpain3.wav");
+        sound_sight = ServerInit.SV_SoundIndex("chick/chksght1.wav");
+        sound_search = ServerInit.SV_SoundIndex("chick/chksrch1.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/bitch/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/bitch/tris.md2");
         Math3D.VectorSet(self.mins, -16, -16, 0);
         Math3D.VectorSet(self.maxs, 16, 16, 56);
 
@@ -1323,7 +1323,7 @@ public class MonsterChick {
         self.monsterinfo.melee = chick_melee;
         self.monsterinfo.sight = chick_sight;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = chick_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;

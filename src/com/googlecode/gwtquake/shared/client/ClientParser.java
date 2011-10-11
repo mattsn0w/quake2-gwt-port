@@ -31,7 +31,7 @@ import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.CommandBuffer;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
@@ -116,12 +116,12 @@ public class ClientParser {
 
             // give the server an offset to start the download
             Com.Printf("Resuming " + Globals.cls.downloadname + "\n");
-            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
             Buffer.WriteString(Globals.cls.netchan.message, "download "
                     + Globals.cls.downloadname + " " + len);
         } else {
             Com.Printf("Downloading " + Globals.cls.downloadname + "\n");
-            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
             Buffer.WriteString(Globals.cls.netchan.message, "download "
                     + Globals.cls.downloadname);
         }
@@ -168,7 +168,7 @@ public class ClientParser {
                     .StripExtension(Globals.cls.downloadname);
             Globals.cls.downloadtempname += ".tmp";
 
-            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
             Buffer.WriteString(Globals.cls.netchan.message, "download "
                     + Globals.cls.downloadname);
 
@@ -182,15 +182,15 @@ public class ClientParser {
     public static void RegisterSounds() {
         Sound.BeginRegistration();
         ClientTent.RegisterTEntSounds();
-        for (int i = 1; i < Defines.MAX_SOUNDS; i++) {
-            if (Globals.cl.configstrings[Defines.CS_SOUNDS + i] == null
-                    || Globals.cl.configstrings[Defines.CS_SOUNDS + i]
+        for (int i = 1; i < Constants.MAX_SOUNDS; i++) {
+            if (Globals.cl.configstrings[Constants.CS_SOUNDS + i] == null
+                    || Globals.cl.configstrings[Constants.CS_SOUNDS + i]
                             .equals("")
-                    || Globals.cl.configstrings[Defines.CS_SOUNDS + i]
+                    || Globals.cl.configstrings[Constants.CS_SOUNDS + i]
                             .equals("\0"))
                 break;
             Globals.cl.sound_precache[i] = Sound
-                    .RegisterSound(Globals.cl.configstrings[Defines.CS_SOUNDS
+                    .RegisterSound(Globals.cl.configstrings[Constants.CS_SOUNDS
                             + i]);
             Sys.SendKeyEvents(); // pump message loop
         }
@@ -251,7 +251,7 @@ public class ClientParser {
             // request next block
             //	   change display routines by zoid
             Globals.cls.downloadpercent = percent;
-            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
             Buffer.Print(Globals.cls.netchan.message, "nextdl");
         } else {
             String oldn, newn;
@@ -302,17 +302,17 @@ public class ClientParser {
         //	   wipe the client_state_t struct
         //
         Client.clearState();
-        Globals.cls.state = Defines.ca_connected;
+        Globals.cls.state = Constants.ca_connected;
 
         //	   parse protocol version number
         i = Buffer.ReadLong(Globals.net_message);
         Globals.cls.serverProtocol = i;
 
         // BIG HACK to let demos from release work with the 3.0x patch!!!
-        if (Globals.server_state != 0 && Defines.PROTOCOL_VERSION == 34) {
-        } else if (i != Defines.PROTOCOL_VERSION)
-            Com.Error(Defines.ERR_DROP, "Server returned version " + i
-                    + ", not " + Defines.PROTOCOL_VERSION);
+        if (Globals.server_state != 0 && Constants.PROTOCOL_VERSION == 34) {
+        } else if (i != Constants.PROTOCOL_VERSION)
+            Com.Error(Constants.ERR_DROP, "Server returned version " + i
+                    + ", not " + Constants.PROTOCOL_VERSION);
 
         Globals.cl.servercount = Buffer.ReadLong(Globals.net_message);
         Globals.cl.attractloop = Buffer.ReadByte(Globals.net_message) != 0;
@@ -378,7 +378,7 @@ public class ClientParser {
         int t;
 
         String model_name, skin_name, model_filename, skin_filename;
-        String[] weapon_filenames = new String[Defines.MAX_CLIENTWEAPONMODELS];
+        String[] weapon_filenames = new String[Constants.MAX_CLIENTWEAPONMODELS];
         int num_weapon_filenames = 0;
 
         ci.cinfo = s;
@@ -412,7 +412,7 @@ public class ClientParser {
                 pos = s.indexOf('/');
             if (pos == -1) {
                 pos = 0;
-                Com.Error(Defines.ERR_FATAL, "Invalid model name:" + s);
+                Com.Error(Constants.ERR_FATAL, "Invalid model name:" + s);
             }
 
             model_name = s.substring(0, pos);
@@ -489,7 +489,7 @@ public class ClientParser {
           }
         });
 
-        ci.weaponmodel = new RendererModel[Defines.MAX_CLIENTWEAPONMODELS];
+        ci.weaponmodel = new RendererModel[Constants.MAX_CLIENTWEAPONMODELS];
         for (i = 0; i < num_weapon_filenames; ++i) {
           loadWeaponModel(ci, i, weapon_filenames[i]);
         }
@@ -524,7 +524,7 @@ public class ClientParser {
      * Load the skin, icon, and model for a client ================
      */
     public static void ParseClientinfo(int player) {
-        String s = Globals.cl.configstrings[player + Defines.CS_PLAYERSKINS];
+        String s = Globals.cl.configstrings[player + Constants.CS_PLAYERSKINS];
 
         ClientInfo ci = Globals.cl.clientinfo[player];
 
@@ -537,8 +537,8 @@ public class ClientParser {
     public static void ParseConfigString() {
         int i = Buffer.ReadShort(Globals.net_message);
 
-        if (i < 0 || i >= Defines.MAX_CONFIGSTRINGS)
-            Com.Error(Defines.ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
+        if (i < 0 || i >= Constants.MAX_CONFIGSTRINGS)
+            Com.Error(Constants.ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
 
         String s = Buffer.ReadString(Globals.net_message);
 
@@ -549,10 +549,10 @@ public class ClientParser {
 
         // do something apropriate
 
-        if (i >= Defines.CS_LIGHTS
-                && i < Defines.CS_LIGHTS + Defines.MAX_LIGHTSTYLES) {
-            ClientEffects.SetLightstyle(i - Defines.CS_LIGHTS);
-        } else if (i >= Defines.CS_MODELS && i < Defines.CS_MODELS + Defines.MAX_MODELS) {
+        if (i >= Constants.CS_LIGHTS
+                && i < Constants.CS_LIGHTS + Constants.MAX_LIGHTSTYLES) {
+            ClientEffects.SetLightstyle(i - Constants.CS_LIGHTS);
+        } else if (i >= Constants.CS_MODELS && i < Constants.CS_MODELS + Constants.MAX_MODELS) {
             if (Globals.cl.refresh_prepped) {
                 // TODO(jgw): It looks to be oimpossible that an inline bsp model ("*1", etc)
                 // could show up here referencing anything except the main bsp, which should
@@ -561,7 +561,7 @@ public class ClientParser {
                 final int model_draw_index = i;
                 Globals.re.RegisterModel(Globals.cl.configstrings[i], new AsyncCallback<RendererModel>() {
                   public void onSuccess(RendererModel response) {
-                    Globals.cl.model_draw[model_draw_index - Defines.CS_MODELS] = response;
+                    Globals.cl.model_draw[model_draw_index - Constants.CS_MODELS] = response;
                   }
 
                   public void onFailure(Throwable e) {
@@ -570,24 +570,24 @@ public class ClientParser {
                 });
 
                 if (Globals.cl.configstrings[i].startsWith("*"))
-                    Globals.cl.model_clip[i - Defines.CS_MODELS] = CM.InlineModel(Globals.cl.configstrings[i]);
+                    Globals.cl.model_clip[i - Constants.CS_MODELS] = CM.InlineModel(Globals.cl.configstrings[i]);
                 else
-                    Globals.cl.model_clip[i - Defines.CS_MODELS] = null;
+                    Globals.cl.model_clip[i - Constants.CS_MODELS] = null;
             }
-        } else if (i >= Defines.CS_SOUNDS
-                && i < Defines.CS_SOUNDS + Defines.MAX_MODELS) {
+        } else if (i >= Constants.CS_SOUNDS
+                && i < Constants.CS_SOUNDS + Constants.MAX_MODELS) {
 //            if (Globals.cl.refresh_prepped)
-                Globals.cl.sound_precache[i - Defines.CS_SOUNDS] = Sound
+                Globals.cl.sound_precache[i - Constants.CS_SOUNDS] = Sound
                         .RegisterSound(Globals.cl.configstrings[i]);
-        } else if (i >= Defines.CS_IMAGES
-                && i < Defines.CS_IMAGES + Defines.MAX_MODELS) {
+        } else if (i >= Constants.CS_IMAGES
+                && i < Constants.CS_IMAGES + Constants.MAX_MODELS) {
             if (Globals.cl.refresh_prepped)
-                Globals.cl.image_precache[i - Defines.CS_IMAGES] = Globals.re
+                Globals.cl.image_precache[i - Constants.CS_IMAGES] = Globals.re
                         .RegisterPic(Globals.cl.configstrings[i]);
-        } else if (i >= Defines.CS_PLAYERSKINS
-                && i < Defines.CS_PLAYERSKINS + Defines.MAX_CLIENTS) {
+        } else if (i >= Constants.CS_PLAYERSKINS
+                && i < Constants.CS_PLAYERSKINS + Constants.MAX_CLIENTS) {
             if (Globals.cl.refresh_prepped && !olds.equals(s))
-                ParseClientinfo(i - Defines.CS_PLAYERSKINS);
+                ParseClientinfo(i - Constants.CS_PLAYERSKINS);
         }
     }
 
@@ -608,30 +608,30 @@ public class ClientParser {
         int sound_num = Buffer.ReadByte(Globals.net_message);
 
         float volume;
-        if ((flags & Defines.SND_VOLUME) != 0)
+        if ((flags & Constants.SND_VOLUME) != 0)
             volume = Buffer.ReadByte(Globals.net_message) / 255.0f;
         else
-            volume = Defines.DEFAULT_SOUND_PACKET_VOLUME;
+            volume = Constants.DEFAULT_SOUND_PACKET_VOLUME;
 
         float attenuation;
-        if ((flags & Defines.SND_ATTENUATION) != 0)
+        if ((flags & Constants.SND_ATTENUATION) != 0)
             attenuation = Buffer.ReadByte(Globals.net_message) / 64.0f;
         else
-            attenuation = Defines.DEFAULT_SOUND_PACKET_ATTENUATION;
+            attenuation = Constants.DEFAULT_SOUND_PACKET_ATTENUATION;
 
         float ofs;
-        if ((flags & Defines.SND_OFFSET) != 0)
+        if ((flags & Constants.SND_OFFSET) != 0)
             ofs = Buffer.ReadByte(Globals.net_message) / 1000.0f;
         else
             ofs = 0;
 
         int channel;
         int ent;
-        if ((flags & Defines.SND_ENT) != 0) { // entity reletive
+        if ((flags & Constants.SND_ENT) != 0) { // entity reletive
             channel = Buffer.ReadShort(Globals.net_message);
             ent = channel >> 3;
-            if (ent > Defines.MAX_EDICTS)
-                Com.Error(Defines.ERR_DROP, "CL_ParseStartSoundPacket: ent = "
+            if (ent > Constants.MAX_EDICTS)
+                Com.Error(Constants.ERR_DROP, "CL_ParseStartSoundPacket: ent = "
                         + ent);
 
             channel &= 7;
@@ -641,7 +641,7 @@ public class ClientParser {
         }
 
         float pos[];
-        if ((flags & Defines.SND_POS) != 0) { // positioned in space
+        if ((flags & Constants.SND_POS) != 0) { // positioned in space
             Buffer.ReadPos(Globals.net_message, pos_v);
             // is ok. sound driver copies
             pos = pos_v;
@@ -678,7 +678,7 @@ public class ClientParser {
         //
         while (true) {
             if (Globals.net_message.readcount > Globals.net_message.cursize) {
-                Com.Error(Defines.ERR_FATAL,
+                Com.Error(Constants.ERR_FATAL,
                         "CL_ParseServerMessage: Bad server message:");
                 break;
             }
@@ -701,19 +701,19 @@ public class ClientParser {
             // other commands
             switch (cmd) {
             default:
-                Com.Error(Defines.ERR_DROP,
+                Com.Error(Constants.ERR_DROP,
                         "CL_ParseServerMessage: Illegible server message\n");
                 break;
 
-            case Defines.svc_nop:
+            case Constants.svc_nop:
                 //				Com.Printf ("svc_nop\n");
                 break;
 
-            case Defines.svc_disconnect:
-                Com.Error(Defines.ERR_DISCONNECT, "Server disconnected\n");
+            case Constants.svc_disconnect:
+                Com.Error(Constants.ERR_DISCONNECT, "Server disconnected\n");
                 break;
 
-            case Defines.svc_reconnect:
+            case Constants.svc_reconnect:
                 Com.Printf("Server disconnected, reconnecting\n");
                 if (Globals.cls.download != null) {
                     //ZOID, close download
@@ -723,14 +723,14 @@ public class ClientParser {
                     }
                     Globals.cls.download = null;
                 }
-                Globals.cls.state = Defines.ca_connecting;
+                Globals.cls.state = Constants.ca_connecting;
                 Globals.cls.connect_time = -99999; // CL_CheckForResend() will
                 // fire immediately
                 break;
 
-            case Defines.svc_print:
+            case Constants.svc_print:
                 int i = Buffer.ReadByte(Globals.net_message);
-                if (i == Defines.PRINT_CHAT) {
+                if (i == Constants.PRINT_CHAT) {
                     Sound.StartLocalSound("misc/talk.wav");
                     Globals.con.ormask = 128;
                 }
@@ -740,66 +740,66 @@ public class ClientParser {
                 Globals.con.ormask = 0;
                 break;
 
-            case Defines.svc_centerprint:
+            case Constants.svc_centerprint:
                 Screen.CenterPrint(Buffer.ReadString(Globals.net_message));
                 break;
 
-            case Defines.svc_stufftext:
+            case Constants.svc_stufftext:
                 String s = Buffer.ReadString(Globals.net_message);
                 Com.DPrintf("stufftext: " + s + "\n");
                 CommandBuffer.AddText(s);
                 break;
 
-            case Defines.svc_serverdata:
+            case Constants.svc_serverdata:
                 CommandBuffer.Execute(); // make sure any stuffed commands are done
                 ParseServerData();
                 break;
 
-            case Defines.svc_configstring:
+            case Constants.svc_configstring:
                 ParseConfigString();
                 break;
 
-            case Defines.svc_sound:
+            case Constants.svc_sound:
                 ParseStartSoundPacket();
                 break;
 
-            case Defines.svc_spawnbaseline:
+            case Constants.svc_spawnbaseline:
                 ParseBaseline();
                 break;
 
-            case Defines.svc_temp_entity:
+            case Constants.svc_temp_entity:
                 ClientTent.ParseTEnt();
                 break;
 
-            case Defines.svc_muzzleflash:
+            case Constants.svc_muzzleflash:
                 ClientEffects.ParseMuzzleFlash();
                 break;
 
-            case Defines.svc_muzzleflash2:
+            case Constants.svc_muzzleflash2:
                 ClientEffects.ParseMuzzleFlash2();
                 break;
 
-            case Defines.svc_download:
+            case Constants.svc_download:
                 // TODO(jgw): Ditch downloads entirely.
                 throw new RuntimeException("SVC_DOWNLOAD");
               
 
-            case Defines.svc_frame:
+            case Constants.svc_frame:
                 ClientEntities.ParseFrame();
                 break;
 
-            case Defines.svc_inventory:
+            case Constants.svc_inventory:
                 ClientInventory.ParseInventory();
                 break;
 
-            case Defines.svc_layout:
+            case Constants.svc_layout:
         	Globals.cl.layout = Buffer.ReadString(Globals.net_message);
                 break;
 
-            case Defines.svc_playerinfo:
-            case Defines.svc_packetentities:
-            case Defines.svc_deltapacketentities:
-                Com.Error(Defines.ERR_DROP, "Out of place frame data");
+            case Constants.svc_playerinfo:
+            case Constants.svc_packetentities:
+            case Constants.svc_deltapacketentities:
+                Com.Error(Constants.ERR_DROP, "Out of place frame data");
                 break;
             }
         }

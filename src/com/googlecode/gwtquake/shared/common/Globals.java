@@ -42,12 +42,6 @@ import com.googlecode.gwtquake.shared.render.RendererModel;
  */
 public class Globals {
 
-	public static final String __DATE__ = "2003";
-
-	public static final float VERSION = 3.21f;
-
-	public static final String BASEDIRNAME = "baseq2";
-
 	/*
 	 * global variables
 	 */
@@ -117,7 +111,7 @@ public class Globals {
 
 	//=============================================================================
 
-	public static byte[] net_message_buffer = new byte[Defines.MAX_MSGLEN];
+	public static byte[] net_message_buffer = new byte[Constants.MAX_MSGLEN];
 
 	public static int time_before_game;
 	public static int time_after_game;
@@ -152,14 +146,14 @@ public class Globals {
 	public static ClientStatic cls = new ClientStatic();
 	public static ClientState cl = new ClientState();
 
-	public static ClientEntity cl_entities[] = new ClientEntity[Defines.MAX_EDICTS];
+	public static ClientEntity cl_entities[] = new ClientEntity[Constants.MAX_EDICTS];
 	static {
 		for (int i = 0; i < cl_entities.length; i++) {
 			cl_entities[i] = new ClientEntity();
 		}
 	}
 
-	public static EntityState cl_parse_entities[] = new EntityState[Defines.MAX_PARSE_ENTITIES];
+	public static EntityState cl_parse_entities[] = new EntityState[Constants.MAX_PARSE_ENTITIES];
 	
 	static {
 		for (int i = 0; i < cl_parse_entities.length; i++)
@@ -361,7 +355,7 @@ public class Globals {
 	public static int key_linepos;
 	static {
 		for (int i = 0; i < key_lines.length; i++)
-			key_lines[i] = new byte[Defines.MAXCMDLINE];
+			key_lines[i] = new byte[Constants.MAXCMDLINE];
 	};
 	public static int edit_line;
 
@@ -379,7 +373,7 @@ public class Globals {
 	public static float vec3_origin[] = { 0.0f, 0.0f, 0.0f };
 
 	public static ConsoleVariable m_filter;
-	public static int vidref_val = Defines.VIDREF_GL;
+	public static int vidref_val = Constants.VIDREF_GL;
 	
 	public static Random rnd = new Random();
 }

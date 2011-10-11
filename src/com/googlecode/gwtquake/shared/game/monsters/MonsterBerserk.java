@@ -23,12 +23,15 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -540,8 +543,8 @@ public class MonsterBerserk {
     static EntInteractAdapter berserk_sight = new EntInteractAdapter() {
         public String getID() { return "berserk_sight";}
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -549,8 +552,8 @@ public class MonsterBerserk {
     static EntityThinkAdapter berserk_search = new EntityThinkAdapter() {
         public String getID() { return "berserk_search";}
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -558,15 +561,15 @@ public class MonsterBerserk {
     static EntityThinkAdapter berserk_fidget = new EntityThinkAdapter() {
         public String getID() { return "berserk_fidget";}
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 return true;
 
             if (Lib.random() > 0.15f)
                 return true;
 
             self.monsterinfo.currentmove = berserk_move_stand_fidget;
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_idle, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -675,7 +678,7 @@ public class MonsterBerserk {
     static EntityThinkAdapter berserk_run = new EntityThinkAdapter() {
         public String getID() { return "berserk_run";}
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = berserk_move_stand;
             else
                 self.monsterinfo.currentmove = berserk_move_run1;
@@ -686,7 +689,7 @@ public class MonsterBerserk {
     static EntityThinkAdapter berserk_attack_spike = new EntityThinkAdapter() {
         public String getID() { return "berserk_attack_spike";}
         public boolean think(Entity self) {
-            float[] aim = { Defines.MELEE_DISTANCE, 0f, -24f };
+            float[] aim = { Constants.MELEE_DISTANCE, 0f, -24f };
 
             GameWeapon.fire_hit(self, aim, (15 + (Lib.rand() % 6)), 400);
             //	Faster attack -- upwards and backwards
@@ -698,8 +701,8 @@ public class MonsterBerserk {
     static EntityThinkAdapter berserk_swing = new EntityThinkAdapter() {
         public String getID() { return "berserk_swing";}
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_punch, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_punch, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -722,7 +725,7 @@ public class MonsterBerserk {
         public boolean think(Entity self) {
             float aim[] = { 0, 0, 0 };
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], -4);
+            Math3D.VectorSet(aim, Constants.MELEE_DISTANCE, self.mins[0], -4);
             GameWeapon.fire_hit(self, aim, (5 + (Lib.rand() % 6)), 400); // Slower
                                                                    // attack
 
@@ -849,8 +852,8 @@ public class MonsterBerserk {
                 return;
 
             self.pain_debounce_time = GameBase.level.time + 3;
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
 
             if (GameBase.skill.value == 3)
                 return; // no pain anims in nightmare
@@ -867,10 +870,10 @@ public class MonsterBerserk {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -913,30 +916,28 @@ public class MonsterBerserk {
             int n;
 
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_die, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
 
             if (damage >= 50)
                 self.monsterinfo.currentmove = berserk_move_death1;
@@ -956,19 +957,18 @@ public class MonsterBerserk {
         }
 
         // pre-caches
-        sound_pain = GameBase.gi.soundindex("berserk/berpain2.wav");
-        sound_die = GameBase.gi.soundindex("berserk/berdeth2.wav");
-        sound_idle = GameBase.gi.soundindex("berserk/beridle1.wav");
-        sound_punch = GameBase.gi.soundindex("berserk/attack.wav");
-        sound_search = GameBase.gi.soundindex("berserk/bersrch1.wav");
-        sound_sight = GameBase.gi.soundindex("berserk/sight.wav");
+        sound_pain = ServerInit.SV_SoundIndex("berserk/berpain2.wav");
+        sound_die = ServerInit.SV_SoundIndex("berserk/berdeth2.wav");
+        sound_idle = ServerInit.SV_SoundIndex("berserk/beridle1.wav");
+        sound_punch = ServerInit.SV_SoundIndex("berserk/attack.wav");
+        sound_search = ServerInit.SV_SoundIndex("berserk/bersrch1.wav");
+        sound_sight = ServerInit.SV_SoundIndex("berserk/sight.wav");
 
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/berserk/tris.md2");
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/berserk/tris.md2");
         Math3D.VectorSet(self.mins, -16, -16, -24);
         Math3D.VectorSet(self.maxs, 16, 16, 32);
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
 
         self.health = 240;
         self.gib_health = -60;
@@ -989,7 +989,7 @@ public class MonsterBerserk {
         self.monsterinfo.currentmove = berserk_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         GameAI.walkmonster_start.think(self);
     }

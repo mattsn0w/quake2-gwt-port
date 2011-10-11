@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.client;
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
 import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.EntityState;
 import com.googlecode.gwtquake.shared.game.PlayerMove;
@@ -63,17 +63,17 @@ public class ClientEntities {
 		int number;
 
 		total = Buffer.ReadByte(Globals.net_message);
-		if ((total & Defines.U_MOREBITS1) != 0) {
+		if ((total & Constants.U_MOREBITS1) != 0) {
 		    
 			b = Buffer.ReadByte(Globals.net_message);
 			total |= b << 8;
 		}
-		if ((total & Defines.U_MOREBITS2) != 0) {
+		if ((total & Constants.U_MOREBITS2) != 0) {
 		    
 			b = Buffer.ReadByte(Globals.net_message);
 			total |= b << 16;
 		}
-		if ((total & Defines.U_MOREBITS3) != 0) {
+		if ((total & Constants.U_MOREBITS3) != 0) {
 		    
 			b = Buffer.ReadByte(Globals.net_message);
 			total |= b << 24;
@@ -84,7 +84,7 @@ public class ClientEntities {
 			if ((total & (1 << i)) != 0)
 				bitcounts[i]++;
 
-		if ((total & Defines.U_NUMBER16) != 0)
+		if ((total & Constants.U_NUMBER16) != 0)
 			number = Buffer.ReadShort(Globals.net_message);
 		else
 			number = Buffer.ReadByte(Globals.net_message);
@@ -107,70 +107,70 @@ public class ClientEntities {
 		Math3D.VectorCopy(from.origin, to.old_origin);
 		to.number = number;
 
-		if ((bits & Defines.U_MODEL) != 0)
+		if ((bits & Constants.U_MODEL) != 0)
 			to.modelindex = Buffer.ReadByte(Globals.net_message);
-		if ((bits & Defines.U_MODEL2) != 0)
+		if ((bits & Constants.U_MODEL2) != 0)
 			to.modelindex2 = Buffer.ReadByte(Globals.net_message);
-		if ((bits & Defines.U_MODEL3) != 0)
+		if ((bits & Constants.U_MODEL3) != 0)
 			to.modelindex3 = Buffer.ReadByte(Globals.net_message);
-		if ((bits & Defines.U_MODEL4) != 0)
+		if ((bits & Constants.U_MODEL4) != 0)
 			to.modelindex4 = Buffer.ReadByte(Globals.net_message);
 
-		if ((bits & Defines.U_FRAME8) != 0)
+		if ((bits & Constants.U_FRAME8) != 0)
 			to.frame = Buffer.ReadByte(Globals.net_message);
-		if ((bits & Defines.U_FRAME16) != 0)
+		if ((bits & Constants.U_FRAME16) != 0)
 			to.frame = Buffer.ReadShort(Globals.net_message);
 
-		if ((bits & Defines.U_SKIN8) != 0 && (bits & Defines.U_SKIN16) != 0) //used
+		if ((bits & Constants.U_SKIN8) != 0 && (bits & Constants.U_SKIN16) != 0) //used
 																			 // for
 																			 // laser
 																			 // colors
 			to.skinnum = Buffer.ReadLong(Globals.net_message);
-		else if ((bits & Defines.U_SKIN8) != 0)
+		else if ((bits & Constants.U_SKIN8) != 0)
 			to.skinnum = Buffer.ReadByte(Globals.net_message);
-		else if ((bits & Defines.U_SKIN16) != 0)
+		else if ((bits & Constants.U_SKIN16) != 0)
 			to.skinnum = Buffer.ReadShort(Globals.net_message);
 
-		if ((bits & (Defines.U_EFFECTS8 | Defines.U_EFFECTS16)) == (Defines.U_EFFECTS8 | Defines.U_EFFECTS16))
+		if ((bits & (Constants.U_EFFECTS8 | Constants.U_EFFECTS16)) == (Constants.U_EFFECTS8 | Constants.U_EFFECTS16))
 			to.effects = Buffer.ReadLong(Globals.net_message);
-		else if ((bits & Defines.U_EFFECTS8) != 0)
+		else if ((bits & Constants.U_EFFECTS8) != 0)
 			to.effects = Buffer.ReadByte(Globals.net_message);
-		else if ((bits & Defines.U_EFFECTS16) != 0)
+		else if ((bits & Constants.U_EFFECTS16) != 0)
 			to.effects = Buffer.ReadShort(Globals.net_message);
 
-		if ((bits & (Defines.U_RENDERFX8 | Defines.U_RENDERFX16)) == (Defines.U_RENDERFX8 | Defines.U_RENDERFX16))
+		if ((bits & (Constants.U_RENDERFX8 | Constants.U_RENDERFX16)) == (Constants.U_RENDERFX8 | Constants.U_RENDERFX16))
 			to.renderfx = Buffer.ReadLong(Globals.net_message);
-		else if ((bits & Defines.U_RENDERFX8) != 0)
+		else if ((bits & Constants.U_RENDERFX8) != 0)
 			to.renderfx = Buffer.ReadByte(Globals.net_message);
-		else if ((bits & Defines.U_RENDERFX16) != 0)
+		else if ((bits & Constants.U_RENDERFX16) != 0)
 			to.renderfx = Buffer.ReadShort(Globals.net_message);
 
-		if ((bits & Defines.U_ORIGIN1) != 0)
+		if ((bits & Constants.U_ORIGIN1) != 0)
 			to.origin[0] = Buffer.ReadCoord(Globals.net_message);
-		if ((bits & Defines.U_ORIGIN2) != 0)
+		if ((bits & Constants.U_ORIGIN2) != 0)
 			to.origin[1] = Buffer.ReadCoord(Globals.net_message);
-		if ((bits & Defines.U_ORIGIN3) != 0)
+		if ((bits & Constants.U_ORIGIN3) != 0)
 			to.origin[2] = Buffer.ReadCoord(Globals.net_message);
 
-		if ((bits & Defines.U_ANGLE1) != 0)
+		if ((bits & Constants.U_ANGLE1) != 0)
 			to.angles[0] = Buffer.ReadAngle(Globals.net_message);
-		if ((bits & Defines.U_ANGLE2) != 0)
+		if ((bits & Constants.U_ANGLE2) != 0)
 			to.angles[1] = Buffer.ReadAngle(Globals.net_message);
-		if ((bits & Defines.U_ANGLE3) != 0)
+		if ((bits & Constants.U_ANGLE3) != 0)
 			to.angles[2] = Buffer.ReadAngle(Globals.net_message);
 
-		if ((bits & Defines.U_OLDORIGIN) != 0)
+		if ((bits & Constants.U_OLDORIGIN) != 0)
 			Buffer.ReadPos(Globals.net_message, to.old_origin);
 
-		if ((bits & Defines.U_SOUND) != 0)
+		if ((bits & Constants.U_SOUND) != 0)
 			to.sound = Buffer.ReadByte(Globals.net_message);
 
-		if ((bits & Defines.U_EVENT) != 0)
+		if ((bits & Constants.U_EVENT) != 0)
 			to.event = Buffer.ReadByte(Globals.net_message);
 		else
 			to.event = 0;
 
-		if ((bits & Defines.U_SOLID) != 0)
+		if ((bits & Constants.U_SOLID) != 0)
 			to.solid = Buffer.ReadShort(Globals.net_message);
 	}
 
@@ -186,7 +186,7 @@ public class ClientEntities {
 
 		ent = Globals.cl_entities[newnum];
 
-		state = Globals.cl_parse_entities[Globals.cl.parse_entities & (Defines.MAX_PARSE_ENTITIES - 1)];
+		state = Globals.cl_parse_entities[Globals.cl.parse_entities & (Constants.MAX_PARSE_ENTITIES - 1)];
 		Globals.cl.parse_entities++;
 		frame.num_entities++;
 
@@ -196,8 +196,8 @@ public class ClientEntities {
 		if (state.modelindex != ent.current.modelindex || state.modelindex2 != ent.current.modelindex2
 				|| state.modelindex3 != ent.current.modelindex3 || state.modelindex4 != ent.current.modelindex4
 				|| Math.abs(state.origin[0] - ent.current.origin[0]) > 512 || Math.abs(state.origin[1] - ent.current.origin[1]) > 512
-				|| Math.abs(state.origin[2] - ent.current.origin[2]) > 512 || state.event == Defines.EV_PLAYER_TELEPORT
-				|| state.event == Defines.EV_OTHER_TELEPORT) {
+				|| Math.abs(state.origin[2] - ent.current.origin[2]) > 512 || state.event == Constants.EV_PLAYER_TELEPORT
+				|| state.event == Constants.EV_OTHER_TELEPORT) {
 			ent.serverframe = -99;
 		}
 
@@ -210,7 +210,7 @@ public class ClientEntities {
 			ent.trailcount = 1024; // for diminishing rocket / grenade trails
 			// duplicate the current state so lerping doesn't hurt anything
 			ent.prev.set(state);
-			if (state.event == Defines.EV_OTHER_TELEPORT) {
+			if (state.event == Constants.EV_OTHER_TELEPORT) {
 				Math3D.VectorCopy(state.origin, ent.prev.origin);
 				Math3D.VectorCopy(state.origin, ent.lerp_origin);
 			} else {
@@ -254,7 +254,7 @@ public class ClientEntities {
 			//			if (oldindex >= oldframe.num_entities)
 			//				oldnum = 99999;
 			//			else {
-			oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Defines.MAX_PARSE_ENTITIES - 1)];
+			oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Constants.MAX_PARSE_ENTITIES - 1)];
 			oldnum = oldstate.number;
 			//			}
 		}
@@ -265,11 +265,11 @@ public class ClientEntities {
 			newnum = ParseEntityBits(iw);
 			bits = iw[0];
 
-			if (newnum >= Defines.MAX_EDICTS)
-				Com.Error(Defines.ERR_DROP, "CL_ParsePacketEntities: bad number:" + newnum);
+			if (newnum >= Constants.MAX_EDICTS)
+				Com.Error(Constants.ERR_DROP, "CL_ParsePacketEntities: bad number:" + newnum);
 
 			if (Globals.net_message.readcount > Globals.net_message.cursize)
-				Com.Error(Defines.ERR_DROP, "CL_ParsePacketEntities: end of message");
+				Com.Error(Constants.ERR_DROP, "CL_ParsePacketEntities: end of message");
 
 			if (0 == newnum)
 				break;
@@ -285,12 +285,12 @@ public class ClientEntities {
 				if (oldindex >= oldframe.num_entities)
 					oldnum = 99999;
 				else {
-					oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Defines.MAX_PARSE_ENTITIES - 1)];
+					oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Constants.MAX_PARSE_ENTITIES - 1)];
 					oldnum = oldstate.number;
 				}
 			}
 
-			if ((bits & Defines.U_REMOVE) != 0) { // the entity present in
+			if ((bits & Constants.U_REMOVE) != 0) { // the entity present in
 												  // oldframe is not in the
 												  // current frame
 				if (Globals.cl_shownet.value == 3)
@@ -303,7 +303,7 @@ public class ClientEntities {
 				if (oldindex >= oldframe.num_entities)
 					oldnum = 99999;
 				else {
-					oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Defines.MAX_PARSE_ENTITIES - 1)];
+					oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Constants.MAX_PARSE_ENTITIES - 1)];
 					oldnum = oldstate.number;
 				}
 				continue;
@@ -319,7 +319,7 @@ public class ClientEntities {
 				if (oldindex >= oldframe.num_entities)
 					oldnum = 99999;
 				else {
-					oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Defines.MAX_PARSE_ENTITIES - 1)];
+					oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Constants.MAX_PARSE_ENTITIES - 1)];
 					oldnum = oldstate.number;
 				}
 				continue;
@@ -346,7 +346,7 @@ public class ClientEntities {
 			if (oldindex >= oldframe.num_entities)
 				oldnum = 99999;
 			else {
-				oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Defines.MAX_PARSE_ENTITIES - 1)];
+				oldstate = Globals.cl_parse_entities[(oldframe.parse_entities + oldindex) & (Constants.MAX_PARSE_ENTITIES - 1)];
 				oldnum = oldstate.number;
 			}
 		}
@@ -375,56 +375,56 @@ public class ClientEntities {
 		//
 		// parse the pmove_state_t
 		//
-		if ((flags & Defines.PS_M_TYPE) != 0)
+		if ((flags & Constants.PS_M_TYPE) != 0)
 			state.pmove.pm_type = Buffer.ReadByte(Globals.net_message);
 
-		if ((flags & Defines.PS_M_ORIGIN) != 0) {
+		if ((flags & Constants.PS_M_ORIGIN) != 0) {
 			state.pmove.origin[0] = Buffer.ReadShort(Globals.net_message);
 			state.pmove.origin[1] = Buffer.ReadShort(Globals.net_message);
 			state.pmove.origin[2] = Buffer.ReadShort(Globals.net_message);
 		}
 
-		if ((flags & Defines.PS_M_VELOCITY) != 0) {
+		if ((flags & Constants.PS_M_VELOCITY) != 0) {
 			state.pmove.velocity[0] = Buffer.ReadShort(Globals.net_message);
 			state.pmove.velocity[1] = Buffer.ReadShort(Globals.net_message);
 			state.pmove.velocity[2] = Buffer.ReadShort(Globals.net_message);
 		}
 
-		if ((flags & Defines.PS_M_TIME) != 0) {
+		if ((flags & Constants.PS_M_TIME) != 0) {
 			state.pmove.pm_time = (byte) Buffer.ReadByte(Globals.net_message);
 		}
 
-		if ((flags & Defines.PS_M_FLAGS) != 0)
+		if ((flags & Constants.PS_M_FLAGS) != 0)
 			state.pmove.pm_flags = (byte) Buffer.ReadByte(Globals.net_message);
 
-		if ((flags & Defines.PS_M_GRAVITY) != 0)
+		if ((flags & Constants.PS_M_GRAVITY) != 0)
 			state.pmove.gravity = Buffer.ReadShort(Globals.net_message);
 
-		if ((flags & Defines.PS_M_DELTA_ANGLES) != 0) {
+		if ((flags & Constants.PS_M_DELTA_ANGLES) != 0) {
 			state.pmove.delta_angles[0] = Buffer.ReadShort(Globals.net_message);
 			state.pmove.delta_angles[1] = Buffer.ReadShort(Globals.net_message);
 			state.pmove.delta_angles[2] = Buffer.ReadShort(Globals.net_message);
 		}
 
 		if (Globals.cl.attractloop)
-			state.pmove.pm_type = Defines.PM_FREEZE; // demo playback
+			state.pmove.pm_type = Constants.PM_FREEZE; // demo playback
 
 		//
 		// parse the rest of the player_state_t
 		//
-		if ((flags & Defines.PS_VIEWOFFSET) != 0) {
+		if ((flags & Constants.PS_VIEWOFFSET) != 0) {
 			state.viewoffset[0] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 			state.viewoffset[1] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 			state.viewoffset[2] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 		}
 
-		if ((flags & Defines.PS_VIEWANGLES) != 0) {
+		if ((flags & Constants.PS_VIEWANGLES) != 0) {
 			state.viewangles[0] = Buffer.ReadAngle16(Globals.net_message);
 			state.viewangles[1] = Buffer.ReadAngle16(Globals.net_message);
 			state.viewangles[2] = Buffer.ReadAngle16(Globals.net_message);
 		}
 
-		if ((flags & Defines.PS_KICKANGLES) != 0) {
+		if ((flags & Constants.PS_KICKANGLES) != 0) {
 
 			state.kick_angles[0] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 			state.kick_angles[1] = Buffer.ReadChar(Globals.net_message) * 0.25f;
@@ -432,11 +432,11 @@ public class ClientEntities {
 
 		}
 
-		if ((flags & Defines.PS_WEAPONINDEX) != 0) {
+		if ((flags & Constants.PS_WEAPONINDEX) != 0) {
 			state.gunindex = Buffer.ReadByte(Globals.net_message);
 		}
 
-		if ((flags & Defines.PS_WEAPONFRAME) != 0) {
+		if ((flags & Constants.PS_WEAPONFRAME) != 0) {
 			state.gunframe = Buffer.ReadByte(Globals.net_message);
 			state.gunoffset[0] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 			state.gunoffset[1] = Buffer.ReadChar(Globals.net_message) * 0.25f;
@@ -446,22 +446,22 @@ public class ClientEntities {
 			state.gunangles[2] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 		}
 
-		if ((flags & Defines.PS_BLEND) != 0) {
+		if ((flags & Constants.PS_BLEND) != 0) {
 			state.blend[0] = Buffer.ReadByte(Globals.net_message) / 255.0f;
 			state.blend[1] = Buffer.ReadByte(Globals.net_message) / 255.0f;
 			state.blend[2] = Buffer.ReadByte(Globals.net_message) / 255.0f;
 			state.blend[3] = Buffer.ReadByte(Globals.net_message) / 255.0f;
 		}
 
-		if ((flags & Defines.PS_FOV) != 0)
+		if ((flags & Constants.PS_FOV) != 0)
 			state.fov = Buffer.ReadByte(Globals.net_message);
 
-		if ((flags & Defines.PS_RDFLAGS) != 0)
+		if ((flags & Constants.PS_RDFLAGS) != 0)
 			state.rdflags = Buffer.ReadByte(Globals.net_message);
 
 		// parse stats
 		statbits = Buffer.ReadLong(Globals.net_message);
-		for (i = 0; i < Defines.MAX_STATS; i++)
+		for (i = 0; i < Constants.MAX_STATS; i++)
 			if ((statbits & (1 << i)) != 0)
 				state.stats[i] = Buffer.ReadShort(Globals.net_message);
 	}
@@ -476,13 +476,13 @@ public class ClientEntities {
 		int pnum, num;
 
 		for (pnum = 0; pnum < frame.num_entities; pnum++) {
-			num = (frame.parse_entities + pnum) & (Defines.MAX_PARSE_ENTITIES - 1);
+			num = (frame.parse_entities + pnum) & (Constants.MAX_PARSE_ENTITIES - 1);
 			s1 = Globals.cl_parse_entities[num];
 			if (s1.event != 0)
 				ClientEffects.EntityEvent(s1);
 
 			// EF_TELEPORTER acts like an event, but is not cleared each frame
-			if ((s1.effects & Defines.EF_TELEPORTER) != 0)
+			if ((s1.effects & Constants.EF_TELEPORTER) != 0)
 				ClientEffects.TeleporterParticles(s1);
 		}
 	}
@@ -518,7 +518,7 @@ public class ClientEntities {
 			old = null;
 			Globals.cls.demowaiting = false; // we can start recording now
 		} else {
-			old = Globals.cl.frames[Globals.cl.frame.deltaframe & Defines.UPDATE_MASK];
+			old = Globals.cl.frames[Globals.cl.frame.deltaframe & Constants.UPDATE_MASK];
 			if (!old.valid) { // should never happen
 				Com.Printf("Delta from invalid frame (not supposed to happen!).\n");
 			}
@@ -529,7 +529,7 @@ public class ClientEntities {
 																  // from
 				// is too old, so we can't reconstruct it properly.
 				Com.Printf("Delta frame too old.\n");
-			} else if (Globals.cl.parse_entities - old.parse_entities > Defines.MAX_PARSE_ENTITIES - 128) {
+			} else if (Globals.cl.parse_entities - old.parse_entities > Constants.MAX_PARSE_ENTITIES - 128) {
 				Com.Printf("Delta parse_entities too old.\n");
 			} else
 				Globals.cl.frame.valid = true; // valid delta parse
@@ -548,25 +548,25 @@ public class ClientEntities {
 		// read playerinfo
 		cmd = Buffer.ReadByte(Globals.net_message);
 		ClientParser.SHOWNET(ClientParser.svc_strings[cmd]);
-		if (cmd != Defines.svc_playerinfo)
-			Com.Error(Defines.ERR_DROP, "CL_ParseFrame: not playerinfo");
+		if (cmd != Constants.svc_playerinfo)
+			Com.Error(Constants.ERR_DROP, "CL_ParseFrame: not playerinfo");
 		ParsePlayerstate(old, Globals.cl.frame);
 
 		// read packet entities
 		cmd = Buffer.ReadByte(Globals.net_message);
 		ClientParser.SHOWNET(ClientParser.svc_strings[cmd]);
-		if (cmd != Defines.svc_packetentities)
-			Com.Error(Defines.ERR_DROP, "CL_ParseFrame: not packetentities");
+		if (cmd != Constants.svc_packetentities)
+			Com.Error(Constants.ERR_DROP, "CL_ParseFrame: not packetentities");
 
 		ParsePacketEntities(old, Globals.cl.frame);
 
 		// save the frame off in the backup array for later delta comparisons
-		Globals.cl.frames[Globals.cl.frame.serverframe & Defines.UPDATE_MASK].set(Globals.cl.frame);
+		Globals.cl.frames[Globals.cl.frame.serverframe & Constants.UPDATE_MASK].set(Globals.cl.frame);
 
 		if (Globals.cl.frame.valid) {
 			// getting a valid frame message ends the connection process
-			if (Globals.cls.state != Defines.ca_active) {
-				Globals.cls.state = Defines.ca_active;
+			if (Globals.cls.state != Constants.ca_active) {
+				Globals.cls.state = Constants.ca_active;
 				Globals.cl.force_refdef = true;
 
 				Globals.cl.predicted_origin[0] = Globals.cl.frame.playerstate.pmove.origin[0] * 0.125f;
@@ -626,7 +626,7 @@ public class ClientEntities {
 		ent.clear();
 
 		for (pnum = 0; pnum < frame.num_entities; pnum++) {
-			s1 = Globals.cl_parse_entities[(frame.parse_entities + pnum) & (Defines.MAX_PARSE_ENTITIES - 1)];
+			s1 = Globals.cl_parse_entities[(frame.parse_entities + pnum) & (Constants.MAX_PARSE_ENTITIES - 1)];
 
 			cent = Globals.cl_entities[s1.number];
 
@@ -634,48 +634,48 @@ public class ClientEntities {
 			renderfx = s1.renderfx;
 
 			// set frame
-			if ((effects & Defines.EF_ANIM01) != 0)
+			if ((effects & Constants.EF_ANIM01) != 0)
 				ent.frame = autoanim & 1;
-			else if ((effects & Defines.EF_ANIM23) != 0)
+			else if ((effects & Constants.EF_ANIM23) != 0)
 				ent.frame = 2 + (autoanim & 1);
-			else if ((effects & Defines.EF_ANIM_ALL) != 0)
+			else if ((effects & Constants.EF_ANIM_ALL) != 0)
 				ent.frame = autoanim;
-			else if ((effects & Defines.EF_ANIM_ALLFAST) != 0)
+			else if ((effects & Constants.EF_ANIM_ALLFAST) != 0)
 				ent.frame = Globals.cl.time / 100;
 			else
 				ent.frame = s1.frame;
 
 			// quad and pent can do different things on client
-			if ((effects & Defines.EF_PENT) != 0) {
-				effects &= ~Defines.EF_PENT;
-				effects |= Defines.EF_COLOR_SHELL;
-				renderfx |= Defines.RF_SHELL_RED;
+			if ((effects & Constants.EF_PENT) != 0) {
+				effects &= ~Constants.EF_PENT;
+				effects |= Constants.EF_COLOR_SHELL;
+				renderfx |= Constants.RF_SHELL_RED;
 			}
 
-			if ((effects & Defines.EF_QUAD) != 0) {
-				effects &= ~Defines.EF_QUAD;
-				effects |= Defines.EF_COLOR_SHELL;
-				renderfx |= Defines.RF_SHELL_BLUE;
+			if ((effects & Constants.EF_QUAD) != 0) {
+				effects &= ~Constants.EF_QUAD;
+				effects |= Constants.EF_COLOR_SHELL;
+				renderfx |= Constants.RF_SHELL_BLUE;
 			}
 			//	  ======
 			//	   PMM
-			if ((effects & Defines.EF_DOUBLE) != 0) {
-				effects &= ~Defines.EF_DOUBLE;
-				effects |= Defines.EF_COLOR_SHELL;
-				renderfx |= Defines.RF_SHELL_DOUBLE;
+			if ((effects & Constants.EF_DOUBLE) != 0) {
+				effects &= ~Constants.EF_DOUBLE;
+				effects |= Constants.EF_COLOR_SHELL;
+				renderfx |= Constants.RF_SHELL_DOUBLE;
 			}
 
-			if ((effects & Defines.EF_HALF_DAMAGE) != 0) {
-				effects &= ~Defines.EF_HALF_DAMAGE;
-				effects |= Defines.EF_COLOR_SHELL;
-				renderfx |= Defines.RF_SHELL_HALF_DAM;
+			if ((effects & Constants.EF_HALF_DAMAGE) != 0) {
+				effects &= ~Constants.EF_HALF_DAMAGE;
+				effects |= Constants.EF_COLOR_SHELL;
+				renderfx |= Constants.RF_SHELL_HALF_DAM;
 			}
 			//	   pmm
 			//	  ======
 			ent.oldframe = cent.prev.frame;
 			ent.backlerp = 1.0f - Globals.cl.lerpfrac;
 
-			if ((renderfx & (Defines.RF_FRAMELERP | Defines.RF_BEAM)) != 0) {
+			if ((renderfx & (Constants.RF_FRAMELERP | Constants.RF_BEAM)) != 0) {
 				// step origin discretely, because the frames
 				// do the animation properly
 				Math3D.VectorCopy(cent.current.origin, ent.origin);
@@ -690,7 +690,7 @@ public class ClientEntities {
 			// create a new entity
 
 			// tweak the color of beams
-			if ((renderfx & Defines.RF_BEAM) != 0) { // the four beam colors are
+			if ((renderfx & Constants.RF_BEAM) != 0) { // the four beam colors are
 													 // encoded in 32 bits of
 													 // skinnum (hack)
 				ent.alpha = 0.30f;
@@ -711,7 +711,7 @@ public class ClientEntities {
 
 					//	  ============
 					//	  PGM
-					if ((renderfx & Defines.RF_USE_DISGUISE) != 0) {
+					if ((renderfx & Constants.RF_USE_DISGUISE) != 0) {
 					  String modelToLoad = null;
 						if (ent.skin.name.startsWith("players/male")) {
 							ent.skin = Globals.re.RegisterSkin("players/male/disguise.pcx");
@@ -746,24 +746,24 @@ public class ClientEntities {
 			}
 
 			// only used for black hole model right now, FIXME: do better
-			if (renderfx == Defines.RF_TRANSLUCENT)
+			if (renderfx == Constants.RF_TRANSLUCENT)
 				ent.alpha = 0.70f;
 
 			// render effects (fullbright, translucent, etc)
-			if ((effects & Defines.EF_COLOR_SHELL) != 0)
+			if ((effects & Constants.EF_COLOR_SHELL) != 0)
 				ent.flags = 0; // renderfx go on color shell entity
 			else
 				ent.flags = renderfx;
 
 			// calculate angles
-			if ((effects & Defines.EF_ROTATE) != 0) { // some bonus items
+			if ((effects & Constants.EF_ROTATE) != 0) { // some bonus items
 													  // auto-rotate
 				ent.angles[0] = 0;
 				ent.angles[1] = autorotate;
 				ent.angles[2] = 0;
 			}
 			// RAFAEL
-			else if ((effects & Defines.EF_SPINNINGLIGHTS) != 0) {
+			else if ((effects & Constants.EF_SPINNINGLIGHTS) != 0) {
 				ent.angles[0] = 0;
 				ent.angles[1] = Math3D.anglemod(Globals.cl.time / 2) + s1.angles[1];
 				ent.angles[2] = 180;
@@ -786,16 +786,16 @@ public class ClientEntities {
 			}
 
 			if (s1.number == Globals.cl.playernum + 1) {
-				ent.flags |= Defines.RF_VIEWERMODEL; // only draw from mirrors
+				ent.flags |= Constants.RF_VIEWERMODEL; // only draw from mirrors
 				// FIXME: still pass to refresh
 
-				if ((effects & Defines.EF_FLAG1) != 0)
+				if ((effects & Constants.EF_FLAG1) != 0)
 					Video.AddLight(ent.origin, 225, 1.0f, 0.1f, 0.1f);
-				else if ((effects & Defines.EF_FLAG2) != 0)
+				else if ((effects & Constants.EF_FLAG2) != 0)
 					Video.AddLight(ent.origin, 225, 0.1f, 0.1f, 1.0f);
-				else if ((effects & Defines.EF_TAGTRAIL) != 0) //PGM
+				else if ((effects & Constants.EF_TAGTRAIL) != 0) //PGM
 					Video.AddLight(ent.origin, 225, 1.0f, 1.0f, 0.0f); //PGM
-				else if ((effects & Defines.EF_TRACKERTRAIL) != 0) //PGM
+				else if ((effects & Constants.EF_TRACKERTRAIL) != 0) //PGM
 					Video.AddLight(ent.origin, 225, -1.0f, -1.0f, -1.0f); //PGM
 
 				continue;
@@ -805,21 +805,21 @@ public class ClientEntities {
 			if (s1.modelindex == 0)
 				continue;
 
-			if ((effects & Defines.EF_BFG) != 0) {
-				ent.flags |= Defines.RF_TRANSLUCENT;
+			if ((effects & Constants.EF_BFG) != 0) {
+				ent.flags |= Constants.RF_TRANSLUCENT;
 				ent.alpha = 0.30f;
 			}
 
 			// RAFAEL
-			if ((effects & Defines.EF_PLASMA) != 0) {
-				ent.flags |= Defines.RF_TRANSLUCENT;
+			if ((effects & Constants.EF_PLASMA) != 0) {
+				ent.flags |= Constants.RF_TRANSLUCENT;
 				ent.alpha = 0.6f;
 			}
 
-			if ((effects & Defines.EF_SPHERETRANS) != 0) {
-				ent.flags |= Defines.RF_TRANSLUCENT;
+			if ((effects & Constants.EF_SPHERETRANS) != 0) {
+				ent.flags |= Constants.RF_TRANSLUCENT;
 				// PMM - *sigh* yet more EF overloading
-				if ((effects & Defines.EF_TRACKERTRAIL) != 0)
+				if ((effects & Constants.EF_TRACKERTRAIL) != 0)
 					ent.alpha = 0.6f;
 				else
 					ent.alpha = 0.3f;
@@ -887,7 +887,7 @@ public class ClientEntities {
 				if (s1.modelindex2 == 255) { // custom weapon
 					ci = Globals.cl.clientinfo[s1.skinnum & 0xff];
 					i = (s1.skinnum >> 8); // 0 is default weapon model
-					if (0 == Globals.cl_vwep.value || i > Defines.MAX_CLIENTWEAPONMODELS - 1)
+					if (0 == Globals.cl_vwep.value || i > Constants.MAX_CLIENTWEAPONMODELS - 1)
 						i = 0;
 					ent.model = ci.weaponmodel[i];
 					if (null == ent.model) {
@@ -903,9 +903,9 @@ public class ClientEntities {
 				// translucent
 				// replaces the previous version which used the high bit on
 				// modelindex2 to determine transparency
-				if (Globals.cl.configstrings[Defines.CS_MODELS + (s1.modelindex2)].equalsIgnoreCase("models/items/shell/tris.md2")) {
+				if (Globals.cl.configstrings[Constants.CS_MODELS + (s1.modelindex2)].equalsIgnoreCase("models/items/shell/tris.md2")) {
 					ent.alpha = 0.32f;
-					ent.flags = Defines.RF_TRANSLUCENT;
+					ent.flags = Constants.RF_TRANSLUCENT;
 				}
 				// pmm
 
@@ -925,28 +925,28 @@ public class ClientEntities {
 				Video.AddEntity(ent);
 			}
 
-			if ((effects & Defines.EF_POWERSCREEN) != 0) {
+			if ((effects & Constants.EF_POWERSCREEN) != 0) {
 				ent.model = ClientTent.cl_mod_powerscreen;
 				ent.oldframe = 0;
 				ent.frame = 0;
-				ent.flags |= (Defines.RF_TRANSLUCENT | Defines.RF_SHELL_GREEN);
+				ent.flags |= (Constants.RF_TRANSLUCENT | Constants.RF_SHELL_GREEN);
 				ent.alpha = 0.30f;
 				Video.AddEntity(ent);
 			}
 
 			// add automatic particle trails
-			if ((effects & ~Defines.EF_ROTATE) != 0) {
-				if ((effects & Defines.EF_ROCKET) != 0) {
+			if ((effects & ~Constants.EF_ROTATE) != 0) {
+				if ((effects & Constants.EF_ROCKET) != 0) {
 					ClientEffects.RocketTrail(cent.lerp_origin, ent.origin, cent);
 					Video.AddLight(ent.origin, 200, 1, 1, 0);
 				}
 				// PGM - Do not reorder EF_BLASTER and EF_HYPERBLASTER.
 				// EF_BLASTER | EF_TRACKER is a special case for EF_BLASTER2...
 				// Cheese!
-				else if ((effects & Defines.EF_BLASTER) != 0) {
+				else if ((effects & Constants.EF_BLASTER) != 0) {
 					//					CL_BlasterTrail (cent.lerp_origin, ent.origin);
 					//	  PGM
-					if ((effects & Defines.EF_TRACKER) != 0) // lame...
+					if ((effects & Constants.EF_TRACKER) != 0) // lame...
 															 // problematic?
 					{
 						ClientNewFx.BlasterTrail2(cent.lerp_origin, ent.origin);
@@ -956,22 +956,22 @@ public class ClientEntities {
 						Video.AddLight(ent.origin, 200, 1, 1, 0);
 					}
 					//	  PGM
-				} else if ((effects & Defines.EF_HYPERBLASTER) != 0) {
-					if ((effects & Defines.EF_TRACKER) != 0) // PGM overloaded
+				} else if ((effects & Constants.EF_HYPERBLASTER) != 0) {
+					if ((effects & Constants.EF_TRACKER) != 0) // PGM overloaded
 															 // for blaster2.
 						Video.AddLight(ent.origin, 200, 0, 1, 0); // PGM
 					else
 						// PGM
 						Video.AddLight(ent.origin, 200, 1, 1, 0);
-				} else if ((effects & Defines.EF_GIB) != 0) {
+				} else if ((effects & Constants.EF_GIB) != 0) {
 					ClientEffects.DiminishingTrail(cent.lerp_origin, ent.origin, cent, effects);
-				} else if ((effects & Defines.EF_GRENADE) != 0) {
+				} else if ((effects & Constants.EF_GRENADE) != 0) {
 					ClientEffects.DiminishingTrail(cent.lerp_origin, ent.origin, cent, effects);
-				} else if ((effects & Defines.EF_FLIES) != 0) {
+				} else if ((effects & Constants.EF_FLIES) != 0) {
 					ClientEffects.FlyEffect(cent, ent.origin);
-				} else if ((effects & Defines.EF_BFG) != 0) {
+				} else if ((effects & Constants.EF_BFG) != 0) {
 
-					if ((effects & Defines.EF_ANIM_ALLFAST) != 0) {
+					if ((effects & Constants.EF_ANIM_ALLFAST) != 0) {
 						ClientEffects.BfgParticles(ent);
 						i = 200;
 					} else {
@@ -980,30 +980,30 @@ public class ClientEntities {
 					Video.AddLight(ent.origin, i, 0, 1, 0);
 				}
 				// RAFAEL
-				else if ((effects & Defines.EF_TRAP) != 0) {
+				else if ((effects & Constants.EF_TRAP) != 0) {
 					ent.origin[2] += 32;
 					ClientEffects.TrapParticles(ent);
 					i = (Globals.rnd.nextInt(100)) + 100;
 					Video.AddLight(ent.origin, i, 1, 0.8f, 0.1f);
-				} else if ((effects & Defines.EF_FLAG1) != 0) {
+				} else if ((effects & Constants.EF_FLAG1) != 0) {
 					ClientEffects.FlagTrail(cent.lerp_origin, ent.origin, 242);
 					Video.AddLight(ent.origin, 225, 1, 0.1f, 0.1f);
-				} else if ((effects & Defines.EF_FLAG2) != 0) {
+				} else if ((effects & Constants.EF_FLAG2) != 0) {
 					ClientEffects.FlagTrail(cent.lerp_origin, ent.origin, 115);
 					Video.AddLight(ent.origin, 225, 0.1f, 0.1f, 1);
 				}
 				//	  ======
 				//	  ROGUE
-				else if ((effects & Defines.EF_TAGTRAIL) != 0) {
+				else if ((effects & Constants.EF_TAGTRAIL) != 0) {
 					ClientNewFx.TagTrail(cent.lerp_origin, ent.origin, 220);
 					Video.AddLight(ent.origin, 225, 1.0f, 1.0f, 0.0f);
-				} else if ((effects & Defines.EF_TRACKERTRAIL) != 0) {
-					if ((effects & Defines.EF_TRACKER) != 0) {
+				} else if ((effects & Constants.EF_TRACKERTRAIL) != 0) {
+					if ((effects & Constants.EF_TRACKER) != 0) {
 						float intensity;
 
 						intensity = (float) (50 + (500 * (Math.sin(Globals.cl.time / 500.0) + 1.0)));
 						// FIXME - check out this effect in rendition
-						if (Globals.vidref_val == Defines.VIDREF_GL)
+						if (Globals.vidref_val == Constants.VIDREF_GL)
 							Video.AddLight(ent.origin, intensity, -1.0f, -1.0f, -1.0f);
 						else
 							Video.AddLight(ent.origin, -1.0f * intensity, 1.0f, 1.0f, 1.0f);
@@ -1011,10 +1011,10 @@ public class ClientEntities {
 						ClientNewFx.Tracker_Shell(cent.lerp_origin);
 						Video.AddLight(ent.origin, 155, -1.0f, -1.0f, -1.0f);
 					}
-				} else if ((effects & Defines.EF_TRACKER) != 0) {
+				} else if ((effects & Constants.EF_TRACKER) != 0) {
 					ClientNewFx.TrackerTrail(cent.lerp_origin, ent.origin, 0);
 					// FIXME - check out this effect in rendition
-					if (Globals.vidref_val == Defines.VIDREF_GL)
+					if (Globals.vidref_val == Constants.VIDREF_GL)
 						Video.AddLight(ent.origin, 200, -1, -1, -1);
 					else
 						Video.AddLight(ent.origin, -200, 1, 1, 1);
@@ -1022,21 +1022,21 @@ public class ClientEntities {
 				//	  ROGUE
 				//	  ======
 				// RAFAEL
-				else if ((effects & Defines.EF_GREENGIB) != 0) {
+				else if ((effects & Constants.EF_GREENGIB) != 0) {
 					ClientEffects.DiminishingTrail(cent.lerp_origin, ent.origin, cent, effects);
 				}
 				// RAFAEL
-				else if ((effects & Defines.EF_IONRIPPER) != 0) {
+				else if ((effects & Constants.EF_IONRIPPER) != 0) {
 					ClientEffects.IonripperTrail(cent.lerp_origin, ent.origin);
 					Video.AddLight(ent.origin, 100, 1, 0.5f, 0.5f);
 				}
 				// RAFAEL
-				else if ((effects & Defines.EF_BLUEHYPERBLASTER) != 0) {
+				else if ((effects & Constants.EF_BLUEHYPERBLASTER) != 0) {
 					Video.AddLight(ent.origin, 200, 0, 0, 1);
 				}
 				// RAFAEL
-				else if ((effects & Defines.EF_PLASMA) != 0) {
-					if ((effects & Defines.EF_ANIM_ALLFAST) != 0) {
+				else if ((effects & Constants.EF_PLASMA) != 0) {
+					if ((effects & Constants.EF_ANIM_ALLFAST) != 0) {
 						ClientEffects.BlasterTrail(cent.lerp_origin, ent.origin);
 					}
 					Video.AddLight(ent.origin, 130, 1, 0.5f, 0.5f);
@@ -1092,7 +1092,7 @@ public class ClientEntities {
 				gun.oldframe = ops.gunframe;
 		}
 
-		gun.flags = Defines.RF_MINLIGHT | Defines.RF_DEPTHHACK | Defines.RF_WEAPONMODEL;
+		gun.flags = Constants.RF_MINLIGHT | Constants.RF_DEPTHHACK | Constants.RF_WEAPONMODEL;
 		gun.backlerp = 1.0f - Globals.cl.lerpfrac;
 		Math3D.VectorCopy(gun.origin, gun.oldorigin); // don't lerp at all
 		Video.AddEntity(gun);
@@ -1112,7 +1112,7 @@ public class ClientEntities {
 		// find the previous frame to interpolate from
 		ps = Globals.cl.frame.playerstate;
 
-		i = (Globals.cl.frame.serverframe - 1) & Defines.UPDATE_MASK;
+		i = (Globals.cl.frame.serverframe - 1) & Constants.UPDATE_MASK;
 		oldframe = Globals.cl.frames[i];
 
 		if (oldframe.serverframe != Globals.cl.frame.serverframe - 1 || !oldframe.valid)
@@ -1152,7 +1152,7 @@ public class ClientEntities {
 
 		// if not running a demo or on a locked frame, add the local angle
 		// movement
-		if (Globals.cl.frame.playerstate.pmove.pm_type < Defines.PM_DEAD) { // use
+		if (Globals.cl.frame.playerstate.pmove.pm_type < Constants.PM_DEAD) { // use
 																			// predicted
 																			// values
 			for (i = 0; i < 3; i++)
@@ -1184,7 +1184,7 @@ public class ClientEntities {
 	 * Emits all entities, particles, and lights to the refresh ===============
 	 */
 	static void AddEntities() {
-		if (Globals.cls.state != Defines.ca_active)
+		if (Globals.cls.state != Constants.ca_active)
 			return;
 
 		if (Globals.cl.time > Globals.cl.frame.servertime) {
@@ -1227,8 +1227,8 @@ public class ClientEntities {
 	public static void GetEntitySoundOrigin(int ent, float[] org) {
 		ClientEntity old;
 
-		if (ent < 0 || ent >= Defines.MAX_EDICTS)
-			Com.Error(Defines.ERR_DROP, "CL_GetEntitySoundOrigin: bad ent");
+		if (ent < 0 || ent >= Constants.MAX_EDICTS)
+			Com.Error(Constants.ERR_DROP, "CL_GetEntitySoundOrigin: bad ent");
 		old = Globals.cl_entities[ent];
 		Math3D.VectorCopy(old.lerp_origin, org);
 

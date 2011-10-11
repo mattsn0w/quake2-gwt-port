@@ -48,7 +48,7 @@ public class ClientPrediction {
 
         // calculate the last usercmd_t we sent that the server has processed
         frame = Globals.cls.netchan.incoming_acknowledged;
-        frame &= (Defines.CMD_BACKUP - 1);
+        frame &= (Constants.CMD_BACKUP - 1);
 
         // compare what the server returned with what we had predicted it to be
         Math3D.VectorSubtract(Globals.cl.frame.playerstate.pmove.origin,
@@ -93,7 +93,7 @@ public class ClientPrediction {
 
         for (i = 0; i < Globals.cl.frame.num_entities; i++) {
             num = (Globals.cl.frame.parse_entities + i)
-                    & (Defines.MAX_PARSE_ENTITIES - 1);
+                    & (Constants.MAX_PARSE_ENTITIES - 1);
             ent = Globals.cl_parse_entities[num];
 
             if (ent.solid == 0)
@@ -126,7 +126,7 @@ public class ClientPrediction {
                 return;
 
             trace = CM.TransformedBoxTrace(start, end, mins, maxs, headnode,
-                    Defines.MASK_PLAYERSOLID, ent.origin, angles);
+                    Constants.MASK_PLAYERSOLID, ent.origin, angles);
 
             if (trace.allsolid || trace.startsolid
                     || trace.fraction < tr.fraction) {
@@ -154,7 +154,7 @@ public class ClientPrediction {
         Trace t;
 
         // check against world
-        t = CM.BoxTrace(start, end, mins, maxs, 0, Defines.MASK_PLAYERSOLID);
+        t = CM.BoxTrace(start, end, mins, maxs, 0, Constants.MASK_PLAYERSOLID);
 
         if (t.fraction < 1.0f) {
             t.ent = DUMMY_ENT;
@@ -182,7 +182,7 @@ public class ClientPrediction {
 
         for (i = 0; i < Globals.cl.frame.num_entities; i++) {
             num = (Globals.cl.frame.parse_entities + i)
-                    & (Defines.MAX_PARSE_ENTITIES - 1);
+                    & (Constants.MAX_PARSE_ENTITIES - 1);
             ent = Globals.cl_parse_entities[num];
 
             if (ent.solid != 31) // special value for bmodel
@@ -205,7 +205,7 @@ public class ClientPrediction {
      */
     static void PredictMovement() {
 
-        if (Globals.cls.state != Defines.ca_active)
+        if (Globals.cls.state != Constants.ca_active)
             return;
 
         if (Globals.cl_paused.value != 0.0f)
@@ -226,7 +226,7 @@ public class ClientPrediction {
         int current = Globals.cls.netchan.outgoing_sequence;
 
         // if we are too far out of date, just freeze
-        if (current - ack >= Defines.CMD_BACKUP) {
+        if (current - ack >= Constants.CMD_BACKUP) {
             if (Globals.cl_showmiss.value != 0.0f)
                 Com.Printf("exceeded CMD_BACKUP\n");
             return;
@@ -250,7 +250,7 @@ public class ClientPrediction {
 
         try {
             PlayerMovements.pm_airaccelerate = Float
-                    .parseFloat(Globals.cl.configstrings[Defines.CS_AIRACCEL]);
+                    .parseFloat(Globals.cl.configstrings[Constants.CS_AIRACCEL]);
         } catch (Exception e) {
             PlayerMovements.pm_airaccelerate = 0;
         }
@@ -265,7 +265,7 @@ public class ClientPrediction {
         // run frames
         UserCommand cmd;
         while (++ack < current) {
-            frame = ack & (Defines.CMD_BACKUP - 1);
+            frame = ack & (Constants.CMD_BACKUP - 1);
             cmd = Globals.cl.cmds[frame];
 
             pm.cmd.set(cmd);
@@ -276,7 +276,7 @@ public class ClientPrediction {
             Math3D.VectorCopy(pm.s.origin, Globals.cl.predicted_origins[frame]);
         }
 
-        int oldframe = (ack - 2) & (Defines.CMD_BACKUP - 1);
+        int oldframe = (ack - 2) & (Constants.CMD_BACKUP - 1);
         int oldz = Globals.cl.predicted_origins[oldframe][2];
         int step = pm.s.origin[2] - oldz;
         if (step > 63 && step < 160

@@ -23,13 +23,16 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -513,8 +516,8 @@ public class MonsterBrain {
     static EntInteractAdapter brain_sight = new EntInteractAdapter() {
     	public String getID() { return "brain_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -522,8 +525,8 @@ public class MonsterBrain {
     static EntityThinkAdapter brain_search = new EntityThinkAdapter() {
     	public String getID() { return "brain_search"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -617,8 +620,8 @@ public class MonsterBrain {
     static EntityThinkAdapter brain_idle = new EntityThinkAdapter() {
     	public String getID() { return "brain_idle"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_AUTO, sound_idle3, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_AUTO, sound_idle3, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             self.monsterinfo.currentmove = brain_move_idle;
             return true;
         }
@@ -694,12 +697,12 @@ public class MonsterBrain {
     	public String getID() { return "brain_duck_down"; }
         public boolean think(Entity self) {
 
-            if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_DUCKED) != 0)
                 return true;
-            self.monsterinfo.aiflags |= Defines.AI_DUCKED;
+            self.monsterinfo.aiflags |= Constants.AI_DUCKED;
             self.maxs[2] -= 32;
-            self.takedamage = Defines.DAMAGE_YES;
-            GameBase.gi.linkentity(self);
+            self.takedamage = Constants.DAMAGE_YES;
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -708,9 +711,9 @@ public class MonsterBrain {
     	public String getID() { return "brain_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
-                self.monsterinfo.aiflags &= ~Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags &= ~Constants.AI_HOLD_FRAME;
             else
-                self.monsterinfo.aiflags |= Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags |= Constants.AI_HOLD_FRAME;
             return true;
         }
     };
@@ -718,10 +721,10 @@ public class MonsterBrain {
     static EntityThinkAdapter brain_duck_up = new EntityThinkAdapter() {
     	public String getID() { return "brain_duck_up"; }
         public boolean think(Entity self) {
-            self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
+            self.monsterinfo.aiflags &= ~Constants.AI_DUCKED;
             self.maxs[2] += 32;
-            self.takedamage = Defines.DAMAGE_AIM;
-            GameBase.gi.linkentity(self);
+            self.takedamage = Constants.DAMAGE_AIM;
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -753,10 +756,10 @@ public class MonsterBrain {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -794,8 +797,8 @@ public class MonsterBrain {
     static EntityThinkAdapter brain_swing_right = new EntityThinkAdapter() {
     	public String getID() { return "brain_swing_right"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_melee1, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_melee1, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -805,10 +808,10 @@ public class MonsterBrain {
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.maxs[0], 8);
+            Math3D.VectorSet(aim, Constants.MELEE_DISTANCE, self.maxs[0], 8);
             if (GameWeapon.fire_hit(self, aim, (15 + (Lib.rand() % 5)), 40))
-                GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_melee3, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_melee3, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             return true;
         }
     };
@@ -816,8 +819,8 @@ public class MonsterBrain {
     static EntityThinkAdapter brain_swing_left = new EntityThinkAdapter() {
     	public String getID() { return "brain_swing_left"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_melee2, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_melee2, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
 
             return true;
         }
@@ -828,10 +831,10 @@ public class MonsterBrain {
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], 8);
+            Math3D.VectorSet(aim, Constants.MELEE_DISTANCE, self.mins[0], 8);
             if (GameWeapon.fire_hit(self, aim, (15 + (Lib.rand() % 5)), 40))
-                GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_melee3, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_melee3, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
 
             return true;
         }
@@ -841,9 +844,9 @@ public class MonsterBrain {
     	public String getID() { return "brain_chest_open"; }
         public boolean think(Entity self) {
             self.spawnflags &= ~65536;
-            self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_NONE;
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_chest_open, 1,
-                    Defines.ATTN_NORM, 0);
+            self.monsterinfo.power_armor_type = Constants.POWER_ARMOR_NONE;
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_chest_open, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -854,12 +857,12 @@ public class MonsterBrain {
 
             float[] aim = { 0, 0, 0 };
 
-            Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, 0, 8);
+            Math3D.VectorSet(aim, Constants.MELEE_DISTANCE, 0, 8);
             if (GameWeapon.fire_hit(self, aim, (10 + (Lib.rand() % 5)), -600)
                     && GameBase.skill.value > 0)
                 self.spawnflags |= 65536;
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON,
-                    sound_tentacles_retract, 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_tentacles_retract, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -888,7 +891,7 @@ public class MonsterBrain {
     	public String getID() { return "brain_chest_closed"; }
         public boolean think(Entity self) {
 
-            self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_SCREEN;
+            self.monsterinfo.power_armor_type = Constants.POWER_ARMOR_SCREEN;
             if ((self.spawnflags & 65536) != 0) {
                 self.spawnflags &= ~65536;
                 self.monsterinfo.currentmove = brain_move_attack1;
@@ -951,8 +954,8 @@ public class MonsterBrain {
     static EntityThinkAdapter brain_run = new EntityThinkAdapter() {
     	public String getID() { return "brain_run"; }
         public boolean think(Entity self) {
-            self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_SCREEN;
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            self.monsterinfo.power_armor_type = Constants.POWER_ARMOR_SCREEN;
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = brain_move_stand;
             else
                 self.monsterinfo.currentmove = brain_move_run;
@@ -1054,16 +1057,16 @@ public class MonsterBrain {
 
             r = Lib.random();
             if (r < 0.33) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = brain_move_pain1;
             } else if (r < 0.66) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = brain_move_pain2;
             } else {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = brain_move_pain3;
             }
         }
@@ -1077,35 +1080,33 @@ public class MonsterBrain {
             int n;
 
             self.s.effects = 0;
-            self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_NONE;
+            self.monsterinfo.power_armor_type = Constants.POWER_ARMOR_NONE;
 
             //	   check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             //	   regular death
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death, 1,
-                    Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
             if (Lib.random() <= 0.5)
                 self.monsterinfo.currentmove = brain_move_death1;
             else
@@ -1129,25 +1130,24 @@ public class MonsterBrain {
             return;
         }
 
-        sound_chest_open = GameBase.gi.soundindex("brain/brnatck1.wav");
-        sound_tentacles_extend = GameBase.gi.soundindex("brain/brnatck2.wav");
-        sound_tentacles_retract = GameBase.gi.soundindex("brain/brnatck3.wav");
-        sound_death = GameBase.gi.soundindex("brain/brndeth1.wav");
-        sound_idle1 = GameBase.gi.soundindex("brain/brnidle1.wav");
-        sound_idle2 = GameBase.gi.soundindex("brain/brnidle2.wav");
-        sound_idle3 = GameBase.gi.soundindex("brain/brnlens1.wav");
-        sound_pain1 = GameBase.gi.soundindex("brain/brnpain1.wav");
-        sound_pain2 = GameBase.gi.soundindex("brain/brnpain2.wav");
-        sound_sight = GameBase.gi.soundindex("brain/brnsght1.wav");
-        sound_search = GameBase.gi.soundindex("brain/brnsrch1.wav");
-        sound_melee1 = GameBase.gi.soundindex("brain/melee1.wav");
-        sound_melee2 = GameBase.gi.soundindex("brain/melee2.wav");
-        sound_melee3 = GameBase.gi.soundindex("brain/melee3.wav");
+        sound_chest_open = ServerInit.SV_SoundIndex("brain/brnatck1.wav");
+        sound_tentacles_extend = ServerInit.SV_SoundIndex("brain/brnatck2.wav");
+        sound_tentacles_retract = ServerInit.SV_SoundIndex("brain/brnatck3.wav");
+        sound_death = ServerInit.SV_SoundIndex("brain/brndeth1.wav");
+        sound_idle1 = ServerInit.SV_SoundIndex("brain/brnidle1.wav");
+        sound_idle2 = ServerInit.SV_SoundIndex("brain/brnidle2.wav");
+        sound_idle3 = ServerInit.SV_SoundIndex("brain/brnlens1.wav");
+        sound_pain1 = ServerInit.SV_SoundIndex("brain/brnpain1.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("brain/brnpain2.wav");
+        sound_sight = ServerInit.SV_SoundIndex("brain/brnsght1.wav");
+        sound_search = ServerInit.SV_SoundIndex("brain/brnsrch1.wav");
+        sound_melee1 = ServerInit.SV_SoundIndex("brain/melee1.wav");
+        sound_melee2 = ServerInit.SV_SoundIndex("brain/melee2.wav");
+        sound_melee3 = ServerInit.SV_SoundIndex("brain/melee3.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/brain/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/brain/tris.md2");
         Math3D.VectorSet(self.mins, -16, -16, -24);
         Math3D.VectorSet(self.maxs, 16, 16, 32);
 
@@ -1168,10 +1168,10 @@ public class MonsterBrain {
         self.monsterinfo.search = brain_search;
         self.monsterinfo.idle = brain_idle;
 
-        self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_SCREEN;
+        self.monsterinfo.power_armor_type = Constants.POWER_ARMOR_SCREEN;
         self.monsterinfo.power_armor_power = 100;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = brain_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;
