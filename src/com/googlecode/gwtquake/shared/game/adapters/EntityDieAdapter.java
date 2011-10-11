@@ -25,7 +25,7 @@ package com.googlecode.gwtquake.shared.game.adapters;
 
 import com.googlecode.gwtquake.shared.game.Entity;
 
-public abstract class EntDieAdapter extends SuperAdapter
+public abstract class EntityDieAdapter extends SuperAdapter
 {
 	public abstract void die(Entity self, Entity inflictor, Entity attacker, int damage, float[] point);
 }

@@ -27,7 +27,7 @@ import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.adapters.AIAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -327,7 +327,7 @@ public class GameAI {
     }
 
     
-    public static EntitiyThinkAdapter walkmonster_start_go = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter walkmonster_start_go = new EntityThinkAdapter() {
         public String getID() { return "walkmonster_start_go"; }
         public boolean think(Entity self) {
 
@@ -352,7 +352,7 @@ public class GameAI {
         }
     };
 
-    public static EntitiyThinkAdapter walkmonster_start = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter walkmonster_start = new EntityThinkAdapter() {
         public String getID() { return "walkmonster_start";} 
         
         public boolean think(Entity self) {
@@ -363,7 +363,7 @@ public class GameAI {
         }
     };
 
-    public static EntitiyThinkAdapter flymonster_start_go = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter flymonster_start_go = new EntityThinkAdapter() {
         public String getID() { return "flymonster_start_go";}
         public boolean think(Entity self) {
             if (!ClientMonsterMethods.M_walkmove(self, 0, 0))
@@ -382,7 +382,7 @@ public class GameAI {
         }
     };
 
-    public static EntitiyThinkAdapter flymonster_start = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter flymonster_start = new EntityThinkAdapter() {
         public String getID() { return "flymonster_start";}        
         public boolean think(Entity self) {
             self.flags |= Defines.FL_FLY;
@@ -392,7 +392,7 @@ public class GameAI {
         }
     };
 
-    public static EntitiyThinkAdapter swimmonster_start_go = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter swimmonster_start_go = new EntityThinkAdapter() {
         public String getID() { return "swimmonster_start_go";}
         public boolean think(Entity self) {
             if (0 == self.yaw_speed)
@@ -407,7 +407,7 @@ public class GameAI {
         }
     };
 
-    public static EntitiyThinkAdapter swimmonster_start = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter swimmonster_start = new EntityThinkAdapter() {
         public String getID() { return "swimmonster_start";}
         public boolean think(Entity self) {
             self.flags |= Defines.FL_SWIM;

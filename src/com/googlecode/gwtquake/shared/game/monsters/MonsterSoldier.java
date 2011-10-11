@@ -26,8 +26,10 @@ package com.googlecode.gwtquake.shared.game.monsters;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -1009,7 +1011,7 @@ public class MonsterSoldier {
 
     static int sound_cock;
 
-    static EntitiyThinkAdapter soldier_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_dead = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_dead"; }
         public boolean think(Entity self) {
 
@@ -1023,7 +1025,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntDieAdapter soldier_die = new EntDieAdapter() {
+    static EntityDieAdapter soldier_die = new EntityDieAdapter() {
     	public String getID(){ return "soldier_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1086,7 +1088,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_attack1_refire1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_attack1_refire1 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_attack1_refire1"; }
         public boolean think(Entity self) {
             if (self.s.skinnum > 1)
@@ -1104,7 +1106,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_attack1_refire2 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_attack1_refire2 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_attack1_refire2"; }
         public boolean think(Entity self) {
             if (self.s.skinnum < 2)
@@ -1120,7 +1122,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_attack2_refire1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_attack2_refire1 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_attack2_refire1"; }
         public boolean think(Entity self) {
             if (self.s.skinnum > 1)
@@ -1138,7 +1140,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_attack2_refire2 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_attack2_refire2 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_attack2_refire2"; }
         public boolean think(Entity self) {
             if (self.s.skinnum < 2)
@@ -1154,7 +1156,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_attack3_refire = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_attack3_refire = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_attack3_refire"; }
         public boolean think(Entity self) {
             if ((GameBase.level.time + 0.4) < self.monsterinfo.pausetime)
@@ -1163,7 +1165,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_attack6_refire = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_attack6_refire = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_attack6_refire"; }
         public boolean think(Entity self) {
             if (self.enemy.health <= 0)
@@ -1179,7 +1181,7 @@ public class MonsterSoldier {
     };
 
     // ATTACK6 (run & shoot)
-    static EntitiyThinkAdapter soldier_fire8 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_fire8 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_fire8"; }
         public boolean think(Entity self) {
             soldier_fire(self, 7);
@@ -1189,7 +1191,7 @@ public class MonsterSoldier {
 
     // ATTACK1 (blaster/shotgun)
 
-    static EntitiyThinkAdapter soldier_fire1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_fire1 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_fire1"; }
         public boolean think(Entity self) {
             soldier_fire(self, 0);
@@ -1199,7 +1201,7 @@ public class MonsterSoldier {
 
     // ATTACK2 (blaster/shotgun)
 
-    static EntitiyThinkAdapter soldier_fire2 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_fire2 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_fire2"; }
         public boolean think(Entity self) {
             soldier_fire(self, 1);
@@ -1207,7 +1209,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_duck_down = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_duck_down = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_duck_down"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
@@ -1221,7 +1223,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_fire3 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_fire3 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_fire3"; }
         public boolean think(Entity self) {
             soldier_duck_down.think(self);
@@ -1232,7 +1234,7 @@ public class MonsterSoldier {
 
     // ATTACK4 (machinegun)
 
-    static EntitiyThinkAdapter soldier_fire4 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_fire4 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_fire4"; }
         public boolean think(Entity self) {
             soldier_fire(self, 3);
@@ -1251,7 +1253,7 @@ public class MonsterSoldier {
     // DEATH
     //
 
-    static EntitiyThinkAdapter soldier_fire6 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_fire6 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_fire6"; }
         public boolean think(Entity self) {
             soldier_fire(self, 5);
@@ -1259,7 +1261,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_fire7 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_fire7 = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_fire7"; }
         public boolean think(Entity self) {
             soldier_fire(self, 6);
@@ -1267,7 +1269,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_idle = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_idle"; }
         public boolean think(Entity self) {
             if (Lib.random() > 0.8)
@@ -1277,7 +1279,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_stand = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_stand"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.currentmove == soldier_move_stand3)
@@ -1292,7 +1294,7 @@ public class MonsterSoldier {
     //
     // WALK
     //
-    static EntitiyThinkAdapter soldier_walk1_random = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_walk1_random = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_walk1_random"; }
         public boolean think(Entity self) {
             if (Lib.random() > 0.1)
@@ -1301,7 +1303,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_walk = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_walk"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
@@ -1312,7 +1314,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntitiyThinkAdapter soldier_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_run = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
@@ -1385,7 +1387,7 @@ public class MonsterSoldier {
     // SIGHT
     //
 
-    static EntitiyThinkAdapter soldier_duck_up = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_duck_up = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_duck_up"; }
         public boolean think(Entity self) {
             self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
@@ -1419,7 +1421,7 @@ public class MonsterSoldier {
     // SPAWN
     //
 
-    static EntitiyThinkAdapter SP_monster_soldier_x = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter SP_monster_soldier_x = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_soldier_x"; }
         public boolean think(Entity self) {
 
@@ -1462,7 +1464,7 @@ public class MonsterSoldier {
      * QUAKED monster_soldier_light (1 .5 0) (-16 -16 -24) (16 16 32) Ambush
      * Trigger_Spawn Sight
      */
-    public static EntitiyThinkAdapter SP_monster_soldier_light = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_monster_soldier_light = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_soldier_light"; }
         public boolean think(Entity self) {
             if (GameBase.deathmatch.value != 0) {
@@ -1490,7 +1492,7 @@ public class MonsterSoldier {
      * Trigger_Spawn Sight
      */
 
-    public static EntitiyThinkAdapter SP_monster_soldier = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_monster_soldier = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_soldier"; }
         public boolean think(Entity self) {
             Com.DPrintf("Spawning a soldier at " + self.s.origin[0] + " " +
@@ -1520,7 +1522,7 @@ public class MonsterSoldier {
      * QUAKED monster_soldier_ss (1 .5 0) (-16 -16 -24) (16 16 32) Ambush
      * Trigger_Spawn Sight
      */
-    public static EntitiyThinkAdapter SP_monster_soldier_ss = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_monster_soldier_ss = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_soldier_ss"; }
         public boolean think(Entity self) {
             if (GameBase.deathmatch.value != 0) {
@@ -1605,7 +1607,7 @@ public class MonsterSoldier {
         }
     }
 
-    static EntitiyThinkAdapter soldier_cock = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_cock = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_cock"; }
         public boolean think(Entity self) {
             if (self.s.frame == FRAME_stand322)
@@ -1777,7 +1779,7 @@ public class MonsterSoldier {
     // DUCK
     //
 
-    static EntitiyThinkAdapter soldier_duck_hold = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_duck_hold = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
@@ -2210,7 +2212,7 @@ public class MonsterSoldier {
 
     // ATTACK3 (duck and shoot)
 
-    static EntitiyThinkAdapter soldier_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter soldier_attack = new EntityThinkAdapter() {
     	public String getID(){ return "soldier_attack"; }
         public boolean think(Entity self) {
             if (self.s.skinnum < 4) {
@@ -2225,7 +2227,7 @@ public class MonsterSoldier {
         }
     };
 
-    static EntDodgeAdapter soldier_dodge = new EntDodgeAdapter() {
+    static EntityDodgeAdapter soldier_dodge = new EntityDodgeAdapter() {
     	public String getID(){ return "soldier_dodge"; }
         public void dodge(Entity self, Entity attacker, float eta) {
             float r;

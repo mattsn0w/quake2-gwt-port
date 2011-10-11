@@ -25,8 +25,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -374,7 +375,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_idle = new EntityThinkAdapter() {
     	public String getID() { return "flyer_idle"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
@@ -383,7 +384,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_pop_blades = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_pop_blades = new EntityThinkAdapter() {
     	public String getID() { return "flyer_pop_blades"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sproing, 1,
@@ -542,7 +543,7 @@ public class MonsterFlyer {
     static MonsterMove flyer_move_run = new MonsterMove(FRAME_stand01, FRAME_stand45,
             flyer_frames_run, null);
 
-    static EntitiyThinkAdapter flyer_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_run = new EntityThinkAdapter() {
     	public String getID() { return "flyer_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -553,7 +554,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_walk = new EntityThinkAdapter() {
     	public String getID() { return "flyer_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flyer_move_walk;
@@ -561,7 +562,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_stand = new EntityThinkAdapter() {
     	public String getID() { return "flyer_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flyer_move_stand;
@@ -569,7 +570,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_nextmove = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_nextmove = new EntityThinkAdapter() {
     	public String getID() { return "flyer_nextmove"; }
         public boolean think(Entity self) {
             if (nextmove == ACTION_attack1)
@@ -605,7 +606,7 @@ public class MonsterFlyer {
     static MonsterMove flyer_move_stop = new MonsterMove(FRAME_stop01, FRAME_stop07,
             flyer_frames_stop, null);
 
-    static EntitiyThinkAdapter flyer_stop = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_stop = new EntityThinkAdapter() {
     	public String getID() { return "flyer_stop"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flyer_move_stop;
@@ -613,7 +614,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_start = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_start = new EntityThinkAdapter() {
     	public String getID() { return "flyer_start"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = flyer_move_start;
@@ -717,7 +718,7 @@ public class MonsterFlyer {
     static MonsterMove flyer_move_bankleft = new MonsterMove(FRAME_bankl01,
             FRAME_bankl07, flyer_frames_bankleft, null);
 
-    static EntitiyThinkAdapter flyer_fireleft = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_fireleft = new EntityThinkAdapter() {
     	public String getID() { return "flyer_fireleft"; }
         public boolean think(Entity self) {
             flyer_fire(self, Defines.MZ2_FLYER_BLASTER_1);
@@ -725,7 +726,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_fireright = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_fireright = new EntityThinkAdapter() {
     	public String getID() { return "flyer_fireright"; }
         public boolean think(Entity self) {
             flyer_fire(self, Defines.MZ2_FLYER_BLASTER_2);
@@ -756,7 +757,7 @@ public class MonsterFlyer {
     static MonsterMove flyer_move_attack2 = new MonsterMove(FRAME_attak201,
             FRAME_attak217, flyer_frames_attack2, flyer_run);
 
-    static EntitiyThinkAdapter flyer_slash_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_slash_left = new EntityThinkAdapter() {
     	public String getID() { return "flyer_slash_left"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -769,7 +770,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_slash_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_slash_right = new EntityThinkAdapter() {
     	public String getID() { return "flyer_slash_right"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -782,7 +783,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_loop_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_loop_melee = new EntityThinkAdapter() {
     	public String getID() { return "flyer_loop_melee"; }
         public boolean think(Entity self) {
             /*
@@ -831,7 +832,7 @@ public class MonsterFlyer {
 
     };
 
-    static EntitiyThinkAdapter flyer_check_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_check_melee = new EntityThinkAdapter() {
     	public String getID() { return "flyer_check_melee"; }
         public boolean think(Entity self) {
             if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)
@@ -848,7 +849,7 @@ public class MonsterFlyer {
     static MonsterMove flyer_move_loop_melee = new MonsterMove(FRAME_attak107,
             FRAME_attak118, flyer_frames_loop_melee, flyer_check_melee);
 
-    static EntitiyThinkAdapter flyer_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_attack = new EntityThinkAdapter() {
     	public String getID() { return "flyer_attack"; }
         public boolean think(Entity self) {
             /*
@@ -861,7 +862,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_setstart = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_setstart = new EntityThinkAdapter() {
     	public String getID() { return "flyer_setstart"; }
         public boolean think(Entity self) {
             nextmove = ACTION_run;
@@ -870,7 +871,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntitiyThinkAdapter flyer_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter flyer_melee = new EntityThinkAdapter() {
     	public String getID() { return "flyer_melee"; }
         public boolean think(Entity self) {
             //			flyer.nextmove = ACTION_attack1;
@@ -913,7 +914,7 @@ public class MonsterFlyer {
         }
     };
 
-    static EntDieAdapter flyer_die = new EntDieAdapter() {
+    static EntityDieAdapter flyer_die = new EntityDieAdapter() {
     	public String getID() { return "flyer_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {

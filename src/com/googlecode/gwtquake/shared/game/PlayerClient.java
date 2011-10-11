@@ -25,8 +25,8 @@ package com.googlecode.gwtquake.shared.game;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.PlayerMove.TraceAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.game.monsters.MonsterPlayer;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -40,7 +40,7 @@ public class PlayerClient {
     /**
      * player_die. 
      */
-    static EntDieAdapter player_die = new EntDieAdapter() {
+    static EntityDieAdapter player_die = new EntityDieAdapter() {
     	public String getID() { return "player_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -138,7 +138,7 @@ public class PlayerClient {
             GameBase.gi.linkentity(self);
         }
     };
-    static EntitiyThinkAdapter SP_FixCoopSpots = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter SP_FixCoopSpots = new EntityThinkAdapter() {
     	public String getID() { return "SP_FixCoopSpots"; }
         public boolean think(Entity self) {
     
@@ -174,7 +174,7 @@ public class PlayerClient {
             }
         }
     };
-    static EntitiyThinkAdapter SP_CreateCoopSpots = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter SP_CreateCoopSpots = new EntityThinkAdapter() {
     	public String getID() { return "SP_CreateCoopSpots"; }
         public boolean think(Entity self) {
     
@@ -214,7 +214,7 @@ public class PlayerClient {
         public void pain(Entity self, Entity other, float kick, int damage) {
         }
     };
-    static EntDieAdapter body_die = new EntDieAdapter() {
+    static EntityDieAdapter body_die = new EntityDieAdapter() {
     	public String getID() { return "body_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {

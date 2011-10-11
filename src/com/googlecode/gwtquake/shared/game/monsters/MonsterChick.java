@@ -25,8 +25,10 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -642,7 +644,7 @@ public class MonsterChick {
 
     static int sound_search;
 
-    static EntitiyThinkAdapter ChickMoan = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter ChickMoan = new EntityThinkAdapter() {
     	public String getID() { return "ChickMoan"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
@@ -687,7 +689,7 @@ public class MonsterChick {
             new Frame(GameAI.ai_stand, 0, null),
             new Frame(GameAI.ai_stand, 0, null) };
 
-    static EntitiyThinkAdapter chick_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_stand = new EntityThinkAdapter() {
     	public String getID() { return "chick_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = chick_move_stand;
@@ -698,7 +700,7 @@ public class MonsterChick {
     static MonsterMove chick_move_fidget = new MonsterMove(FRAME_stand201,
             FRAME_stand230, chick_frames_fidget, chick_stand);
 
-    static EntitiyThinkAdapter chick_fidget = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_fidget = new EntityThinkAdapter() {
     	public String getID() { return "chick_fidget"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -744,7 +746,7 @@ public class MonsterChick {
     static MonsterMove chick_move_stand = new MonsterMove(FRAME_stand101,
             FRAME_stand130, chick_frames_stand, null);
 
-    static EntitiyThinkAdapter chick_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_run = new EntityThinkAdapter() {
     	public String getID() { return "chick_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
@@ -807,7 +809,7 @@ public class MonsterChick {
     static MonsterMove chick_move_walk = new MonsterMove(FRAME_walk11, FRAME_walk20,
             chick_frames_walk, null);
 
-    static EntitiyThinkAdapter chick_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_walk = new EntityThinkAdapter() {
     	public String getID() { return "chick_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = chick_move_walk;
@@ -898,7 +900,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter chick_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_dead = new EntityThinkAdapter() {
     	public String getID() { return "chick_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, 0);
@@ -956,7 +958,7 @@ public class MonsterChick {
     static MonsterMove chick_move_death1 = new MonsterMove(FRAME_death101,
             FRAME_death112, chick_frames_death1, chick_dead);
 
-    static EntDieAdapter chick_die = new EntDieAdapter() {
+    static EntityDieAdapter chick_die = new EntityDieAdapter() {
     	public String getID() { return "chick_die"; }
 
         public void die(Entity self, Entity inflictor, Entity attacker,
@@ -1003,7 +1005,7 @@ public class MonsterChick {
 
     };
 
-    static EntitiyThinkAdapter chick_duck_down = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_duck_down = new EntityThinkAdapter() {
     	public String getID() { return "chick_duck_down"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_DUCKED) != 0)
@@ -1017,7 +1019,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter chick_duck_hold = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_duck_hold = new EntityThinkAdapter() {
     	public String getID() { return "chick_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
@@ -1028,7 +1030,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter chick_duck_up = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_duck_up = new EntityThinkAdapter() {
     	public String getID() { return "chick_duck_up"; }
         public boolean think(Entity self) {
             self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
@@ -1051,7 +1053,7 @@ public class MonsterChick {
     static MonsterMove chick_move_duck = new MonsterMove(FRAME_duck01, FRAME_duck07,
             chick_frames_duck, chick_run);
 
-    static EntDodgeAdapter chick_dodge = new EntDodgeAdapter() {
+    static EntityDodgeAdapter chick_dodge = new EntityDodgeAdapter() {
     	public String getID() { return "chick_dodge"; }
         public void dodge(Entity self, Entity attacker, float eta) {
             if (Lib.random() > 0.25)
@@ -1065,7 +1067,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter ChickSlash = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter ChickSlash = new EntityThinkAdapter() {
     	public String getID() { return "ChickSlash"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -1078,7 +1080,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter ChickRocket = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter ChickRocket = new EntityThinkAdapter() {
     	public String getID() { return "ChickRocket"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -1102,7 +1104,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter Chick_PreAttack1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Chick_PreAttack1 = new EntityThinkAdapter() {
     	public String getID() { return "Chick_PreAttack1"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE,
@@ -1111,7 +1113,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter ChickReload = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter ChickReload = new EntityThinkAdapter() {
     	public String getID() { return "ChickReload"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_missile_reload,
@@ -1120,7 +1122,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter chick_attack1 = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_attack1 = new EntityThinkAdapter() {
     	public String getID() { return "chick_attack1"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = chick_move_attack1;
@@ -1128,7 +1130,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter chick_rerocket = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_rerocket = new EntityThinkAdapter() {
     	public String getID() { return "chick_rerocket"; }
         public boolean think(Entity self) {
             if (self.enemy.health > 0) {
@@ -1191,7 +1193,7 @@ public class MonsterChick {
     static MonsterMove chick_move_end_attack1 = new MonsterMove(FRAME_attak128,
             FRAME_attak132, chick_frames_end_attack1, chick_run);
 
-    static EntitiyThinkAdapter chick_reslash = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_reslash = new EntityThinkAdapter() {
     	public String getID() { return "chick_reslash"; }
         public boolean think(Entity self) {
             if (self.enemy.health > 0) {
@@ -1232,7 +1234,7 @@ public class MonsterChick {
     static MonsterMove chick_move_end_slash = new MonsterMove(FRAME_attak213,
             FRAME_attak216, chick_frames_end_slash, chick_run);
 
-    static EntitiyThinkAdapter chick_slash = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_slash = new EntityThinkAdapter() {
     	public String getID() { return "chick_slash"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = chick_move_slash;
@@ -1248,7 +1250,7 @@ public class MonsterChick {
     static MonsterMove chick_move_start_slash = new MonsterMove(FRAME_attak201,
             FRAME_attak203, chick_frames_start_slash, chick_slash);
 
-    static EntitiyThinkAdapter chick_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_melee = new EntityThinkAdapter() {
     	public String getID() { return "chick_melee"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = chick_move_start_slash;
@@ -1256,7 +1258,7 @@ public class MonsterChick {
         }
     };
 
-    static EntitiyThinkAdapter chick_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter chick_attack = new EntityThinkAdapter() {
     	public String getID() { return "chick_attack"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = chick_move_start_attack1;

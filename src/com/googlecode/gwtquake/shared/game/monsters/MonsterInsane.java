@@ -25,8 +25,8 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -609,7 +609,7 @@ public class MonsterInsane {
 
     static int sound_scream[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
-    static EntitiyThinkAdapter insane_fist = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_fist = new EntityThinkAdapter() {
     	public String getID() { return "insane_fist"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_fist, 1,
@@ -618,7 +618,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_shake = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_shake = new EntityThinkAdapter() {
     	public String getID() { return "insane_shake"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_shake, 1,
@@ -627,7 +627,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_moan = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_moan = new EntityThinkAdapter() {
     	public String getID() { return "insane_moan"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_moan, 1,
@@ -636,7 +636,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_scream = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_scream = new EntityThinkAdapter() {
     	public String getID() { return "insane_scream"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE,
@@ -645,7 +645,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_cross = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_cross = new EntityThinkAdapter() {
     	public String getID() { return "insane_cross"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.8)
@@ -656,7 +656,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_walk = new EntityThinkAdapter() {
     	public String getID() { return "insane_walk"; }
         public boolean think(Entity self) {
             if ((self.spawnflags & 16) != 0) // Hold Ground?
@@ -674,7 +674,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_run = new EntityThinkAdapter() {
     	public String getID() { return "insane_run"; }
         public boolean think(Entity self) {
             if ((self.spawnflags & 16) != 0) // Hold Ground?
@@ -735,7 +735,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_onground = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_onground = new EntityThinkAdapter() {
     	public String getID() { return "insane_onground"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = insane_move_down;
@@ -743,7 +743,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_checkdown = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_checkdown = new EntityThinkAdapter() {
     	public String getID() { return "insane_checkdown"; }
         public boolean think(Entity self) {
             //			if ( (self.s.frame == FRAME_stand94) || (self.s.frame ==
@@ -759,7 +759,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_checkup = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_checkup = new EntityThinkAdapter() {
     	public String getID() { return "insane_checkup"; }
         public boolean think(Entity self) {
             //			If Hold_Ground and Crawl are set
@@ -771,7 +771,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_stand = new EntityThinkAdapter() {
     	public String getID() { return "insane_stand"; }
         public boolean think(Entity self) {
             if ((self.spawnflags & 8) != 0) // If crucified
@@ -790,7 +790,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntitiyThinkAdapter insane_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter insane_dead = new EntityThinkAdapter() {
     	public String getID() { return "insane_dead"; }
         public boolean think(Entity self) {
             if ((self.spawnflags & 8) != 0) {
@@ -807,7 +807,7 @@ public class MonsterInsane {
         }
     };
 
-    static EntDieAdapter insane_die = new EntDieAdapter() {
+    static EntityDieAdapter insane_die = new EntityDieAdapter() {
     	public String getID() { return "insane_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {

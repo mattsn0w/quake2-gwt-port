@@ -25,8 +25,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -656,7 +657,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_footstep = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_footstep = new EntityThinkAdapter() {
     	public String getID(){ return "tank_footstep"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_step, 1,
@@ -665,7 +666,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_thud = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_thud = new EntityThinkAdapter() {
     	public String getID(){ return "tank_thud"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_thud, 1,
@@ -674,7 +675,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_windup = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_windup = new EntityThinkAdapter() {
     	public String getID(){ return "tank_windup"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_windup, 1,
@@ -683,7 +684,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_idle = new EntityThinkAdapter() {
     	public String getID(){ return "tank_idle"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
@@ -731,7 +732,7 @@ public class MonsterTank {
     static MonsterMove tank_move_stand = new MonsterMove(FRAME_stand01, FRAME_stand30,
             tank_frames_stand, null);
 
-    static EntitiyThinkAdapter tank_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_stand = new EntityThinkAdapter() {
     	public String getID(){ return "tank_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = tank_move_stand;
@@ -742,7 +743,7 @@ public class MonsterTank {
     //
     // walk
     //
-    static EntitiyThinkAdapter tank_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_run = new EntityThinkAdapter() {
     	public String getID(){ return "tank_run"; }
         public boolean think(Entity self) {
             if (self.enemy != null && self.enemy.client != null)
@@ -765,7 +766,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_walk = new EntityThinkAdapter() {
     	public String getID(){ return "tank_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = tank_move_walk;
@@ -947,7 +948,7 @@ public class MonsterTank {
     // attacks
     //
 
-    static EntitiyThinkAdapter TankBlaster = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter TankBlaster = new EntityThinkAdapter() {
     	public String getID(){ return "TankBlaster"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -980,7 +981,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter TankStrike = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter TankStrike = new EntityThinkAdapter() {
     	public String getID(){ return "TankStrike"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_strike, 1,
@@ -990,7 +991,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter TankRocket = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter TankRocket = new EntityThinkAdapter() {
     	public String getID(){ return "TankRocket"; }
         public boolean think(Entity self) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
@@ -1024,7 +1025,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter TankMachineGun = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter TankMachineGun = new EntityThinkAdapter() {
     	public String getID(){ return "TankMachineGun"; }
         public boolean think(Entity self) {
 
@@ -1067,7 +1068,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_reattack_blaster = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_reattack_blaster = new EntityThinkAdapter() {
     	public String getID(){ return "tank_reattack_blaster"; }
         public boolean think(Entity self) {
             if (GameBase.skill.value >= 2)
@@ -1129,7 +1130,7 @@ public class MonsterTank {
     static MonsterMove tank_move_attack_post_blast = new MonsterMove(FRAME_attak117,
             FRAME_attak122, tank_frames_attack_post_blast, tank_run);
 
-    static EntitiyThinkAdapter tank_poststrike = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_poststrike = new EntityThinkAdapter() {
     	public String getID(){ return "tank_poststrike"; }
         public boolean think(Entity self) {
             self.enemy = null;
@@ -1138,7 +1139,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_doattack_rocket = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_doattack_rocket = new EntityThinkAdapter() {
     	public String getID(){ return "tank_doattack_rocket"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = tank_move_attack_fire_rocket;
@@ -1146,7 +1147,7 @@ public class MonsterTank {
         }
     };
 
-    static EntitiyThinkAdapter tank_refire_rocket = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_refire_rocket = new EntityThinkAdapter() {
     	public String getID(){ return "tank_refire_rocket"; }
         public boolean think(Entity self) {
             // Only on hard or nightmare
@@ -1316,7 +1317,7 @@ public class MonsterTank {
     static MonsterMove tank_move_attack_chain = new MonsterMove(FRAME_attak401,
             FRAME_attak429, tank_frames_attack_chain, tank_run);
 
-    static EntitiyThinkAdapter tank_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_attack = new EntityThinkAdapter() {
     	public String getID(){ return "tank_attack"; }
         public boolean think(Entity self) {
             float[] vec = { 0, 0, 0 };
@@ -1364,7 +1365,7 @@ public class MonsterTank {
     //
     // death
     //
-    static EntitiyThinkAdapter tank_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter tank_dead = new EntityThinkAdapter() {
     	public String getID(){ return "tank_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -16);
@@ -1414,7 +1415,7 @@ public class MonsterTank {
     static MonsterMove tank_move_death = new MonsterMove(FRAME_death101,
             FRAME_death132, tank_frames_death1, tank_dead);
 
-    static EntDieAdapter tank_die = new EntDieAdapter() {
+    static EntityDieAdapter tank_die = new EntityDieAdapter() {
     	public String getID(){ return "tank_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1468,7 +1469,7 @@ public class MonsterTank {
      * QUAKED monster_tank_commander (1 .5 0) (-32 -32 -16) (32 32 72) Ambush
      * Trigger_Spawn Sight
      */
-    public static EntitiyThinkAdapter SP_monster_tank = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_monster_tank = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_tank"; }
         public boolean think(Entity self) {
             if (GameBase.deathmatch.value != 0) {

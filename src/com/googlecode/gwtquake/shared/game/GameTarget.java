@@ -25,7 +25,7 @@ package com.googlecode.gwtquake.shared.game;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -374,7 +374,7 @@ public class GameTarget {
      * "delay" wait this long before going off "dmg" how much radius damage
      * should be done, defaults to 0
      */
-    static EntitiyThinkAdapter target_explosion_explode = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter target_explosion_explode = new EntityThinkAdapter() {
     	public String getID() { return "target_explosion_explode"; }
         public boolean think(Entity self) {
 
@@ -562,7 +562,7 @@ public class GameTarget {
      * "delay" delay before using targets if the trigger has been activated
      * (default 1)
      */
-    static EntitiyThinkAdapter target_crosslevel_target_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter target_crosslevel_target_think = new EntityThinkAdapter() {
     	public String getID() { return "target_crosslevel_target_think"; }
         public boolean think(Entity self) {
             if (self.spawnflags == (GameBase.game.serverflags
@@ -579,7 +579,7 @@ public class GameTarget {
      * YELLOW ORANGE FAT When triggered, fires a laser. You can either set a
      * target or a direction.
      */
-    public static EntitiyThinkAdapter target_laser_think = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter target_laser_think = new EntityThinkAdapter() {
     	public String getID() { return "target_laser_think"; }
         public boolean think(Entity self) {
 
@@ -664,7 +664,7 @@ public class GameTarget {
         }
     };
 
-    static EntitiyThinkAdapter target_laser_start = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter target_laser_start = new EntityThinkAdapter() {
     	public String getID() { return "target_laser_start"; }
         public boolean think(Entity self) {
 
@@ -728,7 +728,7 @@ public class GameTarget {
      * lightlevel and ending lightlevel
      */
 
-    static EntitiyThinkAdapter target_lightramp_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter target_lightramp_think = new EntityThinkAdapter() {
     	public String getID() { return "target_lightramp_think"; }
         public boolean think(Entity self) {
 
@@ -804,7 +804,7 @@ public class GameTarget {
      * (default:5)
      */
 
-    static EntitiyThinkAdapter target_earthquake_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter target_earthquake_think = new EntityThinkAdapter() {
     	public String getID() { return "target_earthquake_think"; }
         public boolean think(Entity self) {
 

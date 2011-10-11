@@ -24,7 +24,8 @@
 package com.googlecode.gwtquake.shared.game;
 
 import com.googlecode.gwtquake.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 
 
 public class GameItem {
@@ -36,12 +37,12 @@ public class GameItem {
 
     public GameItem(String classname, EntInteractAdapter pickup,
             ItemUseAdapter use, ItemDropAdapter drop,
-            EntitiyThinkAdapter weaponthink) {
+            EntityThinkAdapter weaponthink) {
     }
 
     public GameItem(String classname, EntInteractAdapter pickup,
             ItemUseAdapter use, ItemDropAdapter drop,
-            EntitiyThinkAdapter weaponthink, String pickup_sound,
+            EntityThinkAdapter weaponthink, String pickup_sound,
             String world_model, int world_model_flags, String view_model,
             String icon, String pickup_name, int count_width, int quantity,
             String ammo, int flags, int weapmodel, GameItemArmor info, int tag,
@@ -77,7 +78,7 @@ public class GameItem {
 
     ItemDropAdapter drop;
 
-    EntitiyThinkAdapter weaponthink;
+    EntityThinkAdapter weaponthink;
 
     String pickup_sound;
 

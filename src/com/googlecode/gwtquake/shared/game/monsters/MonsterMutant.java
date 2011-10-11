@@ -26,8 +26,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -367,7 +368,7 @@ public class MonsterMutant {
     //
     //	SOUNDS
     //
-    static EntitiyThinkAdapter mutant_step = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_step = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_step"; }
         public boolean think(Entity self) {
             int n;
@@ -394,7 +395,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_search = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_search"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
@@ -403,7 +404,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_swing = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_swing = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_swing"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_swing, 1,
@@ -482,7 +483,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_stand = new MonsterMove(FRAME_stand101,
             FRAME_stand151, mutant_frames_stand, null);
 
-    static EntitiyThinkAdapter mutant_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_stand = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = mutant_move_stand;
@@ -494,7 +495,7 @@ public class MonsterMutant {
     //	IDLE
     //
 
-    static EntitiyThinkAdapter mutant_idle_loop = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_idle_loop = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_idle_loop"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.75)
@@ -523,7 +524,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_idle = new MonsterMove(FRAME_stand152,
             FRAME_stand164, mutant_frames_idle, mutant_stand);
 
-    static EntitiyThinkAdapter mutant_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_idle = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_idle"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = mutant_move_idle;
@@ -554,7 +555,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_walk = new MonsterMove(FRAME_walk05, FRAME_walk16,
             mutant_frames_walk, null);
 
-    static EntitiyThinkAdapter mutant_walk_loop = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_walk_loop = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_walk_loop"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = mutant_move_walk;
@@ -571,7 +572,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_start_walk = new MonsterMove(FRAME_walk01,
             FRAME_walk04, mutant_frames_start_walk, mutant_walk_loop);
 
-    static EntitiyThinkAdapter mutant_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_walk = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = mutant_move_start_walk;
@@ -594,7 +595,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_run = new MonsterMove(FRAME_run03, FRAME_run08,
             mutant_frames_run, null);
 
-    static EntitiyThinkAdapter mutant_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_run = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -610,7 +611,7 @@ public class MonsterMutant {
     //	MELEE
     //
 
-    static EntitiyThinkAdapter mutant_hit_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_hit_left = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_hit_left"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -626,7 +627,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_hit_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_hit_right = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_hit_right"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -642,7 +643,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_check_refire = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_check_refire = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_check_refire"; }
         public boolean think(Entity self) {
             if (null == self.enemy || !self.enemy.inuse
@@ -668,7 +669,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_attack = new MonsterMove(FRAME_attack09,
             FRAME_attack15, mutant_frames_attack, mutant_run);
 
-    static EntitiyThinkAdapter mutant_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_melee = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_melee"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = mutant_move_attack;
@@ -717,7 +718,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_jump_takeoff = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_jump_takeoff = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_jump_takeoff"; }
         public boolean think(Entity self) {
 
@@ -737,7 +738,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_check_landing = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_check_landing = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_check_landing"; }
         public boolean think(Entity self) {
             if (self.groundentity != null) {
@@ -769,7 +770,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_jump = new MonsterMove(FRAME_attack01,
             FRAME_attack08, mutant_frames_jump, mutant_run);
 
-    static EntitiyThinkAdapter mutant_jump = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_jump = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_jump"; }
         public boolean think(Entity self) {
 
@@ -781,7 +782,7 @@ public class MonsterMutant {
     //
     //	CHECKATTACK
     //
-    static EntitiyThinkAdapter mutant_check_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_check_melee = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_check_melee"; }
         public boolean think(Entity self) {
             if (GameUtil.range(self, self.enemy) == Defines.RANGE_MELEE)
@@ -791,7 +792,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_check_jump = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_check_jump = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_check_jump"; }
         public boolean think(Entity self) {
 
@@ -820,7 +821,7 @@ public class MonsterMutant {
         }
     };
 
-    static EntitiyThinkAdapter mutant_checkattack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_checkattack = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_checkattack"; }
         public boolean think(Entity self) {
 
@@ -919,7 +920,7 @@ public class MonsterMutant {
     //
     //	DEATH
     //
-    static EntitiyThinkAdapter mutant_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter mutant_dead = new EntityThinkAdapter() {
     	public String getID(){ return "mutant_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -962,7 +963,7 @@ public class MonsterMutant {
     static MonsterMove mutant_move_death2 = new MonsterMove(FRAME_death201,
             FRAME_death210, mutant_frames_death2, mutant_dead);
 
-    static EntDieAdapter mutant_die = new EntDieAdapter() {
+    static EntityDieAdapter mutant_die = new EntityDieAdapter() {
     	public String getID(){ return "mutant_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1010,7 +1011,7 @@ public class MonsterMutant {
      * QUAKED monster_mutant (1 .5 0) (-32 -32 -24) (32 32 32) Ambush
      * Trigger_Spawn Sight
      */
-    public static EntitiyThinkAdapter SP_monster_mutant = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_monster_mutant = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_mutant"; }
         public boolean think(Entity self) {
             if (GameBase.deathmatch.value != 0) {

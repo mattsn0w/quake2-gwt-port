@@ -28,7 +28,7 @@ import com.googlecode.gwtquake.*;
 import com.googlecode.gwtquake.shared.client.*;
 import com.googlecode.gwtquake.shared.common.*;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.render.*;
 import com.googlecode.gwtquake.shared.server.*;
@@ -90,7 +90,7 @@ public class GameWeapon {
         }
     };
     
-    static EntitiyThinkAdapter Grenade_Explode = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter Grenade_Explode = new EntityThinkAdapter() {
     	public String getID() { return "Grenade_Explode"; }
         public boolean think(Entity ent) {
             float[] origin = { 0, 0, 0 };
@@ -251,7 +251,7 @@ public class GameWeapon {
      * fire_bfg 
      * =================
      */
-    static EntitiyThinkAdapter bfg_explode = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter bfg_explode = new EntityThinkAdapter() {
     	public String getID() { return "bfg_explode"; }
         public boolean think(Entity self) {
             Entity ent;
@@ -351,7 +351,7 @@ public class GameWeapon {
         }
     };
     
-    static EntitiyThinkAdapter bfg_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter bfg_think = new EntityThinkAdapter() {
     	public String getID() { return "bfg_think"; }
         public boolean think(Entity self) {
             Entity ent;

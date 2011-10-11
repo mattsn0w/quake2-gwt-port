@@ -25,8 +25,8 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
@@ -1006,7 +1006,7 @@ public class MonsterActor {
     static String actor_names[] = { "Hellrot", "Tokay", "Killme", "Disruptor",
             "Adrianator", "Rambear", "Titus", "Bitterman" };
 
-    static EntitiyThinkAdapter actor_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter actor_stand = new EntityThinkAdapter() {
         public String getID() { return "actor_stand";}
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = actor_move_stand;
@@ -1081,7 +1081,7 @@ public class MonsterActor {
     static MonsterMove actor_move_walk = new MonsterMove(FRAME_walk01, FRAME_walk08,
             actor_frames_walk, null);
 
-    static EntitiyThinkAdapter actor_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter actor_walk = new EntityThinkAdapter() {
         public String getID() { return "actor_walk";}
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = actor_move_walk;
@@ -1106,7 +1106,7 @@ public class MonsterActor {
     static MonsterMove actor_move_run = new MonsterMove(FRAME_run02, FRAME_run07,
             actor_frames_run, null);
 
-    static EntitiyThinkAdapter actor_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter actor_run = new EntityThinkAdapter() {
         public String getID() { return "actor_run";}
         public boolean think(Entity self) {
             if ((GameBase.level.time < self.pain_debounce_time)
@@ -1243,7 +1243,7 @@ public class MonsterActor {
         }
     };
 
-    static EntitiyThinkAdapter actor_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter actor_dead = new EntityThinkAdapter() {
         public String getID() { return "actor_dead";}
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -1286,7 +1286,7 @@ public class MonsterActor {
     static MonsterMove actor_move_death2 = new MonsterMove(FRAME_death201,
             FRAME_death213, actor_frames_death2, actor_dead);
 
-    static EntDieAdapter actor_die = new EntDieAdapter() {
+    static EntityDieAdapter actor_die = new EntityDieAdapter() {
         public String getID() { return "actor_die";}
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -1325,7 +1325,7 @@ public class MonsterActor {
         }
     };
 
-    static EntitiyThinkAdapter actor_fire = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter actor_fire = new EntityThinkAdapter() {
         public String getID() { return "actor_fire";}
         public boolean think(Entity self) {
             actorMachineGun(self);
@@ -1348,7 +1348,7 @@ public class MonsterActor {
     static MonsterMove actor_move_attack = new MonsterMove(FRAME_attak01,
             FRAME_attak04, actor_frames_attack, actor_run);
 
-    static EntitiyThinkAdapter actor_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter actor_attack = new EntityThinkAdapter() {
         public String getID() { return "actor_attack";}
         public boolean think(Entity self) {
             int n;

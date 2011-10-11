@@ -25,7 +25,7 @@ package com.googlecode.gwtquake.shared.game.adapters;
 
 import com.googlecode.gwtquake.shared.game.Entity;
 
-public abstract class EntitiyThinkAdapter extends SuperAdapter
+public abstract class EntityThinkAdapter extends SuperAdapter
 {
 	public abstract boolean think(Entity self);
 }

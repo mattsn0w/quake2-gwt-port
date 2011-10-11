@@ -27,7 +27,7 @@ import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -549,7 +549,7 @@ public class GameUtil {
         self.monsterinfo.run.think(self);
     }
 
-    public static EntitiyThinkAdapter Think_Delay = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter Think_Delay = new EntityThinkAdapter() {
     	public String getID() { return "Think_Delay"; }
         public boolean think(Entity ent) {
             G_UseTargets(ent, ent.activator);
@@ -558,7 +558,7 @@ public class GameUtil {
         }
     };
 
-    public static EntitiyThinkAdapter G_FreeEdictA = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter G_FreeEdictA = new EntityThinkAdapter() {
     	public String getID() { return "G_FreeEdictA"; }
         public boolean think(Entity ent) {
             G_FreeEdict(ent);
@@ -566,7 +566,7 @@ public class GameUtil {
         }
     };
 
-    static EntitiyThinkAdapter MegaHealth_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter MegaHealth_think = new EntityThinkAdapter() {
     	public String getID() { return "MegaHealth_think"; }
         public boolean think(Entity self) {
             if (self.owner.health > self.owner.max_health) {
@@ -586,7 +586,7 @@ public class GameUtil {
     };
 
 
-    public static EntitiyThinkAdapter M_CheckAttack = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter M_CheckAttack = new EntityThinkAdapter() {
     	public String getID() { return "M_CheckAttack"; }
 
         public boolean think(Entity self) {

@@ -26,8 +26,8 @@ package com.googlecode.gwtquake.shared.game;
 import com.googlecode.gwtquake.*;
 import com.googlecode.gwtquake.shared.client.*;
 import com.googlecode.gwtquake.shared.common.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityBlockedAdapter;
 import com.googlecode.gwtquake.shared.game.monsters.MonsterInfantry;
 import com.googlecode.gwtquake.shared.render.*;
@@ -200,7 +200,7 @@ public class GameTurret {
         }
     };
 
-    static EntitiyThinkAdapter turret_breach_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter turret_breach_think = new EntityThinkAdapter() {
     	public String getID() { return "turret_breach_think"; }
         public boolean think(Entity self) {
 
@@ -312,7 +312,7 @@ public class GameTurret {
         }
     };
 
-    static EntitiyThinkAdapter turret_breach_finish_init = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter turret_breach_finish_init = new EntityThinkAdapter() {
     	public String getID() { return "turret_breach_finish_init"; }
         public boolean think(Entity self) {
 
@@ -339,7 +339,7 @@ public class GameTurret {
      * team with the rest of the turret parts. Instead it must target the
      * turret_breach.
      */
-    static EntDieAdapter turret_driver_die = new EntDieAdapter() {
+    static EntityDieAdapter turret_driver_die = new EntityDieAdapter() {
     	public String getID() { return "turret_driver_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -363,7 +363,7 @@ public class GameTurret {
         }
     };
 
-    static EntitiyThinkAdapter turret_driver_think = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter turret_driver_think = new EntityThinkAdapter() {
     	public String getID() { return "turret_driver_think"; }
         public boolean think(Entity self) {
 
@@ -416,7 +416,7 @@ public class GameTurret {
         }
     };
 
-    public static EntitiyThinkAdapter turret_driver_link = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter turret_driver_link = new EntityThinkAdapter() {
     	public String getID() { return "turret_driver_link"; }
         public boolean think(Entity self) {
 

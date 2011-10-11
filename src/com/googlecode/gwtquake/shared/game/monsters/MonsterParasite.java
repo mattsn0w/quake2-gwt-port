@@ -26,8 +26,9 @@ package com.googlecode.gwtquake.shared.game.monsters;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -297,7 +298,7 @@ public class MonsterParasite {
 
     static int sound_search;
 
-    static EntitiyThinkAdapter parasite_launch = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_launch = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_launch"; }
         public boolean think(Entity self) {
 
@@ -307,7 +308,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_reel_in = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_reel_in = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_reel_in"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_reelin, 1,
@@ -325,7 +326,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_tap = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_tap = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_tap"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_tap, 1,
@@ -334,7 +335,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_scratch = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_scratch = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_scratch"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_scratch, 1,
@@ -343,7 +344,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_search = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_search"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_search, 1,
@@ -352,7 +353,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_start_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_start_walk = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_start_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = parasite_move_start_walk;
@@ -360,7 +361,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_walk = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_walk"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = parasite_move_walk;
@@ -368,7 +369,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_stand = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = parasite_move_stand;
@@ -376,7 +377,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_end_fidget = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_end_fidget = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_end_fidget"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = parasite_move_end_fidget;
@@ -384,7 +385,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_do_fidget = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_do_fidget = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_do_fidget"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = parasite_move_fidget;
@@ -392,7 +393,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_refidget = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_refidget = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_refidget"; }
         public boolean think(Entity self) {
             if (Lib.random() <= 0.8)
@@ -403,7 +404,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_idle = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_idle"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = parasite_move_start_fidget;
@@ -411,7 +412,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_start_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_start_run = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_start_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -422,7 +423,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_run = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_run"; }
         public boolean think(Entity self) {
             if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
@@ -589,7 +590,7 @@ public class MonsterParasite {
         }
     };
 
-    static EntitiyThinkAdapter parasite_drain_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_drain_attack = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_drain_attack"; }
         public boolean think(Entity self) {
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 }, f = { 0, 0, 0 }, r = {
@@ -710,7 +711,7 @@ public class MonsterParasite {
      * === Break Stuff Ends ===
      */
 
-    static EntitiyThinkAdapter parasite_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_attack = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_attack"; }
         public boolean think(Entity self) {
             //	if (random() <= 0.2)
@@ -725,7 +726,7 @@ public class MonsterParasite {
      * === Death Stuff Starts ===
      */
 
-    static EntitiyThinkAdapter parasite_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter parasite_dead = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -750,7 +751,7 @@ public class MonsterParasite {
     static MonsterMove parasite_move_death = new MonsterMove(FRAME_death101,
             FRAME_death107, parasite_frames_death, parasite_dead);
 
-    static EntDieAdapter parasite_die = new EntDieAdapter() {
+    static EntityDieAdapter parasite_die = new EntityDieAdapter() {
     	public String getID(){ return "parasite_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
@@ -796,7 +797,7 @@ public class MonsterParasite {
      * Trigger_Spawn Sight
      */
 
-    public static EntitiyThinkAdapter SP_monster_parasite = new EntitiyThinkAdapter() {
+    public static EntityThinkAdapter SP_monster_parasite = new EntityThinkAdapter() {
     	public String getID(){ return "SP_monster_parasite"; }
         public boolean think(Entity self) {
             if (GameBase.deathmatch.value != 0) {

@@ -25,8 +25,10 @@ package com.googlecode.gwtquake.shared.game.monsters;
 
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.game.adapters.EntDieAdapter;
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityDodgeAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -517,7 +519,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_search = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_search = new EntityThinkAdapter() {
     	public String getID() { return "brain_search"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search, 1,
@@ -565,7 +567,7 @@ public class MonsterBrain {
     static MonsterMove brain_move_stand = new MonsterMove(FRAME_stand01, FRAME_stand30,
             brain_frames_stand, null);
 
-    static EntitiyThinkAdapter brain_stand = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_stand = new EntityThinkAdapter() {
     	public String getID() { return "brain_stand"; }
         public boolean think(Entity self) {
             self.monsterinfo.currentmove = brain_move_stand;
@@ -612,7 +614,7 @@ public class MonsterBrain {
     static MonsterMove brain_move_idle = new MonsterMove(FRAME_stand31, FRAME_stand60,
             brain_frames_idle, brain_stand);
 
-    static EntitiyThinkAdapter brain_idle = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_idle = new EntityThinkAdapter() {
     	public String getID() { return "brain_idle"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_AUTO, sound_idle3, 1,
@@ -673,7 +675,7 @@ public class MonsterBrain {
      * brain_frames_walk2, null);
      *  # endif
      */
-    static EntitiyThinkAdapter brain_walk = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_walk = new EntityThinkAdapter() {
     	public String getID() { return "brain_walk"; }
         public boolean think(Entity self) {
             //			if (random() <= 0.5)
@@ -688,7 +690,7 @@ public class MonsterBrain {
     //	   DUCK
     //
 
-    static EntitiyThinkAdapter brain_duck_down = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_duck_down = new EntityThinkAdapter() {
     	public String getID() { return "brain_duck_down"; }
         public boolean think(Entity self) {
 
@@ -702,7 +704,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_duck_hold = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_duck_hold = new EntityThinkAdapter() {
     	public String getID() { return "brain_duck_hold"; }
         public boolean think(Entity self) {
             if (GameBase.level.time >= self.monsterinfo.pausetime)
@@ -713,7 +715,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_duck_up = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_duck_up = new EntityThinkAdapter() {
     	public String getID() { return "brain_duck_up"; }
         public boolean think(Entity self) {
             self.monsterinfo.aiflags &= ~Defines.AI_DUCKED;
@@ -724,7 +726,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntDodgeAdapter brain_dodge = new EntDodgeAdapter() {
+    static EntityDodgeAdapter brain_dodge = new EntityDodgeAdapter() {
     	public String getID() { return "brain_dodge"; }
         public void dodge(Entity self, Entity attacker, float eta) {
             if (Lib.random() > 0.25)
@@ -746,7 +748,7 @@ public class MonsterBrain {
             new Frame(GameAI.ai_move, 9, null),
             new Frame(GameAI.ai_move, 0, null) };
 
-    static EntitiyThinkAdapter brain_dead = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_dead = new EntityThinkAdapter() {
     	public String getID() { return "brain_dead"; }
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
@@ -789,7 +791,7 @@ public class MonsterBrain {
     //	   MELEE
     //
 
-    static EntitiyThinkAdapter brain_swing_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_swing_right = new EntityThinkAdapter() {
     	public String getID() { return "brain_swing_right"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_melee1, 1,
@@ -798,7 +800,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_hit_right = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_hit_right = new EntityThinkAdapter() {
     	public String getID() { return "brain_hit_right"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -811,7 +813,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_swing_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_swing_left = new EntityThinkAdapter() {
     	public String getID() { return "brain_swing_left"; }
         public boolean think(Entity self) {
             GameBase.gi.sound(self, Defines.CHAN_BODY, sound_melee2, 1,
@@ -821,7 +823,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_hit_left = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_hit_left = new EntityThinkAdapter() {
     	public String getID() { return "brain_hit_left"; }
         public boolean think(Entity self) {
             float[] aim = { 0, 0, 0 };
@@ -835,7 +837,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_chest_open = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_chest_open = new EntityThinkAdapter() {
     	public String getID() { return "brain_chest_open"; }
         public boolean think(Entity self) {
             self.spawnflags &= ~65536;
@@ -846,7 +848,7 @@ public class MonsterBrain {
         }
     };
 
-    static EntitiyThinkAdapter brain_tentacle_attack = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_tentacle_attack = new EntityThinkAdapter() {
     	public String getID() { return "brain_tentacle_attack"; }
         public boolean think(Entity self) {
 
@@ -882,7 +884,7 @@ public class MonsterBrain {
             new Frame(GameAI.ai_charge, 2, null),
             new Frame(GameAI.ai_charge, -11, null) };
 
-    static EntitiyThinkAdapter brain_chest_closed = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_chest_closed = new EntityThinkAdapter() {
     	public String getID() { return "brain_chest_closed"; }
         public boolean think(Entity self) {
 
@@ -914,7 +916,7 @@ public class MonsterBrain {
             new Frame(GameAI.ai_charge, -3, null),
             new Frame(GameAI.ai_charge, -6, null) };
 
-    static EntitiyThinkAdapter brain_melee = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_melee = new EntityThinkAdapter() {
     	public String getID() { return "brain_melee"; }
         public boolean think(Entity self) {
             if (Lib.random() <= 0.5)
@@ -946,7 +948,7 @@ public class MonsterBrain {
     static MonsterMove brain_move_run = new MonsterMove(FRAME_walk101, FRAME_walk111,
             brain_frames_run, null);
 
-    static EntitiyThinkAdapter brain_run = new EntitiyThinkAdapter() {
+    static EntityThinkAdapter brain_run = new EntityThinkAdapter() {
     	public String getID() { return "brain_run"; }
         public boolean think(Entity self) {
             self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_SCREEN;
@@ -1068,7 +1070,7 @@ public class MonsterBrain {
 
     };
 
-    static EntDieAdapter brain_die = new EntDieAdapter() {
+    static EntityDieAdapter brain_die = new EntityDieAdapter() {
     	public String getID() { return "brain_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {

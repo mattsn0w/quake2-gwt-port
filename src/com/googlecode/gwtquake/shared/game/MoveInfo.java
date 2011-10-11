@@ -25,7 +25,7 @@ package com.googlecode.gwtquake.shared.game;
 
 import java.io.IOException;
 
-import com.googlecode.gwtquake.shared.game.adapters.EntitiyThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.util.QuakeFile;
 
 
@@ -56,7 +56,7 @@ public class MoveInfo {
 	float next_speed;
 	float remaining_distance;
 	float decel_distance;
-	EntitiyThinkAdapter endfunc;
+	EntityThinkAdapter endfunc;
 
 	/** saves the moveinfo to the file.*/
 	public void write(QuakeFile f) throws IOException {
@@ -113,6 +113,6 @@ public class MoveInfo {
 		next_speed= f.readFloat();
 		remaining_distance= f.readFloat();
 		decel_distance= f.readFloat();
-		endfunc= (EntitiyThinkAdapter) f.readAdapter();
+		endfunc= (EntityThinkAdapter) f.readAdapter();
 	}
 }
