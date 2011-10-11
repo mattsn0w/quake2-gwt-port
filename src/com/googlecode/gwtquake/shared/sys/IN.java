@@ -37,22 +37,15 @@ import com.googlecode.gwtquake.shared.util.Math3D;
 /**
  * IN
  */
-public final class IN extends Globals {
+public final class IN {
 
     static boolean mouse_avail = true;
-
     public static boolean mouse_active = false;
-
     static boolean ignorefirst = false;
-
     static int mouse_buttonstate;
-
     static int mouse_oldbuttonstate;
-
     static int old_mouse_x;
-
     static int old_mouse_y;
-
     static boolean mlooking;
 
     public static void ActivateMouse() {
@@ -93,8 +86,8 @@ public final class IN extends Globals {
     }
 
     public static void Init() {
-        in_mouse = ConsoleVariables.Get("in_mouse", "1", Defines.CVAR_ARCHIVE);
-        in_joystick = ConsoleVariables.Get("in_joystick", "0", Defines.CVAR_ARCHIVE);
+        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", Defines.CVAR_ARCHIVE);
+        Globals.in_joystick = ConsoleVariables.Get("in_joystick", "0", Defines.CVAR_ARCHIVE);
     }
 
     public static void Shutdown() {
@@ -158,16 +151,16 @@ public final class IN extends Globals {
 
     public static void Frame() {
 
-        if (!cl.refresh_prepped || cls.key_dest == Defines.key_console
-                || cls.key_dest == Defines.key_menu)
+        if (!Globals.cl.refresh_prepped || Globals.cls.key_dest == Defines.key_console
+                || Globals.cls.key_dest == Defines.key_menu)
             DeactivateMouse();
         else
             ActivateMouse();
     }
 
     public static void CenterView() {
-        cl.viewangles[Defines.PITCH] = -Math3D
-                .SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
+        Globals.cl.viewangles[Defines.PITCH] = -Math3D
+                .SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
     }
 
     public static void Move(UserCommand cmd) {

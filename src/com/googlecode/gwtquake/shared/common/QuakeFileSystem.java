@@ -39,7 +39,7 @@ import com.googlecode.gwtquake.shared.sys.Sys;
  * 
  * @author cwei
  */
-public final class QuakeFileSystem extends Globals {
+public final class QuakeFileSystem {
 
     /*
      * ==================================================
