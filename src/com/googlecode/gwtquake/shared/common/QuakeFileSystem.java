@@ -135,14 +135,10 @@ public final class QuakeFileSystem {
      * Creates any directories needed to store the given filename.
      */
     public static void CreatePath(String path) {
-        int index = path.lastIndexOf('/');
-        // -1 if not found and 0 means write to root
-        if (index > 0) {
-            File f = new File(path.substring(0, index));
-            if (!f.mkdirs() && !f.isDirectory()) {
-                Com.Printf("can't create path \"" + path + '"' + "\n");
-            }
-        }
+      File f = new File(path).getParentFile();
+      if (f != null && !f.mkdirs() && !f.isDirectory()) {
+        Com.Printf("can't create path \"" + path + '"' + "\n");
+      }
     }
 
     /*
