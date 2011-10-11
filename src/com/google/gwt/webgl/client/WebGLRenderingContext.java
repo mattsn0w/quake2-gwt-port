@@ -26,6 +26,15 @@ import com.googlecode.gwtgl.array.ArrayBuffer;
 import com.googlecode.gwtgl.array.ArrayBufferView;
 import com.googlecode.gwtgl.array.Float32Array;
 import com.googlecode.gwtgl.array.Int32Array;
+import com.googlecode.gwtgl.binding.WebGLActiveInfo;
+import com.googlecode.gwtgl.binding.WebGLBuffer;
+import com.googlecode.gwtgl.binding.WebGLContextAttributes;
+import com.googlecode.gwtgl.binding.WebGLFramebuffer;
+import com.googlecode.gwtgl.binding.WebGLProgram;
+import com.googlecode.gwtgl.binding.WebGLRenderbuffer;
+import com.googlecode.gwtgl.binding.WebGLShader;
+import com.googlecode.gwtgl.binding.WebGLTexture;
+import com.googlecode.gwtgl.binding.WebGLUniformLocation;
 import com.googlecode.gwtquake.client.ArrayUtils;
 
 /**
@@ -1167,7 +1176,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
    * 
    * @param pname one of ARRAY_BUFFER_BINDING, COMPRESSED_TEXTURE_FORMATS, CURRENT_PROGRAM, ELEMENT_ARRAY_BUFFER_BINDING, FRAMEBUFFER_BINDING, RENDERBUFFER_BINDING, TEXTURE_BINDING_2D, TEXTURE_BINDING_CUBE_MAP
    */
-  public final native <T extends WebGLObject> T getParametero(int pname) /*-{
+  public final native JavaScriptObject getParametero(int pname) /*-{
     return this.getParameter(pname);
   }-*/;
 
@@ -1232,7 +1241,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
    * @param pname VERTEX_ATTRIB_ARRAY_BUFFER_BINDING
    * @return {@link WebGLBuffer}
    */
-  public final native <T extends WebGLObject> T getVertexAttribo(int index, int pname) /*-{
+  public final native JavaScriptObject getVertexAttribo(int index, int pname) /*-{
     return this.getVertexAttrib(index, pname);
   }-*/;
 
@@ -1325,7 +1334,7 @@ public class WebGLRenderingContext extends JavaScriptObject {
    * @param pname FRAMEBUFFER_ATTACHMENT_OBJECT_NAME
    * @return {@link WebGLRenderbuffer} or {@link WebGLTexture}
    */
-  public final native <T extends WebGLObject> T getFramebufferAttachmentParametero(int target,
+  public final native JavaScriptObject getFramebufferAttachmentParametero(int target,
       int attachment, int pname) /*-{
     return this.getFramebufferAttachmentParameter(target, attachment, pname);
   }-*/;
