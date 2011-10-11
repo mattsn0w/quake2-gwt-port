@@ -38,7 +38,7 @@ import com.googlecode.gwtquake.shared.util.Vargs;
  * Qcommon contains some  basic routines for the game engine
  * namely initialization, shutdown and frame generation.
  */
-public final class QuakeCommon extends Globals {
+public final class QuakeCommon {
 
 	public static final String BUILDSTRING = "Java " + System.getProperty("java.version");;
 	public static final String CPUSTRING = System.getProperty("os.arch");

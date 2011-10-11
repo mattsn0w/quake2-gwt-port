@@ -36,7 +36,7 @@ import com.googlecode.gwtquake.shared.util.Lib;
 /**
  * Cvar implements console variables. The original code is located in cvar.c
  */
-public class ConsoleVariables extends Globals {
+public class ConsoleVariables {
 
     /**
      * @param var_name
@@ -421,7 +421,7 @@ public class ConsoleVariables extends Globals {
             Lib.fclose(f);
             return;
         }
-        for (var = cvar_vars; var != null; var = var.next) {
+        for (var = Globals.cvar_vars; var != null; var = var.next) {
             if ((var.flags & Defines.CVAR_ARCHIVE) != 0) {
                 buffer = "set " + var.name + " \"" + var.string + "\"\n";
                 try {
