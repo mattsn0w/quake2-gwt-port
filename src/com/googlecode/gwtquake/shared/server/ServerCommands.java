@@ -44,7 +44,6 @@ import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.common.NetworkAddress;
 import com.googlecode.gwtquake.shared.common.NetworkChannels;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
-import com.googlecode.gwtquake.shared.common.SZ;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.game.EndianHandler;
@@ -961,12 +960,12 @@ public class ServerCommands {
 		}
 
 		// setup a buffer to catch all multicasts
-		SZ.Init(ServerInit.svs.demo_multicast, ServerInit.svs.demo_multicast_buf, ServerInit.svs.demo_multicast_buf.length);
+		Buffer.Init(ServerInit.svs.demo_multicast, ServerInit.svs.demo_multicast_buf, ServerInit.svs.demo_multicast_buf.length);
 
 		//
 		// write a single giant fake message with all the startup info
 		//
-		SZ.Init(buf, buf_data, buf_data.length);
+		Buffer.Init(buf, buf_data, buf_data.length);
 
 		//
 		// serverdata needs to go over for all types of servers

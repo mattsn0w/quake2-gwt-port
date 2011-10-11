@@ -1168,10 +1168,10 @@ public final class Commands {
         }
 
         Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
-        SZ.Print(Globals.cls.netchan.message, cmd);
+        Buffer.Print(Globals.cls.netchan.message, cmd);
         if (Commands.Argc() > 1) {
-            SZ.Print(Globals.cls.netchan.message, " ");
-            SZ.Print(Globals.cls.netchan.message, Commands.Args());
+            Buffer.Print(Globals.cls.netchan.message, " ");
+            Buffer.Print(Globals.cls.netchan.message, Commands.Args());
         }
     }
 

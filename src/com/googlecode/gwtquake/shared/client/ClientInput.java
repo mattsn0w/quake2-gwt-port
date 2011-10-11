@@ -689,7 +689,7 @@ public class ClientInput {
 			Messages.WriteString(Globals.cls.netchan.message, ConsoleVariables.Userinfo());
 		}
 
-		SZ.Init(buf, data, data.length);
+		Buffer.Init(buf, data, data.length);
 
 		if (cmd.buttons != 0 && Globals.cl.cinematictime > 0 && !Globals.cl.attractloop
 				&& Globals.cls.realtime - Globals.cl.cinematictime > 1000) { // skip

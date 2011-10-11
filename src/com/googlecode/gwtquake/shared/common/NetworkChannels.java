@@ -128,10 +128,10 @@ public final class NetworkChannels extends ServerMain {
             int length, byte data[]) {
 
         // write the packet header
-        SZ.Init(send, send_buf, Defines.MAX_MSGLEN);
+        Buffer.Init(send, send_buf, Defines.MAX_MSGLEN);
 
         Messages.WriteInt(send, -1); // -1 sequence means out of band
-        SZ.Write(send, data, length);
+        Buffer.Write(send, data, length);
 
         // send the datagram
         NET.SendPacket(net_socket, send.cursize, send.data, adr);
@@ -157,7 +157,7 @@ public final class NetworkChannels extends ServerMain {
         chan.incoming_sequence = 0;
         chan.outgoing_sequence = 1;
 
-        SZ.Init(chan.message, chan.message_buf, chan.message_buf.length);
+        Buffer.Init(chan.message, chan.message_buf, chan.message_buf.length);
         chan.message.allowoverflow = true;
     }
 
@@ -226,7 +226,7 @@ public final class NetworkChannels extends ServerMain {
         }
 
         // write the packet header
-        SZ.Init(send, send_buf, send_buf.length);
+        Buffer.Init(send, send_buf, send_buf.length);
 
         w1 = (chan.outgoing_sequence & ~(1 << 31)) | (send_reliable << 31);
         w2 = (chan.incoming_sequence & ~(1 << 31))
@@ -244,13 +244,13 @@ public final class NetworkChannels extends ServerMain {
 
         // copy the reliable message to the packet first
         if (send_reliable != 0) {
-            SZ.Write(send, chan.reliable_buf, chan.reliable_length);
+            Buffer.Write(send, chan.reliable_buf, chan.reliable_length);
             chan.last_reliable_sequence = chan.outgoing_sequence;
         }
 
         // add the unreliable part if space is available
         if (send.maxsize - send.cursize >= length)
-            SZ.Write(send, data, length);
+            Buffer.Write(send, data, length);
         else
             Com.Printf("Netchan_Transmit: dumped unreliable\n");
 

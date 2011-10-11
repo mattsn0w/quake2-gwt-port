@@ -63,7 +63,7 @@ public class ServerInit {
 
         if (sv.state != Defines.ss_loading) { 
             // send the update to everyone
-            SZ.Clear(sv.multicast);
+            sv.multicast.clear();
             Messages.WriteChar(sv.multicast, Defines.svc_configstring);
             Messages.WriteShort(sv.multicast, start + i);
             Messages.WriteString(sv.multicast, name);
@@ -212,7 +212,7 @@ public class ServerInit {
             PlayerMovements.pm_airaccelerate = 0;
         }
 
-        SZ.Init(sv.multicast, sv.multicast_buf, sv.multicast_buf.length);
+        Buffer.Init(sv.multicast, sv.multicast_buf, sv.multicast_buf.length);
 
         sv.name = server;
 
