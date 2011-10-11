@@ -1,7 +1,7 @@
 package com.google.gwt.html5.client;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.webgl.client.WebGLContextAttributes;
+import com.googlecode.gwtgl.binding.WebGLContextAttributes;
 import com.google.gwt.webgl.client.WebGLRenderingContext;
 
 public class CanvasElement extends Element {
