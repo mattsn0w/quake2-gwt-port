@@ -228,8 +228,8 @@ public class Key  {
 		if (down) {
 			key_repeats[key]++;
 			if (key_repeats[key] > 1
-				&& Globals.cls.key_dest == Defines.key_game
-				&& !(Globals.cls.state == Defines.ca_disconnected))
+				&& Globals.cls.key_dest == Constants.key_game
+				&& !(Globals.cls.state == Constants.ca_disconnected))
 				return; // ignore most autorepeats
 
 			if (key >= 200 && Globals.keybindings[key] == null)
@@ -252,7 +252,7 @@ public class Key  {
 		}
 
 		// any key during the attract mode will bring up the menu
-		if (Globals.cl.attractloop && Globals.cls.key_dest != Defines.key_menu && !(key >= K_F1 && key <= K_F12))
+		if (Globals.cl.attractloop && Globals.cls.key_dest != Constants.key_menu && !(key >= K_F1 && key <= K_F12))
 			key = Keys.K_ESCAPE;
 
 		// menu key is hardcoded, so the user can never unbind it
@@ -260,24 +260,24 @@ public class Key  {
 			if (!down)
 				return;
 
-			if (Globals.cl.frame.playerstate.stats[Defines.STAT_LAYOUTS] != 0 && Globals.cls.key_dest == Defines.key_game) {
+			if (Globals.cl.frame.playerstate.stats[Constants.STAT_LAYOUTS] != 0 && Globals.cls.key_dest == Constants.key_game) {
 				// put away help computer / inventory
 				CommandBuffer.AddText("cmd putaway\n");
 				return;
 			}
 			switch (Globals.cls.key_dest) {
-				case Defines.key_message :
+				case Constants.key_message :
 					Key.Message(key);
 					break;
-				case Defines.key_menu :
+				case Constants.key_menu :
 					Menu.Keydown(key);
 					break;
-				case Defines.key_game :
-				case Defines.key_console :
+				case Constants.key_game :
+				case Constants.key_console :
 					Menu.Menu_Main_f();
 					break;
 				default :
-					Com.Error(Defines.ERR_FATAL, "Bad cls.key_dest");
+					Com.Error(Constants.ERR_FATAL, "Bad cls.key_dest");
 			}
 			return;
 		}
@@ -320,9 +320,9 @@ public class Key  {
 		//
 		// if not a consolekey, send to the interpreter no matter what mode is
 		//
-		if ((Globals.cls.key_dest == Defines.key_menu && menubound[key])
-			|| (Globals.cls.key_dest == Defines.key_console && !consolekeys[key])
-			|| (Globals.cls.key_dest == Defines.key_game && (Globals.cls.state == Defines.ca_active || !consolekeys[key]))) {
+		if ((Globals.cls.key_dest == Constants.key_menu && menubound[key])
+			|| (Globals.cls.key_dest == Constants.key_console && !consolekeys[key])
+			|| (Globals.cls.key_dest == Constants.key_game && (Globals.cls.state == Constants.ca_active || !consolekeys[key]))) {
 			kb = Globals.keybindings[key];
 			if (kb != null) {
 				if (kb.length()>0 && kb.charAt(0) == '+') {
@@ -344,19 +344,19 @@ public class Key  {
 //			key = keyshift[key];
 
 		switch (Globals.cls.key_dest) {
-			case Defines.key_message :
+			case Constants.key_message :
 				Key.Message(key);
 				break;
-			case Defines.key_menu :
+			case Constants.key_menu :
 				Menu.Keydown(key);
 				break;
 
-			case Defines.key_game :
-			case Defines.key_console :
+			case Constants.key_game :
+			case Constants.key_console :
 				Key.Console(key);
 				break;
 			default :
-				Com.Error(Defines.ERR_FATAL, "Bad cls.key_dest");
+				Com.Error(Constants.ERR_FATAL, "Bad cls.key_dest");
 		}
 	}
 
@@ -408,13 +408,13 @@ public class Key  {
 			CommandBuffer.AddText(Globals.chat_buffer);
 			CommandBuffer.AddText("\"\n");
 
-			Globals.cls.key_dest = Defines.key_game;
+			Globals.cls.key_dest = Constants.key_game;
 			Globals.chat_buffer = "";
 			return;
 		}
 
 		if (key == Keys.K_ESCAPE) {
-			Globals.cls.key_dest = Defines.key_game;
+			Globals.cls.key_dest = Constants.key_game;
 			Globals.chat_buffer = "";
 			return;
 		}
@@ -431,7 +431,7 @@ public class Key  {
 			return;
 		}
 
-		if (Globals.chat_buffer.length() > Defines.MAXCMDLINE)
+		if (Globals.chat_buffer.length() > Constants.MAXCMDLINE)
 			return; // all full
 
 		Globals.chat_buffer += (char) key;
@@ -511,7 +511,7 @@ public class Key  {
 		
 			Globals.key_lines[Globals.edit_line][0] = ']';
 			Globals.key_linepos = 1;
-			if (Globals.cls.state == Defines.ca_disconnected)
+			if (Globals.cls.state == Constants.ca_disconnected)
 				Screen.UpdateScreen(); // force an update, because the command may take some time
 			return;
 		}
@@ -585,7 +585,7 @@ public class Key  {
 		if (key < 32 || key > 127)
 			return; // non printable
 
-		if (Globals.key_linepos < Defines.MAXCMDLINE - 1) {
+		if (Globals.key_linepos < Constants.MAXCMDLINE - 1) {
 			Globals.key_lines[Globals.edit_line][Globals.key_linepos] = (byte) key;
 			Globals.key_linepos++;
 			Globals.key_lines[Globals.edit_line][Globals.key_linepos] = 0;

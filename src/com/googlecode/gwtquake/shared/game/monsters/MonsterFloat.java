@@ -23,13 +23,17 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -553,8 +557,8 @@ public class MonsterFloat {
     static EntInteractAdapter floater_sight = new EntInteractAdapter() {
     	public String getID() { return "floater_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -562,8 +566,8 @@ public class MonsterFloat {
     static EntityThinkAdapter floater_idle = new EntityThinkAdapter() {
     	public String getID() { return "floater_idle"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_idle, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -579,12 +583,12 @@ public class MonsterFloat {
 
             if ((self.s.frame == FRAME_attak104)
                     || (self.s.frame == FRAME_attak107))
-                effect = Defines.EF_HYPERBLASTER;
+                effect = Constants.EF_HYPERBLASTER;
             else
                 effect = 0;
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_FLOAT_BLASTER_1],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_FLOAT_BLASTER_1],
                     forward, right, start);
 
             Math3D.VectorCopy(self.enemy.s.origin, end);
@@ -592,7 +596,7 @@ public class MonsterFloat {
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 1, 1000,
-                    Defines.MZ2_FLOAT_BLASTER_1, effect);
+                    Constants.MZ2_FLOAT_BLASTER_1, effect);
 
             return true;
         }
@@ -762,7 +766,7 @@ public class MonsterFloat {
     	public String getID() { return "floater_run"; }
         public boolean think(Entity self) {
 
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = floater_move_stand1;
             else
                 self.monsterinfo.currentmove = floater_move_run;
@@ -793,14 +797,14 @@ public class MonsterFloat {
     static MonsterMove floater_move_attack1 = new MonsterMove(FRAME_attak101,
             FRAME_attak114, floater_frames_attack1, floater_run);
 
-    static float[] aim = { Defines.MELEE_DISTANCE, 0, 0 };
+    static float[] aim = { Constants.MELEE_DISTANCE, 0, 0 };
 
     static EntityThinkAdapter floater_wham = new EntityThinkAdapter() {
     	public String getID() { return "floater_wham"; }
         public boolean think(Entity self) {
 
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_attack3, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_attack3, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             GameWeapon.fire_hit(self, aim, 5 + Lib.rand() % 6, -50);
             return true;
         }
@@ -857,21 +861,21 @@ public class MonsterFloat {
             //		G_ProjectSource (self.s.origin,
             // monster_flash_offset[flash_number], forward, right, origin);
 
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_attack2, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_attack2, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
 
             //FIXME use the flash, Luke
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_SPLASH);
-            GameBase.gi.WriteByte(32);
-            GameBase.gi.WritePosition(origin);
-            GameBase.gi.WriteDir(dir);
-            GameBase.gi.WriteByte(1); //sparks
-            GameBase.gi.multicast(origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_SPLASH);
+            ServerGame.PF_WriteByte(32);
+            ServerGame.PF_WritePos(origin);
+            ServerGame.PF_WriteDir(dir);
+            ServerGame.PF_WriteByte(1); //sparks
+            ServerSend.SV_Multicast(origin, Constants.MULTICAST_PVS);
 
             GameCombat.T_Damage(self.enemy, self, self, dir, self.enemy.s.origin,
                     Globals.vec3_origin, 5 + Lib.rand() % 6, -10,
-                    Defines.DAMAGE_ENERGY, Defines.MOD_UNKNOWN);
+                    Constants.DAMAGE_ENERGY, Constants.MOD_UNKNOWN);
             return true;
         }
     };
@@ -937,10 +941,10 @@ public class MonsterFloat {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -1149,12 +1153,12 @@ public class MonsterFloat {
 
             n = (Lib.rand() + 1) % 3;
             if (n == 0) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = floater_move_pain1;
             } else {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = floater_move_pain2;
             }
             return;
@@ -1166,8 +1170,8 @@ public class MonsterFloat {
 
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death1, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death1, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             GameMisc.BecomeExplosion1(self);
 
         }
@@ -1183,22 +1187,21 @@ public class MonsterFloat {
             return;
         }
 
-        sound_attack2 = GameBase.gi.soundindex("floater/fltatck2.wav");
-        sound_attack3 = GameBase.gi.soundindex("floater/fltatck3.wav");
-        sound_death1 = GameBase.gi.soundindex("floater/fltdeth1.wav");
-        sound_idle = GameBase.gi.soundindex("floater/fltidle1.wav");
-        sound_pain1 = GameBase.gi.soundindex("floater/fltpain1.wav");
-        sound_pain2 = GameBase.gi.soundindex("floater/fltpain2.wav");
-        sound_sight = GameBase.gi.soundindex("floater/fltsght1.wav");
+        sound_attack2 = ServerInit.SV_SoundIndex("floater/fltatck2.wav");
+        sound_attack3 = ServerInit.SV_SoundIndex("floater/fltatck3.wav");
+        sound_death1 = ServerInit.SV_SoundIndex("floater/fltdeth1.wav");
+        sound_idle = ServerInit.SV_SoundIndex("floater/fltidle1.wav");
+        sound_pain1 = ServerInit.SV_SoundIndex("floater/fltpain1.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("floater/fltpain2.wav");
+        sound_sight = ServerInit.SV_SoundIndex("floater/fltsght1.wav");
 
-        GameBase.gi.soundindex("floater/fltatck1.wav");
+        ServerInit.SV_SoundIndex("floater/fltatck1.wav");
 
-        self.s.sound = GameBase.gi.soundindex("floater/fltsrch1.wav");
+        self.s.sound = ServerInit.SV_SoundIndex("floater/fltsrch1.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/float/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/float/tris.md2");
         Math3D.VectorSet(self.mins, -24, -24, -24);
         Math3D.VectorSet(self.maxs, 24, 24, 32);
 
@@ -1218,7 +1221,7 @@ public class MonsterFloat {
         self.monsterinfo.sight = floater_sight;
         self.monsterinfo.idle = floater_idle;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         if (Lib.random() <= 0.5)
             self.monsterinfo.currentmove = floater_move_stand1;

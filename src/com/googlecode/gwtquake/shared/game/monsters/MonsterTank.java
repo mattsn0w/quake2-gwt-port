@@ -23,12 +23,15 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -651,8 +654,8 @@ public class MonsterTank {
     static EntInteractAdapter tank_sight = new EntInteractAdapter() {
     	public String getID(){ return "tank_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -660,8 +663,8 @@ public class MonsterTank {
     static EntityThinkAdapter tank_footstep = new EntityThinkAdapter() {
     	public String getID(){ return "tank_footstep"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_step, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_step, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -669,8 +672,8 @@ public class MonsterTank {
     static EntityThinkAdapter tank_thud = new EntityThinkAdapter() {
     	public String getID(){ return "tank_thud"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_BODY, sound_thud, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, sound_thud, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -678,8 +681,8 @@ public class MonsterTank {
     static EntityThinkAdapter tank_windup = new EntityThinkAdapter() {
     	public String getID(){ return "tank_windup"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_windup, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_windup, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -687,8 +690,8 @@ public class MonsterTank {
     static EntityThinkAdapter tank_idle = new EntityThinkAdapter() {
     	public String getID(){ return "tank_idle"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_idle, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_idle, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -747,11 +750,11 @@ public class MonsterTank {
     	public String getID(){ return "tank_run"; }
         public boolean think(Entity self) {
             if (self.enemy != null && self.enemy.client != null)
-                self.monsterinfo.aiflags |= Defines.AI_BRUTAL;
+                self.monsterinfo.aiflags |= Constants.AI_BRUTAL;
             else
-                self.monsterinfo.aiflags &= ~Defines.AI_BRUTAL;
+                self.monsterinfo.aiflags &= ~Constants.AI_BRUTAL;
 
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0) {
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0) {
                 self.monsterinfo.currentmove = tank_move_stand;
                 return true;
             }
@@ -929,8 +932,8 @@ public class MonsterTank {
             }
 
             self.pain_debounce_time = GameBase.level.time + 3;
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
 
             if (GameBase.skill.value == 3)
                 return; // no pain anims in nightmare
@@ -958,12 +961,12 @@ public class MonsterTank {
             int flash_number;
 
             if (self.s.frame == FRAME_attak110)
-                flash_number = Defines.MZ2_TANK_BLASTER_1;
+                flash_number = Constants.MZ2_TANK_BLASTER_1;
             else if (self.s.frame == FRAME_attak113)
-                flash_number = Defines.MZ2_TANK_BLASTER_2;
+                flash_number = Constants.MZ2_TANK_BLASTER_2;
             else
                 // (self.s.frame == FRAME_attak116)
-                flash_number = Defines.MZ2_TANK_BLASTER_3;
+                flash_number = Constants.MZ2_TANK_BLASTER_3;
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
@@ -975,7 +978,7 @@ public class MonsterTank {
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 30, 800,
-                    flash_number, Defines.EF_BLASTER);
+                    flash_number, Constants.EF_BLASTER);
 
             return true;
         }
@@ -984,8 +987,8 @@ public class MonsterTank {
     static EntityThinkAdapter TankStrike = new EntityThinkAdapter() {
     	public String getID(){ return "TankStrike"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_strike, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_strike, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
 
             return true;
         }
@@ -1001,12 +1004,12 @@ public class MonsterTank {
             int flash_number;
 
             if (self.s.frame == FRAME_attak324)
-                flash_number = Defines.MZ2_TANK_ROCKET_1;
+                flash_number = Constants.MZ2_TANK_ROCKET_1;
             else if (self.s.frame == FRAME_attak327)
-                flash_number = Defines.MZ2_TANK_ROCKET_2;
+                flash_number = Constants.MZ2_TANK_ROCKET_2;
             else
                 // (self.s.frame == FRAME_attak330)
-                flash_number = Defines.MZ2_TANK_ROCKET_3;
+                flash_number = Constants.MZ2_TANK_ROCKET_3;
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
@@ -1035,7 +1038,7 @@ public class MonsterTank {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
             int flash_number;
 
-            flash_number = Defines.MZ2_TANK_MACHINEGUN_1
+            flash_number = Constants.MZ2_TANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak406);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
@@ -1061,8 +1064,8 @@ public class MonsterTank {
             Math3D.AngleVectors(dir, forward, null, null);
 
             Monster.monster_fire_bullet(self, start, forward, 20, 4,
-                    Defines.DEFAULT_BULLET_HSPREAD,
-                    Defines.DEFAULT_BULLET_VSPREAD, flash_number);
+                    Constants.DEFAULT_BULLET_HSPREAD,
+                    Constants.DEFAULT_BULLET_VSPREAD, flash_number);
 
             return true;
         }
@@ -1326,7 +1329,7 @@ public class MonsterTank {
 
             if (self.enemy.health < 0) {
                 self.monsterinfo.currentmove = tank_move_attack_strike;
-                self.monsterinfo.aiflags &= ~Defines.AI_BRUTAL;
+                self.monsterinfo.aiflags &= ~Constants.AI_BRUTAL;
                 return true;
             }
 
@@ -1370,10 +1373,10 @@ public class MonsterTank {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -16);
             Math3D.VectorSet(self.maxs, 16, 16, -0);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -1423,34 +1426,32 @@ public class MonsterTank {
 
             // check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 1 /* 4 */; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_metal/tris.md2", damage,
-                            Defines.GIB_METALLIC);
+                            Constants.GIB_METALLIC);
                 GameMisc.ThrowGib(self, "models/objects/gibs/chest/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
+                        damage, Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/gear/tris.md2",
-                        damage, Defines.GIB_METALLIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_METALLIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             // regular death
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_die, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
 
             self.monsterinfo.currentmove = tank_move_death;
 
@@ -1477,29 +1478,28 @@ public class MonsterTank {
                 return true;
             }
 
-            self.s.modelindex = GameBase.gi
-                    .modelindex("models/monsters/tank/tris.md2");
+            self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/tank/tris.md2");
             Math3D.VectorSet(self.mins, -32, -32, -16);
             Math3D.VectorSet(self.maxs, 32, 32, 72);
-            self.movetype = Defines.MOVETYPE_STEP;
-            self.solid = Defines.SOLID_BBOX;
+            self.movetype = Constants.MOVETYPE_STEP;
+            self.solid = Constants.SOLID_BBOX;
 
-            sound_pain = GameBase.gi.soundindex("tank/tnkpain2.wav");
-            sound_thud = GameBase.gi.soundindex("tank/tnkdeth2.wav");
-            sound_idle = GameBase.gi.soundindex("tank/tnkidle1.wav");
-            sound_die = GameBase.gi.soundindex("tank/death.wav");
-            sound_step = GameBase.gi.soundindex("tank/step.wav");
-            sound_windup = GameBase.gi.soundindex("tank/tnkatck4.wav");
-            sound_strike = GameBase.gi.soundindex("tank/tnkatck5.wav");
-            sound_sight = GameBase.gi.soundindex("tank/sight1.wav");
+            sound_pain = ServerInit.SV_SoundIndex("tank/tnkpain2.wav");
+            sound_thud = ServerInit.SV_SoundIndex("tank/tnkdeth2.wav");
+            sound_idle = ServerInit.SV_SoundIndex("tank/tnkidle1.wav");
+            sound_die = ServerInit.SV_SoundIndex("tank/death.wav");
+            sound_step = ServerInit.SV_SoundIndex("tank/step.wav");
+            sound_windup = ServerInit.SV_SoundIndex("tank/tnkatck4.wav");
+            sound_strike = ServerInit.SV_SoundIndex("tank/tnkatck5.wav");
+            sound_sight = ServerInit.SV_SoundIndex("tank/sight1.wav");
 
-            GameBase.gi.soundindex("tank/tnkatck1.wav");
-            GameBase.gi.soundindex("tank/tnkatk2a.wav");
-            GameBase.gi.soundindex("tank/tnkatk2b.wav");
-            GameBase.gi.soundindex("tank/tnkatk2c.wav");
-            GameBase.gi.soundindex("tank/tnkatk2d.wav");
-            GameBase.gi.soundindex("tank/tnkatk2e.wav");
-            GameBase.gi.soundindex("tank/tnkatck3.wav");
+            ServerInit.SV_SoundIndex("tank/tnkatck1.wav");
+            ServerInit.SV_SoundIndex("tank/tnkatk2a.wav");
+            ServerInit.SV_SoundIndex("tank/tnkatk2b.wav");
+            ServerInit.SV_SoundIndex("tank/tnkatk2c.wav");
+            ServerInit.SV_SoundIndex("tank/tnkatk2d.wav");
+            ServerInit.SV_SoundIndex("tank/tnkatk2e.wav");
+            ServerInit.SV_SoundIndex("tank/tnkatck3.wav");
 
             if (Lib.strcmp(self.classname, "monster_tank_commander") == 0) {
                 self.health = 1000;
@@ -1522,7 +1522,7 @@ public class MonsterTank {
             self.monsterinfo.sight = tank_sight;
             self.monsterinfo.idle = tank_idle;
 
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
 
             self.monsterinfo.currentmove = tank_move_stand;
             self.monsterinfo.scale = MODEL_SCALE;

@@ -44,7 +44,7 @@ public final class Com
     static String _debugContext = "";
     
 	static int com_argc;
-	static String[] com_argv= new String[Defines.MAX_NUM_ARGVS];
+	static String[] com_argv= new String[Constants.MAX_NUM_ARGVS];
 
 	public abstract static class RD_Flusher
 	{
@@ -175,7 +175,7 @@ public final class Com
 		}
 	}
 
-  public static char com_token[] = new char[Defines.MAX_TOKEN_CHARS];
+  public static char com_token[] = new char[Constants.MAX_TOKEN_CHARS];
 
   // See GameSpanw.ED_ParseEdict() to see how to use it now.
   public static String Parse(ParseHelp hlp) {
@@ -217,7 +217,7 @@ public final class Com
 				if (c == '\"' || c == 0) {
 					return new String(com_token, 0, len);
 				}
-				if (len < Defines.MAX_TOKEN_CHARS) {
+				if (len < Constants.MAX_TOKEN_CHARS) {
 					com_token[len] = (char) c;
 					len++;
 				}
@@ -227,15 +227,15 @@ public final class Com
 		//	   parse a regular word
 		c = hlp.getchar();
 		do {
-			if (len < Defines.MAX_TOKEN_CHARS) {
+			if (len < Constants.MAX_TOKEN_CHARS) {
 				com_token[len] = (char) c;
 				len++;
 			}
 			c = hlp.nextchar();
 		} while (c > 32);
 
-		if (len == Defines.MAX_TOKEN_CHARS) {
-			Com.Printf("Token exceeded " + Defines.MAX_TOKEN_CHARS + " chars, discarded.\n");
+		if (len == Constants.MAX_TOKEN_CHARS) {
+			Com.Printf("Token exceeded " + Constants.MAX_TOKEN_CHARS + " chars, discarded.\n");
 			len = 0;
 		}
 
@@ -246,7 +246,7 @@ public final class Com
 	{
 		public void execute() throws LongJmpException
 		{
-			Error(Defines.ERR_FATAL, Commands.Argv(1));
+			Error(Constants.ERR_FATAL, Commands.Argv(1));
 		}
 	};
 
@@ -268,13 +268,13 @@ public final class Com
 
 		msg= sprintf(fmt, vargs);
 
-		if (code == Defines.ERR_DISCONNECT)
+		if (code == Constants.ERR_DISCONNECT)
 		{
 			Client.drop();
       recursive = false;
       throw new LongJmpException();
 		}
-		else if (code == Defines.ERR_DROP)
+		else if (code == Constants.ERR_DROP)
 		{
 			Com.Printf("********************\nERROR: " + msg + "\n********************\n");
 			ServerMain.SV_Shutdown("Server crashed: " + msg + "\n", false);
@@ -298,15 +298,15 @@ public final class Com
 	static void InitArgv(String[] args) throws LongJmpException
 	{
 
-		if (args.length > Defines.MAX_NUM_ARGVS)
+		if (args.length > Constants.MAX_NUM_ARGVS)
 		{
-			Com.Error(Defines.ERR_FATAL, "argc > MAX_NUM_ARGVS");
+			Com.Error(Constants.ERR_FATAL, "argc > MAX_NUM_ARGVS");
 		}
 
 		Com.com_argc= args.length;
 		for (int i= 0; i < Com.com_argc; i++)
 		{
-			if (args[i].length() >= Defines.MAX_TOKEN_CHARS)
+			if (args[i].length() >= Constants.MAX_TOKEN_CHARS)
 				Com.com_argv[i]= "";
 			else
 				Com.com_argv[i]= args[i];
@@ -467,12 +467,7 @@ public final class Com
 		Globals.server_state= i;
 	}
 
-	public static int BlockChecksum(byte[] buf, int length)
-	{
-		return MD4.Com_BlockChecksum(buf, length);
-	}
-
-  public static String StripExtension(String string) {
+	public static String StripExtension(String string) {
     int i = string.lastIndexOf('.');
     if (i < 0)
       return string;

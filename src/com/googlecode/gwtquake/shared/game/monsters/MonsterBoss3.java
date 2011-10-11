@@ -23,12 +23,16 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.Entity;
 import com.googlecode.gwtquake.shared.game.GameBase;
 import com.googlecode.gwtquake.shared.game.GameUtil;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
 
@@ -37,10 +41,10 @@ public class MonsterBoss3 {
     static EntityUseAdapter Use_Boss3 = new EntityUseAdapter() {
     	public String getID() { return "Use_Boss3"; }
         public void use(Entity ent, Entity other, Entity activator) {
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_BOSSTPORT);
-            GameBase.gi.WritePosition(ent.s.origin);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_BOSSTPORT);
+            ServerGame.PF_WritePos(ent.s.origin);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
             GameUtil.G_FreeEdict(ent);
         }
     };
@@ -52,7 +56,7 @@ public class MonsterBoss3 {
                 ent.s.frame = MonsterBoss32.FRAME_stand201;
             else
                 ent.s.frame++;
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
 
@@ -69,20 +73,20 @@ public class MonsterBoss3 {
             return;
         }
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
         self.model = "models/monsters/boss3/rider/tris.md2";
-        self.s.modelindex = GameBase.gi.modelindex(self.model);
+        self.s.modelindex = ServerInit.SV_ModelIndex(self.model);
         self.s.frame = MonsterBoss32.FRAME_stand201;
 
-        GameBase.gi.soundindex("misc/bigtele.wav");
+        ServerInit.SV_SoundIndex("misc/bigtele.wav");
 
         Math3D.VectorSet(self.mins, -32, -32, 0);
         Math3D.VectorSet(self.maxs, 32, 32, 90);
 
         self.use = Use_Boss3;
         self.think = Think_Boss3Stand;
-        self.nextthink = GameBase.level.time + Defines.FRAMETIME;
-        GameBase.gi.linkentity(self);
+        self.nextthink = GameBase.level.time + Constants.FRAMETIME;
+        World.SV_LinkEdict(self);
     }
 }

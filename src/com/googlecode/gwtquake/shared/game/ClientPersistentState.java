@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.game;
 
 import java.io.IOException;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.util.QuakeFile;
 
 public class ClientPersistentState {
@@ -71,7 +71,7 @@ public class ClientPersistentState {
 	int savedFlags;
 
 	int selected_item;
-	int inventory[]= new int[Defines.MAX_ITEMS];
+	int inventory[]= new int[Constants.MAX_ITEMS];
 
 	// ammo capacities
 	public int max_bullets;
@@ -105,7 +105,7 @@ public class ClientPersistentState {
 		savedFlags= f.readInt();
 		selected_item= f.readInt();
 
-		for (int n= 0; n < Defines.MAX_ITEMS; n++)
+		for (int n= 0; n < Constants.MAX_ITEMS; n++)
 			inventory[n]= f.readInt();
 
 		max_bullets= f.readInt();
@@ -140,7 +140,7 @@ public class ClientPersistentState {
 		f.writeInt(savedFlags);
 		f.writeInt(selected_item);
 
-		for (int n= 0; n < Defines.MAX_ITEMS; n++)
+		for (int n= 0; n < Constants.MAX_ITEMS; n++)
 			f.writeInt(inventory[n]);
 
 		f.writeInt(max_bullets);

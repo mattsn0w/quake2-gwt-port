@@ -23,6 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.server;
 
+import com.googlecode.gwtquake.shared.common.Com;
+import com.googlecode.gwtquake.shared.common.Constants;
+import com.googlecode.gwtquake.shared.game.Entity;
 import com.googlecode.gwtquake.shared.game.ListNode;
 
 public class AreaNode {
@@ -35,4 +38,46 @@ public class AreaNode {
 	// used for debugging
 	float mins_rst[] = {0,0,0};
 	float maxs_rst[] = {0,0,0};
+  /*
+   * ==================== SV_AreaEdicts_r
+   * 
+   * ====================
+   */
+  public static void SV_AreaEdicts_r(AreaNode node) {
+      ListNode l, next, start;
+      Entity check;
+      int count;
+      count = 0;
+      // touch linked edicts
+      if (World.area_type == Constants.AREA_SOLID)
+          start = node.solid_edicts;
+      else
+          start = node.trigger_edicts;
+      for (l = start.next; l != start; l = next) {
+          next = l.next;
+          check = (Entity) l.o;
+          if (check.solid == Constants.SOLID_NOT)
+              continue; // deactivated
+          if (check.absmin[0] > World.area_maxs[0]
+                  || check.absmin[1] > World.area_maxs[1]
+                  || check.absmin[2] > World.area_maxs[2]
+                  || check.absmax[0] < World.area_mins[0]
+                  || check.absmax[1] < World.area_mins[1]
+                  || check.absmax[2] < World.area_mins[2])
+              continue; // not touching
+          if (World.area_count == World.area_maxcount) {
+              Com.Printf("SV_AreaEdicts: MAXCOUNT\n");
+              return;
+          }
+          World.area_list[World.area_count] = check;
+          World.area_count++;
+      }
+      if (node.axis == -1)
+          return; // terminal node
+      // recurse down both sides
+      if (World.area_maxs[node.axis] > node.dist)
+          SV_AreaEdicts_r(node.children[0]);
+      if (World.area_mins[node.axis] < node.dist)
+          SV_AreaEdicts_r(node.children[1]);
+  }
 }

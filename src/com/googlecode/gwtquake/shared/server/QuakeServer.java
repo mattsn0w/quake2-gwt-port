@@ -23,7 +23,7 @@
 */
 package com.googlecode.gwtquake.shared.server;
 
-import static com.googlecode.gwtquake.shared.common.Defines.CVAR_NOSET;
+import static com.googlecode.gwtquake.shared.common.Constants.CVAR_NOSET;
 
 import com.googlecode.gwtquake.shared.common.CommandBuffer;
 import com.googlecode.gwtquake.shared.common.Compatibility;

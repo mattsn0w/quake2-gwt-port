@@ -399,14 +399,14 @@ public class QuakeFiles {
 			this.ident = bb.getInt();
 			this.version = bb.getInt();
 
-			for (int n = 0; n < Defines.HEADER_LUMPS; n++)
+			for (int n = 0; n < Constants.HEADER_LUMPS; n++)
 				lumps[n] = new Lump(bb.getInt(), bb.getInt());
 
 		}
 
 		public int ident;
 		public int version;
-		public Lump lumps[] = new Lump[Defines.HEADER_LUMPS];
+		public Lump lumps[] = new Lump[Constants.HEADER_LUMPS];
 	}
 
 	public static class dmodel_t {
@@ -523,9 +523,9 @@ public class QuakeFiles {
 	public static class dface_t {
 		
 		public static final int SIZE =
-				4 * Defines.SIZE_OF_SHORT
-			+	2 * Defines.SIZE_OF_INT
-			+	Defines.MAXLIGHTMAPS;
+				4 * Constants.SIZE_OF_SHORT
+			+	2 * Constants.SIZE_OF_INT
+			+	Constants.MAXLIGHTMAPS;
 
 		//unsigned short	planenum;
 		public int planenum;
@@ -536,7 +536,7 @@ public class QuakeFiles {
 		public short texinfo;
 
 		// lighting info
-		public byte styles[] = new byte[Defines.MAXLIGHTMAPS];
+		public byte styles[] = new byte[Constants.MAXLIGHTMAPS];
 		public int lightofs; // start of [numstyles*surfsize] samples
 		
 		public dface_t(ByteBuffer b) {

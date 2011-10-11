@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ResourceLoader;
 
 public class ResourceLoaderImpl implements ResourceLoader.Impl {
@@ -92,7 +92,7 @@ public class ResourceLoaderImpl implements ResourceLoader.Impl {
       file.readFully(buf);
       file.close();
     } catch (IOException e) {
-      Com.Error(Defines.ERR_FATAL, e.toString());
+      Com.Error(Constants.ERR_FATAL, e.toString());
     }
     return buf;
   }
@@ -101,7 +101,7 @@ public class ResourceLoaderImpl implements ResourceLoader.Impl {
     String netpath;
 
     // check a file in the directory tree
-    netpath = Defines.BASEDIRNAME + '/' + filename;
+    netpath = Constants.BASEDIRNAME + '/' + filename;
 
     File file = new File(netpath);
     if (!file.canRead())
@@ -116,7 +116,7 @@ public class ResourceLoaderImpl implements ResourceLoader.Impl {
     String netpath;
     File file = null;
 
-    netpath = Defines.BASEDIRNAME + '/' + filename;
+    netpath = Constants.BASEDIRNAME + '/' + filename;
 
     file = new File(netpath);
     if (!file.canRead())

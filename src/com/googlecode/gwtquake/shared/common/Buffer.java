@@ -54,8 +54,8 @@ public final class Buffer {
 	    int b;
 	
 	    b = ReadByte(sb);
-	    if (b >= Defines.NUMVERTEXNORMALS)
-	        Com.Error(Defines.ERR_DROP, "MSF_ReadDir: out of range");
+	    if (b >= Constants.NUMVERTEXNORMALS)
+	        Com.Error(Constants.ERR_DROP, "MSF_ReadDir: out of range");
 	    Math3D.VectorCopy(Globals.bytedirs[b], dir);
 	}
 
@@ -71,7 +71,7 @@ public final class Buffer {
 	
 	    bestd = 0;
 	    best = 0;
-	    for (i = 0; i < Defines.NUMVERTEXNORMALS; i++) {
+	    for (i = 0; i < Constants.NUMVERTEXNORMALS; i++) {
 	        d = Math3D.DotProduct(dir, Globals.bytedirs[i]);
 	        if (d > bestd) {
 	            bestd = d;
@@ -324,10 +324,10 @@ public final class Buffer {
 	
 		if (buf.cursize + length > buf.maxsize) {
 			if (!buf.allowoverflow)
-				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow set");
+				Com.Error(Constants.ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow set");
 	
 			if (length > buf.maxsize)
-				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: " + length + " is > full buffer size");
+				Com.Error(Constants.ERR_FATAL, "SZ_GetSpace: " + length + " is > full buffer size");
 	
 			Com.Printf("SZ_GetSpace: overflow\n");
 			buf.clear();

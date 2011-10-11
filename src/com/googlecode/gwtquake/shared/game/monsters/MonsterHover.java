@@ -23,12 +23,15 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -487,13 +490,13 @@ public class MonsterHover {
             int effect;
 
             if (self.s.frame == FRAME_attak104)
-                effect = Defines.EF_HYPERBLASTER;
+                effect = Constants.EF_HYPERBLASTER;
             else
                 effect = 0;
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
-                    MonsterFlash.monster_flash_offset[Defines.MZ2_HOVER_BLASTER_1],
+                    MonsterFlash.monster_flash_offset[Constants.MZ2_HOVER_BLASTER_1],
                     forward, right, start);
 
             Math3D.VectorCopy(self.enemy.s.origin, end);
@@ -501,7 +504,7 @@ public class MonsterHover {
             Math3D.VectorSubtract(end, start, dir);
 
             Monster.monster_fire_blaster(self, start, dir, 1, 1000,
-                    Defines.MZ2_HOVER_BLASTER_1, effect);
+                    Constants.MZ2_HOVER_BLASTER_1, effect);
             return true;
         }
     };
@@ -517,7 +520,7 @@ public class MonsterHover {
     static EntityThinkAdapter hover_run = new EntityThinkAdapter() {
     	public String getID() { return "hover_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = hover_move_stand;
             else
                 self.monsterinfo.currentmove = hover_move_run;
@@ -565,17 +568,17 @@ public class MonsterHover {
 
             if (damage <= 25) {
                 if (Lib.random() < 0.5) {
-                    GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                     self.monsterinfo.currentmove = hover_move_pain3;
                 } else {
-                    GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                     self.monsterinfo.currentmove = hover_move_pain2;
                 }
             } else {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = hover_move_pain1;
             }
         }
@@ -586,7 +589,7 @@ public class MonsterHover {
         public boolean think(Entity self) {
             if (null == self.groundentity
                     && GameBase.level.time < self.timestamp) {
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
                 return true;
             }
             GameMisc.BecomeExplosion1(self);
@@ -599,11 +602,11 @@ public class MonsterHover {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
+            self.movetype = Constants.MOVETYPE_TOSS;
             self.think = hover_deadthink;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             self.timestamp = GameBase.level.time + 15;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -616,35 +619,33 @@ public class MonsterHover {
 
             //	check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/sm_meat/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             //	regular death
             if (Lib.random() < 0.5)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death1, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death1, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death2, 1,
-                        Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death2, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
             self.monsterinfo.currentmove = hover_move_death1;
         }
     };
@@ -652,8 +653,8 @@ public class MonsterHover {
     static EntInteractAdapter hover_sight = new EntInteractAdapter() {
     	public String getID() { return "hover_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -662,11 +663,11 @@ public class MonsterHover {
     	public String getID() { return "hover_search"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search1, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search1, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search2, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search2, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             return true;
         }
     };
@@ -1036,22 +1037,21 @@ public class MonsterHover {
             return;
         }
 
-        sound_pain1 = GameBase.gi.soundindex("hover/hovpain1.wav");
-        sound_pain2 = GameBase.gi.soundindex("hover/hovpain2.wav");
-        sound_death1 = GameBase.gi.soundindex("hover/hovdeth1.wav");
-        sound_death2 = GameBase.gi.soundindex("hover/hovdeth2.wav");
-        sound_sight = GameBase.gi.soundindex("hover/hovsght1.wav");
-        sound_search1 = GameBase.gi.soundindex("hover/hovsrch1.wav");
-        sound_search2 = GameBase.gi.soundindex("hover/hovsrch2.wav");
+        sound_pain1 = ServerInit.SV_SoundIndex("hover/hovpain1.wav");
+        sound_pain2 = ServerInit.SV_SoundIndex("hover/hovpain2.wav");
+        sound_death1 = ServerInit.SV_SoundIndex("hover/hovdeth1.wav");
+        sound_death2 = ServerInit.SV_SoundIndex("hover/hovdeth2.wav");
+        sound_sight = ServerInit.SV_SoundIndex("hover/hovsght1.wav");
+        sound_search1 = ServerInit.SV_SoundIndex("hover/hovsrch1.wav");
+        sound_search2 = ServerInit.SV_SoundIndex("hover/hovsrch2.wav");
 
-        GameBase.gi.soundindex("hover/hovatck1.wav");
+        ServerInit.SV_SoundIndex("hover/hovatck1.wav");
 
-        self.s.sound = GameBase.gi.soundindex("hover/hovidle1.wav");
+        self.s.sound = ServerInit.SV_SoundIndex("hover/hovidle1.wav");
 
-        self.movetype = Defines.MOVETYPE_STEP;
-        self.solid = Defines.SOLID_BBOX;
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/hover/tris.md2");
+        self.movetype = Constants.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/hover/tris.md2");
         Math3D.VectorSet(self.mins, -24, -24, -24);
         Math3D.VectorSet(self.maxs, 24, 24, 32);
 
@@ -1070,7 +1070,7 @@ public class MonsterHover {
         self.monsterinfo.sight = hover_sight;
         self.monsterinfo.search = hover_search;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
 
         self.monsterinfo.currentmove = hover_move_stand;
         self.monsterinfo.scale = MODEL_SCALE;

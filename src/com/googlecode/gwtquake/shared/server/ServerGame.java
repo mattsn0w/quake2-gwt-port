@@ -72,7 +72,7 @@ public class ServerGame {
      * Centerprintf for critical messages.
      */
     public static void PF_cprintfhigh(Entity ent, String fmt) {
-    	PF_cprintf(ent, Defines.PRINT_HIGH, fmt);
+    	PF_cprintf(ent, Constants.PRINT_HIGH, fmt);
     }
     
     /**
@@ -87,7 +87,7 @@ public class ServerGame {
         if (ent != null) {
             n = ent.index;
             if (n < 1 || n > ServerMain.maxclients.value)
-                Com.Error(Defines.ERR_DROP, "cprintf to a non-client");
+                Com.Error(Constants.ERR_DROP, "cprintf to a non-client");
         }
 
         if (ent != null)
@@ -108,7 +108,7 @@ public class ServerGame {
         if (n < 1 || n > ServerMain.maxclients.value)
             return; // Com_Error (ERR_DROP, "centerprintf to a non-client");
 
-        Buffer.WriteByte(ServerInit.sv.multicast, Defines.svc_centerprint);
+        Buffer.WriteByte(ServerInit.sv.multicast, Constants.svc_centerprint);
         Buffer.WriteString(ServerInit.sv.multicast, fmt);
         PF_Unicast(ent, true);
     }
@@ -119,7 +119,7 @@ public class ServerGame {
      *  Abort the server with a game error. 
      */
     public static void PF_error(String fmt) {
-        Com.Error(Defines.ERR_DROP, "Game Error: " + fmt);
+        Com.Error(Constants.ERR_DROP, "Game Error: " + fmt);
     }
 
     public static void PF_error(int level, String fmt) {
@@ -136,7 +136,7 @@ public class ServerGame {
         Model mod;
 
         if (name == null)
-            Com.Error(Defines.ERR_DROP, "PF_setmodel: NULL");
+            Com.Error(Constants.ERR_DROP, "PF_setmodel: NULL");
 
         i = ServerInit.SV_ModelIndex(name);
 
@@ -147,7 +147,7 @@ public class ServerGame {
             mod = CM.InlineModel(name);
             Math3D.VectorCopy(mod.mins, ent.mins);
             Math3D.VectorCopy(mod.maxs, ent.maxs);
-            ServerWorld.SV_LinkEdict(ent);
+            World.SV_LinkEdict(ent);
         }
     }
 
@@ -155,8 +155,8 @@ public class ServerGame {
      *  PF_Configstring
      */
     public static void PF_Configstring(int index, String val) {
-        if (index < 0 || index >= Defines.MAX_CONFIGSTRINGS)
-            Com.Error(Defines.ERR_DROP, "configstring: bad index " + index
+        if (index < 0 || index >= Constants.MAX_CONFIGSTRINGS)
+            Com.Error(Constants.ERR_DROP, "configstring: bad index " + index
                     + "\n");
 
         if (val == null)
@@ -165,14 +165,14 @@ public class ServerGame {
         // change the string in sv
         ServerInit.sv.configstrings[index] = val;
 
-        if (ServerInit.sv.state != Defines.ss_loading) { // send the update to
+        if (ServerInit.sv.state != Constants.ss_loading) { // send the update to
                                                       // everyone
             ServerInit.sv.multicast.clear();
-            Buffer.WriteChar(ServerInit.sv.multicast, Defines.svc_configstring);
+            Buffer.WriteChar(ServerInit.sv.multicast, Constants.svc_configstring);
             Buffer.WriteShort(ServerInit.sv.multicast, index);
             Buffer.WriteString(ServerInit.sv.multicast, val);
 
-            ServerSend.SV_Multicast(Globals.vec3_origin, Defines.MULTICAST_ALL_R);
+            ServerSend.SV_Multicast(Globals.vec3_origin, Constants.MULTICAST_ALL_R);
         }
     }
 
@@ -306,11 +306,12 @@ public class ServerGame {
 
         // unload anything we have now
         SV_ShutdownGameProgs();
-
-        GameEngine gimport = new GameEngine();
-
-        // all functions set in game_export_t (rst)
-        GameBase.GetGameApi(gimport);
+       
+        GameBase.pointcontents = new PlayerMove.PointContentsAdapter() {
+            public int pointcontents(float[] o) {
+                return World.SV_PointContents(o);
+            }
+        };
 
         GameSave.InitGame();
     }

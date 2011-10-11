@@ -31,7 +31,7 @@ import java.nio.IntBuffer;
 import com.googlecode.gwtquake.shared.client.Dimension;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
 import com.googlecode.gwtquake.shared.render.ModelImage;
@@ -135,7 +135,7 @@ public abstract class Drawing extends Images {
 		image = Draw_FindPic(pic);
 		if (image == null)
 		{
-			Window.Printf (Defines.PRINT_ALL, "Can't find pic: " + pic +'\n');
+			Window.Printf (Constants.PRINT_ALL, "Can't find pic: " + pic +'\n');
 			return;
 		}
 
@@ -170,7 +170,7 @@ public abstract class Drawing extends Images {
 		image = Draw_FindPic(pic);
 		if (image == null)
 		{
-			Window.Printf(Defines.PRINT_ALL, "Can't find pic: " +pic + '\n');
+			Window.Printf(Constants.PRINT_ALL, "Can't find pic: " +pic + '\n');
 			return;
 		}
 //		if (scrap_dirty)
@@ -206,7 +206,7 @@ public abstract class Drawing extends Images {
 		image = Draw_FindPic(pic);
 		if (image == null)
 		{
-			Window.Printf(Defines.PRINT_ALL, "Can't find pic: " + pic + '\n');
+			Window.Printf(Constants.PRINT_ALL, "Can't find pic: " + pic + '\n');
 			return;
 		}
 
@@ -243,7 +243,7 @@ public abstract class Drawing extends Images {
 	public void DrawFill(int x, int y, int w, int h, int colorIndex)	{
 
 		if ( colorIndex > 255)
-			Com.Error(Defines.ERR_FATAL, "Draw_Fill: bad color");
+			Com.Error(Constants.ERR_FATAL, "Draw_Fill: bad color");
 
 		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
 
@@ -297,7 +297,7 @@ public abstract class Drawing extends Images {
 // ====================================================================
 
     // allocate a 256 * 256 texture buffer
-    private ByteBuffer image8 = Lib.newByteBuffer(256 * 256 * Defines.SIZE_OF_INT);
+    private ByteBuffer image8 = Lib.newByteBuffer(256 * 256 * Constants.SIZE_OF_INT);
     // share the buffer
     private IntBuffer image32 = image8.asIntBuffer();
 

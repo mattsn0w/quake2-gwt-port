@@ -65,8 +65,8 @@ public class GameChase {
         ownerv[2] += targ.viewheight;
     
         Math3D.VectorCopy(targ.client.v_angle, angles);
-        if (angles[Defines.PITCH] > 56)
-            angles[Defines.PITCH] = 56;
+        if (angles[Constants.PITCH] > 56)
+            angles[Constants.PITCH] = 56;
         Math3D.AngleVectors(angles, forward, right, null);
         Math3D.VectorNormalize(forward);
         Math3D.VectorMA(ownerv, -30, forward, o);
@@ -78,8 +78,7 @@ public class GameChase {
         if (targ.groundentity == null)
             o[2] += 16;
     
-        trace = GameBase.gi.trace(ownerv, Globals.vec3_origin,
-                Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
+        trace = World.SV_Trace(ownerv, Globals.vec3_origin, Globals.vec3_origin, o, targ, Constants.MASK_SOLID);
     
         Math3D.VectorCopy(trace.endpos, goal);
     
@@ -88,8 +87,7 @@ public class GameChase {
         // pad for floors and ceilings
         Math3D.VectorCopy(goal, o);
         o[2] += 6;
-        trace = GameBase.gi.trace(goal, Globals.vec3_origin,
-                Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
+        trace = World.SV_Trace(goal, Globals.vec3_origin, Globals.vec3_origin, o, targ, Constants.MASK_SOLID);
         if (trace.fraction < 1) {
             Math3D.VectorCopy(trace.endpos, goal);
             goal[2] -= 6;
@@ -97,17 +95,16 @@ public class GameChase {
     
         Math3D.VectorCopy(goal, o);
         o[2] -= 6;
-        trace = GameBase.gi.trace(goal, Globals.vec3_origin,
-                Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
+        trace = World.SV_Trace(goal, Globals.vec3_origin, Globals.vec3_origin, o, targ, Constants.MASK_SOLID);
         if (trace.fraction < 1) {
             Math3D.VectorCopy(trace.endpos, goal);
             goal[2] += 6;
         }
     
         if (targ.deadflag != 0)
-            ent.client.ps.pmove.pm_type = Defines.PM_DEAD;
+            ent.client.ps.pmove.pm_type = Constants.PM_DEAD;
         else
-            ent.client.ps.pmove.pm_type = Defines.PM_FREEZE;
+            ent.client.ps.pmove.pm_type = Constants.PM_FREEZE;
     
         Math3D.VectorCopy(goal, ent.s.origin);
         for (i = 0; i < 3; i++)
@@ -116,9 +113,9 @@ public class GameChase {
                             - ent.client.resp.cmd_angles[i]);
     
         if (targ.deadflag != 0) {
-            ent.client.ps.viewangles[Defines.ROLL] = 40;
-            ent.client.ps.viewangles[Defines.PITCH] = -15;
-            ent.client.ps.viewangles[Defines.YAW] = targ.client.killer_yaw;
+            ent.client.ps.viewangles[Constants.ROLL] = 40;
+            ent.client.ps.viewangles[Constants.PITCH] = -15;
+            ent.client.ps.viewangles[Constants.YAW] = targ.client.killer_yaw;
         } else {
             Math3D.VectorCopy(targ.client.v_angle, ent.client.ps.viewangles);
             Math3D.VectorCopy(targ.client.v_angle, ent.client.v_angle);
@@ -126,7 +123,7 @@ public class GameChase {
     
         ent.viewheight = 0;
         ent.client.ps.pmove.pm_flags |= PlayerMove.PMF_NO_PREDICTION;
-        ServerWorld.SV_LinkEdict(ent);
+        World.SV_LinkEdict(ent);
     }
 
     public static void ChaseNext(Entity ent) {
@@ -189,6 +186,6 @@ public class GameChase {
                 return;
             }
         }
-        GameBase.gi.centerprintf(ent, "No other players to chase.");
+        ServerGame.PF_centerprintf(ent, "No other players to chase.");
     }
 }

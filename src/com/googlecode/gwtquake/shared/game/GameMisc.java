@@ -26,12 +26,17 @@ package com.googlecode.gwtquake.shared.game;
 import java.util.Calendar;
 
 import com.googlecode.gwtquake.shared.client.ClientMonsterMethods;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.CM;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityTouchAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityUseAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -39,18 +44,18 @@ import com.googlecode.gwtquake.shared.util.Math3D;
 public class GameMisc {
     public static void SP_path_corner(Entity self) {
         if (self.targetname == null) {
-            GameBase.gi.dprintf("path_corner with no targetname at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf("path_corner with no targetname at "
+            + Lib.vtos(self.s.origin) + "\n");
             GameUtil.G_FreeEdict(self);
             return;
         }
 
-        self.solid = Defines.SOLID_TRIGGER;
+        self.solid = Constants.SOLID_TRIGGER;
         self.touch = path_corner_touch;
         Math3D.VectorSet(self.mins, -8, -8, -8);
         Math3D.VectorSet(self.maxs, 8, 8, 8);
-        self.svflags |= Defines.SVF_NOCLIENT;
-        GameBase.gi.linkentity(self);
+        self.svflags |= Constants.SVF_NOCLIENT;
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_point_combat(Entity self) {
@@ -58,25 +63,24 @@ public class GameMisc {
             GameUtil.G_FreeEdict(self);
             return;
         }
-        self.solid = Defines.SOLID_TRIGGER;
+        self.solid = Constants.SOLID_TRIGGER;
         self.touch = point_combat_touch;
         Math3D.VectorSet(self.mins, -8, -8, -16);
         Math3D.VectorSet(self.maxs, 8, 8, 16);
-        self.svflags = Defines.SVF_NOCLIENT;
-        GameBase.gi.linkentity(self);
+        self.svflags = Constants.SVF_NOCLIENT;
+        World.SV_LinkEdict(self);
     };
 
     public static void SP_viewthing(Entity ent) {
-        GameBase.gi.dprintf("viewthing spawned\n");
+        ServerGame.PF_dprintf("viewthing spawned\n");
 
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
-        ent.s.renderfx = Defines.RF_FRAMELERP;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
+        ent.s.renderfx = Constants.RF_FRAMELERP;
         Math3D.VectorSet(ent.mins, -16, -16, -24);
         Math3D.VectorSet(ent.maxs, 16, 16, 32);
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/objects/banner/tris.md2");
-        GameBase.gi.linkentity(ent);
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/objects/banner/tris.md2");
+        World.SV_LinkEdict(ent);
         ent.nextthink = GameBase.level.time + 0.5f;
         ent.think = TH_viewthing;
         return;
@@ -109,54 +113,54 @@ public class GameMisc {
         if (self.style >= 32) {
             self.use = light_use;
             if ((self.spawnflags & START_OFF) != 0)
-                GameBase.gi.configstring(Defines.CS_LIGHTS + self.style, "a");
+              ServerGame.PF_Configstring(Constants.CS_LIGHTS + self.style, "a");
             else
-                GameBase.gi.configstring(Defines.CS_LIGHTS + self.style, "m");
+              ServerGame.PF_Configstring(Constants.CS_LIGHTS + self.style, "m");
         }
     }
 
     public static void SP_func_wall(Entity self) {
-        self.movetype = Defines.MOVETYPE_PUSH;
-        GameBase.gi.setmodel(self, self.model);
+        self.movetype = Constants.MOVETYPE_PUSH;
+        ServerGame.PF_setmodel(self, self.model);
 
         if ((self.spawnflags & 8) != 0)
-            self.s.effects |= Defines.EF_ANIM_ALL;
+            self.s.effects |= Constants.EF_ANIM_ALL;
         if ((self.spawnflags & 16) != 0)
-            self.s.effects |= Defines.EF_ANIM_ALLFAST;
+            self.s.effects |= Constants.EF_ANIM_ALLFAST;
 
         // just a wall
         if ((self.spawnflags & 7) == 0) {
-            self.solid = Defines.SOLID_BSP;
-            GameBase.gi.linkentity(self);
+            self.solid = Constants.SOLID_BSP;
+            World.SV_LinkEdict(self);
             return;
         }
 
         // it must be TRIGGER_SPAWN
         if (0 == (self.spawnflags & 1)) {
-            GameBase.gi.dprintf("func_wall missing TRIGGER_SPAWN\n");
+            ServerGame.PF_dprintf("func_wall missing TRIGGER_SPAWN\n");
             self.spawnflags |= 1;
         }
 
         // yell if the spawnflags are odd
         if ((self.spawnflags & 4) != 0) {
             if (0 == (self.spawnflags & 2)) {
-                GameBase.gi.dprintf("func_wall START_ON without TOGGLE\n");
+                ServerGame.PF_dprintf("func_wall START_ON without TOGGLE\n");
                 self.spawnflags |= 2;
             }
         }
 
         self.use = func_wall_use;
         if ((self.spawnflags & 4) != 0) {
-            self.solid = Defines.SOLID_BSP;
+            self.solid = Constants.SOLID_BSP;
         } else {
-            self.solid = Defines.SOLID_NOT;
-            self.svflags |= Defines.SVF_NOCLIENT;
+            self.solid = Constants.SOLID_NOT;
+            self.svflags |= Constants.SVF_NOCLIENT;
         }
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_func_object(Entity self) {
-        GameBase.gi.setmodel(self, self.model);
+        ServerGame.PF_setmodel(self, self.model);
 
         self.mins[0] += 1;
         self.mins[1] += 1;
@@ -169,25 +173,25 @@ public class GameMisc {
             self.dmg = 100;
 
         if (self.spawnflags == 0) {
-            self.solid = Defines.SOLID_BSP;
-            self.movetype = Defines.MOVETYPE_PUSH;
+            self.solid = Constants.SOLID_BSP;
+            self.movetype = Constants.MOVETYPE_PUSH;
             self.think = func_object_release;
-            self.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
         } else {
-            self.solid = Defines.SOLID_NOT;
-            self.movetype = Defines.MOVETYPE_PUSH;
+            self.solid = Constants.SOLID_NOT;
+            self.movetype = Constants.MOVETYPE_PUSH;
             self.use = func_object_use;
-            self.svflags |= Defines.SVF_NOCLIENT;
+            self.svflags |= Constants.SVF_NOCLIENT;
         }
 
         if ((self.spawnflags & 2) != 0)
-            self.s.effects |= Defines.EF_ANIM_ALL;
+            self.s.effects |= Constants.EF_ANIM_ALL;
         if ((self.spawnflags & 4) != 0)
-            self.s.effects |= Defines.EF_ANIM_ALLFAST;
+            self.s.effects |= Constants.EF_ANIM_ALLFAST;
 
-        self.clipmask = Defines.MASK_MONSTERSOLID;
+        self.clipmask = Constants.MASK_MONSTERSOLID;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_func_explosive(Entity self) {
@@ -196,36 +200,36 @@ public class GameMisc {
             return;
         }
 
-        self.movetype = Defines.MOVETYPE_PUSH;
+        self.movetype = Constants.MOVETYPE_PUSH;
 
-        GameBase.gi.modelindex("models/objects/debris1/tris.md2");
-        GameBase.gi.modelindex("models/objects/debris2/tris.md2");
+        ServerInit.SV_ModelIndex("models/objects/debris1/tris.md2");
+        ServerInit.SV_ModelIndex("models/objects/debris2/tris.md2");
 
-        GameBase.gi.setmodel(self, self.model);
+        ServerGame.PF_setmodel(self, self.model);
 
         if ((self.spawnflags & 1) != 0) {
-            self.svflags |= Defines.SVF_NOCLIENT;
-            self.solid = Defines.SOLID_NOT;
+            self.svflags |= Constants.SVF_NOCLIENT;
+            self.solid = Constants.SOLID_NOT;
             self.use = func_explosive_spawn;
         } else {
-            self.solid = Defines.SOLID_BSP;
+            self.solid = Constants.SOLID_BSP;
             if (self.targetname != null)
                 self.use = func_explosive_use;
         }
 
         if ((self.spawnflags & 2) != 0)
-            self.s.effects |= Defines.EF_ANIM_ALL;
+            self.s.effects |= Constants.EF_ANIM_ALL;
         if ((self.spawnflags & 4) != 0)
-            self.s.effects |= Defines.EF_ANIM_ALLFAST;
+            self.s.effects |= Constants.EF_ANIM_ALLFAST;
 
         if (self.use != func_explosive_use) {
             if (self.health == 0)
                 self.health = 100;
             self.die = func_explosive_explode;
-            self.takedamage = Defines.DAMAGE_YES;
+            self.takedamage = Constants.DAMAGE_YES;
         }
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_misc_explobox(Entity self) {
@@ -234,15 +238,15 @@ public class GameMisc {
             return;
         }
 
-        GameBase.gi.modelindex("models/objects/debris1/tris.md2");
-        GameBase.gi.modelindex("models/objects/debris2/tris.md2");
-        GameBase.gi.modelindex("models/objects/debris3/tris.md2");
+        ServerInit.SV_ModelIndex("models/objects/debris1/tris.md2");
+        ServerInit.SV_ModelIndex("models/objects/debris2/tris.md2");
+        ServerInit.SV_ModelIndex("models/objects/debris3/tris.md2");
 
-        self.solid = Defines.SOLID_BBOX;
-        self.movetype = Defines.MOVETYPE_STEP;
+        self.solid = Constants.SOLID_BBOX;
+        self.movetype = Constants.MOVETYPE_STEP;
 
         self.model = "models/objects/barrels/tris.md2";
-        self.s.modelindex = GameBase.gi.modelindex(self.model);
+        self.s.modelindex = ServerInit.SV_ModelIndex(self.model);
         Math3D.VectorSet(self.mins, -16, -16, 0);
         Math3D.VectorSet(self.maxs, 16, 16, 40);
 
@@ -254,100 +258,95 @@ public class GameMisc {
             self.dmg = 150;
 
         self.die = barrel_delay;
-        self.takedamage = Defines.DAMAGE_YES;
-        self.monsterinfo.aiflags = Defines.AI_NOSTEP;
+        self.takedamage = Constants.DAMAGE_YES;
+        self.monsterinfo.aiflags = Constants.AI_NOSTEP;
 
         self.touch = barrel_touch;
 
         self.think = ClientMonsterMethods.M_droptofloor;
-        self.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+        self.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_misc_blackhole(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_NOT;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_NOT;
         Math3D.VectorSet(ent.mins, -64, -64, 0);
         Math3D.VectorSet(ent.maxs, 64, 64, 8);
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/objects/black/tris.md2");
-        ent.s.renderfx = Defines.RF_TRANSLUCENT;
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/objects/black/tris.md2");
+        ent.s.renderfx = Constants.RF_TRANSLUCENT;
         ent.use = misc_blackhole_use;
         ent.think = misc_blackhole_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
-        GameBase.gi.linkentity(ent);
+        ent.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
+        World.SV_LinkEdict(ent);
     }
 
     public static void SP_misc_eastertank(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
         Math3D.VectorSet(ent.mins, -32, -32, -16);
         Math3D.VectorSet(ent.maxs, 32, 32, 32);
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/tank/tris.md2");
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/tank/tris.md2");
         ent.s.frame = 254;
         ent.think = misc_eastertank_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
-        GameBase.gi.linkentity(ent);
+        ent.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
+        World.SV_LinkEdict(ent);
     }
 
     public static void SP_misc_easterchick(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
         Math3D.VectorSet(ent.mins, -32, -32, 0);
         Math3D.VectorSet(ent.maxs, 32, 32, 32);
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/bitch/tris.md2");
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/bitch/tris.md2");
         ent.s.frame = 208;
         ent.think = misc_easterchick_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
-        GameBase.gi.linkentity(ent);
+        ent.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
+        World.SV_LinkEdict(ent);
     }
 
     public static void SP_misc_easterchick2(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
         Math3D.VectorSet(ent.mins, -32, -32, 0);
         Math3D.VectorSet(ent.maxs, 32, 32, 32);
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/monsters/bitch/tris.md2");
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/bitch/tris.md2");
         ent.s.frame = 248;
         ent.think = misc_easterchick2_think;
-        ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
-        GameBase.gi.linkentity(ent);
+        ent.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
+        World.SV_LinkEdict(ent);
     }
 
     public static void SP_monster_commander_body(Entity self) {
-        self.movetype = Defines.MOVETYPE_NONE;
-        self.solid = Defines.SOLID_BBOX;
+        self.movetype = Constants.MOVETYPE_NONE;
+        self.solid = Constants.SOLID_BBOX;
         self.model = "models/monsters/commandr/tris.md2";
-        self.s.modelindex = GameBase.gi.modelindex(self.model);
+        self.s.modelindex = ServerInit.SV_ModelIndex(self.model);
         Math3D.VectorSet(self.mins, -32, -32, 0);
         Math3D.VectorSet(self.maxs, 32, 32, 48);
         self.use = commander_body_use;
-        self.takedamage = Defines.DAMAGE_YES;
-        self.flags = Defines.FL_GODMODE;
-        self.s.renderfx |= Defines.RF_FRAMELERP;
-        GameBase.gi.linkentity(self);
+        self.takedamage = Constants.DAMAGE_YES;
+        self.flags = Constants.FL_GODMODE;
+        self.s.renderfx |= Constants.RF_FRAMELERP;
+        World.SV_LinkEdict(self);
 
-        GameBase.gi.soundindex("tank/thud.wav");
-        GameBase.gi.soundindex("tank/pain.wav");
+        ServerInit.SV_SoundIndex("tank/thud.wav");
+        ServerInit.SV_SoundIndex("tank/pain.wav");
 
         self.think = commander_body_drop;
-        self.nextthink = GameBase.level.time + 5 * Defines.FRAMETIME;
+        self.nextthink = GameBase.level.time + 5 * Constants.FRAMETIME;
     }
 
     public static void SP_misc_banner(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_NOT;
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/objects/banner/tris.md2");
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_NOT;
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/objects/banner/tris.md2");
         ent.s.frame = Lib.rand() % 16;
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
 
         ent.think = misc_banner_think;
-        ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
     }
 
     public static void SP_misc_deadsoldier(Entity ent) {
@@ -356,10 +355,9 @@ public class GameMisc {
             return;
         }
 
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/deadbods/dude/tris.md2");
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/deadbods/dude/tris.md2");
 
         // Defaults to frame 0
         if ((ent.spawnflags & 2) != 0)
@@ -377,19 +375,19 @@ public class GameMisc {
 
         Math3D.VectorSet(ent.mins, -16, -16, 0);
         Math3D.VectorSet(ent.maxs, 16, 16, 16);
-        ent.deadflag = Defines.DEAD_DEAD;
-        ent.takedamage = Defines.DAMAGE_YES;
-        ent.svflags |= Defines.SVF_MONSTER | Defines.SVF_DEADMONSTER;
+        ent.deadflag = Constants.DEAD_DEAD;
+        ent.takedamage = Constants.DAMAGE_YES;
+        ent.svflags |= Constants.SVF_MONSTER | Constants.SVF_DEADMONSTER;
         ent.die = misc_deadsoldier_die;
-        ent.monsterinfo.aiflags |= Defines.AI_GOOD_GUY;
+        ent.monsterinfo.aiflags |= Constants.AI_GOOD_GUY;
 
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     public static void SP_misc_viper(Entity ent) {
         if (null == ent.target) {
-            GameBase.gi.dprintf("misc_viper without a target at "
-                    + Lib.vtos(ent.absmin) + "\n");
+            ServerGame.PF_dprintf("misc_viper without a target at "
+            + Lib.vtos(ent.absmin) + "\n");
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -397,20 +395,19 @@ public class GameMisc {
         if (0 == ent.speed)
             ent.speed = 300;
 
-        ent.movetype = Defines.MOVETYPE_PUSH;
-        ent.solid = Defines.SOLID_NOT;
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/ships/viper/tris.md2");
+        ent.movetype = Constants.MOVETYPE_PUSH;
+        ent.solid = Constants.SOLID_NOT;
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/ships/viper/tris.md2");
         Math3D.VectorSet(ent.mins, -16, -16, 0);
         Math3D.VectorSet(ent.maxs, 16, 16, 32);
 
         ent.think = GameFunc.func_train_find;
-        ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
         ent.use = misc_viper_use;
-        ent.svflags |= Defines.SVF_NOCLIENT;
+        ent.svflags |= Constants.SVF_NOCLIENT;
         ent.moveinfo.accel = ent.moveinfo.decel = ent.moveinfo.speed = ent.speed;
 
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     /*
@@ -418,37 +415,35 @@ public class GameMisc {
      * large stationary viper as seen in Paul's intro
      */
     public static void SP_misc_bigviper(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
         Math3D.VectorSet(ent.mins, -176, -120, -24);
         Math3D.VectorSet(ent.maxs, 176, 120, 72);
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/ships/bigviper/tris.md2");
-        GameBase.gi.linkentity(ent);
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/ships/bigviper/tris.md2");
+        World.SV_LinkEdict(ent);
     }
 
     public static void SP_misc_viper_bomb(Entity self) {
-        self.movetype = Defines.MOVETYPE_NONE;
-        self.solid = Defines.SOLID_NOT;
+        self.movetype = Constants.MOVETYPE_NONE;
+        self.solid = Constants.SOLID_NOT;
         Math3D.VectorSet(self.mins, -8, -8, -8);
         Math3D.VectorSet(self.maxs, 8, 8, 8);
 
-        self.s.modelindex = GameBase.gi
-                .modelindex("models/objects/bomb/tris.md2");
+        self.s.modelindex = ServerInit.SV_ModelIndex("models/objects/bomb/tris.md2");
 
         if (self.dmg == 0)
             self.dmg = 1000;
 
         self.use = misc_viper_bomb_use;
-        self.svflags |= Defines.SVF_NOCLIENT;
+        self.svflags |= Constants.SVF_NOCLIENT;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_misc_strogg_ship(Entity ent) {
         if (null == ent.target) {
-            GameBase.gi.dprintf(ent.classname + " without a target at "
-                    + Lib.vtos(ent.absmin) + "\n");
+            ServerGame.PF_dprintf(ent.classname + " without a target at "
+            + Lib.vtos(ent.absmin) + "\n");
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -456,53 +451,49 @@ public class GameMisc {
         if (0 == ent.speed)
             ent.speed = 300;
 
-        ent.movetype = Defines.MOVETYPE_PUSH;
-        ent.solid = Defines.SOLID_NOT;
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/ships/strogg1/tris.md2");
+        ent.movetype = Constants.MOVETYPE_PUSH;
+        ent.solid = Constants.SOLID_NOT;
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/ships/strogg1/tris.md2");
         Math3D.VectorSet(ent.mins, -16, -16, 0);
         Math3D.VectorSet(ent.maxs, 16, 16, 32);
 
         ent.think = GameFunc.func_train_find;
-        ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+        ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
         ent.use = misc_strogg_ship_use;
-        ent.svflags |= Defines.SVF_NOCLIENT;
+        ent.svflags |= Constants.SVF_NOCLIENT;
         ent.moveinfo.accel = ent.moveinfo.decel = ent.moveinfo.speed = ent.speed;
 
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     public static void SP_misc_satellite_dish(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
         Math3D.VectorSet(ent.mins, -64, -64, 0);
         Math3D.VectorSet(ent.maxs, 64, 64, 128);
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/objects/satellite/tris.md2");
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/objects/satellite/tris.md2");
         ent.use = misc_satellite_dish_use;
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     /*
      * QUAKED light_mine1 (0 1 0) (-2 -2 -12) (2 2 12)
      */
     public static void SP_light_mine1(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/objects/minelite/light1/tris.md2");
-        GameBase.gi.linkentity(ent);
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/objects/minelite/light1/tris.md2");
+        World.SV_LinkEdict(ent);
     }
 
     /*
      * QUAKED light_mine2 (0 1 0) (-2 -2 -12) (2 2 12)
      */
     public static void SP_light_mine2(Entity ent) {
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.solid = Defines.SOLID_BBOX;
-        ent.s.modelindex = GameBase.gi
-                .modelindex("models/objects/minelite/light2/tris.md2");
-        GameBase.gi.linkentity(ent);
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.solid = Constants.SOLID_BBOX;
+        ent.s.modelindex = ServerInit.SV_ModelIndex("models/objects/minelite/light2/tris.md2");
+        World.SV_LinkEdict(ent);
     }
 
     /*
@@ -510,20 +501,20 @@ public class GameMisc {
      * target_spawner
      */
     public static void SP_misc_gib_arm(Entity ent) {
-        GameBase.gi.setmodel(ent, "models/objects/gibs/arm/tris.md2");
-        ent.solid = Defines.SOLID_NOT;
-        ent.s.effects |= Defines.EF_GIB;
-        ent.takedamage = Defines.DAMAGE_YES;
+        ServerGame.PF_setmodel(ent, "models/objects/gibs/arm/tris.md2");
+        ent.solid = Constants.SOLID_NOT;
+        ent.s.effects |= Constants.EF_GIB;
+        ent.takedamage = Constants.DAMAGE_YES;
         ent.die = gib_die;
-        ent.movetype = Defines.MOVETYPE_TOSS;
-        ent.svflags |= Defines.SVF_MONSTER;
-        ent.deadflag = Defines.DEAD_DEAD;
+        ent.movetype = Constants.MOVETYPE_TOSS;
+        ent.svflags |= Constants.SVF_MONSTER;
+        ent.deadflag = Constants.DEAD_DEAD;
         ent.avelocity[0] = Lib.random() * 200;
         ent.avelocity[1] = Lib.random() * 200;
         ent.avelocity[2] = Lib.random() * 200;
         ent.think = GameUtil.G_FreeEdictA;
         ent.nextthink = GameBase.level.time + 30;
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     /*
@@ -531,20 +522,20 @@ public class GameMisc {
      * target_spawner
      */
     public static void SP_misc_gib_leg(Entity ent) {
-        GameBase.gi.setmodel(ent, "models/objects/gibs/leg/tris.md2");
-        ent.solid = Defines.SOLID_NOT;
-        ent.s.effects |= Defines.EF_GIB;
-        ent.takedamage = Defines.DAMAGE_YES;
+        ServerGame.PF_setmodel(ent, "models/objects/gibs/leg/tris.md2");
+        ent.solid = Constants.SOLID_NOT;
+        ent.s.effects |= Constants.EF_GIB;
+        ent.takedamage = Constants.DAMAGE_YES;
         ent.die = gib_die;
-        ent.movetype = Defines.MOVETYPE_TOSS;
-        ent.svflags |= Defines.SVF_MONSTER;
-        ent.deadflag = Defines.DEAD_DEAD;
+        ent.movetype = Constants.MOVETYPE_TOSS;
+        ent.svflags |= Constants.SVF_MONSTER;
+        ent.deadflag = Constants.DEAD_DEAD;
         ent.avelocity[0] = Lib.random() * 200;
         ent.avelocity[1] = Lib.random() * 200;
         ent.avelocity[2] = Lib.random() * 200;
         ent.think = GameUtil.G_FreeEdictA;
         ent.nextthink = GameBase.level.time + 30;
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     /*
@@ -552,20 +543,20 @@ public class GameMisc {
      * target_spawner
      */
     public static void SP_misc_gib_head(Entity ent) {
-        GameBase.gi.setmodel(ent, "models/objects/gibs/head/tris.md2");
-        ent.solid = Defines.SOLID_NOT;
-        ent.s.effects |= Defines.EF_GIB;
-        ent.takedamage = Defines.DAMAGE_YES;
+        ServerGame.PF_setmodel(ent, "models/objects/gibs/head/tris.md2");
+        ent.solid = Constants.SOLID_NOT;
+        ent.s.effects |= Constants.EF_GIB;
+        ent.takedamage = Constants.DAMAGE_YES;
         ent.die = gib_die;
-        ent.movetype = Defines.MOVETYPE_TOSS;
-        ent.svflags |= Defines.SVF_MONSTER;
-        ent.deadflag = Defines.DEAD_DEAD;
+        ent.movetype = Constants.MOVETYPE_TOSS;
+        ent.svflags |= Constants.SVF_MONSTER;
+        ent.deadflag = Constants.DEAD_DEAD;
         ent.avelocity[0] = Lib.random() * 200;
         ent.avelocity[1] = Lib.random() * 200;
         ent.avelocity[2] = Lib.random() * 200;
         ent.think = GameUtil.G_FreeEdictA;
         ent.nextthink = GameBase.level.time + 30;
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
     }
 
     //=====================================================
@@ -576,11 +567,11 @@ public class GameMisc {
      */
 
     public static void SP_target_character(Entity self) {
-        self.movetype = Defines.MOVETYPE_PUSH;
-        GameBase.gi.setmodel(self, self.model);
-        self.solid = Defines.SOLID_BSP;
+        self.movetype = Constants.MOVETYPE_PUSH;
+        ServerGame.PF_setmodel(self, self.model);
+        self.solid = Constants.SOLID_BSP;
         self.s.frame = 12;
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
         return;
     }
 
@@ -639,15 +630,15 @@ public class GameMisc {
 
     public static void SP_func_clock(Entity self) {
         if (self.target == null) {
-            GameBase.gi.dprintf(self.classname + " with no target at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf(self.classname + " with no target at "
+            + Lib.vtos(self.s.origin) + "\n");
             GameUtil.G_FreeEdict(self);
             return;
         }
 
         if ((self.spawnflags & 2) != 0 && (0 == self.count)) {
-            GameBase.gi.dprintf(self.classname + " with no count at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf(self.classname + " with no count at "
+            + Lib.vtos(self.s.origin) + "\n");
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -676,30 +667,30 @@ public class GameMisc {
         Entity trig;
 
         if (ent.target == null) {
-            GameBase.gi.dprintf("teleporter without a target.\n");
+            ServerGame.PF_dprintf("teleporter without a target.\n");
             GameUtil.G_FreeEdict(ent);
             return;
         }
 
-        GameBase.gi.setmodel(ent, "models/objects/dmspot/tris.md2");
+        ServerGame.PF_setmodel(ent, "models/objects/dmspot/tris.md2");
         ent.s.skinnum = 1;
-        ent.s.effects = Defines.EF_TELEPORTER;
-        ent.s.sound = GameBase.gi.soundindex("world/amb10.wav");
-        ent.solid = Defines.SOLID_BBOX;
+        ent.s.effects = Constants.EF_TELEPORTER;
+        ent.s.sound = ServerInit.SV_SoundIndex("world/amb10.wav");
+        ent.solid = Constants.SOLID_BBOX;
 
         Math3D.VectorSet(ent.mins, -32, -32, -24);
         Math3D.VectorSet(ent.maxs, 32, 32, -16);
-        GameBase.gi.linkentity(ent);
+        World.SV_LinkEdict(ent);
 
         trig = GameUtil.G_Spawn();
         trig.touch = teleporter_touch;
-        trig.solid = Defines.SOLID_TRIGGER;
+        trig.solid = Constants.SOLID_TRIGGER;
         trig.target = ent.target;
         trig.owner = ent;
         Math3D.VectorCopy(ent.s.origin, trig.s.origin);
         Math3D.VectorSet(trig.mins, -8, -8, 8);
         Math3D.VectorSet(trig.maxs, 8, 8, 24);
-        GameBase.gi.linkentity(trig);
+        World.SV_LinkEdict(trig);
     }
 
     /**
@@ -719,19 +710,19 @@ public class GameMisc {
     }
 
     public static void BecomeExplosion1(Entity self) {
-        GameBase.gi.WriteByte(Defines.svc_temp_entity);
-        GameBase.gi.WriteByte(Defines.TE_EXPLOSION1);
-        GameBase.gi.WritePosition(self.s.origin);
-        GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+        ServerGame.PF_WriteByte(Constants.TE_EXPLOSION1);
+        ServerGame.PF_WritePos(self.s.origin);
+        ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PVS);
     
         GameUtil.G_FreeEdict(self);
     }
 
     public static void BecomeExplosion2(Entity self) {
-        GameBase.gi.WriteByte(Defines.svc_temp_entity);
-        GameBase.gi.WriteByte(Defines.TE_EXPLOSION2);
-        GameBase.gi.WritePosition(self.s.origin);
-        GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+        ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+        ServerGame.PF_WriteByte(Constants.TE_EXPLOSION2);
+        ServerGame.PF_WritePos(self.s.origin);
+        ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PVS);
     
         GameUtil.G_FreeEdict(self);
     }
@@ -753,19 +744,19 @@ public class GameMisc {
         gib.s.origin[1] = origin[1] + Lib.crandom() * size[1];
         gib.s.origin[2] = origin[2] + Lib.crandom() * size[2];
     
-        GameBase.gi.setmodel(gib, gibname);
-        gib.solid = Defines.SOLID_NOT;
-        gib.s.effects |= Defines.EF_GIB;
-        gib.flags |= Defines.FL_NO_KNOCKBACK;
-        gib.takedamage = Defines.DAMAGE_YES;
+        ServerGame.PF_setmodel(gib, gibname);
+        gib.solid = Constants.SOLID_NOT;
+        gib.s.effects |= Constants.EF_GIB;
+        gib.flags |= Constants.FL_NO_KNOCKBACK;
+        gib.takedamage = Constants.DAMAGE_YES;
         gib.die = gib_die;
     
-        if (type == Defines.GIB_ORGANIC) {
-            gib.movetype = Defines.MOVETYPE_TOSS;
+        if (type == Constants.GIB_ORGANIC) {
+            gib.movetype = Constants.MOVETYPE_TOSS;
             gib.touch = gib_touch;
             vscale = 0.5f;
         } else {
-            gib.movetype = Defines.MOVETYPE_BOUNCE;
+            gib.movetype = Constants.MOVETYPE_BOUNCE;
             vscale = 1.0f;
         }
     
@@ -779,7 +770,7 @@ public class GameMisc {
         gib.think = GameUtil.G_FreeEdictA;
         gib.nextthink = GameBase.level.time + 10 + Lib.random() * 10;
     
-        GameBase.gi.linkentity(gib);
+        World.SV_LinkEdict(gib);
     }
 
     public static void ThrowHead(Entity self, String gibname, int damage,
@@ -794,22 +785,22 @@ public class GameMisc {
         Math3D.VectorClear(self.maxs);
     
         self.s.modelindex2 = 0;
-        GameBase.gi.setmodel(self, gibname);
-        self.solid = Defines.SOLID_NOT;
-        self.s.effects |= Defines.EF_GIB;
-        self.s.effects &= ~Defines.EF_FLIES;
+        ServerGame.PF_setmodel(self, gibname);
+        self.solid = Constants.SOLID_NOT;
+        self.s.effects |= Constants.EF_GIB;
+        self.s.effects &= ~Constants.EF_FLIES;
         self.s.sound = 0;
-        self.flags |= Defines.FL_NO_KNOCKBACK;
-        self.svflags &= ~Defines.SVF_MONSTER;
-        self.takedamage = Defines.DAMAGE_YES;
+        self.flags |= Constants.FL_NO_KNOCKBACK;
+        self.svflags &= ~Constants.SVF_MONSTER;
+        self.takedamage = Constants.DAMAGE_YES;
         self.die = gib_die;
     
-        if (type == Defines.GIB_ORGANIC) {
-            self.movetype = Defines.MOVETYPE_TOSS;
+        if (type == Constants.GIB_ORGANIC) {
+            self.movetype = Constants.MOVETYPE_TOSS;
             self.touch = gib_touch;
             vscale = 0.5f;
         } else {
-            self.movetype = Defines.MOVETYPE_BOUNCE;
+            self.movetype = Constants.MOVETYPE_BOUNCE;
             vscale = 1.0f;
         }
     
@@ -817,12 +808,12 @@ public class GameMisc {
         Math3D.VectorMA(self.velocity, vscale, vd, self.velocity);
         ClipGibVelocity(self);
     
-        self.avelocity[Defines.YAW] = Lib.crandom() * 600f;
+        self.avelocity[Constants.YAW] = Lib.crandom() * 600f;
     
         self.think = GameUtil.G_FreeEdictA;
         self.nextthink = GameBase.level.time + 10 + Lib.random() * 10;
     
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void ThrowClientHead(Entity self, int damage) {
@@ -839,31 +830,31 @@ public class GameMisc {
     
         self.s.origin[2] += 32;
         self.s.frame = 0;
-        GameBase.gi.setmodel(self, gibname);
+        ServerGame.PF_setmodel(self, gibname);
         Math3D.VectorSet(self.mins, -16, -16, 0);
         Math3D.VectorSet(self.maxs, 16, 16, 16);
     
-        self.takedamage = Defines.DAMAGE_NO;
-        self.solid = Defines.SOLID_NOT;
-        self.s.effects = Defines.EF_GIB;
+        self.takedamage = Constants.DAMAGE_NO;
+        self.solid = Constants.SOLID_NOT;
+        self.s.effects = Constants.EF_GIB;
         self.s.sound = 0;
-        self.flags |= Defines.FL_NO_KNOCKBACK;
+        self.flags |= Constants.FL_NO_KNOCKBACK;
     
-        self.movetype = Defines.MOVETYPE_BOUNCE;
+        self.movetype = Constants.MOVETYPE_BOUNCE;
         VelocityForDamage(damage, vd);
         Math3D.VectorAdd(self.velocity, vd, self.velocity);
     
         if (self.client != null)
         // bodies in the queue don't have a client anymore
         {
-            self.client.anim_priority = Defines.ANIM_DEATH;
+            self.client.anim_priority = Constants.ANIM_DEATH;
             self.client.anim_end = self.s.frame;
         } else {
             self.think = null;
             self.nextthink = 0;
         }
     
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void ThrowDebris(Entity self, String modelname, float speed,
@@ -873,13 +864,13 @@ public class GameMisc {
     
         chunk = GameUtil.G_Spawn();
         Math3D.VectorCopy(origin, chunk.s.origin);
-        GameBase.gi.setmodel(chunk, modelname);
+        ServerGame.PF_setmodel(chunk, modelname);
         v[0] = 100 * Lib.crandom();
         v[1] = 100 * Lib.crandom();
         v[2] = 100 + 100 * Lib.crandom();
         Math3D.VectorMA(self.velocity, speed, v, chunk.velocity);
-        chunk.movetype = Defines.MOVETYPE_BOUNCE;
-        chunk.solid = Defines.SOLID_NOT;
+        chunk.movetype = Constants.MOVETYPE_BOUNCE;
+        chunk.solid = Constants.SOLID_NOT;
         chunk.avelocity[0] = Lib.random() * 600;
         chunk.avelocity[1] = Lib.random() * 600;
         chunk.avelocity[2] = Lib.random() * 600;
@@ -888,9 +879,9 @@ public class GameMisc {
         chunk.s.frame = 0;
         chunk.flags = 0;
         chunk.classname = "debris";
-        chunk.takedamage = Defines.DAMAGE_YES;
+        chunk.takedamage = Constants.DAMAGE_YES;
         chunk.die = debris_die;
-        GameBase.gi.linkentity(chunk);
+        World.SV_LinkEdict(chunk);
     }
 
     public static void ClipGibVelocity(Entity ent) {
@@ -913,7 +904,7 @@ public class GameMisc {
         public void use(Entity ent, Entity other, Entity activator) {
             ent.count ^= 1; // toggle state
             //	gi.dprintf ("portalstate: %i = %i\n", ent.style, ent.count);
-            GameBase.gi.SetAreaPortalState(ent.style, ent.count != 0);
+            CM.CM_SetAreaPortalState(ent.style, ent.count != 0);
         }
     };
 
@@ -972,7 +963,7 @@ public class GameMisc {
                 v[2] -= other.mins[2];
                 Math3D.VectorCopy(v, other.s.origin);
                 next = GameBase.G_PickTarget(next.target);
-                other.s.event = Defines.EV_OTHER_TELEPORT;
+                other.s.event = Constants.EV_OTHER_TELEPORT;
             }
 
             other.goalentity = other.movetarget = next;
@@ -1013,16 +1004,16 @@ public class GameMisc {
                 other.goalentity = other.movetarget = GameBase
                         .G_PickTarget(other.target);
                 if (null == other.goalentity) {
-                    GameBase.gi.dprintf(self.classname + " at "
-                            + Lib.vtos(self.s.origin) + " target "
-                            + self.target + " does not exist\n");
+                    ServerGame.PF_dprintf(self.classname + " at "
+                    + Lib.vtos(self.s.origin) + " target "
+                    + self.target + " does not exist\n");
                     other.movetarget = self;
                 }
                 self.target = null;
             } else if ((self.spawnflags & 1) != 0
-                    && 0 == (other.flags & (Defines.FL_SWIM | Defines.FL_FLY))) {
+                    && 0 == (other.flags & (Constants.FL_SWIM | Constants.FL_FLY))) {
                 other.monsterinfo.pausetime = GameBase.level.time + 100000000;
-                other.monsterinfo.aiflags |= Defines.AI_STAND_GROUND;
+                other.monsterinfo.aiflags |= Constants.AI_STAND_GROUND;
                 other.monsterinfo.stand.think(other);
             }
 
@@ -1030,7 +1021,7 @@ public class GameMisc {
                 other.target = null;
                 other.movetarget = null;
                 other.goalentity = other.enemy;
-                other.monsterinfo.aiflags &= ~Defines.AI_COMBAT_POINT;
+                other.monsterinfo.aiflags &= ~Constants.AI_COMBAT_POINT;
             }
 
             if (self.pathtarget != null) {
@@ -1062,7 +1053,7 @@ public class GameMisc {
         public String getID() { return "th_viewthing";}
         public boolean think(Entity ent) {
             ent.s.frame = (ent.s.frame + 1) % 7;
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
     };
@@ -1080,10 +1071,10 @@ public class GameMisc {
         public String getID() { return "light_use";}
         public void use(Entity self, Entity other, Entity activator) {
             if ((self.spawnflags & START_OFF) != 0) {
-                GameBase.gi.configstring(Defines.CS_LIGHTS + self.style, "m");
+                ServerGame.PF_Configstring(Constants.CS_LIGHTS + self.style, "m");
                 self.spawnflags &= ~START_OFF;
             } else {
-                GameBase.gi.configstring(Defines.CS_LIGHTS + self.style, "a");
+                ServerGame.PF_Configstring(Constants.CS_LIGHTS + self.style, "a");
                 self.spawnflags |= START_OFF;
             }
         }
@@ -1106,15 +1097,15 @@ public class GameMisc {
     static EntityUseAdapter func_wall_use = new EntityUseAdapter() {
         public String getID() { return "func_wall_use";}
         public void use(Entity self, Entity other, Entity activator) {
-            if (self.solid == Defines.SOLID_NOT) {
-                self.solid = Defines.SOLID_BSP;
-                self.svflags &= ~Defines.SVF_NOCLIENT;
+            if (self.solid == Constants.SOLID_NOT) {
+                self.solid = Constants.SOLID_BSP;
+                self.svflags &= ~Constants.SVF_NOCLIENT;
                 GameUtil.KillBox(self);
             } else {
-                self.solid = Defines.SOLID_NOT;
-                self.svflags |= Defines.SVF_NOCLIENT;
+                self.solid = Constants.SOLID_NOT;
+                self.svflags |= Constants.SVF_NOCLIENT;
             }
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
 
             if (0 == (self.spawnflags & 2))
                 self.use = null;
@@ -1134,18 +1125,18 @@ public class GameMisc {
                 return;
             if (plane.normal[2] < 1.0)
                 return;
-            if (other.takedamage == Defines.DAMAGE_NO)
+            if (other.takedamage == Constants.DAMAGE_NO)
                 return;
             GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     self.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
-                    Defines.MOD_CRUSH);
+                    Constants.MOD_CRUSH);
         }
     };
 
     static EntityThinkAdapter func_object_release = new EntityThinkAdapter() {
         public String getID() { return "func_object_release";}
         public boolean think(Entity self) {
-            self.movetype = Defines.MOVETYPE_TOSS;
+            self.movetype = Constants.MOVETYPE_TOSS;
             self.touch = func_object_touch;
             return true;
         }
@@ -1154,8 +1145,8 @@ public class GameMisc {
     static EntityUseAdapter func_object_use = new EntityUseAdapter() {
         public String getID() { return "func_object_use";}
         public void use(Entity self, Entity other, Entity activator) {
-            self.solid = Defines.SOLID_BSP;
-            self.svflags &= ~Defines.SVF_NOCLIENT;
+            self.solid = Constants.SOLID_BSP;
+            self.svflags &= ~Constants.SVF_NOCLIENT;
             self.use = null;
             GameUtil.KillBox(self);
             func_object_release.think(self);
@@ -1191,11 +1182,11 @@ public class GameMisc {
             Math3D.VectorAdd(self.absmin, size, origin);
             Math3D.VectorCopy(origin, self.s.origin);
 
-            self.takedamage = Defines.DAMAGE_NO;
+            self.takedamage = Constants.DAMAGE_NO;
 
             if (self.dmg != 0)
                 GameCombat.T_RadiusDamage(self, attacker, self.dmg, null,
-                        self.dmg + 40, Defines.MOD_EXPLOSIVE);
+                        self.dmg + 40, Constants.MOD_EXPLOSIVE);
 
             Math3D.VectorSubtract(self.s.origin, inflictor.s.origin,
                     self.velocity);
@@ -1255,11 +1246,11 @@ public class GameMisc {
     public static EntityUseAdapter func_explosive_spawn = new EntityUseAdapter() {
         public String getID() { return "func_explosive_spawn";}
         public void use(Entity self, Entity other, Entity activator) {
-            self.solid = Defines.SOLID_BSP;
-            self.svflags &= ~Defines.SVF_NOCLIENT;
+            self.solid = Constants.SOLID_BSP;
+            self.svflags &= ~Constants.SVF_NOCLIENT;
             self.use = null;
             GameUtil.KillBox(self);
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
         }
     };
 
@@ -1281,7 +1272,7 @@ public class GameMisc {
             ratio = (float) other.mass / (float) self.mass;
             Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
             ClientMonsterMethods.M_walkmove(self, Math3D.vectoyaw(v), 20 * ratio
-                    * Defines.FRAMETIME);
+                    * Constants.FRAMETIME);
         }
     };
 
@@ -1294,7 +1285,7 @@ public class GameMisc {
             float[] save = { 0, 0, 0 };
 
             GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
-                    self.dmg + 40, Defines.MOD_BARREL);
+                    self.dmg + 40, Constants.MOD_BARREL);
 
             Math3D.VectorCopy(self.s.origin, save);
             Math3D.VectorMA(self.absmin, 0.5f, self.size, self.s.origin);
@@ -1389,8 +1380,8 @@ public class GameMisc {
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
 
-            self.takedamage = Defines.DAMAGE_NO;
-            self.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
+            self.takedamage = Constants.DAMAGE_NO;
+            self.nextthink = GameBase.level.time + 2 * Constants.FRAMETIME;
             self.think = barrel_explode;
             self.activator = attacker;
         }
@@ -1421,10 +1412,10 @@ public class GameMisc {
         public boolean think(Entity self) {
 
             if (++self.s.frame < 19)
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             else {
                 self.s.frame = 0;
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             }
             return true;
         }
@@ -1438,10 +1429,10 @@ public class GameMisc {
         public String getID() { return "misc_eastertank_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 293)
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             else {
                 self.s.frame = 254;
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             }
             return true;
         }
@@ -1455,10 +1446,10 @@ public class GameMisc {
         public String getID() { return "misc_easterchick_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 247)
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             else {
                 self.s.frame = 208;
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             }
             return true;
         }
@@ -1471,10 +1462,10 @@ public class GameMisc {
         public String getID() { return "misc_easterchick2_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 287)
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             else {
                 self.s.frame = 248;
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             }
             return true;
         }
@@ -1490,13 +1481,13 @@ public class GameMisc {
         public String getID() { return "commander_body_think";}
         public boolean think(Entity self) {
             if (++self.s.frame < 24)
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             else
                 self.nextthink = 0;
 
             if (self.s.frame == 22)
-                GameBase.gi.sound(self, Defines.CHAN_BODY, GameBase.gi
-                        .soundindex("tank/thud.wav"), 1, Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("tank/thud.wav"), (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             return true;
         }
     };
@@ -1505,16 +1496,16 @@ public class GameMisc {
         public String getID() { return "commander_body_use";}
         public void use(Entity self, Entity other, Entity activator) {
             self.think = commander_body_think;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
-            GameBase.gi.sound(self, Defines.CHAN_BODY, GameBase.gi
-                    .soundindex("tank/pain.wav"), 1, Defines.ATTN_NORM, 0);
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("tank/pain.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
         }
     };
 
     public static EntityThinkAdapter commander_body_drop = new EntityThinkAdapter() {
         public String getID() { return "commander_body_group";}
         public boolean think(Entity self) {
-            self.movetype = Defines.MOVETYPE_TOSS;
+            self.movetype = Constants.MOVETYPE_TOSS;
             self.s.origin[2] += 2;
             return true;
         }
@@ -1528,7 +1519,7 @@ public class GameMisc {
         public String getID() { return "misc_banner_think";}
         public boolean think(Entity ent) {
             ent.s.frame = (ent.s.frame + 1) % 16;
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
     };
@@ -1547,13 +1538,13 @@ public class GameMisc {
             if (self.health > -80)
                 return;
 
-            GameBase.gi.sound(self, Defines.CHAN_BODY, GameBase.gi
-                    .soundindex("misc/udeath.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             for (n = 0; n < 4; n++)
                 ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
+                        damage, Constants.GIB_ORGANIC);
             ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                    damage, Defines.GIB_ORGANIC);
+                    damage, Constants.GIB_ORGANIC);
         }
     };
 
@@ -1569,7 +1560,7 @@ public class GameMisc {
     static EntityUseAdapter misc_viper_use = new EntityUseAdapter() {
         public String getID() { return "misc_viper_use";}
         public void use(Entity self, Entity other, Entity activator) {
-            self.svflags &= ~Defines.SVF_NOCLIENT;
+            self.svflags &= ~Constants.SVF_NOCLIENT;
             self.use = GameFunc.train_use;
             GameFunc.train_use.use(self, other, activator);
         }
@@ -1587,7 +1578,7 @@ public class GameMisc {
 
             self.s.origin[2] = self.absmin[2] + 1;
             GameCombat.T_RadiusDamage(self, self, self.dmg, null, self.dmg + 40,
-                    Defines.MOD_BOMB);
+                    Constants.MOD_BOMB);
             BecomeExplosion2(self);
         }
     };
@@ -1621,11 +1612,11 @@ public class GameMisc {
         public void use(Entity self, Entity other, Entity activator) {
             Entity viper = null;
 
-            self.solid = Defines.SOLID_BBOX;
-            self.svflags &= ~Defines.SVF_NOCLIENT;
-            self.s.effects |= Defines.EF_ROCKET;
+            self.solid = Constants.SOLID_BBOX;
+            self.svflags &= ~Constants.SVF_NOCLIENT;
+            self.s.effects |= Constants.EF_ROCKET;
             self.use = null;
-            self.movetype = Defines.MOVETYPE_TOSS;
+            self.movetype = Constants.MOVETYPE_TOSS;
             self.prethink = misc_viper_bomb_prethink;
             self.touch = misc_viper_bomb_touch;
             self.activator = activator;
@@ -1656,7 +1647,7 @@ public class GameMisc {
     static EntityUseAdapter misc_strogg_ship_use = new EntityUseAdapter() {
         public String getID() { return "misc_strogg_ship_use";}
         public void use(Entity self, Entity other, Entity activator) {
-            self.svflags &= ~Defines.SVF_NOCLIENT;
+            self.svflags &= ~Constants.SVF_NOCLIENT;
             self.use = GameFunc.train_use;
             GameFunc.train_use.use(self, other, activator);
         }
@@ -1670,7 +1661,7 @@ public class GameMisc {
         public boolean think(Entity self) {
             self.s.frame++;
             if (self.s.frame < 38)
-                self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
     };
@@ -1680,7 +1671,7 @@ public class GameMisc {
         public void use(Entity self, Entity other, Entity activator) {
             self.s.frame = 0;
             self.think = misc_satellite_dish_think;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
         }
     };
 
@@ -1829,12 +1820,12 @@ public class GameMisc {
             dest = GameBase.G_Find(null, GameBase.findByTarget, self.target).o;
 
             if (dest == null) {
-                GameBase.gi.dprintf("Couldn't find destination\n");
+                ServerGame.PF_dprintf("Couldn't find destination\n");
                 return;
             }
 
             // unlink to make sure it can't possibly interfere with KillBox
-            GameBase.gi.unlinkentity(other);
+            World.SV_UnlinkEdict(other);
 
             Math3D.VectorCopy(dest.s.origin, other.s.origin);
             Math3D.VectorCopy(dest.s.origin, other.s.old_origin);
@@ -1846,8 +1837,8 @@ public class GameMisc {
             other.client.ps.pmove.pm_flags |= PlayerMove.PMF_TIME_TELEPORT;
 
             // draw the teleport splash at source and on the player
-            self.owner.s.event = Defines.EV_PLAYER_TELEPORT;
-            other.s.event = Defines.EV_PLAYER_TELEPORT;
+            self.owner.s.event = Constants.EV_PLAYER_TELEPORT;
+            other.s.event = Constants.EV_PLAYER_TELEPORT;
 
             // set angles
             for (i = 0; i < 3; i++) {
@@ -1863,7 +1854,7 @@ public class GameMisc {
             // kill anything at the destination
             GameUtil.KillBox(other);
 
-            GameBase.gi.linkentity(other);
+            World.SV_LinkEdict(other);
         }
     };
 
@@ -1875,13 +1866,13 @@ public class GameMisc {
     public static EntityThinkAdapter SP_misc_teleporter_dest = new EntityThinkAdapter() {
         public String getID() { return "SP_misc_teleporter_dest";}
         public boolean think(Entity ent) {
-            GameBase.gi.setmodel(ent, "models/objects/dmspot/tris.md2");
+            ServerGame.PF_setmodel(ent, "models/objects/dmspot/tris.md2");
             ent.s.skinnum = 0;
-            ent.solid = Defines.SOLID_BBOX;
+            ent.solid = Constants.SOLID_BBOX;
             //	ent.s.effects |= EF_FLIES;
             Math3D.VectorSet(ent.mins, -32, -32, -24);
             Math3D.VectorSet(ent.maxs, 32, 32, -16);
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             return true;
         }
     };
@@ -1890,7 +1881,7 @@ public class GameMisc {
         public String getID() { return "gib_think";}
         public boolean think(Entity self) {
             self.s.frame++;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
     
             if (self.s.frame == 10) {
                 self.think = GameUtil.G_FreeEdictA;
@@ -1913,8 +1904,8 @@ public class GameMisc {
             self.touch = null;
     
             if (plane != null) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, GameBase.gi
-                        .soundindex("misc/fhit3.wav"), 1, Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/fhit3.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
     
                 Math3D.vectoangles(plane.normal, normal_angles);
                 Math3D.AngleVectors(normal_angles, null, right, null);
@@ -1923,7 +1914,7 @@ public class GameMisc {
                 if (self.s.modelindex == GameBase.sm_meat_index) {
                     self.s.frame++;
                     self.think = gib_think;
-                    self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+                    self.nextthink = GameBase.level.time + Constants.FRAMETIME;
                 }
             }
         }

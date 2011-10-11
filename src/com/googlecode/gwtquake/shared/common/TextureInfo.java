@@ -16,11 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-*/
+ */
 /* Modifications
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
-*/
+ */
 package com.googlecode.gwtquake.shared.common;
 
 
@@ -31,36 +31,38 @@ import java.nio.ByteOrder;
 import com.googlecode.gwtquake.shared.util.Lib;
 
 public class TextureInfo {
+  public static final int SIZE = 32 + 4 + 4 + 32 + 4;
 
-	// works fine.
-	public TextureInfo(byte[] cmod_base, int o, int len) {
-		this(ByteBuffer.wrap(cmod_base, o, len).order(ByteOrder.LITTLE_ENDIAN));
-	}
+  //float         vecs[2][4];     
+  // [s/t][xyz offset]
+  public float vecs[][] = {
+      { 0, 0, 0, 0 },
+      { 0, 0, 0, 0 }
+  };
+  
+  public int flags; // miptex flags + overrides
+  public int value; // light emission, etc
+  //char          texture[32];    // texture name (textures/*.wal)
+  
+  public String texture="";
+  public int nexttexinfo; // for animations, -1 = end of chain
 
-	public TextureInfo(ByteBuffer bb) {
-		byte str[] = new byte[32];
+  // works fine.
+  public TextureInfo(byte[] cmod_base, int o, int len) {
+    this(ByteBuffer.wrap(cmod_base, o, len).order(ByteOrder.LITTLE_ENDIAN));
+  }
 
-		vecs[0] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
-		vecs[1] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
+  public TextureInfo(ByteBuffer bb) {
+    byte str[] = new byte[32];
 
-		flags = bb.getInt();
-		value = bb.getInt();
+    vecs[0] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
+    vecs[1] = new float[] { bb.getFloat(), bb.getFloat(), bb.getFloat(), bb.getFloat()};
 
-		bb.get(str);
-		texture = Compatibility.newString(str, 0, Lib.strlen(str));
-		nexttexinfo = bb.getInt();
-	}
+    flags = bb.getInt();
+    value = bb.getInt();
 
-	public static final int SIZE = 32 + 4 + 4 + 32 + 4;
-
-	//float			vecs[2][4];		// [s/t][xyz offset]
-	public float vecs[][] = {
-		 { 0, 0, 0, 0 },
-		 { 0, 0, 0, 0 }
-	};
-	public int flags; // miptex flags + overrides
-	public int value; // light emission, etc
-	//char			texture[32];	// texture name (textures/*.wal)
-	public String texture="";
-	public int nexttexinfo; // for animations, -1 = end of chain
+    bb.get(str);
+    texture = Compatibility.newString(str, 0, Lib.strlen(str));
+    nexttexinfo = bb.getInt();
+  }
 }

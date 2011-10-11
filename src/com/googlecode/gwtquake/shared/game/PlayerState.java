@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -60,7 +60,7 @@ public class PlayerState {
 
 	public int rdflags; // refdef flags
 
-	public short stats[]= new short[Defines.MAX_STATS];
+	public short stats[]= new short[Constants.MAX_STATS];
 
 	/** Lets cleverly reset the structure. */
 	private static PlayerState prototype= new PlayerState();
@@ -96,7 +96,7 @@ public class PlayerState {
 		fov= from.fov;
 		rdflags= from.rdflags;
 
-		System.arraycopy(from.stats, 0, stats, 0, Defines.MAX_STATS);
+		System.arraycopy(from.stats, 0, stats, 0, Constants.MAX_STATS);
 
 		return this;
 	}
@@ -137,7 +137,7 @@ public class PlayerState {
 
 		rdflags= f.readInt();
 
-		for (int n= 0; n < Defines.MAX_STATS; n++)
+		for (int n= 0; n < Constants.MAX_STATS; n++)
 			stats[n]= f.readShort();
 	}
 
@@ -177,7 +177,7 @@ public class PlayerState {
 
 		f.writeInt(rdflags);
 
-		for (int n= 0; n < Defines.MAX_STATS; n++)
+		for (int n= 0; n < Constants.MAX_STATS; n++)
 			f.writeShort(stats[n]);
 	}
 
@@ -200,7 +200,7 @@ public class PlayerState {
 
 		Com.Println("rdflags: " + rdflags);
 
-		for (int n= 0; n < Defines.MAX_STATS; n++)
+		for (int n= 0; n < Constants.MAX_STATS; n++)
 			System.out.println("stats[" + n + "]: " + stats[n]);
 	}
 }

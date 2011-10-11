@@ -24,8 +24,11 @@
 package com.googlecode.gwtquake.shared.game;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.ConsoleVariables;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.QuakeFile;
 
@@ -54,7 +57,7 @@ public class GameSave {
      * a new game is started or a save game is loaded. 
      */
     public static void InitGame() {
-        GameBase.gi.dprintf("==== InitGame ====\n");
+        ServerGame.PF_dprintf("==== InitGame ====\n");
 
 //        // preload all classes to register the adapters
 //        for ( int n=0; n < preloadclasslist.length; n++)
@@ -70,70 +73,56 @@ public class GameSave {
 //        }
 //        
         
-        GameBase.gun_x = GameBase.gi.cvar("gun_x", "0", 0);
-        GameBase.gun_y = GameBase.gi.cvar("gun_y", "0", 0);
-        GameBase.gun_z = GameBase.gi.cvar("gun_z", "0", 0);
+        GameBase.gun_x = ConsoleVariables.Get("gun_x", "0", 0);
+        GameBase.gun_y = ConsoleVariables.Get("gun_y", "0", 0);
+        GameBase.gun_z = ConsoleVariables.Get("gun_z", "0", 0);
 
         //FIXME: sv_ prefix are wrong names for these variables 
-        GameBase.sv_rollspeed = GameBase.gi.cvar("sv_rollspeed", "200", 0);
-        GameBase.sv_rollangle = GameBase.gi.cvar("sv_rollangle", "2", 0);
-        GameBase.sv_maxvelocity = GameBase.gi.cvar("sv_maxvelocity", "2000", 0);
-        GameBase.sv_gravity = GameBase.gi.cvar("sv_gravity", "800", 0);
+        GameBase.sv_rollspeed = ConsoleVariables.Get("sv_rollspeed", "200", 0);
+        GameBase.sv_rollangle = ConsoleVariables.Get("sv_rollangle", "2", 0);
+        GameBase.sv_maxvelocity = ConsoleVariables.Get("sv_maxvelocity", "2000", 0);
+        GameBase.sv_gravity = ConsoleVariables.Get("sv_gravity", "800", 0);
 
         // noset vars
-        Globals.dedicated = GameBase.gi.cvar("dedicated", "0",
-                Defines.CVAR_NOSET);
+        Globals.dedicated = ConsoleVariables.Get("dedicated", "0", Constants.CVAR_NOSET);
 
         // latched vars
-        GameBase.sv_cheats = GameBase.gi.cvar("cheats", "0",
-                Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
-        GameBase.gi.cvar("gamename", Defines.GAMEVERSION,
-                Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
-        GameBase.gi.cvar("gamedate", Globals.__DATE__, Defines.CVAR_SERVERINFO
-                | Defines.CVAR_LATCH);
+        GameBase.sv_cheats = ConsoleVariables.Get("cheats", "0", Constants.CVAR_SERVERINFO | Constants.CVAR_LATCH);
+        ConsoleVariables.Get("gamename", Constants.GAMEVERSION, Constants.CVAR_SERVERINFO | Constants.CVAR_LATCH);
+        ConsoleVariables.Get("gamedate", Constants.__DATE__, Constants.CVAR_SERVERINFO
+        | Constants.CVAR_LATCH);
 
-        GameBase.maxclients = GameBase.gi.cvar("maxclients", "4",
-                Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
-        GameBase.maxspectators = GameBase.gi.cvar("maxspectators", "4",
-                Defines.CVAR_SERVERINFO);
-        GameBase.deathmatch = GameBase.gi.cvar("deathmatch", "0",
-                Defines.CVAR_LATCH);
-        GameBase.coop = GameBase.gi.cvar("coop", "0", Defines.CVAR_LATCH);
-        GameBase.skill = GameBase.gi.cvar("skill", "0", Defines.CVAR_LATCH);
-        GameBase.maxentities = GameBase.gi.cvar("maxentities", "1024",
-                Defines.CVAR_LATCH);
+        GameBase.maxclients = ConsoleVariables.Get("maxclients", "4", Constants.CVAR_SERVERINFO | Constants.CVAR_LATCH);
+        GameBase.maxspectators = ConsoleVariables.Get("maxspectators", "4", Constants.CVAR_SERVERINFO);
+        GameBase.deathmatch = ConsoleVariables.Get("deathmatch", "0", Constants.CVAR_LATCH);
+        GameBase.coop = ConsoleVariables.Get("coop", "0", Constants.CVAR_LATCH);
+        GameBase.skill = ConsoleVariables.Get("skill", "0", Constants.CVAR_LATCH);
+        GameBase.maxentities = ConsoleVariables.Get("maxentities", "1024", Constants.CVAR_LATCH);
 
         // change anytime vars
-        GameBase.dmflags = GameBase.gi.cvar("dmflags", "0",
-                Defines.CVAR_SERVERINFO);
-        GameBase.fraglimit = GameBase.gi.cvar("fraglimit", "0",
-                Defines.CVAR_SERVERINFO);
-        GameBase.timelimit = GameBase.gi.cvar("timelimit", "0",
-                Defines.CVAR_SERVERINFO);
-        GameBase.password = GameBase.gi.cvar("password", "",
-                Defines.CVAR_USERINFO);
-        GameBase.spectator_password = GameBase.gi.cvar("spectator_password",
-                "", Defines.CVAR_USERINFO);
-        GameBase.needpass = GameBase.gi.cvar("needpass", "0",
-                Defines.CVAR_SERVERINFO);
-        GameBase.filterban = GameBase.gi.cvar("filterban", "1", 0);
+        GameBase.dmflags = ConsoleVariables.Get("dmflags", "0", Constants.CVAR_SERVERINFO);
+        GameBase.fraglimit = ConsoleVariables.Get("fraglimit", "0", Constants.CVAR_SERVERINFO);
+        GameBase.timelimit = ConsoleVariables.Get("timelimit", "0", Constants.CVAR_SERVERINFO);
+        GameBase.password = ConsoleVariables.Get("password", "", Constants.CVAR_USERINFO);
+        GameBase.spectator_password = ConsoleVariables.Get("spectator_password", "", Constants.CVAR_USERINFO);
+        GameBase.needpass = ConsoleVariables.Get("needpass", "0", Constants.CVAR_SERVERINFO);
+        GameBase.filterban = ConsoleVariables.Get("filterban", "1", 0);
 
-        GameBase.g_select_empty = GameBase.gi.cvar("g_select_empty", "0",
-                Defines.CVAR_ARCHIVE);
+        GameBase.g_select_empty = ConsoleVariables.Get("g_select_empty", "0", Constants.CVAR_ARCHIVE);
 
-        GameBase.run_pitch = GameBase.gi.cvar("run_pitch", "0.002", 0);
-        GameBase.run_roll = GameBase.gi.cvar("run_roll", "0.005", 0);
-        GameBase.bob_up = GameBase.gi.cvar("bob_up", "0.005", 0);
-        GameBase.bob_pitch = GameBase.gi.cvar("bob_pitch", "0.002", 0);
-        GameBase.bob_roll = GameBase.gi.cvar("bob_roll", "0.002", 0);
+        GameBase.run_pitch = ConsoleVariables.Get("run_pitch", "0.002", 0);
+        GameBase.run_roll = ConsoleVariables.Get("run_roll", "0.005", 0);
+        GameBase.bob_up = ConsoleVariables.Get("bob_up", "0.005", 0);
+        GameBase.bob_pitch = ConsoleVariables.Get("bob_pitch", "0.002", 0);
+        GameBase.bob_roll = ConsoleVariables.Get("bob_roll", "0.002", 0);
 
         // flood control
-        GameBase.flood_msgs = GameBase.gi.cvar("flood_msgs", "4", 0);
-        GameBase.flood_persecond = GameBase.gi.cvar("flood_persecond", "4", 0);
-        GameBase.flood_waitdelay = GameBase.gi.cvar("flood_waitdelay", "10", 0);
+        GameBase.flood_msgs = ConsoleVariables.Get("flood_msgs", "4", 0);
+        GameBase.flood_persecond = ConsoleVariables.Get("flood_persecond", "4", 0);
+        GameBase.flood_waitdelay = ConsoleVariables.Get("flood_waitdelay", "10", 0);
 
         // dm map list
-        GameBase.sv_maplist = GameBase.gi.cvar("sv_maplist", "", 0);
+        GameBase.sv_maplist = ConsoleVariables.Get("sv_maplist", "", 0);
 
         // items
         GameItems.InitItems();
@@ -175,7 +164,7 @@ public class GameSave {
             f = new QuakeFile(filename, "rw");
 
             if (f == null)
-                GameBase.gi.error("Couldn't write to " + filename);
+              Com.Error(Constants.ERR_FATAL, "Couldn't write to " + filename);
 
             GameBase.game.autosaved = autosave;
             GameBase.game.write(f);
@@ -225,7 +214,7 @@ public class GameSave {
 
             f = new QuakeFile(filename, "rw");
             if (f == null)
-                GameBase.gi.error("Couldn't open for writing: " + filename);
+              Com.Error(Constants.ERR_FATAL, "Couldn't open for writing: " + filename);
 
             // write out level_locals_t
             GameBase.level.write(f);
@@ -268,7 +257,7 @@ public class GameSave {
             QuakeFile f = new QuakeFile(filename, "r");
 
             if (f == null)
-                GameBase.gi.error("Couldn't read level file " + filename);
+              Com.Error(Constants.ERR_FATAL, "Couldn't read level file " + filename);
 
             // wipe all the entities
             CreateEdicts();
@@ -290,7 +279,7 @@ public class GameSave {
                 ent = GameBase.g_edicts[entnum];
                 ent.read(f);
                 ent.cleararealinks();
-                GameBase.gi.linkentity(ent);
+                World.SV_LinkEdict(ent);
             }
 
             Lib.fclose(f);

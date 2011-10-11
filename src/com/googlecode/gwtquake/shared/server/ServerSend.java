@@ -44,13 +44,13 @@ public class ServerSend {
 	public static StringBuffer sv_outputbuf = new StringBuffer();
 
 	public static void SV_FlushRedirect(int sv_redirected, byte outputbuf[]) {
-		if (sv_redirected == Defines.RD_PACKET) {
+		if (sv_redirected == Constants.RD_PACKET) {
 			String s = ("print\n" + Lib.CtoJava(outputbuf));
-			NetworkChannels.Netchan_OutOfBand(Defines.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
+			NetworkChannel.Netchan_OutOfBand(Constants.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
 		}
-		else if (sv_redirected == Defines.RD_CLIENT) {
-			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Defines.svc_print);
-			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Defines.PRINT_HIGH);
+		else if (sv_redirected == Constants.RD_CLIENT) {
+			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Constants.svc_print);
+			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Constants.PRINT_HIGH);
 			Buffer.WriteStringTrimmed(ServerMain.sv_client.netchan.message, outputbuf);
         }
 	}
@@ -74,7 +74,7 @@ public class ServerSend {
 		if (level < cl.messagelevel)
 			return;
 
-		Buffer.WriteByte(cl.netchan.message, Defines.svc_print);
+		Buffer.WriteByte(cl.netchan.message, Constants.svc_print);
 		Buffer.WriteByte(cl.netchan.message, level);
 		Buffer.WriteString(cl.netchan.message, s);
 	}
@@ -99,9 +99,9 @@ public class ServerSend {
 			cl = ServerInit.svs.clients[i];
 			if (level < cl.messagelevel)
 				continue;
-			if (cl.state != Defines.cs_spawned)
+			if (cl.state != Constants.cs_spawned)
 				continue;
-			Buffer.WriteByte(cl.netchan.message, Defines.svc_print);
+			Buffer.WriteByte(cl.netchan.message, Constants.svc_print);
 			Buffer.WriteByte(cl.netchan.message, level);
 			Buffer.WriteString(cl.netchan.message, s);
 		}
@@ -118,9 +118,9 @@ public class ServerSend {
 		if (ServerInit.sv.state == 0)
 			return;
 
-		Buffer.WriteByte(ServerInit.sv.multicast, Defines.svc_stufftext);
+		Buffer.WriteByte(ServerInit.sv.multicast, Constants.svc_stufftext);
 		Buffer.WriteString(ServerInit.sv.multicast, s);
-		SV_Multicast(null, Defines.MULTICAST_ALL_R);
+		SV_Multicast(null, Constants.MULTICAST_ALL_R);
 	}
 	/*
 	=================
@@ -144,7 +144,7 @@ public class ServerSend {
 
 		reliable = false;
 
-		if (to != Defines.MULTICAST_ALL_R && to != Defines.MULTICAST_ALL) {
+		if (to != Constants.MULTICAST_ALL_R && to != Constants.MULTICAST_ALL) {
 			leafnum = CM.CM_PointLeafnum(origin);
 			area1 = CM.CM_LeafArea(leafnum);
 		}
@@ -158,24 +158,24 @@ public class ServerSend {
 			Buffer.Write(ServerInit.svs.demo_multicast, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
 
 		switch (to) {
-			case Defines.MULTICAST_ALL_R :
+			case Constants.MULTICAST_ALL_R :
 				reliable = true; // intentional fallthrough, no break here
-			case Defines.MULTICAST_ALL :
+			case Constants.MULTICAST_ALL :
 				leafnum = 0;
 				mask = null;
 				break;
 
-			case Defines.MULTICAST_PHS_R :
+			case Constants.MULTICAST_PHS_R :
 				reliable = true; // intentional fallthrough
-			case Defines.MULTICAST_PHS :
+			case Constants.MULTICAST_PHS :
 				leafnum = CM.CM_PointLeafnum(origin);
 				cluster = CM.CM_LeafCluster(leafnum);
 				mask = CM.CM_ClusterPHS(cluster);
 				break;
 
-			case Defines.MULTICAST_PVS_R :
+			case Constants.MULTICAST_PVS_R :
 				reliable = true; // intentional fallthrough
-			case Defines.MULTICAST_PVS :
+			case Constants.MULTICAST_PVS :
 				leafnum = CM.CM_PointLeafnum(origin);
 				cluster = CM.CM_LeafCluster(leafnum);
 				mask = CM.CM_ClusterPVS(cluster);
@@ -183,16 +183,16 @@ public class ServerSend {
 
 			default :
 				mask = null;
-				Com.Error(Defines.ERR_FATAL, "SV_Multicast: bad to:" + to + "\n");
+				Com.Error(Constants.ERR_FATAL, "SV_Multicast: bad to:" + to + "\n");
 		}
 
 		// send the data to all relevent clients
 		for (j = 0; j < ServerMain.maxclients.value; j++) {
 			client = ServerInit.svs.clients[j];
 
-			if (client.state == Defines.cs_free || client.state == Defines.cs_zombie)
+			if (client.state == Constants.cs_free || client.state == Constants.cs_zombie)
 				continue;
-			if (client.state != Defines.cs_spawned && !reliable)
+			if (client.state != Constants.cs_spawned && !reliable)
 				continue;
 
 			if (mask != null) {
@@ -260,16 +260,16 @@ public class ServerSend {
 		boolean use_phs;
 
 		if (volume < 0 || volume > 1.0)
-			Com.Error(Defines.ERR_FATAL, "SV_StartSound: volume = " + volume);
+			Com.Error(Constants.ERR_FATAL, "SV_StartSound: volume = " + volume);
 
 		if (attenuation < 0 || attenuation > 4)
-			Com.Error(Defines.ERR_FATAL, "SV_StartSound: attenuation = " + attenuation);
+			Com.Error(Constants.ERR_FATAL, "SV_StartSound: attenuation = " + attenuation);
 
 		//	if (channel < 0 || channel > 15)
 		//		Com_Error (ERR_FATAL, "SV_StartSound: channel = %i", channel);
 
 		if (timeofs < 0 || timeofs > 0.255)
-			Com.Error(Defines.ERR_FATAL, "SV_StartSound: timeofs = " + timeofs);
+			Com.Error(Constants.ERR_FATAL, "SV_StartSound: timeofs = " + timeofs);
 
 		ent = entity.index;
 
@@ -284,26 +284,26 @@ public class ServerSend {
 		sendchan = (ent << 3) | (channel & 7);
 
 		flags = 0;
-		if (volume != Defines.DEFAULT_SOUND_PACKET_VOLUME)
-			flags |= Defines.SND_VOLUME;
-		if (attenuation != Defines.DEFAULT_SOUND_PACKET_ATTENUATION)
-			flags |= Defines.SND_ATTENUATION;
+		if (volume != Constants.DEFAULT_SOUND_PACKET_VOLUME)
+			flags |= Constants.SND_VOLUME;
+		if (attenuation != Constants.DEFAULT_SOUND_PACKET_ATTENUATION)
+			flags |= Constants.SND_ATTENUATION;
 
 		// the client doesn't know that bmodels have weird origins
 		// the origin can also be explicitly set
-		if ((entity.svflags & Defines.SVF_NOCLIENT) != 0 || (entity.solid == Defines.SOLID_BSP) || origin != null)
-			flags |= Defines.SND_POS;
+		if ((entity.svflags & Constants.SVF_NOCLIENT) != 0 || (entity.solid == Constants.SOLID_BSP) || origin != null)
+			flags |= Constants.SND_POS;
 
 		// always send the entity number for channel overrides
-		flags |= Defines.SND_ENT;
+		flags |= Constants.SND_ENT;
 
 		if (timeofs != 0)
-			flags |= Defines.SND_OFFSET;
+			flags |= Constants.SND_OFFSET;
 
 		// use the entity origin unless it is a bmodel or explicitly specified
 		if (origin == null) {
 			origin = origin_v;
-			if (entity.solid == Defines.SOLID_BSP) {
+			if (entity.solid == Constants.SOLID_BSP) {
 				for (i = 0; i < 3; i++)
 					origin_v[i] = entity.s.origin[i] + 0.5f * (entity.mins[i] + entity.maxs[i]);
 			}
@@ -312,39 +312,39 @@ public class ServerSend {
 			}
 		}
 
-		Buffer.WriteByte(ServerInit.sv.multicast, Defines.svc_sound);
+		Buffer.WriteByte(ServerInit.sv.multicast, Constants.svc_sound);
 		Buffer.WriteByte(ServerInit.sv.multicast, flags);
 		Buffer.WriteByte(ServerInit.sv.multicast, soundindex);
 
-		if ((flags & Defines.SND_VOLUME) != 0)
+		if ((flags & Constants.SND_VOLUME) != 0)
 			Buffer.WriteByte(ServerInit.sv.multicast, (int) (volume * 255));
-		if ((flags & Defines.SND_ATTENUATION) != 0)
+		if ((flags & Constants.SND_ATTENUATION) != 0)
 			Buffer.WriteByte(ServerInit.sv.multicast, (int) (attenuation * 64));
-		if ((flags & Defines.SND_OFFSET) != 0)
+		if ((flags & Constants.SND_OFFSET) != 0)
 			Buffer.WriteByte(ServerInit.sv.multicast, (int) (timeofs * 1000));
 
-		if ((flags & Defines.SND_ENT) != 0)
+		if ((flags & Constants.SND_ENT) != 0)
 			Buffer.WriteShort(ServerInit.sv.multicast, sendchan);
 
-		if ((flags & Defines.SND_POS) != 0)
+		if ((flags & Constants.SND_POS) != 0)
 			Buffer.WritePos(ServerInit.sv.multicast, origin);
 
 		// if the sound doesn't attenuate,send it to everyone
 		// (global radio chatter, voiceovers, etc)
-		if (attenuation == Defines.ATTN_NONE)
+		if (attenuation == Constants.ATTN_NONE)
 			use_phs = false;
 
-		if ((channel & Defines.CHAN_RELIABLE) != 0) {
+		if ((channel & Constants.CHAN_RELIABLE) != 0) {
 			if (use_phs)
-				SV_Multicast(origin, Defines.MULTICAST_PHS_R);
+				SV_Multicast(origin, Constants.MULTICAST_PHS_R);
 			else
-				SV_Multicast(origin, Defines.MULTICAST_ALL_R);
+				SV_Multicast(origin, Constants.MULTICAST_ALL_R);
 		}
 		else {
 			if (use_phs)
-				SV_Multicast(origin, Defines.MULTICAST_PHS);
+				SV_Multicast(origin, Constants.MULTICAST_PHS);
 			else
-				SV_Multicast(origin, Defines.MULTICAST_ALL);
+				SV_Multicast(origin, Constants.MULTICAST_ALL);
 		}
 	}
 	/*
@@ -389,10 +389,10 @@ public class ServerSend {
 		}
 
 		// send the datagram
-		NetworkChannels.Transmit(client.netchan, msg.cursize, msg.data);
+		NetworkChannel.Transmit(client.netchan, msg.cursize, msg.data);
 
 		// record the size for rate estimation
-		client.message_size[ServerInit.sv.framenum % Defines.RATE_MESSAGES] = msg.cursize;
+		client.message_size[ServerInit.sv.framenum % Constants.RATE_MESSAGES] = msg.cursize;
 
 		return true;
 	}
@@ -418,25 +418,25 @@ public class ServerSend {
 		int i;
 
 		// never drop over the loopback
-		if (c.netchan.remote_address.type == Defines.NA_LOOPBACK)
+		if (c.netchan.remote_address.type == Constants.NA_LOOPBACK)
 			return false;
 
 		total = 0;
 
-		for (i = 0; i < Defines.RATE_MESSAGES; i++) {
+		for (i = 0; i < Constants.RATE_MESSAGES; i++) {
 			total += c.message_size[i];
 		}
 
 		if (total > c.rate) {
 			c.surpressCount++;
-			c.message_size[ServerInit.sv.framenum % Defines.RATE_MESSAGES] = 0;
+			c.message_size[ServerInit.sv.framenum % Constants.RATE_MESSAGES] = 0;
 			return true;
 		}
 
 		return false;
 	}
 
-	private static final byte msgbuf[] = new byte[Defines.MAX_MSGLEN];
+	private static final byte msgbuf[] = new byte[Constants.MAX_MSGLEN];
 	private static final byte[] NULLBYTE = {0};
 	/*
 	=======================
@@ -452,7 +452,7 @@ public class ServerSend {
 		msglen = 0;
 
 		// read the next demo message if needed
-		if (ServerInit.sv.state == Defines.ss_demo && ServerInit.sv.demofile != null) {
+		if (ServerInit.sv.state == Constants.ss_demo && ServerInit.sv.demofile != null) {
 			if (ServerMain.sv_paused.value != 0)
 				msglen = 0;
 			else {
@@ -473,8 +473,8 @@ public class ServerSend {
 					SV_DemoCompleted();
 					return;
 				}
-				if (msglen > Defines.MAX_MSGLEN)
-					Com.Error(Defines.ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN");
+				if (msglen > Constants.MAX_MSGLEN)
+					Com.Error(Constants.ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN");
 
 				//r = fread (msgbuf, msglen, 1, sv.demofile);
 				try {
@@ -499,15 +499,15 @@ public class ServerSend {
 			if (c.netchan.message.overflowed) {
 				c.netchan.message.clear();
 				c.datagram.clear();
-				SV_BroadcastPrintf(Defines.PRINT_HIGH, c.name + " overflowed\n");
+				SV_BroadcastPrintf(Constants.PRINT_HIGH, c.name + " overflowed\n");
 				ServerMain.SV_DropClient(c);
 			}
 
-			if (ServerInit.sv.state == Defines.ss_cinematic
-				|| ServerInit.sv.state == Defines.ss_demo
-				|| ServerInit.sv.state == Defines.ss_pic)
-				NetworkChannels.Transmit(c.netchan, msglen, msgbuf);
-			else if (c.state == Defines.cs_spawned) {
+			if (ServerInit.sv.state == Constants.ss_cinematic
+				|| ServerInit.sv.state == Constants.ss_demo
+				|| ServerInit.sv.state == Constants.ss_pic)
+				NetworkChannel.Transmit(c.netchan, msglen, msgbuf);
+			else if (c.state == Constants.cs_spawned) {
 				// don't overrun bandwidth
 				if (SV_RateDrop(c))
 					continue;
@@ -518,7 +518,7 @@ public class ServerSend {
 				
 				// just update reliable	if needed
 				if (c.netchan.message.cursize != 0 || Globals.curtime - c.netchan.last_sent > 1000)
-					NetworkChannels.Transmit(c.netchan, 0, NULLBYTE);
+					NetworkChannel.Transmit(c.netchan, 0, NULLBYTE);
 			}
 		}
 	}

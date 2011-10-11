@@ -94,45 +94,45 @@ public class CM {
 
     static int numbrushsides;
 
-    static cbrushside_t map_brushsides[] = new cbrushside_t[Defines.MAX_MAP_BRUSHSIDES];
+    static cbrushside_t map_brushsides[] = new cbrushside_t[Constants.MAX_MAP_BRUSHSIDES];
     static {
-        for (int n = 0; n < Defines.MAX_MAP_BRUSHSIDES; n++)
+        for (int n = 0; n < Constants.MAX_MAP_BRUSHSIDES; n++)
             map_brushsides[n] = new cbrushside_t();
     }
 
     public static int numtexinfo;
 
-    public static MapSurface map_surfaces[] = new MapSurface[Defines.MAX_MAP_TEXINFO];
+    public static MapSurface map_surfaces[] = new MapSurface[Constants.MAX_MAP_TEXINFO];
     static {
-        for (int n = 0; n < Defines.MAX_MAP_TEXINFO; n++)
+        for (int n = 0; n < Constants.MAX_MAP_TEXINFO; n++)
             map_surfaces[n] = new MapSurface();
     }
 
     static int numplanes;
 
     /** Extra for box hull ( +6) */
-    static Plane map_planes[] = new Plane[Defines.MAX_MAP_PLANES + 6];
+    static Plane map_planes[] = new Plane[Constants.MAX_MAP_PLANES + 6];
 
     static {
-        for (int n = 0; n < Defines.MAX_MAP_PLANES + 6; n++)
+        for (int n = 0; n < Constants.MAX_MAP_PLANES + 6; n++)
             map_planes[n] = new Plane();
     }
 
     static int numnodes;
 
     /** Extra for box hull ( +6) */
-    static cnode_t map_nodes[] = new cnode_t[Defines.MAX_MAP_NODES + 6];
+    static cnode_t map_nodes[] = new cnode_t[Constants.MAX_MAP_NODES + 6];
 
     static {
-        for (int n = 0; n < Defines.MAX_MAP_NODES + 6; n++)
+        for (int n = 0; n < Constants.MAX_MAP_NODES + 6; n++)
             map_nodes[n] = new cnode_t();
     }
 
     static int numleafs = 1; // allow leaf funcs to be called without a map
 
-    static cleaf_t map_leafs[] = new cleaf_t[Defines.MAX_MAP_LEAFS];
+    static cleaf_t map_leafs[] = new cleaf_t[Constants.MAX_MAP_LEAFS];
     static {
-        for (int n = 0; n < Defines.MAX_MAP_LEAFS; n++)
+        for (int n = 0; n < Constants.MAX_MAP_LEAFS; n++)
             map_leafs[n] = new cleaf_t();
     }
 
@@ -140,29 +140,29 @@ public class CM {
 
     static int numleafbrushes;
 
-    public static int map_leafbrushes[] = new int[Defines.MAX_MAP_LEAFBRUSHES];
+    public static int map_leafbrushes[] = new int[Constants.MAX_MAP_LEAFBRUSHES];
 
     public static int numcmodels;
 
-    public static Model map_cmodels[] = new Model[Defines.MAX_MAP_MODELS];
+    public static Model map_cmodels[] = new Model[Constants.MAX_MAP_MODELS];
     static {
-        for (int n = 0; n < Defines.MAX_MAP_MODELS; n++)
+        for (int n = 0; n < Constants.MAX_MAP_MODELS; n++)
             map_cmodels[n] = new Model();
 
     }
 
     public static int numbrushes;
 
-    public static cbrush_t map_brushes[] = new cbrush_t[Defines.MAX_MAP_BRUSHES];
+    public static cbrush_t map_brushes[] = new cbrush_t[Constants.MAX_MAP_BRUSHES];
     static {
-        for (int n = 0; n < Defines.MAX_MAP_BRUSHES; n++)
+        for (int n = 0; n < Constants.MAX_MAP_BRUSHES; n++)
             map_brushes[n] = new cbrush_t();
 
     }
 
     public static int numvisibility;
 
-    public static byte map_visibility[] = new byte[Defines.MAX_MAP_VISIBILITY];
+    public static byte map_visibility[] = new byte[Constants.MAX_MAP_VISIBILITY];
 
     /** Main visibility data. */
     public static QuakeFiles.dvis_t map_vis = new QuakeFiles.dvis_t(ByteBuffer
@@ -174,19 +174,19 @@ public class CM {
 
     public static int numareas = 1;
 
-    public static carea_t map_areas[] = new carea_t[Defines.MAX_MAP_AREAS];
+    public static carea_t map_areas[] = new carea_t[Constants.MAX_MAP_AREAS];
     static {
-        for (int n = 0; n < Defines.MAX_MAP_AREAS; n++)
+        for (int n = 0; n < Constants.MAX_MAP_AREAS; n++)
             map_areas[n] = new carea_t();
 
     }
 
     public static int numareaportals;
 
-    public static QuakeFiles.dareaportal_t map_areaportals[] = new QuakeFiles.dareaportal_t[Defines.MAX_MAP_AREAPORTALS];
+    public static QuakeFiles.dareaportal_t map_areaportals[] = new QuakeFiles.dareaportal_t[Constants.MAX_MAP_AREAPORTALS];
 
     static {
-        for (int n = 0; n < Defines.MAX_MAP_AREAPORTALS; n++)
+        for (int n = 0; n < Constants.MAX_MAP_AREAPORTALS; n++)
             map_areaportals[n] = new QuakeFiles.dareaportal_t();
 
     }
@@ -197,7 +197,7 @@ public class CM {
 
     public static int floodvalid;
 
-    public static boolean portalopen[] = new boolean[Defines.MAX_MAP_AREAPORTALS];
+    public static boolean portalopen[] = new boolean[Constants.MAX_MAP_AREAPORTALS];
 
     public static ConsoleVariable map_noareas;
 
@@ -295,27 +295,27 @@ public class CM {
 
         QuakeFiles.dheader_t header = new QuakeFiles.dheader_t(bbuf.slice());
 
-        if (header.version != Defines.BSPVERSION)
-            Com.Error(Defines.ERR_DROP, "CMod_LoadBrushModel: " + name
+        if (header.version != Constants.BSPVERSION)
+            Com.Error(Constants.ERR_DROP, "CMod_LoadBrushModel: " + name
                     + " has wrong version number (" + header.version
-                    + " should be " + Defines.BSPVERSION + ")");
+                    + " should be " + Constants.BSPVERSION + ")");
 
         cmod_base = bbuf.order(ByteOrder.LITTLE_ENDIAN);
 
         // load into heap
-        CMod_LoadSurfaces(header.lumps[Defines.LUMP_TEXINFO]); // ok        
-        CMod_LoadLeafs(header.lumps[Defines.LUMP_LEAFS]);
-        CMod_LoadLeafBrushes(header.lumps[Defines.LUMP_LEAFBRUSHES]);
-        CMod_LoadPlanes(header.lumps[Defines.LUMP_PLANES]);
-        CMod_LoadBrushes(header.lumps[Defines.LUMP_BRUSHES]);
-        CMod_LoadBrushSides(header.lumps[Defines.LUMP_BRUSHSIDES]);
-        CMod_LoadSubmodels(header.lumps[Defines.LUMP_MODELS]);
+        CMod_LoadSurfaces(header.lumps[Constants.LUMP_TEXINFO]); // ok        
+        CMod_LoadLeafs(header.lumps[Constants.LUMP_LEAFS]);
+        CMod_LoadLeafBrushes(header.lumps[Constants.LUMP_LEAFBRUSHES]);
+        CMod_LoadPlanes(header.lumps[Constants.LUMP_PLANES]);
+        CMod_LoadBrushes(header.lumps[Constants.LUMP_BRUSHES]);
+        CMod_LoadBrushSides(header.lumps[Constants.LUMP_BRUSHSIDES]);
+        CMod_LoadSubmodels(header.lumps[Constants.LUMP_MODELS]);
 
-        CMod_LoadNodes(header.lumps[Defines.LUMP_NODES]);
-        CMod_LoadAreas(header.lumps[Defines.LUMP_AREAS]);    
-        CMod_LoadAreaPortals(header.lumps[Defines.LUMP_AREAPORTALS]);       
-        CMod_LoadVisibility(header.lumps[Defines.LUMP_VISIBILITY]);
-        CMod_LoadEntityString(header.lumps[Defines.LUMP_ENTITIES]);
+        CMod_LoadNodes(header.lumps[Constants.LUMP_NODES]);
+        CMod_LoadAreas(header.lumps[Constants.LUMP_AREAS]);    
+        CMod_LoadAreaPortals(header.lumps[Constants.LUMP_AREAPORTALS]);       
+        CMod_LoadVisibility(header.lumps[Constants.LUMP_VISIBILITY]);
+        CMod_LoadEntityString(header.lumps[Constants.LUMP_ENTITIES]);
 
         CM_InitBoxHull();
 
@@ -339,14 +339,14 @@ public class CM {
         int i, j, count;
 
         if ((l.filelen % QuakeFiles.dmodel_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "CMod_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "CMod_LoadBmodel: funny lump size");
 
         count = l.filelen / QuakeFiles.dmodel_t.SIZE;
 
         if (count < 1)
-            Com.Error(Defines.ERR_DROP, "Map with no models");
-        if (count > Defines.MAX_MAP_MODELS)
-            Com.Error(Defines.ERR_DROP, "Map has too many models");
+            Com.Error(Constants.ERR_DROP, "Map with no models");
+        if (count > Constants.MAX_MAP_MODELS)
+            Com.Error(Constants.ERR_DROP, "Map has too many models");
 
         Com.DPrintf(" numcmodels=" + count + "\n");
         numcmodels = count;
@@ -391,13 +391,13 @@ public class CM {
         int i, count;
 
         if ((l.filelen % TextureInfo.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
         count = l.filelen / TextureInfo.SIZE;
         if (count < 1)
-            Com.Error(Defines.ERR_DROP, "Map with no surfaces");
-        if (count > Defines.MAX_MAP_TEXINFO)
-            Com.Error(Defines.ERR_DROP, "Map has too many surfaces");
+            Com.Error(Constants.ERR_DROP, "Map with no surfaces");
+        if (count > Constants.MAX_MAP_TEXINFO)
+            Com.Error(Constants.ERR_DROP, "Map has too many surfaces");
 
         numtexinfo = count;
         Com.DPrintf(" numtexinfo=" + count + "\n");
@@ -434,14 +434,14 @@ public class CM {
         int i, j, count;
 
         if ((l.filelen % QuakeFiles.dnode_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size:"
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size:"
                     + l.fileofs + "," + QuakeFiles.dnode_t.SIZE);
         count = l.filelen / QuakeFiles.dnode_t.SIZE;
 
         if (count < 1)
-            Com.Error(Defines.ERR_DROP, "Map has no nodes");
-        if (count > Defines.MAX_MAP_NODES)
-            Com.Error(Defines.ERR_DROP, "Map has too many nodes");
+            Com.Error(Constants.ERR_DROP, "Map has no nodes");
+        if (count > Constants.MAX_MAP_NODES)
+            Com.Error(Constants.ERR_DROP, "Map has too many nodes");
 
         numnodes = count;
         Com.DPrintf(" numnodes=" + count + "\n");
@@ -477,12 +477,12 @@ public class CM {
         int i, count;
 
         if ((l.filelen % QuakeFiles.dbrush_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
         count = l.filelen / QuakeFiles.dbrush_t.SIZE;
 
-        if (count > Defines.MAX_MAP_BRUSHES)
-            Com.Error(Defines.ERR_DROP, "Map has too many brushes");
+        if (count > Constants.MAX_MAP_BRUSHES)
+            Com.Error(Constants.ERR_DROP, "Map has too many brushes");
 
         numbrushes = count;
         Com.DPrintf(" numbrushes=" + count + "\n");
@@ -517,16 +517,16 @@ public class CM {
         int count;
 
         if ((l.filelen % QuakeFiles.dleaf_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
         count = l.filelen / QuakeFiles.dleaf_t.SIZE;
 
         if (count < 1)
-            Com.Error(Defines.ERR_DROP, "Map with no leafs");
+            Com.Error(Constants.ERR_DROP, "Map with no leafs");
 
         // need to save space for box planes
-        if (count > Defines.MAX_MAP_PLANES)
-            Com.Error(Defines.ERR_DROP, "Map has too many planes");
+        if (count > Constants.MAX_MAP_PLANES)
+            Com.Error(Constants.ERR_DROP, "Map has too many planes");
 
         Com.DPrintf(" numleafes=" + count + "\n");
 
@@ -561,8 +561,8 @@ public class CM {
 
         Com.DPrintf(" numclusters=" + numclusters + "\n");
 
-        if (map_leafs[0].contents != Defines.CONTENTS_SOLID)
-            Com.Error(Defines.ERR_DROP, "Map leaf 0 is not CONTENTS_SOLID");
+        if (map_leafs[0].contents != Constants.CONTENTS_SOLID)
+            Com.Error(Constants.ERR_DROP, "Map leaf 0 is not CONTENTS_SOLID");
 
         solidleaf = 0;
         emptyleaf = -1;
@@ -575,7 +575,7 @@ public class CM {
         }
 
         if (emptyleaf == -1)
-            Com.Error(Defines.ERR_DROP, "Map does not have an empty leaf");
+            Com.Error(Constants.ERR_DROP, "Map does not have an empty leaf");
     }
 
     /** Loads planes. */
@@ -588,16 +588,16 @@ public class CM {
         int bits;
 
         if ((l.filelen % QuakeFiles.dplane_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
         count = l.filelen / QuakeFiles.dplane_t.SIZE;
 
         if (count < 1)
-            Com.Error(Defines.ERR_DROP, "Map with no planes");
+            Com.Error(Constants.ERR_DROP, "Map with no planes");
 
         // need to save space for box planes
-        if (count > Defines.MAX_MAP_PLANES)
-            Com.Error(Defines.ERR_DROP, "Map has too many planes");
+        if (count > Constants.MAX_MAP_PLANES)
+            Com.Error(Constants.ERR_DROP, "Map has too many planes");
 
         Com.DPrintf(" numplanes=" + count + "\n");
 
@@ -644,18 +644,18 @@ public class CM {
         int count;
 
         if ((l.filelen % 2) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
         count = l.filelen / 2;
 
         Com.DPrintf(" numbrushes=" + count + "\n");
 
         if (count < 1)
-            Com.Error(Defines.ERR_DROP, "Map with no planes");
+            Com.Error(Constants.ERR_DROP, "Map with no planes");
 
         // need to save space for box planes
-        if (count > Defines.MAX_MAP_LEAFBRUSHES)
-            Com.Error(Defines.ERR_DROP, "Map has too many leafbrushes");
+        if (count > Constants.MAX_MAP_LEAFBRUSHES)
+            Com.Error(Constants.ERR_DROP, "Map has too many leafbrushes");
 
         out = map_leafbrushes;
         numleafbrushes = count;
@@ -687,12 +687,12 @@ public class CM {
         int num;
 
         if ((l.filelen % QuakeFiles.dbrushside_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
         count = l.filelen / QuakeFiles.dbrushside_t.SIZE;
 
         // need to save space for box planes
-        if (count > Defines.MAX_MAP_BRUSHSIDES)
-            Com.Error(Defines.ERR_DROP, "Map has too many planes");
+        if (count > Constants.MAX_MAP_BRUSHSIDES)
+            Com.Error(Constants.ERR_DROP, "Map has too many planes");
 
         numbrushsides = count;
 
@@ -718,7 +718,7 @@ public class CM {
             j = in.texinfo;
 
             if (j >= numtexinfo)
-                Com.Error(Defines.ERR_DROP, "Bad brushside texinfo");
+                Com.Error(Constants.ERR_DROP, "Bad brushside texinfo");
 
             // java specific handling of -1
             if (j == -1)
@@ -741,12 +741,12 @@ public class CM {
         int count;
 
         if ((l.filelen % QuakeFiles.darea_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
         count = l.filelen / QuakeFiles.darea_t.SIZE;
 
-        if (count > Defines.MAX_MAP_AREAS)
-            Com.Error(Defines.ERR_DROP, "Map has too many areas");
+        if (count > Constants.MAX_MAP_AREAS)
+            Com.Error(Constants.ERR_DROP, "Map has too many areas");
 
         Com.DPrintf(" numareas=" + count + "\n");
         numareas = count;
@@ -782,11 +782,11 @@ public class CM {
         int count;
 
         if ((l.filelen % QuakeFiles.dareaportal_t.SIZE) != 0)
-            Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
+            Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size");
         count = l.filelen / QuakeFiles.dareaportal_t.SIZE;
 
-        if (count > Defines.MAX_MAP_AREAS)
-            Com.Error(Defines.ERR_DROP, "Map has too many areas");
+        if (count > Constants.MAX_MAP_AREAS)
+            Com.Error(Constants.ERR_DROP, "Map has too many areas");
 
         numareaportals = count;
         Com.DPrintf(" numareaportals=" + count + "\n");
@@ -820,8 +820,8 @@ public class CM {
 
         Com.DPrintf(" numvisibility=" + numvisibility + "\n");
 
-        if (l.filelen > Defines.MAX_MAP_VISIBILITY)
-            Com.Error(Defines.ERR_DROP, "Map has too large visibility lump");
+        if (l.filelen > Constants.MAX_MAP_VISIBILITY)
+            Com.Error(Constants.ERR_DROP, "Map has too large visibility lump");
 
 //        System.arraycopy(cmod_base, l.fileofs, map_visibility, 0, l.filelen);
 //        ByteBuffer bb = ByteBuffer.wrap(map_visibility, 0, l.filelen);
@@ -843,8 +843,8 @@ public class CM {
 
         numentitychars = l.filelen;
 
-        if (l.filelen > Defines.MAX_MAP_ENTSTRING)
-            Com.Error(Defines.ERR_DROP, "Map has too large entity lump");
+        if (l.filelen > Constants.MAX_MAP_ENTSTRING)
+            Com.Error(Constants.ERR_DROP, "Map has too large entity lump");
 
         int x = 0;
 //        for (; x < l.filelen && cmod_base[x + l.fileofs] != 0; x++);
@@ -869,12 +869,12 @@ public class CM {
         int num;
 
         if (name == null || name.charAt(0) != '*')
-            Com.Error(Defines.ERR_DROP, "CM_InlineModel: bad name");
+            Com.Error(Constants.ERR_DROP, "CM_InlineModel: bad name");
 
         num = Lib.atoi(name.substring(1));
 
         if (num < 1 || num >= numcmodels)
-            Com.Error(Defines.ERR_DROP, "CM_InlineModel: bad number: " + num + " not in range [1.." +numcmodels+"[; name: " + name);
+            Com.Error(Constants.ERR_DROP, "CM_InlineModel: bad number: " + num + " not in range [1.." +numcmodels+"[; name: " + name);
 
         return map_cmodels[num];
     }
@@ -893,19 +893,19 @@ public class CM {
 
     public static int CM_LeafContents(int leafnum) {
         if (leafnum < 0 || leafnum >= numleafs)
-            Com.Error(Defines.ERR_DROP, "CM_LeafContents: bad number");
+            Com.Error(Constants.ERR_DROP, "CM_LeafContents: bad number");
         return map_leafs[leafnum].contents;
     }
 
     public static int CM_LeafCluster(int leafnum) {
         if (leafnum < 0 || leafnum >= numleafs)
-            Com.Error(Defines.ERR_DROP, "CM_LeafCluster: bad number");
+            Com.Error(Constants.ERR_DROP, "CM_LeafCluster: bad number");
         return map_leafs[leafnum].cluster;
     }
 
     public static int CM_LeafArea(int leafnum) {
         if (leafnum < 0 || leafnum >= numleafs)
-            Com.Error(Defines.ERR_DROP, "CM_LeafArea: bad number");
+            Com.Error(Constants.ERR_DROP, "CM_LeafArea: bad number");
         return map_leafs[leafnum].area;
     }
 
@@ -937,20 +937,20 @@ public class CM {
                 map_planes[numplanes + 9], map_planes[numplanes + 10],
                 map_planes[numplanes + 11], map_planes[numplanes + 12] };
 
-        if (numnodes + 6 > Defines.MAX_MAP_NODES
-                || numbrushes + 1 > Defines.MAX_MAP_BRUSHES
-                || numleafbrushes + 1 > Defines.MAX_MAP_LEAFBRUSHES
-                || numbrushsides + 6 > Defines.MAX_MAP_BRUSHSIDES
-                || numplanes + 12 > Defines.MAX_MAP_PLANES)
-            Com.Error(Defines.ERR_DROP, "Not enough room for box tree");
+        if (numnodes + 6 > Constants.MAX_MAP_NODES
+                || numbrushes + 1 > Constants.MAX_MAP_BRUSHES
+                || numleafbrushes + 1 > Constants.MAX_MAP_LEAFBRUSHES
+                || numbrushsides + 6 > Constants.MAX_MAP_BRUSHSIDES
+                || numplanes + 12 > Constants.MAX_MAP_PLANES)
+            Com.Error(Constants.ERR_DROP, "Not enough room for box tree");
 
         box_brush = map_brushes[numbrushes];
         box_brush.numsides = 6;
         box_brush.firstbrushside = numbrushsides;
-        box_brush.contents = Defines.CONTENTS_MONSTER;
+        box_brush.contents = Constants.CONTENTS_MONSTER;
 
         box_leaf = map_leafs[numleafs];
-        box_leaf.contents = Defines.CONTENTS_MONSTER;
+        box_leaf.contents = Constants.CONTENTS_MONSTER;
         box_leaf.firstleafbrush = (short) numleafbrushes;
         box_leaf.numleafbrushes = 1;
 
@@ -1688,16 +1688,16 @@ public class CM {
         } while (outp < row);
     }
 
-    public static byte pvsrow[] = new byte[Defines.MAX_MAP_LEAFS / 8];
+    public static byte pvsrow[] = new byte[Constants.MAX_MAP_LEAFS / 8];
 
-    public static byte phsrow[] = new byte[Defines.MAX_MAP_LEAFS / 8];
+    public static byte phsrow[] = new byte[Constants.MAX_MAP_LEAFS / 8];
 
     public static byte[] CM_ClusterPVS(int cluster) {
         if (cluster == -1)
             Arrays.fill(pvsrow, 0, (numclusters + 7) >> 3, (byte) 0);
         else
             CM_DecompressVis(map_visibility,
-                    map_vis.bitofs[cluster][Defines.DVIS_PVS], pvsrow);
+                    map_vis.bitofs[cluster][Constants.DVIS_PVS], pvsrow);
         return pvsrow;
     }
 
@@ -1706,7 +1706,7 @@ public class CM {
             Arrays.fill(phsrow, 0, (numclusters + 7) >> 3, (byte) 0);
         else
             CM_DecompressVis(map_visibility,
-                    map_vis.bitofs[cluster][Defines.DVIS_PHS], phsrow);
+                    map_vis.bitofs[cluster][Constants.DVIS_PHS], phsrow);
         return phsrow;
     }
 
@@ -1724,7 +1724,7 @@ public class CM {
         if (area.floodvalid == floodvalid) {
             if (area.floodnum == floodnum)
                 return;
-            Com.Error(Defines.ERR_DROP, "FloodArea_r: reflooded");
+            Com.Error(Constants.ERR_DROP, "FloodArea_r: reflooded");
         }
 
         area.floodnum = floodnum;
@@ -1768,7 +1768,7 @@ public class CM {
      */
     public static void CM_SetAreaPortalState(int portalnum, boolean open) {
         if (portalnum > numareaportals)
-            Com.Error(Defines.ERR_DROP, "areaportal > numareaportals");
+            Com.Error(Constants.ERR_DROP, "areaportal > numareaportals");
 
         portalopen[portalnum] = open;
         FloodAreaConnections();
@@ -1783,7 +1783,7 @@ public class CM {
             return true;
 
         if (area1 > numareas || area2 > numareas)
-            Com.Error(Defines.ERR_DROP, "area > numareas");
+            Com.Error(Constants.ERR_DROP, "area > numareas");
 
         if (map_areas[area1].floodnum == map_areas[area2].floodnum)
             return true;

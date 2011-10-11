@@ -23,7 +23,7 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
-import static com.googlecode.gwtquake.shared.common.Defines.*;
+import static com.googlecode.gwtquake.shared.common.Constants.*;
 import static com.googlecode.gwtquake.shared.common.Globals.cl;
 import static com.googlecode.gwtquake.shared.common.Globals.cl_run;
 import static com.googlecode.gwtquake.shared.common.Globals.cls;

@@ -26,12 +26,12 @@ package com.googlecode.gwtquake.shared.render;
 
 import java.nio.ByteBuffer;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 
 public class ModelVertex {
-    public static final int DISK_SIZE = 3 * Defines.SIZE_OF_FLOAT;
+    public static final int DISK_SIZE = 3 * Constants.SIZE_OF_FLOAT;
 
-    public static final int MEM_SIZE = 3 * Defines.SIZE_OF_FLOAT;
+    public static final int MEM_SIZE = 3 * Constants.SIZE_OF_FLOAT;
 
     public float[] position = { 0, 0, 0 };
 

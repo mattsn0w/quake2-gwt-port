@@ -26,13 +26,13 @@ package com.googlecode.gwtquake.shared.render;
 
 import java.nio.ByteBuffer;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 
 public class ModelEdge {
 
-    public static final int DISK_SIZE = 2 * Defines.SIZE_OF_SHORT;
+    public static final int DISK_SIZE = 2 * Constants.SIZE_OF_SHORT;
 
-    public static final int MEM_SIZE = 3 * Defines.SIZE_OF_INT;
+    public static final int MEM_SIZE = 3 * Constants.SIZE_OF_INT;
 
     // unsigned short
     public int[] v = new int[2];

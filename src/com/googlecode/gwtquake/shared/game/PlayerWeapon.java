@@ -24,11 +24,17 @@
 package com.googlecode.gwtquake.shared.game;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.ItemDropAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.ItemUseAdapter;
 import com.googlecode.gwtquake.shared.game.monsters.MonsterPlayer;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -40,30 +46,28 @@ public class PlayerWeapon {
 
         public boolean think(Entity ent) {
             if ((ent.client.newweapon != null)
-                    && (ent.client.weaponstate == Defines.WEAPON_READY)) {
+                    && (ent.client.weaponstate == Constants.WEAPON_READY)) {
                 ChangeWeapon(ent);
                 return true;
             }
 
-            if (ent.client.weaponstate == Defines.WEAPON_ACTIVATING) {
-                ent.client.weaponstate = Defines.WEAPON_READY;
+            if (ent.client.weaponstate == Constants.WEAPON_ACTIVATING) {
+                ent.client.weaponstate = Constants.WEAPON_READY;
                 ent.client.ps.gunframe = 16;
                 return true;
             }
 
-            if (ent.client.weaponstate == Defines.WEAPON_READY) {
-                if (((ent.client.latched_buttons | ent.client.buttons) & Defines.BUTTON_ATTACK) != 0) {
-                    ent.client.latched_buttons &= ~Defines.BUTTON_ATTACK;
+            if (ent.client.weaponstate == Constants.WEAPON_READY) {
+                if (((ent.client.latched_buttons | ent.client.buttons) & Constants.BUTTON_ATTACK) != 0) {
+                    ent.client.latched_buttons &= ~Constants.BUTTON_ATTACK;
                     if (0 != ent.client.pers.inventory[ent.client.ammo_index]) {
                         ent.client.ps.gunframe = 1;
-                        ent.client.weaponstate = Defines.WEAPON_FIRING;
+                        ent.client.weaponstate = Constants.WEAPON_FIRING;
                         ent.client.grenade_time = 0;
                     } else {
                         if (GameBase.level.time >= ent.pain_debounce_time) {
-                            GameBase.gi.sound(ent, Defines.CHAN_VOICE,
-                                    GameBase.gi
-                                            .soundindex("weapons/noammo.wav"),
-                                    1, Defines.ATTN_NORM, 0);
+                            ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/noammo.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                            (float) 0);
                             ent.pain_debounce_time = GameBase.level.time + 1;
                         }
                         NoAmmoWeaponChange(ent);
@@ -84,18 +88,16 @@ public class PlayerWeapon {
                 return true;
             }
 
-            if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
+            if (ent.client.weaponstate == Constants.WEAPON_FIRING) {
                 if (ent.client.ps.gunframe == 5)
-                    GameBase.gi.sound(ent, Defines.CHAN_WEAPON, GameBase.gi
-                            .soundindex("weapons/hgrena1b.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(ent, Constants.CHAN_WEAPON, ServerInit.SV_SoundIndex("weapons/hgrena1b.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
 
                 if (ent.client.ps.gunframe == 11) {
                     if (0 == ent.client.grenade_time) {
                         ent.client.grenade_time = GameBase.level.time
-                                + Defines.GRENADE_TIMER + 0.2f;
-                        ent.client.weapon_sound = GameBase.gi
-                                .soundindex("weapons/hgrenc1b.wav");
+                                + Constants.GRENADE_TIMER + 0.2f;
+                        ent.client.weapon_sound = ServerInit.SV_SoundIndex("weapons/hgrenc1b.wav");
                     }
 
                     // they waited too long, detonate it in their hand
@@ -106,7 +108,7 @@ public class PlayerWeapon {
                         ent.client.grenade_blew_up = true;
                     }
 
-                    if ((ent.client.buttons & Defines.BUTTON_ATTACK) != 0)
+                    if ((ent.client.buttons & Constants.BUTTON_ATTACK) != 0)
                         return true;
 
                     if (ent.client.grenade_blew_up) {
@@ -132,7 +134,7 @@ public class PlayerWeapon {
 
                 if (ent.client.ps.gunframe == 16) {
                     ent.client.grenade_time = 0;
-                    ent.client.weaponstate = Defines.WEAPON_READY;
+                    ent.client.weaponstate = Constants.WEAPON_READY;
                 }
             }
             return true;
@@ -171,16 +173,16 @@ public class PlayerWeapon {
 
             GameWeapon.fire_grenade(ent, start, forward, damage, 600, 2.5f, radius);
 
-            GameBase.gi.WriteByte(Defines.svc_muzzleflash);
-            GameBase.gi.WriteShort(ent.index);
-            GameBase.gi.WriteByte(Defines.MZ_GRENADE | is_silenced);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
+            ServerGame.PF_WriteShort(ent.index);
+            ServerGame.PF_WriteByte(Constants.MZ_GRENADE | is_silenced);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
 
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
 
             return true;
@@ -240,17 +242,17 @@ public class PlayerWeapon {
                     radius_damage);
 
             // send muzzle flash
-            GameBase.gi.WriteByte(Defines.svc_muzzleflash);
+            ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
 
-            GameBase.gi.WriteShort(ent.index);
-            GameBase.gi.WriteByte(Defines.MZ_ROCKET | is_silenced);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteShort(ent.index);
+            ServerGame.PF_WriteByte(Constants.MZ_ROCKET | is_silenced);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
 
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
 
             return true;
@@ -283,7 +285,7 @@ public class PlayerWeapon {
             else
                 damage = 10;
             Blaster_Fire(ent, Globals.vec3_origin, damage, false,
-                    Defines.EF_BLASTER);
+                    Constants.EF_BLASTER);
             ent.client.ps.gunframe++;
             return true;
         }
@@ -312,17 +314,15 @@ public class PlayerWeapon {
             int effect;
             int damage;
 
-            ent.client.weapon_sound = GameBase.gi
-                    .soundindex("weapons/hyprbl1a.wav");
+            ent.client.weapon_sound = ServerInit.SV_SoundIndex("weapons/hyprbl1a.wav");
 
-            if (0 == (ent.client.buttons & Defines.BUTTON_ATTACK)) {
+            if (0 == (ent.client.buttons & Constants.BUTTON_ATTACK)) {
                 ent.client.ps.gunframe++;
             } else {
                 if (0 == ent.client.pers.inventory[ent.client.ammo_index]) {
                     if (GameBase.level.time >= ent.pain_debounce_time) {
-                        GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("weapons/noammo.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                        ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/noammo.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                        (float) 0);
                         ent.pain_debounce_time = GameBase.level.time + 1;
                     }
                     NoAmmoWeaponChange(ent);
@@ -335,7 +335,7 @@ public class PlayerWeapon {
 
                     if ((ent.client.ps.gunframe == 6)
                             || (ent.client.ps.gunframe == 9))
-                        effect = Defines.EF_HYPERBLASTER;
+                        effect = Constants.EF_HYPERBLASTER;
                     else
                         effect = 0;
                     if (GameBase.deathmatch.value != 0)
@@ -343,10 +343,10 @@ public class PlayerWeapon {
                     else
                         damage = 20;
                     Blaster_Fire(ent, offset, damage, true, effect);
-                    if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+                    if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                         ent.client.pers.inventory[ent.client.ammo_index]--;
 
-                    ent.client.anim_priority = Defines.ANIM_ATTACK;
+                    ent.client.anim_priority = Constants.ANIM_ATTACK;
                     if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
                         ent.s.frame = MonsterPlayer.FRAME_crattak1 - 1;
                         ent.client.anim_end = MonsterPlayer.FRAME_crattak9;
@@ -363,9 +363,8 @@ public class PlayerWeapon {
             }
 
             if (ent.client.ps.gunframe == 12) {
-                GameBase.gi.sound(ent, Defines.CHAN_AUTO, GameBase.gi
-                        .soundindex("weapons/hyprbd1a.wav"), 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(ent, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("weapons/hyprbd1a.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 ent.client.weapon_sound = 0;
             }
 
@@ -454,23 +453,23 @@ public class PlayerWeapon {
 
             if (GameBase.deathmatch.value != 0)
                 GameWeapon.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
-                        Defines.DEFAULT_DEATHMATCH_SHOTGUN_COUNT,
-                        Defines.MOD_SHOTGUN);
+                        Constants.DEFAULT_DEATHMATCH_SHOTGUN_COUNT,
+                        Constants.MOD_SHOTGUN);
             else
                 GameWeapon.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
-                        Defines.DEFAULT_SHOTGUN_COUNT, Defines.MOD_SHOTGUN);
+                        Constants.DEFAULT_SHOTGUN_COUNT, Constants.MOD_SHOTGUN);
 
             // send muzzle flash
-            GameBase.gi.WriteByte(Defines.svc_muzzleflash);
+            ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
 
-            GameBase.gi.WriteShort(ent.index);
-            GameBase.gi.WriteByte(Defines.MZ_SHOTGUN | is_silenced);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteShort(ent.index);
+            ServerGame.PF_WriteByte(Constants.MZ_SHOTGUN | is_silenced);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
 
             return true;
@@ -515,32 +514,32 @@ public class PlayerWeapon {
                 kick *= 4;
             }
 
-            v[Defines.PITCH] = ent.client.v_angle[Defines.PITCH];
-            v[Defines.YAW] = ent.client.v_angle[Defines.YAW] - 5;
-            v[Defines.ROLL] = ent.client.v_angle[Defines.ROLL];
+            v[Constants.PITCH] = ent.client.v_angle[Constants.PITCH];
+            v[Constants.YAW] = ent.client.v_angle[Constants.YAW] - 5;
+            v[Constants.ROLL] = ent.client.v_angle[Constants.ROLL];
             Math3D.AngleVectors(v, forward, null, null);
             GameWeapon.fire_shotgun(ent, start, forward, damage, kick,
-                    Defines.DEFAULT_SHOTGUN_HSPREAD,
-                    Defines.DEFAULT_SHOTGUN_VSPREAD,
-                    Defines.DEFAULT_SSHOTGUN_COUNT / 2, Defines.MOD_SSHOTGUN);
-            v[Defines.YAW] = ent.client.v_angle[Defines.YAW] + 5;
+                    Constants.DEFAULT_SHOTGUN_HSPREAD,
+                    Constants.DEFAULT_SHOTGUN_VSPREAD,
+                    Constants.DEFAULT_SSHOTGUN_COUNT / 2, Constants.MOD_SSHOTGUN);
+            v[Constants.YAW] = ent.client.v_angle[Constants.YAW] + 5;
             Math3D.AngleVectors(v, forward, null, null);
             GameWeapon.fire_shotgun(ent, start, forward, damage, kick,
-                    Defines.DEFAULT_SHOTGUN_HSPREAD,
-                    Defines.DEFAULT_SHOTGUN_VSPREAD,
-                    Defines.DEFAULT_SSHOTGUN_COUNT / 2, Defines.MOD_SSHOTGUN);
+                    Constants.DEFAULT_SHOTGUN_HSPREAD,
+                    Constants.DEFAULT_SHOTGUN_VSPREAD,
+                    Constants.DEFAULT_SSHOTGUN_COUNT / 2, Constants.MOD_SSHOTGUN);
 
             // send muzzle flash
-            GameBase.gi.WriteByte(Defines.svc_muzzleflash);
+            ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
 
-            GameBase.gi.WriteShort(ent.index);
-            GameBase.gi.WriteByte(Defines.MZ_SSHOTGUN | is_silenced);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteShort(ent.index);
+            ServerGame.PF_WriteByte(Constants.MZ_SSHOTGUN | is_silenced);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index] -= 2;
 
             return true;
@@ -603,16 +602,16 @@ public class PlayerWeapon {
             GameWeapon.fire_rail(ent, start, forward, damage, kick);
 
             // send muzzle flash
-            GameBase.gi.WriteByte(Defines.svc_muzzleflash);
+            ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
 
-            GameBase.gi.WriteShort(ent.index);
-            GameBase.gi.WriteByte(Defines.MZ_RAILGUN | is_silenced);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteShort(ent.index);
+            ServerGame.PF_WriteByte(Constants.MZ_RAILGUN | is_silenced);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
             ent.client.ps.gunframe++;
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
 
             return true;
@@ -657,15 +656,15 @@ public class PlayerWeapon {
 
             if (ent.client.ps.gunframe == 9) {
                 // send muzzle flash
-                GameBase.gi.WriteByte(Defines.svc_muzzleflash);
+                ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
 
-                GameBase.gi.WriteShort(ent.index);
-                GameBase.gi.WriteByte(Defines.MZ_BFG | is_silenced);
-                GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+                ServerGame.PF_WriteShort(ent.index);
+                ServerGame.PF_WriteByte(Constants.MZ_BFG | is_silenced);
+                ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
                 ent.client.ps.gunframe++;
 
-                PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+                PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
                 return true;
             }
 
@@ -686,7 +685,7 @@ public class PlayerWeapon {
             // make a big pitch kick with an inverse fall
             ent.client.v_dmg_pitch = -40;
             ent.client.v_dmg_roll = Lib.crandom() * 8;
-            ent.client.v_dmg_time = GameBase.level.time + Defines.DAMAGE_TIME;
+            ent.client.v_dmg_time = GameBase.level.time + Constants.DAMAGE_TIME;
 
             Math3D.VectorSet(offset, 8, 8, ent.viewheight - 8);
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
@@ -695,9 +694,9 @@ public class PlayerWeapon {
 
             ent.client.ps.gunframe++;
 
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index] -= 50;
 
             return true;
@@ -738,22 +737,22 @@ public class PlayerWeapon {
                 return;
 
             if (item.ammo != null && 0 == GameBase.g_select_empty.value
-                    && 0 == (item.flags & Defines.IT_AMMO)) {
+                    && 0 == (item.flags & Constants.IT_AMMO)) {
                 
                 ammo_item = GameItems.FindItem(item.ammo);
                 ammo_index = GameItems.ITEM_INDEX(ammo_item);
 
                 if (0 == ent.client.pers.inventory[ammo_index]) {
-                    GameBase.gi.cprintf(ent, Defines.PRINT_HIGH, "No "
-                            + ammo_item.pickup_name + " for "
-                            + item.pickup_name + ".\n");
+                    ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, "No "
+                    + ammo_item.pickup_name + " for "
+                    + item.pickup_name + ".\n");
                     return;
                 }
 
                 if (ent.client.pers.inventory[ammo_index] < item.quantity) {
-                    GameBase.gi.cprintf(ent, Defines.PRINT_HIGH, "Not enough "
-                            + ammo_item.pickup_name + " for "
-                            + item.pickup_name + ".\n");
+                    ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, "Not enough "
+                    + ammo_item.pickup_name + " for "
+                    + item.pickup_name + ".\n");
                     return;
                 }
             }
@@ -774,15 +773,14 @@ public class PlayerWeapon {
         public void drop(Entity ent, GameItem item) {
             int index;
 
-            if (0 != ((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY))
+            if (0 != ((int) (GameBase.dmflags.value) & Constants.DF_WEAPONS_STAY))
                 return;
 
             index = GameItems.ITEM_INDEX(item);
             // see if we're already using it
             if (((item == ent.client.pers.weapon) || (item == ent.client.newweapon))
                     && (ent.client.pers.inventory[index] == 1)) {
-                GameBase.gi.cprintf(ent, Defines.PRINT_HIGH,
-                        "Can't drop current weapon\n");
+                ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, "Can't drop current weapon\n");
                 return;
             }
 
@@ -812,7 +810,7 @@ public class PlayerWeapon {
             int kick = 2;
             float[] offset = { 0, 0, 0 };
 
-            if (0 == (ent.client.buttons & Defines.BUTTON_ATTACK)) {
+            if (0 == (ent.client.buttons & Constants.BUTTON_ATTACK)) {
                 ent.client.machinegun_shots = 0;
                 ent.client.ps.gunframe++;
                 return true;
@@ -826,9 +824,8 @@ public class PlayerWeapon {
             if (ent.client.pers.inventory[ent.client.ammo_index] < 1) {
                 ent.client.ps.gunframe = 6;
                 if (GameBase.level.time >= ent.pain_debounce_time) {
-                    GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                            .soundindex("weapons/noammo.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/noammo.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                     ent.pain_debounce_time = GameBase.level.time + 1;
                 }
                 NoAmmoWeaponChange(ent);
@@ -863,21 +860,21 @@ public class PlayerWeapon {
             P_ProjectSource(ent.client, ent.s.origin, offset, forward, right,
                     start);
             GameWeapon.fire_bullet(ent, start, forward, damage, kick,
-                    Defines.DEFAULT_BULLET_HSPREAD,
-                    Defines.DEFAULT_BULLET_VSPREAD, Defines.MOD_MACHINEGUN);
+                    Constants.DEFAULT_BULLET_HSPREAD,
+                    Constants.DEFAULT_BULLET_VSPREAD, Constants.MOD_MACHINEGUN);
 
-            GameBase.gi.WriteByte(Defines.svc_muzzleflash);
+            ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
 
-            GameBase.gi.WriteShort(ent.index);
-            GameBase.gi.WriteByte(Defines.MZ_MACHINEGUN | is_silenced);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteShort(ent.index);
+            ServerGame.PF_WriteByte(Constants.MZ_MACHINEGUN | is_silenced);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index]--;
 
-            ent.client.anim_priority = Defines.ANIM_ATTACK;
+            ent.client.anim_priority = Constants.ANIM_ATTACK;
             if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
                 ent.s.frame = MonsterPlayer.FRAME_crattak1
                         - (int) (Lib.random() + 0.25);
@@ -911,17 +908,16 @@ public class PlayerWeapon {
                 damage = 8;
 
             if (ent.client.ps.gunframe == 5)
-                GameBase.gi.sound(ent, Defines.CHAN_AUTO, GameBase.gi
-                        .soundindex("weapons/chngnu1a.wav"), 1,
-                        Defines.ATTN_IDLE, 0);
+              ServerGame.PF_StartSound(ent, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("weapons/chngnu1a.wav"), (float) 1, (float) Constants.ATTN_IDLE,
+              (float) 0);
 
             if ((ent.client.ps.gunframe == 14)
-                    && 0 == (ent.client.buttons & Defines.BUTTON_ATTACK)) {
+                    && 0 == (ent.client.buttons & Constants.BUTTON_ATTACK)) {
                 ent.client.ps.gunframe = 32;
                 ent.client.weapon_sound = 0;
                 return true;
             } else if ((ent.client.ps.gunframe == 21)
-                    && (ent.client.buttons & Defines.BUTTON_ATTACK) != 0
+                    && (ent.client.buttons & Constants.BUTTON_ATTACK) != 0
                     && 0 != ent.client.pers.inventory[ent.client.ammo_index]) {
                 ent.client.ps.gunframe = 15;
             } else {
@@ -930,15 +926,13 @@ public class PlayerWeapon {
 
             if (ent.client.ps.gunframe == 22) {
                 ent.client.weapon_sound = 0;
-                GameBase.gi.sound(ent, Defines.CHAN_AUTO, GameBase.gi
-                        .soundindex("weapons/chngnd1a.wav"), 1,
-                        Defines.ATTN_IDLE, 0);
+                ServerGame.PF_StartSound(ent, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("weapons/chngnd1a.wav"), (float) 1, (float) Constants.ATTN_IDLE,
+                (float) 0);
             } else {
-                ent.client.weapon_sound = GameBase.gi
-                        .soundindex("weapons/chngnl1a.wav");
+                ent.client.weapon_sound = ServerInit.SV_SoundIndex("weapons/chngnl1a.wav");
             }
 
-            ent.client.anim_priority = Defines.ANIM_ATTACK;
+            ent.client.anim_priority = Constants.ANIM_ATTACK;
             if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
                 ent.s.frame = MonsterPlayer.FRAME_crattak1
                         - (ent.client.ps.gunframe & 1);
@@ -952,7 +946,7 @@ public class PlayerWeapon {
             if (ent.client.ps.gunframe <= 9)
                 shots = 1;
             else if (ent.client.ps.gunframe <= 14) {
-                if ((ent.client.buttons & Defines.BUTTON_ATTACK) != 0)
+                if ((ent.client.buttons & Constants.BUTTON_ATTACK) != 0)
                     shots = 2;
                 else
                     shots = 1;
@@ -964,9 +958,8 @@ public class PlayerWeapon {
 
             if (0 == shots) {
                 if (GameBase.level.time >= ent.pain_debounce_time) {
-                    GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                            .soundindex("weapons/noammo.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/noammo.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                     ent.pain_debounce_time = GameBase.level.time + 1;
                 }
                 NoAmmoWeaponChange(ent);
@@ -993,21 +986,21 @@ public class PlayerWeapon {
                         right, start);
 
                 GameWeapon.fire_bullet(ent, start, forward, damage, kick,
-                        Defines.DEFAULT_BULLET_HSPREAD,
-                        Defines.DEFAULT_BULLET_VSPREAD, Defines.MOD_CHAINGUN);
+                        Constants.DEFAULT_BULLET_HSPREAD,
+                        Constants.DEFAULT_BULLET_VSPREAD, Constants.MOD_CHAINGUN);
             }
 
             // send muzzle flash
-            GameBase.gi.WriteByte(Defines.svc_muzzleflash);
+            ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
 
-            GameBase.gi.WriteShort(ent.index);
-            GameBase.gi.WriteByte((Defines.MZ_CHAINGUN1 + shots - 1)
-                    | is_silenced);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteShort(ent.index);
+            ServerGame.PF_WriteByte((Constants.MZ_CHAINGUN1 + shots - 1)
+            | is_silenced);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
-            PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+            PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
 
-            if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+            if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
                 ent.client.pers.inventory[ent.client.ammo_index] -= shots;
 
             return true;
@@ -1026,31 +1019,31 @@ public class PlayerWeapon {
     
             index = GameItems.ITEM_INDEX(ent.item);
     
-            if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
+            if ((((int) (GameBase.dmflags.value) & Constants.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
                     && 0 != other.client.pers.inventory[index]) {
-                if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM)))
+                if (0 == (ent.spawnflags & (Constants.DROPPED_ITEM | Constants.DROPPED_PLAYER_ITEM)))
                     return false; // leave the weapon for others to pickup
             }
     
             other.client.pers.inventory[index]++;
     
-            if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)) {
+            if (0 == (ent.spawnflags & Constants.DROPPED_ITEM)) {
                 // give them some ammo with it
                 ammo = GameItems.FindItem(ent.item.ammo);
-                if (((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
+                if (((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO) != 0)
                     GameItems.Add_Ammo(other, ammo, 1000);
                 else
                     GameItems.Add_Ammo(other, ammo, ammo.quantity);
     
-                if (0 == (ent.spawnflags & Defines.DROPPED_PLAYER_ITEM)) {
+                if (0 == (ent.spawnflags & Constants.DROPPED_PLAYER_ITEM)) {
                     if (GameBase.deathmatch.value != 0) {
-                        if (((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0)
-                            ent.flags |= Defines.FL_RESPAWN;
+                        if (((int) (GameBase.dmflags.value) & Constants.DF_WEAPONS_STAY) != 0)
+                            ent.flags |= Constants.FL_RESPAWN;
                         else
                             GameItems.SetRespawn(ent, 30);
                     }
                     if (GameBase.coop.value != 0)
-                        ent.flags |= Defines.FL_RESPAWN;
+                        ent.flags |= Constants.FL_RESPAWN;
                 }
             }
     
@@ -1069,9 +1062,9 @@ public class PlayerWeapon {
         float[] _distance = { 0, 0, 0 };
 
         Math3D.VectorCopy(distance, _distance);
-        if (client.pers.hand == Defines.LEFT_HANDED)
+        if (client.pers.hand == Constants.LEFT_HANDED)
             _distance[1] *= -1;
-        else if (client.pers.hand == Defines.CENTER_HANDED)
+        else if (client.pers.hand == Constants.CENTER_HANDED)
             _distance[1] = 0;
         Math3D.G_ProjectSource(point, _distance, forward, right, result);
     }
@@ -1120,12 +1113,11 @@ public class PlayerWeapon {
             return;
         }
 
-        ent.client.weaponstate = Defines.WEAPON_ACTIVATING;
+        ent.client.weaponstate = Constants.WEAPON_ACTIVATING;
         ent.client.ps.gunframe = 0;
-        ent.client.ps.gunindex = GameBase.gi
-                .modelindex(ent.client.pers.weapon.view_model);
+        ent.client.ps.gunindex = ServerInit.SV_ModelIndex(ent.client.pers.weapon.view_model);
 
-        ent.client.anim_priority = Defines.ANIM_PAIN;
+        ent.client.anim_priority = Constants.ANIM_PAIN;
         if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
             ent.s.frame = MonsterPlayer.FRAME_crpain1;
             ent.client.anim_end = MonsterPlayer.FRAME_crpain4;
@@ -1206,7 +1198,7 @@ public class PlayerWeapon {
                 && null != ent.client.pers.weapon.weaponthink) {
             is_quad = (ent.client.quad_framenum > GameBase.level.framenum);
             if (ent.client.silencer_shots != 0)
-                is_silenced = (byte) Defines.MZ_SILENCED;
+                is_silenced = (byte) Constants.MZ_SILENCED;
             else
                 is_silenced = 0;
             ent.client.pers.weapon.weaponthink.think(ent);
@@ -1237,12 +1229,12 @@ public class PlayerWeapon {
             return;
         }
 
-        if (ent.client.weaponstate == Defines.WEAPON_DROPPING) {
+        if (ent.client.weaponstate == Constants.WEAPON_DROPPING) {
             if (ent.client.ps.gunframe == FRAME_DEACTIVATE_LAST) {
                 ChangeWeapon(ent);
                 return;
             } else if ((FRAME_DEACTIVATE_LAST - ent.client.ps.gunframe) == 4) {
-                ent.client.anim_priority = Defines.ANIM_REVERSE;
+                ent.client.anim_priority = Constants.ANIM_REVERSE;
                 if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
                     ent.s.frame = MonsterPlayer.FRAME_crpain4 + 1;
                     ent.client.anim_end = MonsterPlayer.FRAME_crpain1;
@@ -1256,9 +1248,9 @@ public class PlayerWeapon {
             return;
         }
 
-        if (ent.client.weaponstate == Defines.WEAPON_ACTIVATING) {
+        if (ent.client.weaponstate == Constants.WEAPON_ACTIVATING) {
             if (ent.client.ps.gunframe == FRAME_ACTIVATE_LAST) {
-                ent.client.weaponstate = Defines.WEAPON_READY;
+                ent.client.weaponstate = Constants.WEAPON_READY;
                 ent.client.ps.gunframe = FRAME_IDLE_FIRST;
                 return;
             }
@@ -1268,12 +1260,12 @@ public class PlayerWeapon {
         }
 
         if ((ent.client.newweapon != null)
-                && (ent.client.weaponstate != Defines.WEAPON_FIRING)) {
-            ent.client.weaponstate = Defines.WEAPON_DROPPING;
+                && (ent.client.weaponstate != Constants.WEAPON_FIRING)) {
+            ent.client.weaponstate = Constants.WEAPON_DROPPING;
             ent.client.ps.gunframe = FRAME_DEACTIVATE_FIRST;
 
             if ((FRAME_DEACTIVATE_LAST - FRAME_DEACTIVATE_FIRST) < 4) {
-                ent.client.anim_priority = Defines.ANIM_REVERSE;
+                ent.client.anim_priority = Constants.ANIM_REVERSE;
                 if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
                     ent.s.frame = MonsterPlayer.FRAME_crpain4 + 1;
                     ent.client.anim_end = MonsterPlayer.FRAME_crpain1;
@@ -1286,16 +1278,16 @@ public class PlayerWeapon {
             return;
         }
 
-        if (ent.client.weaponstate == Defines.WEAPON_READY) {
-            if (((ent.client.latched_buttons | ent.client.buttons) & Defines.BUTTON_ATTACK) != 0) {
-                ent.client.latched_buttons &= ~Defines.BUTTON_ATTACK;
+        if (ent.client.weaponstate == Constants.WEAPON_READY) {
+            if (((ent.client.latched_buttons | ent.client.buttons) & Constants.BUTTON_ATTACK) != 0) {
+                ent.client.latched_buttons &= ~Constants.BUTTON_ATTACK;
                 if ((0 == ent.client.ammo_index)
                         || (ent.client.pers.inventory[ent.client.ammo_index] >= ent.client.pers.weapon.quantity)) {
                     ent.client.ps.gunframe = FRAME_FIRE_FIRST;
-                    ent.client.weaponstate = Defines.WEAPON_FIRING;
+                    ent.client.weaponstate = Constants.WEAPON_FIRING;
 
                     // start the animation
-                    ent.client.anim_priority = Defines.ANIM_ATTACK;
+                    ent.client.anim_priority = Constants.ANIM_ATTACK;
                     if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
                         ent.s.frame = MonsterPlayer.FRAME_crattak1 - 1;
                         ent.client.anim_end = MonsterPlayer.FRAME_crattak9;
@@ -1305,9 +1297,8 @@ public class PlayerWeapon {
                     }
                 } else {
                     if (GameBase.level.time >= ent.pain_debounce_time) {
-                        GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("weapons/noammo.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                        ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/noammo.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                        (float) 0);
                         ent.pain_debounce_time = GameBase.level.time + 1;
                     }
                     NoAmmoWeaponChange(ent);
@@ -1332,13 +1323,12 @@ public class PlayerWeapon {
             }
         }
 
-        if (ent.client.weaponstate == Defines.WEAPON_FIRING) {
+        if (ent.client.weaponstate == Constants.WEAPON_FIRING) {
             for (n = 0; fire_frames[n] != 0; n++) {
                 if (ent.client.ps.gunframe == fire_frames[n]) {
                     if (ent.client.quad_framenum > GameBase.level.framenum)
-                        GameBase.gi.sound(ent, Defines.CHAN_ITEM, GameBase.gi
-                                .soundindex("items/damage3.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(ent, Constants.CHAN_ITEM, ServerInit.SV_SoundIndex("items/damage3.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
 
                     fire.think(ent);
                     break;
@@ -1349,7 +1339,7 @@ public class PlayerWeapon {
                 ent.client.ps.gunframe++;
 
             if (ent.client.ps.gunframe == FRAME_IDLE_FIRST + 1)
-                ent.client.weaponstate = Defines.WEAPON_READY;
+                ent.client.weaponstate = Constants.WEAPON_READY;
         }
     }
 
@@ -1379,12 +1369,12 @@ public class PlayerWeapon {
         P_ProjectSource(ent.client, ent.s.origin, offset, forward, right, start);
 
         timer = ent.client.grenade_time - GameBase.level.time;
-        speed = (int) (Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
-                * ((Defines.GRENADE_MAXSPEED - Defines.GRENADE_MINSPEED) / Defines.GRENADE_TIMER));
+        speed = (int) (Constants.GRENADE_MINSPEED + (Constants.GRENADE_TIMER - timer)
+                * ((Constants.GRENADE_MAXSPEED - Constants.GRENADE_MINSPEED) / Constants.GRENADE_TIMER));
         GameWeapon.fire_grenade2(ent, start, forward, damage, speed, timer, radius,
                 held);
 
-        if (0 == ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO))
+        if (0 == ((int) GameBase.dmflags.value & Constants.DF_INFINITE_AMMO))
             ent.client.pers.inventory[ent.client.ammo_index]--;
 
         ent.client.grenade_time = GameBase.level.time + 1.0f;
@@ -1399,11 +1389,11 @@ public class PlayerWeapon {
             return;
 
         if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0) {
-            ent.client.anim_priority = Defines.ANIM_ATTACK;
+            ent.client.anim_priority = Constants.ANIM_ATTACK;
             ent.s.frame = MonsterPlayer.FRAME_crattak1 - 1;
             ent.client.anim_end = MonsterPlayer.FRAME_crattak3;
         } else {
-            ent.client.anim_priority = Defines.ANIM_REVERSE;
+            ent.client.anim_priority = Constants.ANIM_REVERSE;
             ent.s.frame = MonsterPlayer.FRAME_wave08;
             ent.client.anim_end = MonsterPlayer.FRAME_wave01;
         }
@@ -1436,15 +1426,15 @@ public class PlayerWeapon {
         GameWeapon.fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
 
         // send muzzle flash
-        GameBase.gi.WriteByte(Defines.svc_muzzleflash);
-        GameBase.gi.WriteShort(ent.index);
+        ServerGame.PF_WriteByte(Constants.svc_muzzleflash);
+        ServerGame.PF_WriteShort(ent.index);
         if (hyper)
-            GameBase.gi.WriteByte(Defines.MZ_HYPERBLASTER | is_silenced);
+          ServerGame.PF_WriteByte(Constants.MZ_HYPERBLASTER | is_silenced);
         else
-            GameBase.gi.WriteByte(Defines.MZ_BLASTER | is_silenced);
-        GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PVS);
+          ServerGame.PF_WriteByte(Constants.MZ_BLASTER | is_silenced);
+        ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PVS);
 
-        PlayerWeapon.PlayerNoise(ent, start, Defines.PNOISE_WEAPON);
+        PlayerWeapon.PlayerNoise(ent, start, Constants.PNOISE_WEAPON);
     }
 
     /*
@@ -1462,7 +1452,7 @@ public class PlayerWeapon {
     static void PlayerNoise(Entity who, float[] where, int type) {
         Entity noise;
     
-        if (type == Defines.PNOISE_WEAPON) {
+        if (type == Constants.PNOISE_WEAPON) {
             if (who.client.silencer_shots > 0) {
                 who.client.silencer_shots--;
                 return;
@@ -1472,7 +1462,7 @@ public class PlayerWeapon {
         if (GameBase.deathmatch.value != 0)
             return;
     
-        if ((who.flags & Defines.FL_NOTARGET) != 0)
+        if ((who.flags & Constants.FL_NOTARGET) != 0)
             return;
     
         if (who.mynoise == null) {
@@ -1481,7 +1471,7 @@ public class PlayerWeapon {
             Math3D.VectorSet(noise.mins, -8, -8, -8);
             Math3D.VectorSet(noise.maxs, 8, 8, 8);
             noise.owner = who;
-            noise.svflags = Defines.SVF_NOCLIENT;
+            noise.svflags = Constants.SVF_NOCLIENT;
             who.mynoise = noise;
     
             noise = GameUtil.G_Spawn();
@@ -1489,11 +1479,11 @@ public class PlayerWeapon {
             Math3D.VectorSet(noise.mins, -8, -8, -8);
             Math3D.VectorSet(noise.maxs, 8, 8, 8);
             noise.owner = who;
-            noise.svflags = Defines.SVF_NOCLIENT;
+            noise.svflags = Constants.SVF_NOCLIENT;
             who.mynoise2 = noise;
         }
     
-        if (type == Defines.PNOISE_SELF || type == Defines.PNOISE_WEAPON) {
+        if (type == Constants.PNOISE_SELF || type == Constants.PNOISE_WEAPON) {
             noise = who.mynoise;
             GameBase.level.sound_entity = noise;
             GameBase.level.sound_entity_framenum = GameBase.level.framenum;
@@ -1509,6 +1499,6 @@ public class PlayerWeapon {
         Math3D.VectorSubtract(where, noise.maxs, noise.absmin);
         Math3D.VectorAdd(where, noise.maxs, noise.absmax);
         noise.teleport_time = GameBase.level.time;
-        GameBase.gi.linkentity(noise);
+        World.SV_LinkEdict(noise);
     }
 }

@@ -23,13 +23,17 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -302,8 +306,8 @@ public class MonsterParasite {
     	public String getID(){ return "parasite_launch"; }
         public boolean think(Entity self) {
 
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_launch, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_launch, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -311,8 +315,8 @@ public class MonsterParasite {
     static EntityThinkAdapter parasite_reel_in = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_reel_in"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_reelin, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_reelin, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -320,8 +324,8 @@ public class MonsterParasite {
     static EntInteractAdapter parasite_sight = new EntInteractAdapter() {
     	public String getID(){ return "parasite_sight"; }
         public boolean interact(Entity self, Entity other) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_sight, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_sight, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -329,8 +333,8 @@ public class MonsterParasite {
     static EntityThinkAdapter parasite_tap = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_tap"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_tap, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_tap, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -338,8 +342,8 @@ public class MonsterParasite {
     static EntityThinkAdapter parasite_scratch = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_scratch"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_scratch, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_scratch, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -347,8 +351,8 @@ public class MonsterParasite {
     static EntityThinkAdapter parasite_search = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_search"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_search, 1,
-                    Defines.ATTN_IDLE, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_search, (float) 1, (float) Constants.ATTN_IDLE,
+            (float) 0);
             return true;
         }
     };
@@ -415,7 +419,7 @@ public class MonsterParasite {
     static EntityThinkAdapter parasite_start_run = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_start_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = parasite_move_stand;
             else
                 self.monsterinfo.currentmove = parasite_move_start_run;
@@ -426,7 +430,7 @@ public class MonsterParasite {
     static EntityThinkAdapter parasite_run = new EntityThinkAdapter() {
     	public String getID(){ return "parasite_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = parasite_move_stand;
             else
                 self.monsterinfo.currentmove = parasite_move_run;
@@ -580,11 +584,11 @@ public class MonsterParasite {
                 return; // no pain anims in nightmare
 
             if (Lib.random() < 0.5)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
 
             self.monsterinfo.currentmove = parasite_move_pain1;
         }
@@ -613,34 +617,33 @@ public class MonsterParasite {
             }
             Math3D.VectorCopy(self.enemy.s.origin, end);
 
-            tr = GameBase.gi.trace(start, null, null, end, self,
-                    Defines.MASK_SHOT);
+            tr = World.SV_Trace(start, null, null, end, self, Constants.MASK_SHOT);
             if (tr.ent != self.enemy)
                 return true;
 
             if (self.s.frame == FRAME_drain03) {
                 damage = 5;
-                GameBase.gi.sound(self.enemy, Defines.CHAN_AUTO, sound_impact,
-                        1, Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self.enemy, Constants.CHAN_AUTO, sound_impact, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             } else {
                 if (self.s.frame == FRAME_drain04)
-                    GameBase.gi.sound(self, Defines.CHAN_WEAPON, sound_suck, 1,
-                            Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, sound_suck, (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
                 damage = 2;
             }
 
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_PARASITE_ATTACK);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_PARASITE_ATTACK);
             //gi.WriteShort(self - g_edicts);
-            GameBase.gi.WriteShort(self.index);
-            GameBase.gi.WritePosition(start);
-            GameBase.gi.WritePosition(end);
-            GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteShort(self.index);
+            ServerGame.PF_WritePos(start);
+            ServerGame.PF_WritePos(end);
+            ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PVS);
 
             Math3D.VectorSubtract(start, end, dir);
             GameCombat.T_Damage(self.enemy, self, self, dir, self.enemy.s.origin,
                     Globals.vec3_origin, damage, 0,
-                    Defines.DAMAGE_NO_KNOCKBACK, Defines.MOD_UNKNOWN);
+                    Constants.DAMAGE_NO_KNOCKBACK, Constants.MOD_UNKNOWN);
             return true;
         }
     };
@@ -731,10 +734,10 @@ public class MonsterParasite {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, -8);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -759,31 +762,29 @@ public class MonsterParasite {
 
             // check for gib
             if (self.health <= self.gib_health) {
-                GameBase.gi
-                        .sound(self, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("misc/udeath.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("misc/udeath.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 for (n = 0; n < 2; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/bone/tris.md2",
-                            damage, Defines.GIB_ORGANIC);
+                            damage, Constants.GIB_ORGANIC);
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self,
                             "models/objects/gibs/sm_meat/tris.md2", damage,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/head2/tris.md2",
-                        damage, Defines.GIB_ORGANIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        damage, Constants.GIB_ORGANIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return;
             }
 
-            if (self.deadflag == Defines.DEAD_DEAD)
+            if (self.deadflag == Constants.DEAD_DEAD)
                 return;
 
             // regular death
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_die, 1,
-                    Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_YES;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_die, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_YES;
             self.monsterinfo.currentmove = parasite_move_death;
         }
     };
@@ -805,24 +806,23 @@ public class MonsterParasite {
                 return true;
             }
 
-            sound_pain1 = GameBase.gi.soundindex("parasite/parpain1.wav");
-            sound_pain2 = GameBase.gi.soundindex("parasite/parpain2.wav");
-            sound_die = GameBase.gi.soundindex("parasite/pardeth1.wav");
-            sound_launch = GameBase.gi.soundindex("parasite/paratck1.wav");
-            sound_impact = GameBase.gi.soundindex("parasite/paratck2.wav");
-            sound_suck = GameBase.gi.soundindex("parasite/paratck3.wav");
-            sound_reelin = GameBase.gi.soundindex("parasite/paratck4.wav");
-            sound_sight = GameBase.gi.soundindex("parasite/parsght1.wav");
-            sound_tap = GameBase.gi.soundindex("parasite/paridle1.wav");
-            sound_scratch = GameBase.gi.soundindex("parasite/paridle2.wav");
-            sound_search = GameBase.gi.soundindex("parasite/parsrch1.wav");
+            sound_pain1 = ServerInit.SV_SoundIndex("parasite/parpain1.wav");
+            sound_pain2 = ServerInit.SV_SoundIndex("parasite/parpain2.wav");
+            sound_die = ServerInit.SV_SoundIndex("parasite/pardeth1.wav");
+            sound_launch = ServerInit.SV_SoundIndex("parasite/paratck1.wav");
+            sound_impact = ServerInit.SV_SoundIndex("parasite/paratck2.wav");
+            sound_suck = ServerInit.SV_SoundIndex("parasite/paratck3.wav");
+            sound_reelin = ServerInit.SV_SoundIndex("parasite/paratck4.wav");
+            sound_sight = ServerInit.SV_SoundIndex("parasite/parsght1.wav");
+            sound_tap = ServerInit.SV_SoundIndex("parasite/paridle1.wav");
+            sound_scratch = ServerInit.SV_SoundIndex("parasite/paridle2.wav");
+            sound_search = ServerInit.SV_SoundIndex("parasite/parsrch1.wav");
 
-            self.s.modelindex = GameBase.gi
-                    .modelindex("models/monsters/parasite/tris.md2");
+            self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/parasite/tris.md2");
             Math3D.VectorSet(self.mins, -16, -16, -24);
             Math3D.VectorSet(self.maxs, 16, 16, 24);
-            self.movetype = Defines.MOVETYPE_STEP;
-            self.solid = Defines.SOLID_BBOX;
+            self.movetype = Constants.MOVETYPE_STEP;
+            self.solid = Constants.SOLID_BBOX;
 
             self.health = 175;
             self.gib_health = -50;
@@ -838,7 +838,7 @@ public class MonsterParasite {
             self.monsterinfo.sight = parasite_sight;
             self.monsterinfo.idle = parasite_idle;
 
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
 
             self.monsterinfo.currentmove = parasite_move_stand;
             self.monsterinfo.scale = MODEL_SCALE;

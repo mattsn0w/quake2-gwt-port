@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import com.googlecode.gwtquake.*;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.TextureInfo;
 import com.googlecode.gwtquake.shared.game.*;
 
@@ -62,8 +62,8 @@ public class ModelSurface
 	public int dlightbits;
 
 	public int lightmaptexturenum;
-	public byte styles[] = new byte[Defines.MAXLIGHTMAPS];
-	public float cached_light[] = new float[Defines.MAXLIGHTMAPS];
+	public byte styles[] = new byte[Constants.MAXLIGHTMAPS];
+	public float cached_light[] = new float[Constants.MAXLIGHTMAPS];
 	// values currently used in lightmap
 	//public byte samples[]; // [numstyles*surfsize]
 	public ByteBuffer samples; // [numstyles*surfsize]

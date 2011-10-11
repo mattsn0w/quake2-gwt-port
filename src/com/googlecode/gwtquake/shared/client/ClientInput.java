@@ -343,19 +343,19 @@ public class ClientInput {
 			speed = Globals.cls.frametime;
 
 		if ((in_strafe.state & 1) == 0) {
-			Globals.cl.viewangles[Defines.YAW] -= speed * Globals.cl_yawspeed.value * KeyState(in_right);
-			Globals.cl.viewangles[Defines.YAW] += speed * Globals.cl_yawspeed.value * KeyState(in_left);
+			Globals.cl.viewangles[Constants.YAW] -= speed * Globals.cl_yawspeed.value * KeyState(in_right);
+			Globals.cl.viewangles[Constants.YAW] += speed * Globals.cl_yawspeed.value * KeyState(in_left);
 		}
 		if ((in_klook.state & 1) != 0) {
-			Globals.cl.viewangles[Defines.PITCH] -= speed * Globals.cl_pitchspeed.value * KeyState(in_forward);
-			Globals.cl.viewangles[Defines.PITCH] += speed * Globals.cl_pitchspeed.value * KeyState(in_back);
+			Globals.cl.viewangles[Constants.PITCH] -= speed * Globals.cl_pitchspeed.value * KeyState(in_forward);
+			Globals.cl.viewangles[Constants.PITCH] += speed * Globals.cl_pitchspeed.value * KeyState(in_back);
 		}
 
 		up = KeyState(in_lookup);
 		down = KeyState(in_lookdown);
 
-		Globals.cl.viewangles[Defines.PITCH] -= speed * Globals.cl_pitchspeed.value * up;
-		Globals.cl.viewangles[Defines.PITCH] += speed * Globals.cl_pitchspeed.value * down;
+		Globals.cl.viewangles[Constants.PITCH] -= speed * Globals.cl_pitchspeed.value * up;
+		Globals.cl.viewangles[Constants.PITCH] += speed * Globals.cl_pitchspeed.value * down;
 	}
 
 	/*
@@ -401,19 +401,19 @@ public class ClientInput {
 
 		float pitch;
 
-		pitch = Math3D.SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
+		pitch = Math3D.SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Constants.PITCH]);
 		if (pitch > 180)
 			pitch -= 360;
 
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch < -360)
-			Globals.cl.viewangles[Defines.PITCH] += 360; // wrapped
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 360)
-			Globals.cl.viewangles[Defines.PITCH] -= 360; // wrapped
+		if (Globals.cl.viewangles[Constants.PITCH] + pitch < -360)
+			Globals.cl.viewangles[Constants.PITCH] += 360; // wrapped
+		if (Globals.cl.viewangles[Constants.PITCH] + pitch > 360)
+			Globals.cl.viewangles[Constants.PITCH] -= 360; // wrapped
 
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 89)
-			Globals.cl.viewangles[Defines.PITCH] = 89 - pitch;
-		if (Globals.cl.viewangles[Defines.PITCH] + pitch < -89)
-			Globals.cl.viewangles[Defines.PITCH] = -89 - pitch;
+		if (Globals.cl.viewangles[Constants.PITCH] + pitch > 89)
+			Globals.cl.viewangles[Constants.PITCH] = 89 - pitch;
+		if (Globals.cl.viewangles[Constants.PITCH] + pitch < -89)
+			Globals.cl.viewangles[Constants.PITCH] = -89 - pitch;
 	}
 
 	/*
@@ -427,15 +427,15 @@ public class ClientInput {
 		//	   figure button bits
 		//	
 		if ((in_attack.state & 3) != 0)
-			cmd.buttons |= Defines.BUTTON_ATTACK;
+			cmd.buttons |= Constants.BUTTON_ATTACK;
 		in_attack.state &= ~2;
 
 		if ((in_use.state & 3) != 0)
-			cmd.buttons |= Defines.BUTTON_USE;
+			cmd.buttons |= Constants.BUTTON_USE;
 		in_use.state &= ~2;
 
-		if (Key.anykeydown != 0 && Globals.cls.key_dest == Defines.key_game)
-			cmd.buttons |= Defines.BUTTON_ANY;
+		if (Key.anykeydown != 0 && Globals.cls.key_dest == Constants.key_game)
+			cmd.buttons |= Constants.BUTTON_ANY;
 
 		// send milliseconds of time to apply the move
 		ms = (int) (Globals.cls.frametime * 1000);
@@ -662,7 +662,7 @@ public class ClientInput {
 		// build a command even if not connected
 
 		// save this command off for prediction
-		i = Globals.cls.netchan.outgoing_sequence & (Defines.CMD_BACKUP - 1);
+		i = Globals.cls.netchan.outgoing_sequence & (Constants.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
 		Globals.cl.cmd_time[i] = (int) Globals.cls.realtime; // for netgraph
 															 // ping calculation
@@ -672,12 +672,12 @@ public class ClientInput {
 
 		Globals.cl.cmd.set(cmd);
 
-		if (Globals.cls.state == Defines.ca_disconnected || Globals.cls.state == Defines.ca_connecting)
+		if (Globals.cls.state == Constants.ca_disconnected || Globals.cls.state == Constants.ca_connecting)
 			return;
 
-		if (Globals.cls.state == Defines.ca_connected) {
+		if (Globals.cls.state == Constants.ca_connected) {
 			if (Globals.cls.netchan.message.cursize != 0 || Globals.curtime - Globals.cls.netchan.last_sent > 1000)
-				NetworkChannels.Transmit(Globals.cls.netchan, 0, new byte[0]);
+				NetworkChannel.Transmit(Globals.cls.netchan, 0, new byte[0]);
 			return;
 		}
 
@@ -685,7 +685,7 @@ public class ClientInput {
 		if (Globals.userinfo_modified) {
 			Client.fixUpGender();
 			Globals.userinfo_modified = false;
-			Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_userinfo);
+			Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_userinfo);
 			Buffer.WriteString(Globals.cls.netchan.message, ConsoleVariables.Userinfo());
 		}
 
@@ -702,7 +702,7 @@ public class ClientInput {
 		}
 
 		// begin a client move command
-		Buffer.WriteByte(buf, Defines.clc_move);
+		Buffer.WriteByte(buf, Constants.clc_move);
 
 		// save the position for a checksum byte
 		checksumIndex = buf.cursize;
@@ -717,7 +717,7 @@ public class ClientInput {
 
 		// send this and the previous cmds in the message, so
 		// if the last packet was dropped, it can be recovered
-		i = (Globals.cls.netchan.outgoing_sequence - 2) & (Defines.CMD_BACKUP - 1);
+		i = (Globals.cls.netchan.outgoing_sequence - 2) & (Constants.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
 		//memset (nullcmd, 0, sizeof(nullcmd));
 		nullcmd.clear();
@@ -725,13 +725,13 @@ public class ClientInput {
 		Delta.WriteDeltaUsercmd(buf, nullcmd, cmd);
 		oldcmd = cmd;
 
-		i = (Globals.cls.netchan.outgoing_sequence - 1) & (Defines.CMD_BACKUP - 1);
+		i = (Globals.cls.netchan.outgoing_sequence - 1) & (Constants.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
 
 		Delta.WriteDeltaUsercmd(buf, oldcmd, cmd);
 		oldcmd = cmd;
 
-		i = (Globals.cls.netchan.outgoing_sequence) & (Defines.CMD_BACKUP - 1);
+		i = (Globals.cls.netchan.outgoing_sequence) & (Constants.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
 
 		Delta.WriteDeltaUsercmd(buf, oldcmd, cmd);
@@ -743,6 +743,6 @@ public class ClientInput {
 		//
 		// deliver the message
 		//
-		NetworkChannels.Transmit(Globals.cls.netchan, buf.cursize, buf.data);
+		NetworkChannel.Transmit(Globals.cls.netchan, buf.cursize, buf.data);
 	}
 }

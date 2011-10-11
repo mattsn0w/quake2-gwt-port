@@ -57,32 +57,32 @@ public class ServerInit {
             return 0;
 
         if (i == max)
-            Com.Error(Defines.ERR_DROP, "*Index: overflow");
+            Com.Error(Constants.ERR_DROP, "*Index: overflow");
 
         sv.configstrings[start + i] = name;
 
-        if (sv.state != Defines.ss_loading) { 
+        if (sv.state != Constants.ss_loading) { 
             // send the update to everyone
             sv.multicast.clear();
-            Buffer.WriteChar(sv.multicast, Defines.svc_configstring);
+            Buffer.WriteChar(sv.multicast, Constants.svc_configstring);
             Buffer.WriteShort(sv.multicast, start + i);
             Buffer.WriteString(sv.multicast, name);
-            ServerSend.SV_Multicast(Globals.vec3_origin, Defines.MULTICAST_ALL_R);
+            ServerSend.SV_Multicast(Globals.vec3_origin, Constants.MULTICAST_ALL_R);
         }
 
         return i;
     }
 
     public static int SV_ModelIndex(String name) {
-        return SV_FindIndex(name, Defines.CS_MODELS, Defines.MAX_MODELS, true);
+        return SV_FindIndex(name, Constants.CS_MODELS, Constants.MAX_MODELS, true);
     }
 
     public static int SV_SoundIndex(String name) {
-        return SV_FindIndex(name, Defines.CS_SOUNDS, Defines.MAX_SOUNDS, true);
+        return SV_FindIndex(name, Constants.CS_SOUNDS, Constants.MAX_SOUNDS, true);
     }
 
     public static int SV_ImageIndex(String name) {
-        return SV_FindIndex(name, Defines.CS_IMAGES, Defines.MAX_IMAGES, true);
+        return SV_FindIndex(name, Constants.CS_IMAGES, Constants.MAX_IMAGES, true);
     }
 
     /**
@@ -144,7 +144,7 @@ public class ServerInit {
             Compatibility.printStackTrace(e1);
         }
 
-        ServerWorld.SV_ClearWorld();
+        World.SV_ClearWorld();
 
         // get configstrings and areaportals
         ServerCommands.SV_ReadLevelFile();
@@ -159,7 +159,7 @@ public class ServerInit {
             int previousState; // PGM
 
             previousState = sv.state; // PGM
-            sv.state = Defines.ss_loading; // PGM
+            sv.state = Constants.ss_loading; // PGM
             for (i = 0; i < 100; i++)
                 GameBase.G_RunFrame();
 
@@ -189,26 +189,26 @@ public class ServerInit {
         // any partially connected client will be restarted
         svs.spawncount++;        
 
-        sv.state = Defines.ss_dead;
+        sv.state = Constants.ss_dead;
 
         Globals.server_state = sv.state;
 
         // wipe the entire per-level structure
-        sv = new server_t();
+        sv = new ServerState();
 
         svs.realtime = 0;
         sv.loadgame = loadgame;
         sv.attractloop = attractloop;
 
         // save name for levels that don't set message
-        sv.configstrings[Defines.CS_NAME] = server;
+        sv.configstrings[Constants.CS_NAME] = server;
 
         if (ConsoleVariables.VariableValue("deathmatch") != 0) {
-            sv.configstrings[Defines.CS_AIRACCEL] = ""
+            sv.configstrings[Constants.CS_AIRACCEL] = ""
                     + ServerMain.sv_airaccelerate.value;
             PlayerMovements.pm_airaccelerate = ServerMain.sv_airaccelerate.value;
         } else {
-            sv.configstrings[Defines.CS_AIRACCEL] = "0";
+            sv.configstrings[Constants.CS_AIRACCEL] = "0";
             PlayerMovements.pm_airaccelerate = 0;
         }
 
@@ -219,15 +219,15 @@ public class ServerInit {
         // leave slots at start for clients only
         for (i = 0; i < ServerMain.maxclients.value; i++) {
             // needs to reconnect
-            if (svs.clients[i].state > Defines.cs_connected)
-                svs.clients[i].state = Defines.cs_connected;
+            if (svs.clients[i].state > Constants.cs_connected)
+                svs.clients[i].state = Constants.cs_connected;
             svs.clients[i].lastframe = -1;
         }
 
         sv.time = 1000;
 
         sv.name = server;
-        sv.configstrings[Defines.CS_NAME] = server;
+        sv.configstrings[Constants.CS_NAME] = server;
         
         final int iw[] = {checksum };
         
@@ -236,16 +236,16 @@ public class ServerInit {
 			public void onSuccess(Model response) {
 				sv.models[1] = response;
 				int checksum = iw[0];
-		        sv.configstrings[Defines.CS_MAPCHECKSUM] = "" + checksum;
+		        sv.configstrings[Constants.CS_MAPCHECKSUM] = "" + checksum;
 				// clear physics interaction links
 
-				ServerWorld.SV_ClearWorld();
+				World.SV_ClearWorld();
 
 				for (int i = 1; i < CM.CM_NumInlineModels(); i++) {
-					sv.configstrings[Defines.CS_MODELS + 1 + i] = "*" + i;
+					sv.configstrings[Constants.CS_MODELS + 1 + i] = "*" + i;
 
 					// copy references
-					sv.models[i + 1] = CM.InlineModel(sv.configstrings[Defines.CS_MODELS + 1 + i]);
+					sv.models[i + 1] = CM.InlineModel(sv.configstrings[Constants.CS_MODELS + 1 + i]);
 				}
 
 
@@ -254,7 +254,7 @@ public class ServerInit {
 				// precache and static commands can be issued during
 				// map initialization
 
-				sv.state = Defines.ss_loading;
+				sv.state = Constants.ss_loading;
 				Globals.server_state = sv.state;
 
 				// load and spawn all other entities
@@ -275,8 +275,8 @@ public class ServerInit {
 				SV_CheckForSavegame();
 
 				// set serverinfo variable
-				ConsoleVariables.FullSet("mapname", sv.name, Defines.CVAR_SERVERINFO
-						| Defines.CVAR_NOSET);
+				ConsoleVariables.FullSet("mapname", sv.name, Constants.CVAR_SERVERINFO
+						| Constants.CVAR_NOSET);
         		
         		continueCommand.execute();
         	}
@@ -284,11 +284,11 @@ public class ServerInit {
         };
         
         
-        if (serverstate != Defines.ss_game) {
+        if (serverstate != Constants.ss_game) {
         	CM.CM_LoadMap("", false, iw, onLoad); // no real map
         } else {
-            sv.configstrings[Defines.CS_MODELS + 1] = "maps/" + server + ".bsp";
-            CM.CM_LoadMap(sv.configstrings[Defines.CS_MODELS + 1], false, iw, onLoad);
+            sv.configstrings[Constants.CS_MODELS + 1] = "maps/" + server + ".bsp";
+            CM.CM_LoadMap(sv.configstrings[Constants.CS_MODELS + 1], false, iw, onLoad);
         }
 
         
@@ -323,35 +323,35 @@ public class ServerInit {
         if (ConsoleVariables.VariableValue("coop") != 0
                 && ConsoleVariables.VariableValue("deathmatch") != 0) {
             Com.Printf("Deathmatch and Coop both set, disabling Coop\n");
-            ConsoleVariables.FullSet("coop", "0", Defines.CVAR_SERVERINFO
-                    | Defines.CVAR_LATCH);
+            ConsoleVariables.FullSet("coop", "0", Constants.CVAR_SERVERINFO
+                    | Constants.CVAR_LATCH);
         }
 
         // dedicated servers are can't be single player and are usually DM
         // so unless they explicity set coop, force it to deathmatch
         if (Globals.dedicated.value != 0) {
             if (0 == ConsoleVariables.VariableValue("coop"))
-                ConsoleVariables.FullSet("deathmatch", "1", Defines.CVAR_SERVERINFO
-                        | Defines.CVAR_LATCH);
+                ConsoleVariables.FullSet("deathmatch", "1", Constants.CVAR_SERVERINFO
+                        | Constants.CVAR_LATCH);
         }
 
         // init clients
         if (ConsoleVariables.VariableValue("deathmatch") != 0) {
             if (ServerMain.maxclients.value <= 1)
-                ConsoleVariables.FullSet("maxclients", "8", Defines.CVAR_SERVERINFO
-                        | Defines.CVAR_LATCH);
-            else if (ServerMain.maxclients.value > Defines.MAX_CLIENTS)
-                ConsoleVariables.FullSet("maxclients", "" + Defines.MAX_CLIENTS,
-                        Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
+                ConsoleVariables.FullSet("maxclients", "8", Constants.CVAR_SERVERINFO
+                        | Constants.CVAR_LATCH);
+            else if (ServerMain.maxclients.value > Constants.MAX_CLIENTS)
+                ConsoleVariables.FullSet("maxclients", "" + Constants.MAX_CLIENTS,
+                        Constants.CVAR_SERVERINFO | Constants.CVAR_LATCH);
         } else if (ConsoleVariables.VariableValue("coop") != 0) {
             if (ServerMain.maxclients.value <= 1 || ServerMain.maxclients.value > 4)
-                ConsoleVariables.FullSet("maxclients", "4", Defines.CVAR_SERVERINFO
-                        | Defines.CVAR_LATCH);
+                ConsoleVariables.FullSet("maxclients", "4", Constants.CVAR_SERVERINFO
+                        | Constants.CVAR_LATCH);
 
         } else // non-deathmatch, non-coop is one player
         {
-            ConsoleVariables.FullSet("maxclients", "1", Defines.CVAR_SERVERINFO
-                    | Defines.CVAR_LATCH);
+            ConsoleVariables.FullSet("maxclients", "1", Constants.CVAR_SERVERINFO
+                    | Constants.CVAR_LATCH);
         }
 
         svs.spawncount = Lib.rand();        
@@ -361,7 +361,7 @@ public class ServerInit {
             svs.clients[n].serverindex = n;
         }
         svs.num_client_entities = ((int) ServerMain.maxclients.value)
-                * Defines.UPDATE_BACKUP * 64; //ok.
+                * Constants.UPDATE_BACKUP * 64; //ok.
 
         svs.client_entities = new EntityState[svs.num_client_entities];
         for (int n = 0; n < svs.client_entities.length; n++)
@@ -372,7 +372,7 @@ public class ServerInit {
 
         // heartbeats will always be sent to the id master
         svs.last_heartbeat = -99999; // send immediately
-        idmaster = "192.246.40.37:" + Defines.PORT_MASTER;
+        idmaster = "192.246.40.37:" + Constants.PORT_MASTER;
         NET.StringToAdr(idmaster, ServerMain.master_adr[0]);
 
         // init game
@@ -409,7 +409,7 @@ public class ServerInit {
         sv.loadgame = loadgame;
         sv.attractloop = attractloop;
 
-        if (sv.state == Defines.ss_dead && !sv.loadgame)
+        if (sv.state == Constants.ss_dead && !sv.loadgame)
             SV_InitGame(); // the game is just starting
 
         level = levelstring; // bis hier her ok.
@@ -463,23 +463,23 @@ public class ServerInit {
         if (l > 4 && level.endsWith(".cin")) {
             Screen.BeginLoadingPlaque(); // for local system
             ServerSend.SV_BroadcastCommand("changing\n");
-            SV_SpawnServer(level, spawnpoint, Defines.ss_cinematic, attractloop,
+            SV_SpawnServer(level, spawnpoint, Constants.ss_cinematic, attractloop,
                      loadgame, continueCmd2);
         } else if (l > 4 && level.endsWith(".dm2")) {
             Screen.BeginLoadingPlaque(); // for local system
             ServerSend.SV_BroadcastCommand("changing\n");
-            SV_SpawnServer(level, spawnpoint, Defines.ss_demo, attractloop,
+            SV_SpawnServer(level, spawnpoint, Constants.ss_demo, attractloop,
                     loadgame, continueCmd2);
         } else if (l > 4 && level.endsWith(".pcx")) {
             Screen.BeginLoadingPlaque(); // for local system
             ServerSend.SV_BroadcastCommand("changing\n");
-            SV_SpawnServer(level, spawnpoint, Defines.ss_pic, attractloop,
+            SV_SpawnServer(level, spawnpoint, Constants.ss_pic, attractloop,
                     loadgame, continueCmd2);
         } else {
             Screen.BeginLoadingPlaque(); // for local system
             ServerSend.SV_BroadcastCommand("changing\n");
             ServerSend.SV_SendClientMessages();
-            SV_SpawnServer(level, spawnpoint, Defines.ss_game, attractloop,
+            SV_SpawnServer(level, spawnpoint, Constants.ss_game, attractloop,
                     loadgame, new Command() {
             	public void execute() {
             		CommandBuffer.CopyToDefer();
@@ -493,5 +493,5 @@ public class ServerInit {
     public static ServerStatic svs = new ServerStatic(); // persistant
                                                                // server info
 
-    public static server_t sv = new server_t(); // local server
+    public static ServerState sv = new ServerState(); // local server
 }

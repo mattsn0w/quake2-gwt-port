@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package com.googlecode.gwtquake.shared.util;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.Plane;
 
 
@@ -124,16 +124,16 @@ public class Math3D {
 		float yaw;
 
 		if (/*vec[YAW] == 0 &&*/
-			vec[Defines.PITCH] == 0) {
+			vec[Constants.PITCH] == 0) {
 			yaw = 0;
-			if (vec[Defines.YAW] > 0)
+			if (vec[Constants.YAW] > 0)
 				yaw = 90;
-			else if (vec[Defines.YAW] < 0)
+			else if (vec[Constants.YAW] < 0)
 				yaw = -90;
 		}
 		else {
 
-			yaw = (int) (Math.atan2(vec[Defines.YAW], vec[Defines.PITCH]) * 180 / Math.PI);
+			yaw = (int) (Math.atan2(vec[Constants.YAW], vec[Constants.PITCH]) * 180 / Math.PI);
 			if (yaw < 0)
 				yaw += 360;
 		}
@@ -167,9 +167,9 @@ public class Math3D {
 				pitch += 360;
 		}
 
-		angles[Defines.PITCH] = -pitch;
-		angles[Defines.YAW] = yaw;
-		angles[Defines.ROLL] = 0;
+		angles[Constants.PITCH] = -pitch;
+		angles[Constants.YAW] = yaw;
+		angles[Constants.ROLL] = 0;
 	}
 	private static float m[][] = new float[3][3];
 	private static float im[][] = new float[3][3];
@@ -409,10 +409,10 @@ public class Math3D {
 	public static void AngleVectors(float[] angles, float[] forward, float[] right, float[] up) {
 
 		float cr = 2.0f * piratio;
-		float angle = (float) (angles[Defines.YAW] * (cr));
+		float angle = (float) (angles[Constants.YAW] * (cr));
 		float sy = (float) Math.sin(angle);
 		float cy = (float) Math.cos(angle);
-		angle = (float) (angles[Defines.PITCH] * (cr));
+		angle = (float) (angles[Constants.PITCH] * (cr));
 		float sp = (float) Math.sin(angle);
 		float cp = (float) Math.cos(angle);
 
@@ -423,7 +423,7 @@ public class Math3D {
 		}
 
 		if (right != null || up != null) {
-			angle = (float) (angles[Defines.ROLL] * (cr));
+			angle = (float) (angles[Constants.ROLL] * (cr));
 			float sr = (float) Math.sin(angle);
 			cr = (float) Math.cos(angle);
 
@@ -484,7 +484,7 @@ public class Math3D {
 		double x;
 
 		if (fov_x < 1.0f || fov_x > 179.0f)
-			Com.Error(Defines.ERR_DROP, "Bad fov: " + fov_x);
+			Com.Error(Constants.ERR_DROP, "Bad fov: " + fov_x);
 
 		x = width / Math.tan(fov_x * piratio);
 

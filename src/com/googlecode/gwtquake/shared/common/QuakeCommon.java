@@ -96,26 +96,26 @@ public final class QuakeCommon {
 
 			Globals.host_speeds= ConsoleVariables.Get("host_speeds", "0", 0);
 			Globals.log_stats= ConsoleVariables.Get("log_stats", "0", 0);
-			Globals.developer= ConsoleVariables.Get("developer", "0", Defines.CVAR_ARCHIVE);
+			Globals.developer= ConsoleVariables.Get("developer", "0", Constants.CVAR_ARCHIVE);
 			Globals.timescale= ConsoleVariables.Get("timescale", "0", 0);
 			Globals.fixedtime= ConsoleVariables.Get("fixedtime", "0", 0);
 			Globals.logfile_active= ConsoleVariables.Get("logfile", "0", 0);
 			Globals.showtrace= ConsoleVariables.Get("showtrace", "0", 0);
-			Globals.dedicated= ConsoleVariables.Get("dedicated", "0", Defines.CVAR_NOSET);
+			Globals.dedicated= ConsoleVariables.Get("dedicated", "0", Constants.CVAR_NOSET);
 			String s = Com.sprintf("%4.2f %s %s %s",
 					new Vargs(4)
-						.add(Globals.VERSION)
+						.add(Constants.VERSION)
 						.add(CPUSTRING)
-						.add(Globals.__DATE__)
+						.add(Constants.__DATE__)
 						.add(BUILDSTRING));
 
-			ConsoleVariables.Get("version", s, Defines.CVAR_SERVERINFO | Defines.CVAR_NOSET);
+			ConsoleVariables.Get("version", s, Constants.CVAR_SERVERINFO | Constants.CVAR_NOSET);
 
 			if (q2Dialog != null)
 				q2Dialog.setStatus("initializing network subsystem...");
 			
 			NET.Init();	//ok
-			NetworkChannels.Netchan_Init();	//ok
+			NetworkChannel.Netchan_Init();	//ok
 
 			if (q2Dialog != null)			
 				q2Dialog.setStatus("initializing server subsystem...");
@@ -260,7 +260,7 @@ public final class QuakeCommon {
 	}
 
 	static void reconfigure(boolean clear) {
-		String dir = ConsoleVariables.Get("cddir", "", Defines.CVAR_ARCHIVE).string;
+		String dir = ConsoleVariables.Get("cddir", "", Constants.CVAR_ARCHIVE).string;
 		
 		CommandBuffer.AddText(DefaultCfg.DEFAULT_CFG);
 

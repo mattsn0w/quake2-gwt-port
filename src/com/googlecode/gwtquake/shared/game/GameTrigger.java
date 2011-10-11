@@ -41,10 +41,10 @@ public class GameTrigger {
         if (!Math3D.VectorEquals(self.s.angles, Globals.vec3_origin))
             GameBase.G_SetMovedir(self.s.angles, self.movedir);
 
-        self.solid = Defines.SOLID_TRIGGER;
-        self.movetype = Defines.MOVETYPE_NONE;
-        GameBase.gi.setmodel(self, self.model);
-        self.svflags = Defines.SVF_NOCLIENT;
+        self.solid = Constants.SOLID_TRIGGER;
+        self.movetype = Constants.MOVETYPE_NONE;
+        ServerGame.PF_setmodel(self, self.model);
+        self.svflags = Constants.SVF_NOCLIENT;
     }
 
     // the trigger was just activated
@@ -63,39 +63,39 @@ public class GameTrigger {
                  // function
             // called while looping through area links...
             ent.touch = null;
-            ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            ent.nextthink = GameBase.level.time + Constants.FRAMETIME;
             ent.think = GameUtil.G_FreeEdictA;
         }
     }
 
     public static void SP_trigger_multiple(Entity ent) {
         if (ent.sounds == 1)
-            ent.noise_index = GameBase.gi.soundindex("misc/secret.wav");
+            ent.noise_index = ServerInit.SV_SoundIndex("misc/secret.wav");
         else if (ent.sounds == 2)
-            ent.noise_index = GameBase.gi.soundindex("misc/talk.wav");
+            ent.noise_index = ServerInit.SV_SoundIndex("misc/talk.wav");
         else if (ent.sounds == 3)
-            ent.noise_index = GameBase.gi.soundindex("misc/trigger1.wav");
+            ent.noise_index = ServerInit.SV_SoundIndex("misc/trigger1.wav");
 
         if (ent.wait == 0)
             ent.wait = 0.2f;
 
         ent.touch = Touch_Multi;
-        ent.movetype = Defines.MOVETYPE_NONE;
-        ent.svflags |= Defines.SVF_NOCLIENT;
+        ent.movetype = Constants.MOVETYPE_NONE;
+        ent.svflags |= Constants.SVF_NOCLIENT;
 
         if ((ent.spawnflags & 4) != 0) {
-            ent.solid = Defines.SOLID_NOT;
+            ent.solid = Constants.SOLID_NOT;
             ent.use = trigger_enable;
         } else {
-            ent.solid = Defines.SOLID_TRIGGER;
+            ent.solid = Constants.SOLID_TRIGGER;
             ent.use = Use_Multi;
         }
 
         if (!Math3D.VectorEquals(ent.s.angles, Globals.vec3_origin))
             GameBase.G_SetMovedir(ent.s.angles, ent.movedir);
 
-        GameBase.gi.setmodel(ent, ent.model);
-        GameBase.gi.linkentity(ent);
+        ServerGame.PF_setmodel(ent, ent.model);
+        World.SV_LinkEdict(ent);
     }
 
     /**
@@ -119,8 +119,8 @@ public class GameTrigger {
             Math3D.VectorMA(ent.mins, 0.5f, ent.size, v);
             ent.spawnflags &= ~1;
             ent.spawnflags |= 4;
-            GameBase.gi.dprintf("fixed TRIGGERED flag on " + ent.classname
-                    + " at " + Lib.vtos(v) + "\n");
+            ServerGame.PF_dprintf("fixed TRIGGERED flag on " + ent.classname
+            + " at " + Lib.vtos(v) + "\n");
         }
 
         ent.wait = -1;
@@ -133,27 +133,27 @@ public class GameTrigger {
 
     public static void SP_trigger_key(Entity self) {
         if (GameBase.st.item == null) {
-            GameBase.gi.dprintf("no key item for trigger_key at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf("no key item for trigger_key at "
+            + Lib.vtos(self.s.origin) + "\n");
             return;
         }
         self.item = GameItems.FindItemByClassname(GameBase.st.item);
 
         if (null == self.item) {
-            GameBase.gi.dprintf("item " + GameBase.st.item
-                    + " not found for trigger_key at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf("item " + GameBase.st.item
+            + " not found for trigger_key at "
+            + Lib.vtos(self.s.origin) + "\n");
             return;
         }
 
         if (self.target == null) {
-            GameBase.gi.dprintf(self.classname + " at "
-                    + Lib.vtos(self.s.origin) + " has no target\n");
+            ServerGame.PF_dprintf(self.classname + " at "
+            + Lib.vtos(self.s.origin) + " has no target\n");
             return;
         }
 
-        GameBase.gi.soundindex("misc/keytry.wav");
-        GameBase.gi.soundindex("misc/keyuse.wav");
+        ServerInit.SV_SoundIndex("misc/keytry.wav");
+        ServerInit.SV_SoundIndex("misc/keyuse.wav");
 
         self.use = trigger_key_use;
     }
@@ -191,37 +191,37 @@ public class GameTrigger {
      */
     public static void SP_trigger_push(Entity self) {
         InitTrigger(self);
-        windsound = GameBase.gi.soundindex("misc/windfly.wav");
+        windsound = ServerInit.SV_SoundIndex("misc/windfly.wav");
         self.touch = trigger_push_touch;
         if (0 == self.speed)
             self.speed = 1000;
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_trigger_hurt(Entity self) {
         InitTrigger(self);
 
-        self.noise_index = GameBase.gi.soundindex("world/electro.wav");
+        self.noise_index = ServerInit.SV_SoundIndex("world/electro.wav");
         self.touch = hurt_touch;
 
         if (0 == self.dmg)
             self.dmg = 5;
 
         if ((self.spawnflags & 1) != 0)
-            self.solid = Defines.SOLID_NOT;
+            self.solid = Constants.SOLID_NOT;
         else
-            self.solid = Defines.SOLID_TRIGGER;
+            self.solid = Constants.SOLID_TRIGGER;
 
         if ((self.spawnflags & 2) != 0)
             self.use = hurt_use;
 
-        GameBase.gi.linkentity(self);
+        World.SV_LinkEdict(self);
     }
 
     public static void SP_trigger_gravity(Entity self) {
         if (GameBase.st.gravity == null) {
-            GameBase.gi.dprintf("trigger_gravity without gravity set at "
-                    + Lib.vtos(self.s.origin) + "\n");
+            ServerGame.PF_dprintf("trigger_gravity without gravity set at "
+            + Lib.vtos(self.s.origin) + "\n");
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -236,8 +236,8 @@ public class GameTrigger {
             self.speed = 200;
         if (0 == GameBase.st.height)
             GameBase.st.height = 200;
-        if (self.s.angles[Defines.YAW] == 0)
-            self.s.angles[Defines.YAW] = 360;
+        if (self.s.angles[Constants.YAW] == 0)
+            self.s.angles[Constants.YAW] = 360;
         InitTrigger(self);
         self.touch = trigger_monsterjump_touch;
         self.movedir[2] = GameBase.st.height;
@@ -268,7 +268,7 @@ public class GameTrigger {
             if (other.client != null) {
                 if ((self.spawnflags & 2) != 0)
                     return;
-            } else if ((other.svflags & Defines.SVF_MONSTER) != 0) {
+            } else if ((other.svflags & Constants.SVF_MONSTER) != 0) {
                 if (0 == (self.spawnflags & 1))
                     return;
             } else
@@ -297,9 +297,9 @@ public class GameTrigger {
     static EntityUseAdapter trigger_enable = new EntityUseAdapter() {
     	public String getID(){ return "trigger_enable"; }
         public void use(Entity self, Entity other, Entity activator) {
-            self.solid = Defines.SOLID_TRIGGER;
+            self.solid = Constants.SOLID_TRIGGER;
             self.use = Use_Multi;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
         }
     };
 
@@ -343,16 +343,15 @@ public class GameTrigger {
                 if (GameBase.level.time < self.touch_debounce_time)
                     return;
                 self.touch_debounce_time = GameBase.level.time + 5.0f;
-                GameBase.gi.centerprintf(activator, "You need the "
-                        + self.item.pickup_name);
-                GameBase.gi.sound(activator, Defines.CHAN_AUTO, 
-                		GameBase.gi.soundindex("misc/keytry.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                ServerGame.PF_centerprintf(activator, "You need the "
+                + self.item.pickup_name);
+                ServerGame.PF_StartSound(activator, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/keytry.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 return;
             }
 
-            GameBase.gi.sound(activator, Defines.CHAN_AUTO, GameBase.gi
-                    .soundindex("misc/keyuse.wav"), 1, Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(activator, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/keyuse.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             if (GameBase.coop.value != 0) {
                 int player;
                 Entity ent;
@@ -415,19 +414,18 @@ public class GameTrigger {
 
             if (self.count != 0) {
                 if (0 == (self.spawnflags & 1)) {
-                    GameBase.gi.centerprintf(activator, self.count
-                            + " more to go...");
-                    GameBase.gi.sound(activator, Defines.CHAN_AUTO, GameBase.gi
-                            .soundindex("misc/talk1.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_centerprintf(activator, self.count
+                    + " more to go...");
+                    ServerGame.PF_StartSound(activator, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/talk1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                 }
                 return;
             }
 
             if (0 == (self.spawnflags & 1)) {
-                GameBase.gi.centerprintf(activator, "Sequence completed!");
-                GameBase.gi.sound(activator, Defines.CHAN_AUTO, GameBase.gi
-                        .soundindex("misc/talk1.wav"), 1, Defines.ATTN_NORM, 0);
+                ServerGame.PF_centerprintf(activator, "Sequence completed!");
+                ServerGame.PF_StartSound(activator, Constants.CHAN_AUTO, ServerInit.SV_SoundIndex("misc/talk1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
             }
             self.activator = activator;
             multi_trigger(self);
@@ -462,8 +460,8 @@ public class GameTrigger {
                     Math3D.VectorCopy(other.velocity, other.client.oldvelocity);
                     if (other.fly_sound_debounce_time < GameBase.level.time) {
                         other.fly_sound_debounce_time = GameBase.level.time + 1.5f;
-                        GameBase.gi.sound(other, Defines.CHAN_AUTO, windsound,
-                                1, Defines.ATTN_NORM, 0);
+                        ServerGame.PF_StartSound(other, Constants.CHAN_AUTO, windsound, (float) 1, (float) Constants.ATTN_NORM,
+                        (float) 0);
                     }
                 }
             }
@@ -489,11 +487,11 @@ public class GameTrigger {
     	public String getID(){ return "hurt_use"; }
 
         public void use(Entity self, Entity other, Entity activator) {
-            if (self.solid == Defines.SOLID_NOT)
-                self.solid = Defines.SOLID_TRIGGER;
+            if (self.solid == Constants.SOLID_NOT)
+                self.solid = Constants.SOLID_TRIGGER;
             else
-                self.solid = Defines.SOLID_NOT;
-            GameBase.gi.linkentity(self);
+                self.solid = Constants.SOLID_NOT;
+            World.SV_LinkEdict(self);
 
             if (0 == (self.spawnflags & 2))
                 self.use = null;
@@ -515,21 +513,21 @@ public class GameTrigger {
             if ((self.spawnflags & 16) != 0)
                 self.timestamp = GameBase.level.time + 1;
             else
-                self.timestamp = GameBase.level.time + Defines.FRAMETIME;
+                self.timestamp = GameBase.level.time + Constants.FRAMETIME;
 
             if (0 == (self.spawnflags & 4)) {
                 if ((GameBase.level.framenum % 10) == 0)
-                    GameBase.gi.sound(other, Defines.CHAN_AUTO,
-                            self.noise_index, 1, Defines.ATTN_NORM, 0);
+                  ServerGame.PF_StartSound(other, Constants.CHAN_AUTO, self.noise_index, (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
             }
 
             if ((self.spawnflags & 8) != 0)
-                dflags = Defines.DAMAGE_NO_PROTECTION;
+                dflags = Constants.DAMAGE_NO_PROTECTION;
             else
                 dflags = 0;
             GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                     other.s.origin, Globals.vec3_origin, self.dmg, self.dmg,
-                    dflags, Defines.MOD_TRIGGER_HURT);
+                    dflags, Constants.MOD_TRIGGER_HURT);
         }
     };
 
@@ -574,11 +572,11 @@ public class GameTrigger {
     	public String getID(){ return "trigger_monsterjump_touch"; }
         public void touch(Entity self, Entity other, Plane plane,
                 Surface surf) {
-            if ((other.flags & (Defines.FL_FLY | Defines.FL_SWIM)) != 0)
+            if ((other.flags & (Constants.FL_FLY | Constants.FL_SWIM)) != 0)
                 return;
-            if ((other.svflags & Defines.SVF_DEADMONSTER) != 0)
+            if ((other.svflags & Constants.SVF_DEADMONSTER) != 0)
                 return;
-            if (0 == (other.svflags & Defines.SVF_MONSTER))
+            if (0 == (other.svflags & Constants.SVF_MONSTER))
                 return;
 
             // set XY even if not on ground, so the jump will clear lips

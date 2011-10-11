@@ -23,7 +23,7 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -54,7 +54,7 @@ public class ClientNewFx {
             float g, float b) {
         ClientEffects.DynamicLight dl;
 
-        if ((Globals.vidref_val == Defines.VIDREF_SOFT)
+        if ((Globals.vidref_val == Constants.VIDREF_SOFT)
                 && ((r < 0) || (g < 0) || (b < 0))) {
             intensity = -intensity;
             r = -r;
@@ -250,7 +250,7 @@ public class ClientNewFx {
         //		MakeNormalVectors (vec, right, up);
         Math3D.VectorCopy(Globals.cl.v_right, right);
         Math3D.VectorCopy(Globals.cl.v_up, up);
-        if (Globals.vidref_val == Defines.VIDREF_GL) { // GL mode
+        if (Globals.vidref_val == Constants.VIDREF_GL) { // GL mode
             Math3D.VectorMA(move, -0.5f, right, move);
             Math3D.VectorMA(move, -0.5f, up, move);
         }

@@ -37,11 +37,11 @@ import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Compatibility;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.NetworkAddress;
-import com.googlecode.gwtquake.shared.common.NetworkChannels;
+import com.googlecode.gwtquake.shared.common.NetworkChannel;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
@@ -90,12 +90,12 @@ public class ServerCommands {
 		// make sure the server is listed public
 		ConsoleVariables.Set("public", "1");
 
-		for (i = 1; i < Defines.MAX_MASTERS; i++)
+		for (i = 1; i < Constants.MAX_MASTERS; i++)
 			ServerMain.master_adr[i] = new NetworkAddress();
 
 		slot = 1; // slot 0 will always contain the id master
 		for (i = 1; i < Commands.Argc(); i++) {
-			if (slot == Defines.MAX_MASTERS)
+			if (slot == Constants.MAX_MASTERS)
 				break;
 
 			if (!NET.StringToAdr(Commands.Argv(i), ServerMain.master_adr[i])) {
@@ -103,12 +103,12 @@ public class ServerCommands {
 				continue;
 			}
 			if (ServerMain.master_adr[slot].port == 0)
-				ServerMain.master_adr[slot].port = Defines.PORT_MASTER;
+				ServerMain.master_adr[slot].port = Constants.PORT_MASTER;
 
 			Com.Printf("Master server at " + NET.AdrToString(ServerMain.master_adr[slot]) + "\n");
 			Com.Printf("Sending a ping.\n");
 
-			NetworkChannels.OutOfBandPrint(Defines.NS_SERVER, ServerMain.master_adr[slot], "ping");
+			NetworkChannel.OutOfBandPrint(Constants.NS_SERVER, ServerMain.master_adr[slot], "ping");
 
 			slot++;
 		}
@@ -348,7 +348,7 @@ public class ServerCommands {
 		try {
 			f = new QuakeFile(name, "rw");
 
-			for (int i = 0; i < Defines.MAX_CONFIGSTRINGS; i++)
+			for (int i = 0; i < Constants.MAX_CONFIGSTRINGS; i++)
 				f.writeString(ServerInit.sv.configstrings[i]);
 
 			CM.CM_WritePortalState(f);
@@ -378,7 +378,7 @@ public class ServerCommands {
 		try {
 			f = new QuakeFile(name, "r");
 
-			for (int n = 0; n < Defines.MAX_CONFIGSTRINGS; n++)
+			for (int n = 0; n < Constants.MAX_CONFIGSTRINGS; n++)
 				ServerInit.sv.configstrings[n] = f.readString();
 
 			CM.CM_ReadPortalState(f);
@@ -418,11 +418,11 @@ public class ServerCommands {
 						new Vargs().add(c.get(Calendar.HOUR_OF_DAY)).add(c.get(Calendar.MINUTE)).add(
 							c.get(Calendar.MONTH) + 1).add(
 							c.get(Calendar.DAY_OF_MONTH)));
-				comment += ServerInit.sv.configstrings[Defines.CS_NAME];
+				comment += ServerInit.sv.configstrings[Constants.CS_NAME];
 			}
 			else {
 				// autosaved
-				comment = "ENTERING " + ServerInit.sv.configstrings[Defines.CS_NAME];
+				comment = "ENTERING " + ServerInit.sv.configstrings[Constants.CS_NAME];
 			}
 
 			f.writeString(comment);
@@ -433,9 +433,9 @@ public class ServerCommands {
 			// write all CVAR_LATCH cvars
 			// these will be things like coop, skill, deathmatch, etc
 			for (var = Globals.cvar_vars; var != null; var = var.next) {
-				if (0 == (var.flags & Defines.CVAR_LATCH))
+				if (0 == (var.flags & Constants.CVAR_LATCH))
 					continue;
-				if (var.name.length() >= Defines.MAX_OSPATH - 1 || var.string.length() >= 128 - 1) {
+				if (var.name.length() >= Constants.MAX_OSPATH - 1 || var.string.length() >= 128 - 1) {
 					Com.Printf("Cvar too long: " + var.name + " = " + var.string + "\n");
 					continue;
 				}
@@ -569,7 +569,7 @@ public class ServerCommands {
 			SV_WipeSavegame("current");
 		}
 		else { // save the map just exited
-			if (ServerInit.sv.state == Defines.ss_game) {
+			if (ServerInit.sv.state == Constants.ss_game) {
 				// clear all the client inuse flags before saving so that
 				// when the level is re-entered, the clients will spawn
 				// at spawn points instead of occupying body shells
@@ -635,7 +635,7 @@ public class ServerCommands {
 //			}
 //		}
 
-		ServerInit.sv.state = Defines.ss_dead; // don't save current level when changing
+		ServerInit.sv.state = Constants.ss_dead; // don't save current level when changing
 
 		SV_WipeSavegame("current");
 		SV_GameMap_f();
@@ -696,7 +696,7 @@ public class ServerCommands {
 		SV_ReadServerFile();
 
 		// go to the map
-		ServerInit.sv.state = Defines.ss_dead; // don't save current level when changing
+		ServerInit.sv.state = Constants.ss_dead; // don't save current level when changing
 		ServerInit.SV_Map(false, ServerInit.svs.mapcmd, true, EMPTY_COMMAND);
 	}
 	/*
@@ -708,7 +708,7 @@ public class ServerCommands {
 	public static void SV_Savegame_f() {
 		String dir;
 
-		if (ServerInit.sv.state != Defines.ss_game) {
+		if (ServerInit.sv.state != Constants.ss_game) {
 			Com.Printf("You must be in a game to save.\n");
 			return;
 		}
@@ -728,7 +728,7 @@ public class ServerCommands {
 			return;
 		}
 
-		if (ServerMain.maxclients.value == 1 && ServerInit.svs.clients[0].edict.client.ps.stats[Defines.STAT_HEALTH] <= 0) {
+		if (ServerMain.maxclients.value == 1 && ServerInit.svs.clients[0].edict.client.ps.stats[Constants.STAT_HEALTH] <= 0) {
 			Com.Printf("\nCan't savegame while dead!\n");
 			return;
 		}
@@ -780,10 +780,10 @@ public class ServerCommands {
 		if (!SV_SetPlayer())
 			return;
 
-		ServerSend.SV_BroadcastPrintf(Defines.PRINT_HIGH, ServerMain.sv_client.name + " was kicked\n");
+		ServerSend.SV_BroadcastPrintf(Constants.PRINT_HIGH, ServerMain.sv_client.name + " was kicked\n");
 		// print directly, because the dropped client won't get the
 		// SV_BroadcastPrintf message
-		ServerSend.SV_ClientPrintf(ServerMain.sv_client, Defines.PRINT_HIGH, "You were kicked from the game\n");
+		ServerSend.SV_ClientPrintf(ServerMain.sv_client, Constants.PRINT_HIGH, "You were kicked from the game\n");
 		ServerMain.SV_DropClient(ServerMain.sv_client);
 		ServerMain.sv_client.lastmessage = ServerInit.svs.realtime; // min case there is a funny zombie
 	}
@@ -811,11 +811,11 @@ public class ServerCommands {
 				continue;
 
 			Com.Printf("%3i ", new Vargs().add(i));
-			Com.Printf("%5i ", new Vargs().add(cl.edict.client.ps.stats[Defines.STAT_FRAGS]));
+			Com.Printf("%5i ", new Vargs().add(cl.edict.client.ps.stats[Constants.STAT_FRAGS]));
 
-			if (cl.state == Defines.cs_connected)
+			if (cl.state == Constants.cs_connected)
 				Com.Printf("CNCT ");
-			else if (cl.state == Defines.cs_zombie)
+			else if (cl.state == Constants.cs_zombie)
 				Com.Printf("ZMBI ");
 			else {
 				ping = cl.ping < 9999 ? cl.ping : 9999;
@@ -866,9 +866,9 @@ public class ServerCommands {
 
 		for (j = 0; j < ServerMain.maxclients.value; j++) {
 			client = ServerInit.svs.clients[j];
-			if (client.state != Defines.cs_spawned)
+			if (client.state != Constants.cs_spawned)
 				continue;
-			ServerSend.SV_ClientPrintf(client, Defines.PRINT_CHAT, text + "\n");
+			ServerSend.SV_ClientPrintf(client, Constants.PRINT_CHAT, text + "\n");
 		}
 	}
 	/*
@@ -937,7 +937,7 @@ public class ServerCommands {
 			return;
 		}
 
-		if (ServerInit.sv.state != Defines.ss_game) {
+		if (ServerInit.sv.state != Constants.ss_game) {
 			Com.Printf("You must be in a level to record.\n");
 			return;
 		}
@@ -971,19 +971,19 @@ public class ServerCommands {
 		// to make sure the protocol is right, and to set the gamedir
 		//
 		// send the serverdata
-		Buffer.WriteByte(buf, Defines.svc_serverdata);
-		Buffer.WriteLong(buf, Defines.PROTOCOL_VERSION);
+		Buffer.WriteByte(buf, Constants.svc_serverdata);
+		Buffer.WriteLong(buf, Constants.PROTOCOL_VERSION);
 		Buffer.WriteLong(buf, ServerInit.svs.spawncount);
 		// 2 means server demo
 		Buffer.WriteByte(buf, 2); // demos are always attract loops
 		Buffer.WriteString(buf, ConsoleVariables.VariableString("gamedir"));
 		Buffer.WriteShort(buf, -1);
 		// send full levelname
-		Buffer.WriteString(buf, ServerInit.sv.configstrings[Defines.CS_NAME]);
+		Buffer.WriteString(buf, ServerInit.sv.configstrings[Constants.CS_NAME]);
 
-		for (i = 0; i < Defines.MAX_CONFIGSTRINGS; i++)
+		for (i = 0; i < Constants.MAX_CONFIGSTRINGS; i++)
 			if (ServerInit.sv.configstrings[i].length() == 0) {
-				Buffer.WriteByte(buf, Defines.svc_configstring);
+				Buffer.WriteByte(buf, Constants.svc_configstring);
 				Buffer.WriteShort(buf, i);
 				Buffer.WriteString(buf, ServerInit.sv.configstrings[i]);
 			}

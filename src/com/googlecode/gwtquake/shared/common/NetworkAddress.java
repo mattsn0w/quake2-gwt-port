@@ -38,7 +38,7 @@ public class NetworkAddress {
     public byte ip[];
 
     public NetworkAddress() {
-        this.type = Defines.NA_LOOPBACK;
+        this.type = Constants.NA_LOOPBACK;
         this.port = 0; // any
         try {
         	// localhost / 127.0.0.1
@@ -49,12 +49,12 @@ public class NetworkAddress {
 
     public InetAddress getInetAddress() throws UnknownHostException {
         switch (type) {
-        case Defines.NA_BROADCAST:
+        case Constants.NA_BROADCAST:
             return InetAddress.getByName("255.255.255.255");
-        case Defines.NA_LOOPBACK:
+        case Constants.NA_LOOPBACK:
         	// localhost / 127.0.0.1
             return InetAddress.getByName(null);
-        case Defines.NA_IP:
+        case Constants.NA_IP:
             return InetAddress.getByAddress(ip);
         default:
             return null;
@@ -71,7 +71,7 @@ public class NetworkAddress {
     }
 
     public String toString() {
-        return (type == Defines.NA_LOOPBACK) ? "loopback" : NET
+        return (type == Constants.NA_LOOPBACK) ? "loopback" : NET
                 .AdrToString(this);
     }
 }

@@ -49,20 +49,20 @@ public class GameWeapon {
             if (other == self.owner)
                 return;
     
-            if (surf != null && (surf.flags & Defines.SURF_SKY) != 0) {
+            if (surf != null && (surf.flags & Constants.SURF_SKY) != 0) {
                 GameUtil.G_FreeEdict(self);
                 return;
             }
     
             if (self.owner.client != null)
                 PlayerWeapon.PlayerNoise(self.owner, self.s.origin,
-                        Defines.PNOISE_IMPACT);
+                        Constants.PNOISE_IMPACT);
     
             if (other.takedamage != 0) {
                 if ((self.spawnflags & 1) != 0)
-                    mod = Defines.MOD_HYPERBLASTER;
+                    mod = Constants.MOD_HYPERBLASTER;
                 else
-                    mod = Defines.MOD_BLASTER;
+                    mod = Constants.MOD_BLASTER;
     
                 // bugfix null plane rst
                 float[] normal;
@@ -73,17 +73,17 @@ public class GameWeapon {
     
                 GameCombat.T_Damage(other, self, self.owner, self.velocity,
                         self.s.origin, normal, self.dmg, 1,
-                        Defines.DAMAGE_ENERGY, mod);
+                        Constants.DAMAGE_ENERGY, mod);
     
             } else {
-                GameBase.gi.WriteByte(Defines.svc_temp_entity);
-                GameBase.gi.WriteByte(Defines.TE_BLASTER);
-                GameBase.gi.WritePosition(self.s.origin);
+                ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+                ServerGame.PF_WriteByte(Constants.TE_BLASTER);
+                ServerGame.PF_WritePos(self.s.origin);
                 if (plane == null)
-                    GameBase.gi.WriteDir(Globals.vec3_origin);
+                  ServerGame.PF_WriteDir(Globals.vec3_origin);
                 else
-                    GameBase.gi.WriteDir(plane.normal);
-                GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+                  ServerGame.PF_WriteDir(plane.normal);
+                ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PVS);
             }
     
             GameUtil.G_FreeEdict(self);
@@ -98,7 +98,7 @@ public class GameWeapon {
     
             if (ent.owner.client != null)
                 PlayerWeapon.PlayerNoise(ent.owner, ent.s.origin,
-                        Defines.PNOISE_IMPACT);
+                        Constants.PNOISE_IMPACT);
     
             //FIXME: if we are onground then raise our Z just a bit since we
             // are a point?
@@ -113,38 +113,38 @@ public class GameWeapon {
                 points = ent.dmg - 0.5f * Math3D.VectorLength(v);
                 Math3D.VectorSubtract(ent.enemy.s.origin, ent.s.origin, dir);
                 if ((ent.spawnflags & 1) != 0)
-                    mod = Defines.MOD_HANDGRENADE;
+                    mod = Constants.MOD_HANDGRENADE;
                 else
-                    mod = Defines.MOD_GRENADE;
+                    mod = Constants.MOD_GRENADE;
                 GameCombat.T_Damage(ent.enemy, ent, ent.owner, dir, ent.s.origin,
                         Globals.vec3_origin, (int) points, (int) points,
-                        Defines.DAMAGE_RADIUS, mod);
+                        Constants.DAMAGE_RADIUS, mod);
             }
     
             if ((ent.spawnflags & 2) != 0)
-                mod = Defines.MOD_HELD_GRENADE;
+                mod = Constants.MOD_HELD_GRENADE;
             else if ((ent.spawnflags & 1) != 0)
-                mod = Defines.MOD_HG_SPLASH;
+                mod = Constants.MOD_HG_SPLASH;
             else
-                mod = Defines.MOD_G_SPLASH;
+                mod = Constants.MOD_G_SPLASH;
             GameCombat.T_RadiusDamage(ent, ent.owner, ent.dmg, ent.enemy,
                     ent.dmg_radius, mod);
     
             Math3D.VectorMA(ent.s.origin, -0.02f, ent.velocity, origin);
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
             if (ent.waterlevel != 0) {
                 if (ent.groundentity != null)
-                    GameBase.gi.WriteByte(Defines.TE_GRENADE_EXPLOSION_WATER);
+                  ServerGame.PF_WriteByte(Constants.TE_GRENADE_EXPLOSION_WATER);
                 else
-                    GameBase.gi.WriteByte(Defines.TE_ROCKET_EXPLOSION_WATER);
+                  ServerGame.PF_WriteByte(Constants.TE_ROCKET_EXPLOSION_WATER);
             } else {
                 if (ent.groundentity != null)
-                    GameBase.gi.WriteByte(Defines.TE_GRENADE_EXPLOSION);
+                  ServerGame.PF_WriteByte(Constants.TE_GRENADE_EXPLOSION);
                 else
-                    GameBase.gi.WriteByte(Defines.TE_ROCKET_EXPLOSION);
+                  ServerGame.PF_WriteByte(Constants.TE_ROCKET_EXPLOSION);
             }
-            GameBase.gi.WritePosition(origin);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PHS);
+            ServerGame.PF_WritePos(origin);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PHS);
     
             GameUtil.G_FreeEdict(ent);
             return true;
@@ -157,7 +157,7 @@ public class GameWeapon {
             if (other == ent.owner)
                 return;
     
-            if (surf != null && 0 != (surf.flags & Defines.SURF_SKY)) {
+            if (surf != null && 0 != (surf.flags & Constants.SURF_SKY)) {
                 GameUtil.G_FreeEdict(ent);
                 return;
             }
@@ -165,17 +165,14 @@ public class GameWeapon {
             if (other.takedamage == 0) {
                 if ((ent.spawnflags & 1) != 0) {
                     if (Lib.random() > 0.5f)
-                        GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("weapons/hgrenb1a.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/hgrenb1a.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else
-                        GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                                .soundindex("weapons/hgrenb2a.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/hgrenb2a.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                 } else {
-                    GameBase.gi.sound(ent, Defines.CHAN_VOICE, GameBase.gi
-                            .soundindex("weapons/grenlb1b.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                    ServerGame.PF_StartSound(ent, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/grenlb1b.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                    (float) 0);
                 }
                 return;
             }
@@ -200,14 +197,14 @@ public class GameWeapon {
             if (other == ent.owner)
                 return;
     
-            if (surf != null && (surf.flags & Defines.SURF_SKY) != 0) {
+            if (surf != null && (surf.flags & Constants.SURF_SKY) != 0) {
                 GameUtil.G_FreeEdict(ent);
                 return;
             }
     
             if (ent.owner.client != null)
                 PlayerWeapon.PlayerNoise(ent.owner, ent.s.origin,
-                        Defines.PNOISE_IMPACT);
+                        Constants.PNOISE_IMPACT);
     
             // calculate position for the explosion entity
             Math3D.VectorMA(ent.s.origin, -0.02f, ent.velocity, origin);
@@ -215,14 +212,14 @@ public class GameWeapon {
             if (other.takedamage != 0) {
                 GameCombat.T_Damage(other, ent, ent.owner, ent.velocity,
                         ent.s.origin, plane.normal, ent.dmg, 0, 0,
-                        Defines.MOD_ROCKET);
+                        Constants.MOD_ROCKET);
             } else {
                 // don't throw any debris in net games
                 if (GameBase.deathmatch.value == 0 && 0 == GameBase.coop.value) {
                     if ((surf != null)
-                            && 0 == (surf.flags & (Defines.SURF_WARP
-                                    | Defines.SURF_TRANS33
-                                    | Defines.SURF_TRANS66 | Defines.SURF_FLOWING))) {
+                            && 0 == (surf.flags & (Constants.SURF_WARP
+                                    | Constants.SURF_TRANS33
+                                    | Constants.SURF_TRANS66 | Constants.SURF_FLOWING))) {
                         n = Lib.rand() % 5;
                         while (n-- > 0)
                             GameMisc.ThrowDebris(ent,
@@ -233,15 +230,15 @@ public class GameWeapon {
             }
     
             GameCombat.T_RadiusDamage(ent, ent.owner, ent.radius_dmg, other,
-                    ent.dmg_radius, Defines.MOD_R_SPLASH);
+                    ent.dmg_radius, Constants.MOD_R_SPLASH);
     
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
             if (ent.waterlevel != 0)
-                GameBase.gi.WriteByte(Defines.TE_ROCKET_EXPLOSION_WATER);
+              ServerGame.PF_WriteByte(Constants.TE_ROCKET_EXPLOSION_WATER);
             else
-                GameBase.gi.WriteByte(Defines.TE_ROCKET_EXPLOSION);
-            GameBase.gi.WritePosition(origin);
-            GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PHS);
+              ServerGame.PF_WriteByte(Constants.TE_ROCKET_EXPLOSION);
+            ServerGame.PF_WritePos(origin);
+            ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PHS);
     
             GameUtil.G_FreeEdict(ent);
         }
@@ -285,17 +282,17 @@ public class GameWeapon {
                     if (ent == self.owner)
                         points = points * 0.5f;
     
-                    GameBase.gi.WriteByte(Defines.svc_temp_entity);
-                    GameBase.gi.WriteByte(Defines.TE_BFG_EXPLOSION);
-                    GameBase.gi.WritePosition(ent.s.origin);
-                    GameBase.gi.multicast(ent.s.origin, Defines.MULTICAST_PHS);
+                    ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+                    ServerGame.PF_WriteByte(Constants.TE_BFG_EXPLOSION);
+                    ServerGame.PF_WritePos(ent.s.origin);
+                    ServerSend.SV_Multicast(ent.s.origin, Constants.MULTICAST_PHS);
                     GameCombat.T_Damage(ent, self, self.owner, self.velocity,
                             ent.s.origin, Globals.vec3_origin, (int) points, 0,
-                            Defines.DAMAGE_ENERGY, Defines.MOD_BFG_EFFECT);
+                            Constants.DAMAGE_ENERGY, Constants.MOD_BFG_EFFECT);
                 }
             }
     
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             self.s.frame++;
             if (self.s.frame == 5)
                 self.think = GameUtil.G_FreeEdictA;
@@ -311,43 +308,42 @@ public class GameWeapon {
             if (other == self.owner)
                 return;
     
-            if (surf != null && (surf.flags & Defines.SURF_SKY) != 0) {
+            if (surf != null && (surf.flags & Constants.SURF_SKY) != 0) {
                 GameUtil.G_FreeEdict(self);
                 return;
             }
     
             if (self.owner.client != null)
                 PlayerWeapon.PlayerNoise(self.owner, self.s.origin,
-                        Defines.PNOISE_IMPACT);
+                        Constants.PNOISE_IMPACT);
     
             // core explosion - prevents firing it into the wall/floor
             if (other.takedamage != 0)
                 GameCombat.T_Damage(other, self, self.owner, self.velocity,
                         self.s.origin, plane.normal, 200, 0, 0,
-                        Defines.MOD_BFG_BLAST);
+                        Constants.MOD_BFG_BLAST);
             GameCombat.T_RadiusDamage(self, self.owner, 200, other, 100,
-                    Defines.MOD_BFG_BLAST);
+                    Constants.MOD_BFG_BLAST);
     
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, GameBase.gi
-                    .soundindex("weapons/bfg__x1b.wav"), 1, Defines.ATTN_NORM,
-                    0);
-            self.solid = Defines.SOLID_NOT;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, ServerInit.SV_SoundIndex("weapons/bfg__x1b.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.solid = Constants.SOLID_NOT;
             self.touch = null;
-            Math3D.VectorMA(self.s.origin, -1 * Defines.FRAMETIME,
+            Math3D.VectorMA(self.s.origin, -1 * Constants.FRAMETIME,
                     self.velocity, self.s.origin);
             Math3D.VectorClear(self.velocity);
-            self.s.modelindex = GameBase.gi.modelindex("sprites/s_bfg3.sp2");
+            self.s.modelindex = ServerInit.SV_ModelIndex("sprites/s_bfg3.sp2");
             self.s.frame = 0;
             self.s.sound = 0;
-            self.s.effects &= ~Defines.EF_ANIM_ALLFAST;
+            self.s.effects &= ~Constants.EF_ANIM_ALLFAST;
             self.think = bfg_explode;
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             self.enemy = other;
     
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_BFG_BIGEXPLOSION);
-            GameBase.gi.WritePosition(self.s.origin);
-            GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_BFG_BIGEXPLOSION);
+            ServerGame.PF_WritePos(self.s.origin);
+            ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PVS);
         }
     };
     
@@ -381,7 +377,7 @@ public class GameWeapon {
                 if (ent.takedamage == 0)
                     continue;
     
-                if (0 == (ent.svflags & Defines.SVF_MONSTER)
+                if (0 == (ent.svflags & Constants.SVF_MONSTER)
                         && (null == ent.client)
                         && (Lib.strcmp(ent.classname, "misc_explobox") != 0))
                     continue;
@@ -395,32 +391,31 @@ public class GameWeapon {
                 Math3D.VectorCopy(self.s.origin, start);
                 Math3D.VectorMA(start, 2048, dir, end);
                 while (true) {
-                    tr = GameBase.gi.trace(start, null, null, end, ignore,
-                            Defines.CONTENTS_SOLID | Defines.CONTENTS_MONSTER
-                                    | Defines.CONTENTS_DEADMONSTER);
+                    tr = World.SV_Trace(start, null, null, end, ignore, Constants.CONTENTS_SOLID | Constants.CONTENTS_MONSTER
+                    | Constants.CONTENTS_DEADMONSTER);
     
                     if (null == tr.ent)
                         break;
     
                     // hurt it if we can
                     if ((tr.ent.takedamage != 0)
-                            && 0 == (tr.ent.flags & Defines.FL_IMMUNE_LASER)
+                            && 0 == (tr.ent.flags & Constants.FL_IMMUNE_LASER)
                             && (tr.ent != self.owner))
                         GameCombat.T_Damage(tr.ent, self, self.owner, dir,
                                 tr.endpos, Globals.vec3_origin, dmg, 1,
-                                Defines.DAMAGE_ENERGY, Defines.MOD_BFG_LASER);
+                                Constants.DAMAGE_ENERGY, Constants.MOD_BFG_LASER);
     
                     // if we hit something that's not a monster or player we're
                     // done
-                    if (0 == (tr.ent.svflags & Defines.SVF_MONSTER)
+                    if (0 == (tr.ent.svflags & Constants.SVF_MONSTER)
                             && (null == tr.ent.client)) {
-                        GameBase.gi.WriteByte(Defines.svc_temp_entity);
-                        GameBase.gi.WriteByte(Defines.TE_LASER_SPARKS);
-                        GameBase.gi.WriteByte(4);
-                        GameBase.gi.WritePosition(tr.endpos);
-                        GameBase.gi.WriteDir(tr.plane.normal);
-                        GameBase.gi.WriteByte(self.s.skinnum);
-                        GameBase.gi.multicast(tr.endpos, Defines.MULTICAST_PVS);
+                        ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+                        ServerGame.PF_WriteByte(Constants.TE_LASER_SPARKS);
+                        ServerGame.PF_WriteByte(4);
+                        ServerGame.PF_WritePos(tr.endpos);
+                        ServerGame.PF_WriteDir(tr.plane.normal);
+                        ServerGame.PF_WriteByte(self.s.skinnum);
+                        ServerSend.SV_Multicast(tr.endpos, Constants.MULTICAST_PVS);
                         break;
                     }
     
@@ -428,14 +423,14 @@ public class GameWeapon {
                     Math3D.VectorCopy(tr.endpos, start);
                 }
     
-                GameBase.gi.WriteByte(Defines.svc_temp_entity);
-                GameBase.gi.WriteByte(Defines.TE_BFG_LASER);
-                GameBase.gi.WritePosition(self.s.origin);
-                GameBase.gi.WritePosition(tr.endpos);
-                GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PHS);
+                ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+                ServerGame.PF_WriteByte(Constants.TE_BFG_LASER);
+                ServerGame.PF_WritePos(self.s.origin);
+                ServerGame.PF_WritePos(tr.endpos);
+                ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PHS);
             }
     
-            self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+            self.nextthink = GameBase.level.time + Constants.FRAMETIME;
             return true;
         }
     };
@@ -461,8 +456,8 @@ public class GameWeapon {
                 return;
         }
         Math3D.VectorMA(start, 8192, dir, end);
-        tr = GameBase.gi.trace(start, null, null, end, self, Defines.MASK_SHOT);
-        if ((tr.ent != null) && (tr.ent.svflags & Defines.SVF_MONSTER) != 0
+        tr = World.SV_Trace(start, null, null, end, self, Constants.MASK_SHOT);
+        if ((tr.ent != null) && (tr.ent.svflags & Constants.SVF_MONSTER) != 0
                 && (tr.ent.health > 0) && (null != tr.ent.monsterinfo.dodge)
                 && GameUtil.infront(tr.ent, self)) {
             Math3D.VectorSubtract(tr.endpos, start, v);
@@ -508,14 +503,13 @@ public class GameWeapon {
     
         Math3D.VectorMA(self.s.origin, range, dir, point);
     
-        tr = GameBase.gi.trace(self.s.origin, null, null, point, self,
-                Defines.MASK_SHOT);
+        tr = World.SV_Trace(self.s.origin, null, null, point, self, Constants.MASK_SHOT);
         if (tr.fraction < 1) {
             if (0 == tr.ent.takedamage)
                 return false;
             // if it will hit any client/monster then hit the one we wanted to
             // hit
-            if ((tr.ent.svflags & Defines.SVF_MONSTER) != 0
+            if ((tr.ent.svflags & Constants.SVF_MONSTER) != 0
                     || (tr.ent.client != null))
                 tr.ent = self.enemy;
         }
@@ -528,9 +522,9 @@ public class GameWeapon {
     
         // do the damage
         GameCombat.T_Damage(tr.ent, self, self, dir, point, Globals.vec3_origin,
-                damage, kick / 2, Defines.DAMAGE_NO_KNOCKBACK, Defines.MOD_HIT);
+                damage, kick / 2, Constants.DAMAGE_NO_KNOCKBACK, Constants.MOD_HIT);
     
-        if (0 == (tr.ent.svflags & Defines.SVF_MONSTER)
+        if (0 == (tr.ent.svflags & Constants.SVF_MONSTER)
                 && (null == tr.ent.client))
             return false;
     
@@ -562,10 +556,9 @@ public class GameWeapon {
         float u;
         float[] water_start = { 0, 0, 0 };
         boolean water = false;
-        int content_mask = Defines.MASK_SHOT | Defines.MASK_WATER;
+        int content_mask = Constants.MASK_SHOT | Constants.MASK_WATER;
     
-        tr = GameBase.gi.trace(self.s.origin, null, null, start, self,
-                Defines.MASK_SHOT);
+        tr = World.SV_Trace(self.s.origin, null, null, start, self, Constants.MASK_SHOT);
         if (!(tr.fraction < 1.0)) {
             Math3D.vectoangles(aimdir, dir);
             Math3D.AngleVectors(dir, forward, right, up);
@@ -576,42 +569,42 @@ public class GameWeapon {
             Math3D.VectorMA(end, r, right, end);
             Math3D.VectorMA(end, u, up, end);
     
-            if ((GameBase.gi.pointcontents.pointcontents(start) & Defines.MASK_WATER) != 0) {
+            if ((GameBase.pointcontents.pointcontents(start) & Constants.MASK_WATER) != 0) {
                 water = true;
                 Math3D.VectorCopy(start, water_start);
-                content_mask &= ~Defines.MASK_WATER;
+                content_mask &= ~Constants.MASK_WATER;
             }
     
-            tr = GameBase.gi.trace(start, null, null, end, self, content_mask);
+            tr = World.SV_Trace(start, null, null, end, self, content_mask);
     
             // see if we hit water
-            if ((tr.contents & Defines.MASK_WATER) != 0) {
+            if ((tr.contents & Constants.MASK_WATER) != 0) {
                 int color;
     
                 water = true;
                 Math3D.VectorCopy(tr.endpos, water_start);
     
                 if (!Math3D.VectorEquals(start, tr.endpos)) {
-                    if ((tr.contents & Defines.CONTENTS_WATER) != 0) {
+                    if ((tr.contents & Constants.CONTENTS_WATER) != 0) {
                         if (Lib.strcmp(tr.surface.name, "*brwater") == 0)
-                            color = Defines.SPLASH_BROWN_WATER;
+                            color = Constants.SPLASH_BROWN_WATER;
                         else
-                            color = Defines.SPLASH_BLUE_WATER;
-                    } else if ((tr.contents & Defines.CONTENTS_SLIME) != 0)
-                        color = Defines.SPLASH_SLIME;
-                    else if ((tr.contents & Defines.CONTENTS_LAVA) != 0)
-                        color = Defines.SPLASH_LAVA;
+                            color = Constants.SPLASH_BLUE_WATER;
+                    } else if ((tr.contents & Constants.CONTENTS_SLIME) != 0)
+                        color = Constants.SPLASH_SLIME;
+                    else if ((tr.contents & Constants.CONTENTS_LAVA) != 0)
+                        color = Constants.SPLASH_LAVA;
                     else
-                        color = Defines.SPLASH_UNKNOWN;
+                        color = Constants.SPLASH_UNKNOWN;
     
-                    if (color != Defines.SPLASH_UNKNOWN) {
-                        GameBase.gi.WriteByte(Defines.svc_temp_entity);
-                        GameBase.gi.WriteByte(Defines.TE_SPLASH);
-                        GameBase.gi.WriteByte(8);
-                        GameBase.gi.WritePosition(tr.endpos);
-                        GameBase.gi.WriteDir(tr.plane.normal);
-                        GameBase.gi.WriteByte(color);
-                        GameBase.gi.multicast(tr.endpos, Defines.MULTICAST_PVS);
+                    if (color != Constants.SPLASH_UNKNOWN) {
+                        ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+                        ServerGame.PF_WriteByte(Constants.TE_SPLASH);
+                        ServerGame.PF_WriteByte(8);
+                        ServerGame.PF_WritePos(tr.endpos);
+                        ServerGame.PF_WriteDir(tr.plane.normal);
+                        ServerGame.PF_WriteByte(color);
+                        ServerSend.SV_Multicast(tr.endpos, Constants.MULTICAST_PVS);
                     }
     
                     // change bullet's course when it enters water
@@ -626,29 +619,28 @@ public class GameWeapon {
                 }
     
                 // re-trace ignoring water this time
-                tr = GameBase.gi.trace(water_start, null, null, end, self,
-                        Defines.MASK_SHOT);
+                tr = World.SV_Trace(water_start, null, null, end, self, Constants.MASK_SHOT);
             }
         }
     
         // send gun puff / flash
-        if (!((tr.surface != null) && 0 != (tr.surface.flags & Defines.SURF_SKY))) {
+        if (!((tr.surface != null) && 0 != (tr.surface.flags & Constants.SURF_SKY))) {
             if (tr.fraction < 1.0) {
                 if (tr.ent.takedamage != 0) {
                     GameCombat.T_Damage(tr.ent, self, self, aimdir, tr.endpos,
                             tr.plane.normal, damage, kick,
-                            Defines.DAMAGE_BULLET, mod);
+                            Constants.DAMAGE_BULLET, mod);
                 } else {
                     if (!"sky".equals(tr.surface.name)) {
-                        GameBase.gi.WriteByte(Defines.svc_temp_entity);
-                        GameBase.gi.WriteByte(te_impact);
-                        GameBase.gi.WritePosition(tr.endpos);
-                        GameBase.gi.WriteDir(tr.plane.normal);
-                        GameBase.gi.multicast(tr.endpos, Defines.MULTICAST_PVS);
+                        ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+                        ServerGame.PF_WriteByte(te_impact);
+                        ServerGame.PF_WritePos(tr.endpos);
+                        ServerGame.PF_WriteDir(tr.plane.normal);
+                        ServerSend.SV_Multicast(tr.endpos, Constants.MULTICAST_PVS);
     
                         if (self.client != null)
                             PlayerWeapon.PlayerNoise(self, tr.endpos,
-                                    Defines.PNOISE_IMPACT);
+                                    Constants.PNOISE_IMPACT);
                     }
                 }
             }
@@ -662,20 +654,19 @@ public class GameWeapon {
             Math3D.VectorSubtract(tr.endpos, water_start, dir);
             Math3D.VectorNormalize(dir);
             Math3D.VectorMA(tr.endpos, -2, dir, pos);
-            if ((GameBase.gi.pointcontents.pointcontents(pos) & Defines.MASK_WATER) != 0)
+            if ((GameBase.pointcontents.pointcontents(pos) & Constants.MASK_WATER) != 0)
                 Math3D.VectorCopy(pos, tr.endpos);
             else
-                tr = GameBase.gi.trace(pos, null, null, water_start, tr.ent,
-                        Defines.MASK_WATER);
+                tr = World.SV_Trace(pos, null, null, water_start, tr.ent, Constants.MASK_WATER);
     
             Math3D.VectorAdd(water_start, tr.endpos, pos);
             Math3D.VectorScale(pos, 0.5f, pos);
     
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_BUBBLETRAIL);
-            GameBase.gi.WritePosition(water_start);
-            GameBase.gi.WritePosition(tr.endpos);
-            GameBase.gi.multicast(pos, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_BUBBLETRAIL);
+            ServerGame.PF_WritePos(water_start);
+            ServerGame.PF_WritePos(tr.endpos);
+            ServerSend.SV_Multicast(pos, Constants.MULTICAST_PVS);
         }
     }
 
@@ -687,7 +678,7 @@ public class GameWeapon {
      */
     public static void fire_bullet(Entity self, float[] start, float[] aimdir,
             int damage, int kick, int hspread, int vspread, int mod) {
-        fire_lead(self, start, aimdir, damage, kick, Defines.TE_GUNSHOT,
+        fire_lead(self, start, aimdir, damage, kick, Constants.TE_GUNSHOT,
                 hspread, vspread, mod);
     }
 
@@ -704,7 +695,7 @@ public class GameWeapon {
         int i;
     
         for (i = 0; i < count; i++)
-            fire_lead(self, start, aimdir, damage, kick, Defines.TE_SHOTGUN,
+            fire_lead(self, start, aimdir, damage, kick, Constants.TE_SHOTGUN,
                     hspread, vspread, mod);
     }
 
@@ -724,7 +715,7 @@ public class GameWeapon {
         Math3D.VectorNormalize(dir);
     
         bolt = GameUtil.G_Spawn();
-        bolt.svflags = Defines.SVF_DEADMONSTER;
+        bolt.svflags = Constants.SVF_DEADMONSTER;
         // yes, I know it looks weird that projectiles are deadmonsters
         // what this means is that when prediction is used against the object
         // (blaster/hyperblaster shots), the player won't be solid clipped
@@ -735,15 +726,14 @@ public class GameWeapon {
         Math3D.VectorCopy(start, bolt.s.old_origin);
         Math3D.vectoangles(dir, bolt.s.angles);
         Math3D.VectorScale(dir, speed, bolt.velocity);
-        bolt.movetype = Defines.MOVETYPE_FLYMISSILE;
-        bolt.clipmask = Defines.MASK_SHOT;
-        bolt.solid = Defines.SOLID_BBOX;
+        bolt.movetype = Constants.MOVETYPE_FLYMISSILE;
+        bolt.clipmask = Constants.MASK_SHOT;
+        bolt.solid = Constants.SOLID_BBOX;
         bolt.s.effects |= effect;
         Math3D.VectorClear(bolt.mins);
         Math3D.VectorClear(bolt.maxs);
-        bolt.s.modelindex = GameBase.gi
-                .modelindex("models/objects/laser/tris.md2");
-        bolt.s.sound = GameBase.gi.soundindex("misc/lasfly.wav");
+        bolt.s.modelindex = ServerInit.SV_ModelIndex("models/objects/laser/tris.md2");
+        bolt.s.sound = ServerInit.SV_SoundIndex("misc/lasfly.wav");
         bolt.owner = self;
         bolt.touch = blaster_touch;
         bolt.nextthink = GameBase.level.time + 2;
@@ -752,13 +742,12 @@ public class GameWeapon {
         bolt.classname = "bolt";
         if (hyper)
             bolt.spawnflags = 1;
-        GameBase.gi.linkentity(bolt);
+        World.SV_LinkEdict(bolt);
     
         if (self.client != null)
             check_dodge(self, bolt.s.origin, dir, speed);
     
-        tr = GameBase.gi.trace(self.s.origin, null, null, bolt.s.origin, bolt,
-                Defines.MASK_SHOT);
+        tr = World.SV_Trace(self.s.origin, null, null, bolt.s.origin, bolt, Constants.MASK_SHOT);
         if (tr.fraction < 1.0) {
             Math3D.VectorMA(bolt.s.origin, -10, dir, bolt.s.origin);
             bolt.touch.touch(bolt, tr.ent, GameBase.dummyplane, null);
@@ -783,14 +772,13 @@ public class GameWeapon {
         Math3D.VectorMA(grenade.velocity, Lib.crandom() * 10.0f, right,
                 grenade.velocity);
         Math3D.VectorSet(grenade.avelocity, 300, 300, 300);
-        grenade.movetype = Defines.MOVETYPE_BOUNCE;
-        grenade.clipmask = Defines.MASK_SHOT;
-        grenade.solid = Defines.SOLID_BBOX;
-        grenade.s.effects |= Defines.EF_GRENADE;
+        grenade.movetype = Constants.MOVETYPE_BOUNCE;
+        grenade.clipmask = Constants.MASK_SHOT;
+        grenade.solid = Constants.SOLID_BBOX;
+        grenade.s.effects |= Constants.EF_GRENADE;
         Math3D.VectorClear(grenade.mins);
         Math3D.VectorClear(grenade.maxs);
-        grenade.s.modelindex = GameBase.gi
-                .modelindex("models/objects/grenade/tris.md2");
+        grenade.s.modelindex = ServerInit.SV_ModelIndex("models/objects/grenade/tris.md2");
         grenade.owner = self;
         grenade.touch = Grenade_Touch;
         grenade.nextthink = GameBase.level.time + timer;
@@ -799,7 +787,7 @@ public class GameWeapon {
         grenade.dmg_radius = damage_radius;
         grenade.classname = "grenade";
     
-        GameBase.gi.linkentity(grenade);
+        World.SV_LinkEdict(grenade);
     }
 
     public static void fire_grenade2(Entity self, float[] start,
@@ -820,14 +808,13 @@ public class GameWeapon {
         Math3D.VectorMA(grenade.velocity, Lib.crandom() * 10.0f, right,
                 grenade.velocity);
         Math3D.VectorSet(grenade.avelocity, 300f, 300f, 300f);
-        grenade.movetype = Defines.MOVETYPE_BOUNCE;
-        grenade.clipmask = Defines.MASK_SHOT;
-        grenade.solid = Defines.SOLID_BBOX;
-        grenade.s.effects |= Defines.EF_GRENADE;
+        grenade.movetype = Constants.MOVETYPE_BOUNCE;
+        grenade.clipmask = Constants.MASK_SHOT;
+        grenade.solid = Constants.SOLID_BBOX;
+        grenade.s.effects |= Constants.EF_GRENADE;
         Math3D.VectorClear(grenade.mins);
         Math3D.VectorClear(grenade.maxs);
-        grenade.s.modelindex = GameBase.gi
-                .modelindex("models/objects/grenade2/tris.md2");
+        grenade.s.modelindex = ServerInit.SV_ModelIndex("models/objects/grenade2/tris.md2");
         grenade.owner = self;
         grenade.touch = Grenade_Touch;
         grenade.nextthink = GameBase.level.time + timer;
@@ -839,15 +826,14 @@ public class GameWeapon {
             grenade.spawnflags = 3;
         else
             grenade.spawnflags = 1;
-        grenade.s.sound = GameBase.gi.soundindex("weapons/hgrenc1b.wav");
+        grenade.s.sound = ServerInit.SV_SoundIndex("weapons/hgrenc1b.wav");
     
         if (timer <= 0.0)
             Grenade_Explode.think(grenade);
         else {
-            GameBase.gi.sound(self, Defines.CHAN_WEAPON, GameBase.gi
-                    .soundindex("weapons/hgrent1a.wav"), 1, Defines.ATTN_NORM,
-                    0);
-            GameBase.gi.linkentity(grenade);
+            ServerGame.PF_StartSound(self, Constants.CHAN_WEAPON, ServerInit.SV_SoundIndex("weapons/hgrent1a.wav"), (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            World.SV_LinkEdict(grenade);
         }
     }
 
@@ -860,14 +846,13 @@ public class GameWeapon {
         Math3D.VectorCopy(dir, rocket.movedir);
         Math3D.vectoangles(dir, rocket.s.angles);
         Math3D.VectorScale(dir, speed, rocket.velocity);
-        rocket.movetype = Defines.MOVETYPE_FLYMISSILE;
-        rocket.clipmask = Defines.MASK_SHOT;
-        rocket.solid = Defines.SOLID_BBOX;
-        rocket.s.effects |= Defines.EF_ROCKET;
+        rocket.movetype = Constants.MOVETYPE_FLYMISSILE;
+        rocket.clipmask = Constants.MASK_SHOT;
+        rocket.solid = Constants.SOLID_BBOX;
+        rocket.s.effects |= Constants.EF_ROCKET;
         Math3D.VectorClear(rocket.mins);
         Math3D.VectorClear(rocket.maxs);
-        rocket.s.modelindex = GameBase.gi
-                .modelindex("models/objects/rocket/tris.md2");
+        rocket.s.modelindex = ServerInit.SV_ModelIndex("models/objects/rocket/tris.md2");
         rocket.owner = self;
         rocket.touch = rocket_touch;
         rocket.nextthink = GameBase.level.time + 8000 / speed;
@@ -875,13 +860,13 @@ public class GameWeapon {
         rocket.dmg = damage;
         rocket.radius_dmg = radius_damage;
         rocket.dmg_radius = damage_radius;
-        rocket.s.sound = GameBase.gi.soundindex("weapons/rockfly.wav");
+        rocket.s.sound = ServerInit.SV_SoundIndex("weapons/rockfly.wav");
         rocket.classname = "rocket";
     
         if (self.client != null)
             check_dodge(self, rocket.s.origin, dir, speed);
     
-        GameBase.gi.linkentity(rocket);
+        World.SV_LinkEdict(rocket);
     }
 
     /*
@@ -902,20 +887,20 @@ public class GameWeapon {
         Math3D.VectorCopy(start, from);
         ignore = self;
         water = false;
-        mask = Defines.MASK_SHOT | Defines.CONTENTS_SLIME
-                | Defines.CONTENTS_LAVA;
+        mask = Constants.MASK_SHOT | Constants.CONTENTS_SLIME
+                | Constants.CONTENTS_LAVA;
         while (ignore != null) {
-            tr = GameBase.gi.trace(from, null, null, end, ignore, mask);
+            tr = World.SV_Trace(from, null, null, end, ignore, mask);
     
-            if ((tr.contents & (Defines.CONTENTS_SLIME | Defines.CONTENTS_LAVA)) != 0) {
-                mask &= ~(Defines.CONTENTS_SLIME | Defines.CONTENTS_LAVA);
+            if ((tr.contents & (Constants.CONTENTS_SLIME | Constants.CONTENTS_LAVA)) != 0) {
+                mask &= ~(Constants.CONTENTS_SLIME | Constants.CONTENTS_LAVA);
                 water = true;
             } else {
                 //ZOID--added so rail goes through SOLID_BBOX entities (gibs,
                 // etc)
-                if ((tr.ent.svflags & Defines.SVF_MONSTER) != 0
+                if ((tr.ent.svflags & Constants.SVF_MONSTER) != 0
                         || (tr.ent.client != null)
-                        || (tr.ent.solid == Defines.SOLID_BBOX))
+                        || (tr.ent.solid == Constants.SOLID_BBOX))
                     ignore = tr.ent;
                 else
                     ignore = null;
@@ -923,29 +908,29 @@ public class GameWeapon {
                 if ((tr.ent != self) && (tr.ent.takedamage != 0))
                     GameCombat.T_Damage(tr.ent, self, self, aimdir, tr.endpos,
                             tr.plane.normal, damage, kick, 0,
-                            Defines.MOD_RAILGUN);
+                            Constants.MOD_RAILGUN);
             }
     
             Math3D.VectorCopy(tr.endpos, from);
         }
     
         // send gun puff / flash
-        GameBase.gi.WriteByte(Defines.svc_temp_entity);
-        GameBase.gi.WriteByte(Defines.TE_RAILTRAIL);
-        GameBase.gi.WritePosition(start);
-        GameBase.gi.WritePosition(tr.endpos);
-        GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PHS);
+        ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+        ServerGame.PF_WriteByte(Constants.TE_RAILTRAIL);
+        ServerGame.PF_WritePos(start);
+        ServerGame.PF_WritePos(tr.endpos);
+        ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PHS);
         // gi.multicast (start, MULTICAST_PHS);
         if (water) {
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_RAILTRAIL);
-            GameBase.gi.WritePosition(start);
-            GameBase.gi.WritePosition(tr.endpos);
-            GameBase.gi.multicast(tr.endpos, Defines.MULTICAST_PHS);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_RAILTRAIL);
+            ServerGame.PF_WritePos(start);
+            ServerGame.PF_WritePos(tr.endpos);
+            ServerSend.SV_Multicast(tr.endpos, Constants.MULTICAST_PHS);
         }
     
         if (self.client != null)
-            PlayerWeapon.PlayerNoise(self, tr.endpos, Defines.PNOISE_IMPACT);
+            PlayerWeapon.PlayerNoise(self, tr.endpos, Constants.PNOISE_IMPACT);
     }
 
     public static void fire_bfg(Entity self, float[] start, float[] dir,
@@ -957,13 +942,13 @@ public class GameWeapon {
         Math3D.VectorCopy(dir, bfg.movedir);
         Math3D.vectoangles(dir, bfg.s.angles);
         Math3D.VectorScale(dir, speed, bfg.velocity);
-        bfg.movetype = Defines.MOVETYPE_FLYMISSILE;
-        bfg.clipmask = Defines.MASK_SHOT;
-        bfg.solid = Defines.SOLID_BBOX;
-        bfg.s.effects |= Defines.EF_BFG | Defines.EF_ANIM_ALLFAST;
+        bfg.movetype = Constants.MOVETYPE_FLYMISSILE;
+        bfg.clipmask = Constants.MASK_SHOT;
+        bfg.solid = Constants.SOLID_BBOX;
+        bfg.s.effects |= Constants.EF_BFG | Constants.EF_ANIM_ALLFAST;
         Math3D.VectorClear(bfg.mins);
         Math3D.VectorClear(bfg.maxs);
-        bfg.s.modelindex = GameBase.gi.modelindex("sprites/s_bfg1.sp2");
+        bfg.s.modelindex = ServerInit.SV_ModelIndex("sprites/s_bfg1.sp2");
         bfg.owner = self;
         bfg.touch = bfg_touch;
         bfg.nextthink = GameBase.level.time + 8000 / speed;
@@ -971,16 +956,16 @@ public class GameWeapon {
         bfg.radius_dmg = damage;
         bfg.dmg_radius = damage_radius;
         bfg.classname = "bfg blast";
-        bfg.s.sound = GameBase.gi.soundindex("weapons/bfg__l1a.wav");
+        bfg.s.sound = ServerInit.SV_SoundIndex("weapons/bfg__l1a.wav");
     
         bfg.think = bfg_think;
-        bfg.nextthink = GameBase.level.time + Defines.FRAMETIME;
+        bfg.nextthink = GameBase.level.time + Constants.FRAMETIME;
         bfg.teammaster = bfg;
         bfg.teamchain = null;
     
         if (self.client != null)
             check_dodge(self, bfg.s.origin, dir, speed);
     
-        GameBase.gi.linkentity(bfg);
+        World.SV_LinkEdict(bfg);
     }
 }

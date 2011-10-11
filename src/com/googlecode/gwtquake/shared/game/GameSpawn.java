@@ -24,10 +24,13 @@
 package com.googlecode.gwtquake.shared.game;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.ConsoleVariables;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.monsters.*;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
 import com.googlecode.gwtquake.shared.util.Lib;
 
 
@@ -143,8 +146,8 @@ public class GameSpawn {
         public String getID(){ return "SP_worldspawn"; }
 
         public boolean think(Entity ent) {
-            ent.movetype = Defines.MOVETYPE_PUSH;
-            ent.solid = Defines.SOLID_BSP;
+            ent.movetype = Constants.MOVETYPE_PUSH;
+            ent.solid = Constants.SOLID_BSP;
             ent.inuse = true;
             // since the world doesn't use G_Spawn()
             ent.s.modelindex = 1;
@@ -158,153 +161,143 @@ public class GameSpawn {
                 GameBase.level.nextmap = GameBase.st.nextmap;
             // make some data visible to the server
             if (ent.message != null && ent.message.length() > 0) {
-                GameBase.gi.configstring(Defines.CS_NAME, ent.message);
+                ServerGame.PF_Configstring(Constants.CS_NAME, ent.message);
                 GameBase.level.level_name = ent.message;
             } else
                 GameBase.level.level_name = GameBase.level.mapname;
             if (GameBase.st.sky != null && GameBase.st.sky.length() > 0)
-                GameBase.gi.configstring(Defines.CS_SKY, GameBase.st.sky);
+              ServerGame.PF_Configstring(Constants.CS_SKY, GameBase.st.sky);
             else
-                GameBase.gi.configstring(Defines.CS_SKY, "unit1_");
-            GameBase.gi.configstring(Defines.CS_SKYROTATE, ""
-                    + GameBase.st.skyrotate);
-            GameBase.gi.configstring(Defines.CS_SKYAXIS, Lib
-                    .vtos(GameBase.st.skyaxis));
-            GameBase.gi.configstring(Defines.CS_CDTRACK, "" + ent.sounds);
-            GameBase.gi.configstring(Defines.CS_MAXCLIENTS, ""
-                    + (int) (GameBase.maxclients.value));
+              ServerGame.PF_Configstring(Constants.CS_SKY, "unit1_");
+            ServerGame.PF_Configstring(Constants.CS_SKYROTATE, ""
+            + GameBase.st.skyrotate);
+            ServerGame.PF_Configstring(Constants.CS_SKYAXIS, Lib
+            .vtos(GameBase.st.skyaxis));
+            ServerGame.PF_Configstring(Constants.CS_CDTRACK, "" + ent.sounds);
+            ServerGame.PF_Configstring(Constants.CS_MAXCLIENTS, ""
+            + (int) (GameBase.maxclients.value));
             // status bar program
             if (GameBase.deathmatch.value != 0)
-                GameBase.gi.configstring(Defines.CS_STATUSBAR, "" + dm_statusbar);
+              ServerGame.PF_Configstring(Constants.CS_STATUSBAR, "" + dm_statusbar);
             else
-                GameBase.gi.configstring(Defines.CS_STATUSBAR, "" + single_statusbar);
+              ServerGame.PF_Configstring(Constants.CS_STATUSBAR, "" + single_statusbar);
             //---------------
             // help icon for statusbar
-            GameBase.gi.imageindex("i_help");
-            GameBase.level.pic_health = GameBase.gi.imageindex("i_health");
-            GameBase.gi.imageindex("help");
-            GameBase.gi.imageindex("field_3");
+            ServerInit.SV_ImageIndex("i_help");
+            GameBase.level.pic_health = ServerInit.SV_ImageIndex("i_health");
+            ServerInit.SV_ImageIndex("help");
+            ServerInit.SV_ImageIndex("field_3");
             if ("".equals(GameBase.st.gravity))
-                GameBase.gi.cvar_set("sv_gravity", "800");
+              ConsoleVariables.Set("sv_gravity", "800");
             else
-                GameBase.gi.cvar_set("sv_gravity", GameBase.st.gravity);
-            GameBase.snd_fry = GameBase.gi.soundindex("player/fry.wav");
+              ConsoleVariables.Set("sv_gravity", GameBase.st.gravity);
+            GameBase.snd_fry = ServerInit.SV_SoundIndex("player/fry.wav");
             // standing in lava / slime
             GameItems.PrecacheItem(GameItems.FindItem("Blaster"));
-            GameBase.gi.soundindex("player/lava1.wav");
-            GameBase.gi.soundindex("player/lava2.wav");
-            GameBase.gi.soundindex("misc/pc_up.wav");
-            GameBase.gi.soundindex("misc/talk1.wav");
-            GameBase.gi.soundindex("misc/udeath.wav");
+            ServerInit.SV_SoundIndex("player/lava1.wav");
+            ServerInit.SV_SoundIndex("player/lava2.wav");
+            ServerInit.SV_SoundIndex("misc/pc_up.wav");
+            ServerInit.SV_SoundIndex("misc/talk1.wav");
+            ServerInit.SV_SoundIndex("misc/udeath.wav");
             // gibs
-            GameBase.gi.soundindex("items/respawn1.wav");
+            ServerInit.SV_SoundIndex("items/respawn1.wav");
             // sexed sounds
-            GameBase.gi.soundindex("*death1.wav");
-            GameBase.gi.soundindex("*death2.wav");
-            GameBase.gi.soundindex("*death3.wav");
-            GameBase.gi.soundindex("*death4.wav");
-            GameBase.gi.soundindex("*fall1.wav");
-            GameBase.gi.soundindex("*fall2.wav");
-            GameBase.gi.soundindex("*gurp1.wav");
+            ServerInit.SV_SoundIndex("*death1.wav");
+            ServerInit.SV_SoundIndex("*death2.wav");
+            ServerInit.SV_SoundIndex("*death3.wav");
+            ServerInit.SV_SoundIndex("*death4.wav");
+            ServerInit.SV_SoundIndex("*fall1.wav");
+            ServerInit.SV_SoundIndex("*fall2.wav");
+            ServerInit.SV_SoundIndex("*gurp1.wav");
             // drowning damage
-            GameBase.gi.soundindex("*gurp2.wav");
-            GameBase.gi.soundindex("*jump1.wav");
+            ServerInit.SV_SoundIndex("*gurp2.wav");
+            ServerInit.SV_SoundIndex("*jump1.wav");
             // player jump
-            GameBase.gi.soundindex("*pain25_1.wav");
-            GameBase.gi.soundindex("*pain25_2.wav");
-            GameBase.gi.soundindex("*pain50_1.wav");
-            GameBase.gi.soundindex("*pain50_2.wav");
-            GameBase.gi.soundindex("*pain75_1.wav");
-            GameBase.gi.soundindex("*pain75_2.wav");
-            GameBase.gi.soundindex("*pain100_1.wav");
-            GameBase.gi.soundindex("*pain100_2.wav");
+            ServerInit.SV_SoundIndex("*pain25_1.wav");
+            ServerInit.SV_SoundIndex("*pain25_2.wav");
+            ServerInit.SV_SoundIndex("*pain50_1.wav");
+            ServerInit.SV_SoundIndex("*pain50_2.wav");
+            ServerInit.SV_SoundIndex("*pain75_1.wav");
+            ServerInit.SV_SoundIndex("*pain75_2.wav");
+            ServerInit.SV_SoundIndex("*pain100_1.wav");
+            ServerInit.SV_SoundIndex("*pain100_2.wav");
             // sexed models
             // THIS ORDER MUST MATCH THE DEFINES IN g_local.h
             // you can add more, max 15
-            GameBase.gi.modelindex("#w_blaster.md2");
-            GameBase.gi.modelindex("#w_shotgun.md2");
-            GameBase.gi.modelindex("#w_sshotgun.md2");
-            GameBase.gi.modelindex("#w_machinegun.md2");
-            GameBase.gi.modelindex("#w_chaingun.md2");
-            GameBase.gi.modelindex("#a_grenades.md2");
-            GameBase.gi.modelindex("#w_glauncher.md2");
-            GameBase.gi.modelindex("#w_rlauncher.md2");
-            GameBase.gi.modelindex("#w_hyperblaster.md2");
-            GameBase.gi.modelindex("#w_railgun.md2");
-            GameBase.gi.modelindex("#w_bfg.md2");
+            ServerInit.SV_ModelIndex("#w_blaster.md2");
+            ServerInit.SV_ModelIndex("#w_shotgun.md2");
+            ServerInit.SV_ModelIndex("#w_sshotgun.md2");
+            ServerInit.SV_ModelIndex("#w_machinegun.md2");
+            ServerInit.SV_ModelIndex("#w_chaingun.md2");
+            ServerInit.SV_ModelIndex("#a_grenades.md2");
+            ServerInit.SV_ModelIndex("#w_glauncher.md2");
+            ServerInit.SV_ModelIndex("#w_rlauncher.md2");
+            ServerInit.SV_ModelIndex("#w_hyperblaster.md2");
+            ServerInit.SV_ModelIndex("#w_railgun.md2");
+            ServerInit.SV_ModelIndex("#w_bfg.md2");
             //-------------------
-            GameBase.gi.soundindex("player/gasp1.wav");
+            ServerInit.SV_SoundIndex("player/gasp1.wav");
             // gasping for air
-            GameBase.gi.soundindex("player/gasp2.wav");
+            ServerInit.SV_SoundIndex("player/gasp2.wav");
             // head breaking surface, not gasping
-            GameBase.gi.soundindex("player/watr_in.wav");
+            ServerInit.SV_SoundIndex("player/watr_in.wav");
             // feet hitting water
-            GameBase.gi.soundindex("player/watr_out.wav");
+            ServerInit.SV_SoundIndex("player/watr_out.wav");
             // feet leaving water
-            GameBase.gi.soundindex("player/watr_un.wav");
+            ServerInit.SV_SoundIndex("player/watr_un.wav");
             // head going underwater
-            GameBase.gi.soundindex("player/u_breath1.wav");
-            GameBase.gi.soundindex("player/u_breath2.wav");
-            GameBase.gi.soundindex("items/pkup.wav");
+            ServerInit.SV_SoundIndex("player/u_breath1.wav");
+            ServerInit.SV_SoundIndex("player/u_breath2.wav");
+            ServerInit.SV_SoundIndex("items/pkup.wav");
             // bonus item pickup
-            GameBase.gi.soundindex("world/land.wav");
+            ServerInit.SV_SoundIndex("world/land.wav");
             // landing thud
-            GameBase.gi.soundindex("misc/h2ohit1.wav");
+            ServerInit.SV_SoundIndex("misc/h2ohit1.wav");
             // landing splash
-            GameBase.gi.soundindex("items/damage.wav");
-            GameBase.gi.soundindex("items/protect.wav");
-            GameBase.gi.soundindex("items/protect4.wav");
-            GameBase.gi.soundindex("weapons/noammo.wav");
-            GameBase.gi.soundindex("infantry/inflies1.wav");
-            GameBase.sm_meat_index = GameBase.gi
-                    .modelindex("models/objects/gibs/sm_meat/tris.md2");
-            GameBase.gi.modelindex("models/objects/gibs/arm/tris.md2");
-            GameBase.gi.modelindex("models/objects/gibs/bone/tris.md2");
-            GameBase.gi.modelindex("models/objects/gibs/bone2/tris.md2");
-            GameBase.gi.modelindex("models/objects/gibs/chest/tris.md2");
-            GameBase.gi.modelindex("models/objects/gibs/skull/tris.md2");
-            GameBase.gi.modelindex("models/objects/gibs/head2/tris.md2");
+            ServerInit.SV_SoundIndex("items/damage.wav");
+            ServerInit.SV_SoundIndex("items/protect.wav");
+            ServerInit.SV_SoundIndex("items/protect4.wav");
+            ServerInit.SV_SoundIndex("weapons/noammo.wav");
+            ServerInit.SV_SoundIndex("infantry/inflies1.wav");
+            GameBase.sm_meat_index = ServerInit.SV_ModelIndex("models/objects/gibs/sm_meat/tris.md2");
+            ServerInit.SV_ModelIndex("models/objects/gibs/arm/tris.md2");
+            ServerInit.SV_ModelIndex("models/objects/gibs/bone/tris.md2");
+            ServerInit.SV_ModelIndex("models/objects/gibs/bone2/tris.md2");
+            ServerInit.SV_ModelIndex("models/objects/gibs/chest/tris.md2");
+            ServerInit.SV_ModelIndex("models/objects/gibs/skull/tris.md2");
+            ServerInit.SV_ModelIndex("models/objects/gibs/head2/tris.md2");
             //
             // Setup light animation tables. 'a' is total darkness, 'z' is
             // doublebright.
             //
             // 0 normal
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 0, "m");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 0, "m");
             // 1 FLICKER (first variety)
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 1,
-                    "mmnmmommommnonmmonqnmmo");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 1, "mmnmmommommnonmmonqnmmo");
             // 2 SLOW STRONG PULSE
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 2,
-                    "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 2, "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
             // 3 CANDLE (first variety)
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 3,
-                    "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 3, "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
             // 4 FAST STROBE
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 4, "mamamamamama");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 4, "mamamamamama");
             // 5 GENTLE PULSE 1
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 5,
-                    "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 5, "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
             // 6 FLICKER (second variety)
-            GameBase.gi
-                    .configstring(Defines.CS_LIGHTS + 6, "nmonqnmomnmomomno");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 6, "nmonqnmomnmomomno");
             // 7 CANDLE (second variety)
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 7,
-                    "mmmaaaabcdefgmmmmaaaammmaamm");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 7, "mmmaaaabcdefgmmmmaaaammmaamm");
             // 8 CANDLE (third variety)
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 8,
-                    "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 8, "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
             // 9 SLOW STROBE (fourth variety)
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 9, "aaaaaaaazzzzzzzz");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 9, "aaaaaaaazzzzzzzz");
             // 10 FLUORESCENT FLICKER
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 10,
-                    "mmamammmmammamamaaamammma");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 10, "mmamammmmammamamaaamammma");
             // 11 SLOW PULSE NOT FADE TO BLACK
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 11,
-                    "abcdefghijklmnopqrrqponmlkjihgfedcba");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 11, "abcdefghijklmnopqrrqponmlkjihgfedcba");
             // styles 32-62 are assigned by the light program for switchable
             // lights
             // 63 testing
-            GameBase.gi.configstring(Defines.CS_LIGHTS + 63, "a");
+            ServerGame.PF_Configstring(Constants.CS_LIGHTS + 63, "a");
             return true;
         }
     };
@@ -343,8 +336,8 @@ public class GameSpawn {
             Com.Println("nextmap: " + value);
         if (!GameBase.st.set(key, value))
             if (!ent.setField(key, value))
-                GameBase.gi.dprintf("??? The key [" + key
-                        + "] is not a field\n");
+              ServerGame.PF_dprintf("??? The key [" + key
+              + "] is not a field\n");
 
     }
 
@@ -371,7 +364,7 @@ public class GameSpawn {
                 break;
 
             if (ph.isEof())
-                GameBase.gi.error("ED_ParseEntity: EOF without closing brace");
+              Com.Error(Constants.ERR_FATAL, "ED_ParseEntity: EOF without closing brace");
 
             keyname = com_token;
 
@@ -379,10 +372,10 @@ public class GameSpawn {
             com_token = Com.Parse(ph);
 
             if (ph.isEof())
-                GameBase.gi.error("ED_ParseEntity: EOF without closing brace");
+              Com.Error(Constants.ERR_FATAL, "ED_ParseEntity: EOF without closing brace");
 
             if (com_token.equals("}"))
-                GameBase.gi.error("ED_ParseEntity: closing brace without data");
+              Com.Error(Constants.ERR_FATAL, "ED_ParseEntity: closing brace without data");
 
             init = true;
             // keynames with a leading underscore are used for utility comments,
@@ -423,7 +416,7 @@ public class GameSpawn {
                 continue;
             if (e.team == null)
                 continue;
-            if ((e.flags & Defines.FL_TEAMSLAVE) != 0)
+            if ((e.flags & Constants.FL_TEAMSLAVE) != 0)
                 continue;
             chain = e;
             e.teammaster = e;
@@ -436,14 +429,14 @@ public class GameSpawn {
                     continue;
                 if (null == e2.team)
                     continue;
-                if ((e2.flags & Defines.FL_TEAMSLAVE) != 0)
+                if ((e2.flags & Constants.FL_TEAMSLAVE) != 0)
                     continue;
                 if (0 == Lib.strcmp(e.team, e2.team)) {
                     c2++;
                     chain.teamchain = e2;
                     e2.teammaster = e;
                     chain = e2;
-                    e2.flags |= Defines.FL_TEAMSLAVE;
+                    e2.flags |= Constants.FL_TEAMSLAVE;
 
                 }
             }
@@ -474,7 +467,7 @@ public class GameSpawn {
         if (skill_level > 3)
             skill_level = 3;
         if (GameBase.skill.value != skill_level)
-            GameBase.gi.cvar_forceset("skill", "" + skill_level);
+          ConsoleVariables.ForceSet("skill", "" + skill_level);
 
         PlayerClient.SaveClientData();
 
@@ -501,8 +494,8 @@ public class GameSpawn {
             if (ph.isEof())
                 break;
             if (!com_token.startsWith("{"))
-                GameBase.gi.error("ED_LoadFromFile: found " + com_token
-                        + " when expecting {");
+              Com.Error(Constants.ERR_FATAL, "ED_LoadFromFile: found " + com_token
+              + " when expecting {");
 
             if (ent == null)
                 ent = GameBase.g_edicts[0];
@@ -517,13 +510,13 @@ public class GameSpawn {
             if (0 == Lib.Q_stricmp(GameBase.level.mapname, "command")
                     && 0 == Lib.Q_stricmp(ent.classname, "trigger_once")
                     && 0 == Lib.Q_stricmp(ent.model, "*27"))
-                ent.spawnflags &= ~Defines.SPAWNFLAG_NOT_HARD;
+                ent.spawnflags &= ~Constants.SPAWNFLAG_NOT_HARD;
 
             // remove things (except the world) from different skill levels or
             // deathmatch
             if (ent != GameBase.g_edicts[0]) {
                 if (GameBase.deathmatch.value != 0) {
-                    if ((ent.spawnflags & Defines.SPAWNFLAG_NOT_DEATHMATCH) != 0) {
+                    if ((ent.spawnflags & Constants.SPAWNFLAG_NOT_DEATHMATCH) != 0) {
                         
                         Com.DPrintf("->inhibited.\n");
                         GameUtil.G_FreeEdict(ent);
@@ -535,9 +528,9 @@ public class GameSpawn {
                          * ((coop.value) && (ent.spawnflags &
                          * SPAWNFLAG_NOT_COOP)) ||
                          */
-                    ((GameBase.skill.value == 0) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_EASY) != 0)
-                            || ((GameBase.skill.value == 1) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_MEDIUM) != 0)
-                            || (((GameBase.skill.value == 2) || (GameBase.skill.value == 3)) && (ent.spawnflags & Defines.SPAWNFLAG_NOT_HARD) != 0)) {
+                    ((GameBase.skill.value == 0) && (ent.spawnflags & Constants.SPAWNFLAG_NOT_EASY) != 0)
+                            || ((GameBase.skill.value == 1) && (ent.spawnflags & Constants.SPAWNFLAG_NOT_MEDIUM) != 0)
+                            || (((GameBase.skill.value == 2) || (GameBase.skill.value == 3)) && (ent.spawnflags & Constants.SPAWNFLAG_NOT_HARD) != 0)) {
                         
                         Com.DPrintf("->inhibited.\n");
                         GameUtil.G_FreeEdict(ent);
@@ -547,10 +540,10 @@ public class GameSpawn {
                     }
                 }
 
-                ent.spawnflags &= ~(Defines.SPAWNFLAG_NOT_EASY
-                        | Defines.SPAWNFLAG_NOT_MEDIUM
-                        | Defines.SPAWNFLAG_NOT_HARD
-                        | Defines.SPAWNFLAG_NOT_COOP | Defines.SPAWNFLAG_NOT_DEATHMATCH);
+                ent.spawnflags &= ~(Constants.SPAWNFLAG_NOT_EASY
+                        | Constants.SPAWNFLAG_NOT_MEDIUM
+                        | Constants.SPAWNFLAG_NOT_HARD
+                        | Constants.SPAWNFLAG_NOT_COOP | Constants.SPAWNFLAG_NOT_DEATHMATCH);
             }
             ED_CallSpawn(ent);
             Com.DPrintf("\n");
@@ -1175,7 +1168,7 @@ public class GameSpawn {
         GameItem item;
         int i;
         if (null == ent.classname) {
-            GameBase.gi.dprintf("ED_CallSpawn: null classname\n");
+            ServerGame.PF_dprintf("ED_CallSpawn: null classname\n");
             return;
         } // check item spawn functions
         for (i = 1; i < GameBase.game.num_items; i++) {
@@ -1183,7 +1176,7 @@ public class GameSpawn {
             item = GameItemList.itemlist[i];
 
             if (item == null)
-                GameBase.gi.error("ED_CallSpawn: null item in pos " + i);
+              Com.Error(Constants.ERR_FATAL, "ED_CallSpawn: null item in pos " + i);
 
             if (item.classname == null)
                 continue;
@@ -1197,11 +1190,11 @@ public class GameSpawn {
             if (s.name.equalsIgnoreCase(ent.classname)) { // found it
 
                 if (s.spawn == null)
-                    GameBase.gi.error("ED_CallSpawn: null-spawn on index=" + i);
+                  Com.Error(Constants.ERR_FATAL, "ED_CallSpawn: null-spawn on index=" + i);
                 s.spawn.think(ent);
                 return;
             }
         }
-        GameBase.gi.dprintf(ent.classname + " doesn't have a spawn function\n");
+        ServerGame.PF_dprintf(ent.classname + " doesn't have a spawn function\n");
     }
 }

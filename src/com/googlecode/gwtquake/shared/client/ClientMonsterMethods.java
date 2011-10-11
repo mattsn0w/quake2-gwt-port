@@ -23,11 +23,14 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.server.SV;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -41,7 +44,7 @@ public final class ClientMonsterMethods {
         float[] point = { 0, 0, 0 };
         Trace trace;
 
-        if ((ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)) != 0)
+        if ((ent.flags & (Constants.FL_SWIM | Constants.FL_FLY)) != 0)
             return;
 
         if (ent.velocity[2] > 100) {
@@ -55,8 +58,7 @@ public final class ClientMonsterMethods {
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] - 0.25f;
 
-        trace = GameBase.gi.trace(ent.s.origin, ent.mins, ent.maxs, point, ent,
-                Defines.MASK_MONSTERSOLID);
+        trace = World.SV_Trace(ent.s.origin, ent.mins, ent.maxs, point, ent, Constants.MASK_MONSTERSOLID);
 
         // check steepness
         if (trace.plane.normal[2] < 0.7 && !trace.startsolid) {
@@ -102,7 +104,7 @@ public final class ClientMonsterMethods {
             for (y = 0; y <= 1; y++) {
                 start[0] = x != 0 ? maxs[0] : mins[0];
                 start[1] = y != 0 ? maxs[1] : mins[1];
-                if (GameBase.gi.pointcontents.pointcontents(start) != Defines.CONTENTS_SOLID) {
+                if (GameBase.pointcontents.pointcontents(start) != Constants.CONTENTS_SOLID) {
                     GameBase.c_no++;
                     //
                     //	   check it for real...
@@ -113,9 +115,7 @@ public final class ClientMonsterMethods {
                     start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5f;
                     start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5f;
                     stop[2] = start[2] - 2 * GameBase.STEPSIZE;
-                    trace = GameBase.gi.trace(start, Globals.vec3_origin,
-                            Globals.vec3_origin, stop, ent,
-                            Defines.MASK_MONSTERSOLID);
+                    trace = World.SV_Trace(start, Globals.vec3_origin, Globals.vec3_origin, stop, ent, Constants.MASK_MONSTERSOLID);
 
                     if (trace.fraction == 1.0)
                         return false;
@@ -127,9 +127,7 @@ public final class ClientMonsterMethods {
                             start[0] = stop[0] = x != 0 ? maxs[0] : mins[0];
                             start[1] = stop[1] = y != 0 ? maxs[1] : mins[1];
 
-                            trace = GameBase.gi.trace(start,
-                                    Globals.vec3_origin, Globals.vec3_origin,
-                                    stop, ent, Defines.MASK_MONSTERSOLID);
+                            trace = World.SV_Trace(start, Globals.vec3_origin, Globals.vec3_origin, stop, ent, Constants.MASK_MONSTERSOLID);
 
                             if (trace.fraction != 1.0
                                     && trace.endpos[2] > bottom)
@@ -157,7 +155,7 @@ public final class ClientMonsterMethods {
         float move;
         float speed;
 
-        current = Math3D.anglemod(ent.s.angles[Defines.YAW]);
+        current = Math3D.anglemod(ent.s.angles[Constants.YAW]);
         ideal = ent.ideal_yaw;
 
         if (current == ideal)
@@ -180,7 +178,7 @@ public final class ClientMonsterMethods {
                 move = -speed;
         }
 
-        ent.s.angles[Defines.YAW] = Math3D.anglemod(current + move);
+        ent.s.angles[Constants.YAW] = Math3D.anglemod(current + move);
     }
 
     /**
@@ -190,7 +188,7 @@ public final class ClientMonsterMethods {
         Entity goal = ent.goalentity;
 
         if (ent.groundentity == null
-                && (ent.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == 0)
+                && (ent.flags & (Constants.FL_FLY | Constants.FL_SWIM)) == 0)
             return;
 
         //	   if the next step hits the enemy, return immediately
@@ -212,7 +210,7 @@ public final class ClientMonsterMethods {
         float[] move = { 0, 0, 0 };
 
         if ((ent.groundentity == null)
-                && (ent.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == 0)
+                && (ent.flags & (Constants.FL_FLY | Constants.FL_SWIM)) == 0)
             return false;
 
         yaw = (float) (yaw * Math.PI * 2 / 360);
@@ -234,9 +232,9 @@ public final class ClientMonsterMethods {
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] + ent.mins[2] + 1;
-        cont = GameBase.gi.pointcontents.pointcontents(point);
+        cont = GameBase.pointcontents.pointcontents(point);
 
-        if (0 == (cont & Defines.MASK_WATER)) {
+        if (0 == (cont & Constants.MASK_WATER)) {
             ent.waterlevel = 0;
             ent.watertype = 0;
             return;
@@ -245,14 +243,14 @@ public final class ClientMonsterMethods {
         ent.watertype = cont;
         ent.waterlevel = 1;
         point[2] += 26;
-        cont = GameBase.gi.pointcontents.pointcontents(point);
-        if (0 == (cont & Defines.MASK_WATER))
+        cont = GameBase.pointcontents.pointcontents(point);
+        if (0 == (cont & Constants.MASK_WATER))
             return;
 
         ent.waterlevel = 2;
         point[2] += 22;
-        cont = GameBase.gi.pointcontents.pointcontents(point);
-        if (0 != (cont & Defines.MASK_WATER))
+        cont = GameBase.pointcontents.pointcontents(point);
+        if (0 != (cont & Constants.MASK_WATER))
             ent.waterlevel = 3;
     }
 
@@ -260,7 +258,7 @@ public final class ClientMonsterMethods {
         int dmg;
 
         if (ent.health > 0) {
-            if (0 == (ent.flags & Defines.FL_SWIM)) {
+            if (0 == (ent.flags & Constants.FL_SWIM)) {
                 if (ent.waterlevel < 3) {
                     ent.air_finished = GameBase.level.time + 12;
                 } else if (ent.air_finished < GameBase.level.time) {
@@ -273,7 +271,7 @@ public final class ClientMonsterMethods {
                         GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                                 GameBase.g_edicts[0], Globals.vec3_origin,
                                 ent.s.origin, Globals.vec3_origin, dmg, 0,
-                                Defines.DAMAGE_NO_ARMOR, Defines.MOD_WATER);
+                                Constants.DAMAGE_NO_ARMOR, Constants.MOD_WATER);
                         ent.pain_debounce_time = GameBase.level.time + 1;
                     }
                 }
@@ -290,7 +288,7 @@ public final class ClientMonsterMethods {
                         GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                                 GameBase.g_edicts[0], Globals.vec3_origin,
                                 ent.s.origin, Globals.vec3_origin, dmg, 0,
-                                Defines.DAMAGE_NO_ARMOR, Defines.MOD_WATER);
+                                Constants.DAMAGE_NO_ARMOR, Constants.MOD_WATER);
                         ent.pain_debounce_time = GameBase.level.time + 1;
                     }
                 }
@@ -298,58 +296,53 @@ public final class ClientMonsterMethods {
         }
 
         if (ent.waterlevel == 0) {
-            if ((ent.flags & Defines.FL_INWATER) != 0) {
-                GameBase.gi.sound(ent, Defines.CHAN_BODY, GameBase.gi
-                        .soundindex("player/watr_out.wav"), 1,
-                        Defines.ATTN_NORM, 0);
-                ent.flags &= ~Defines.FL_INWATER;
+            if ((ent.flags & Constants.FL_INWATER) != 0) {
+                ServerGame.PF_StartSound(ent, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/watr_out.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
+                ent.flags &= ~Constants.FL_INWATER;
             }
             return;
         }
 
-        if ((ent.watertype & Defines.CONTENTS_LAVA) != 0
-                && 0 == (ent.flags & Defines.FL_IMMUNE_LAVA)) {
+        if ((ent.watertype & Constants.CONTENTS_LAVA) != 0
+                && 0 == (ent.flags & Constants.FL_IMMUNE_LAVA)) {
             if (ent.damage_debounce_time < GameBase.level.time) {
                 ent.damage_debounce_time = GameBase.level.time + 0.2f;
                 GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                         GameBase.g_edicts[0], Globals.vec3_origin,
                         ent.s.origin, Globals.vec3_origin, 10 * ent.waterlevel,
-                        0, 0, Defines.MOD_LAVA);
+                        0, 0, Constants.MOD_LAVA);
             }
         }
-        if ((ent.watertype & Defines.CONTENTS_SLIME) != 0
-                && 0 == (ent.flags & Defines.FL_IMMUNE_SLIME)) {
+        if ((ent.watertype & Constants.CONTENTS_SLIME) != 0
+                && 0 == (ent.flags & Constants.FL_IMMUNE_SLIME)) {
             if (ent.damage_debounce_time < GameBase.level.time) {
                 ent.damage_debounce_time = GameBase.level.time + 1;
                 GameCombat.T_Damage(ent, GameBase.g_edicts[0],
                         GameBase.g_edicts[0], Globals.vec3_origin,
                         ent.s.origin, Globals.vec3_origin, 4 * ent.waterlevel,
-                        0, 0, Defines.MOD_SLIME);
+                        0, 0, Constants.MOD_SLIME);
             }
         }
 
-        if (0 == (ent.flags & Defines.FL_INWATER)) {
-            if (0 == (ent.svflags & Defines.SVF_DEADMONSTER)) {
-                if ((ent.watertype & Defines.CONTENTS_LAVA) != 0)
+        if (0 == (ent.flags & Constants.FL_INWATER)) {
+            if (0 == (ent.svflags & Constants.SVF_DEADMONSTER)) {
+                if ((ent.watertype & Constants.CONTENTS_LAVA) != 0)
                     if (Globals.rnd.nextFloat() <= 0.5)
-                        GameBase.gi.sound(ent, Defines.CHAN_BODY, GameBase.gi
-                                .soundindex("player/lava1.wav"), 1,
-                                Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(ent, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/lava1.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
                     else
-                        GameBase.gi.sound(ent, Defines.CHAN_BODY, GameBase.gi
-                                .soundindex("player/lava2.wav"), 1,
-                                Defines.ATTN_NORM, 0);
-                else if ((ent.watertype & Defines.CONTENTS_SLIME) != 0)
-                    GameBase.gi.sound(ent, Defines.CHAN_BODY, GameBase.gi
-                            .soundindex("player/watr_in.wav"), 1,
-                            Defines.ATTN_NORM, 0);
-                else if ((ent.watertype & Defines.CONTENTS_WATER) != 0)
-                    GameBase.gi.sound(ent, Defines.CHAN_BODY, GameBase.gi
-                            .soundindex("player/watr_in.wav"), 1,
-                            Defines.ATTN_NORM, 0);
+                      ServerGame.PF_StartSound(ent, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/lava2.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                      (float) 0);
+                else if ((ent.watertype & Constants.CONTENTS_SLIME) != 0)
+                  ServerGame.PF_StartSound(ent, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/watr_in.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
+                else if ((ent.watertype & Constants.CONTENTS_WATER) != 0)
+                  ServerGame.PF_StartSound(ent, Constants.CHAN_BODY, ServerInit.SV_SoundIndex("player/watr_in.wav"), (float) 1, (float) Constants.ATTN_NORM,
+                  (float) 0);
             }
 
-            ent.flags |= Defines.FL_INWATER;
+            ent.flags |= Constants.FL_INWATER;
             ent.damage_debounce_time = 0;
         }
     }
@@ -364,15 +357,14 @@ public final class ClientMonsterMethods {
             Math3D.VectorCopy(ent.s.origin, end);
             end[2] -= 256;
 
-            trace = GameBase.gi.trace(ent.s.origin, ent.mins, ent.maxs, end,
-                    ent, Defines.MASK_MONSTERSOLID);
+            trace = World.SV_Trace(ent.s.origin, ent.mins, ent.maxs, end, ent, Constants.MASK_MONSTERSOLID);
 
             if (trace.fraction == 1 || trace.allsolid)
                 return true;
 
             Math3D.VectorCopy(trace.endpos, ent.s.origin);
 
-            GameBase.gi.linkentity(ent);
+            World.SV_LinkEdict(ent);
             ClientMonsterMethods.M_CheckGround(ent);
             M_CatagorizePosition(ent);
             return true;
@@ -380,23 +372,23 @@ public final class ClientMonsterMethods {
     };
 
     public static void M_SetEffects(Entity ent) {
-        ent.s.effects &= ~(Defines.EF_COLOR_SHELL | Defines.EF_POWERSCREEN);
-        ent.s.renderfx &= ~(Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE);
+        ent.s.effects &= ~(Constants.EF_COLOR_SHELL | Constants.EF_POWERSCREEN);
+        ent.s.renderfx &= ~(Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE);
 
-        if ((ent.monsterinfo.aiflags & Defines.AI_RESURRECTING) != 0) {
-            ent.s.effects |= Defines.EF_COLOR_SHELL;
-            ent.s.renderfx |= Defines.RF_SHELL_RED;
+        if ((ent.monsterinfo.aiflags & Constants.AI_RESURRECTING) != 0) {
+            ent.s.effects |= Constants.EF_COLOR_SHELL;
+            ent.s.renderfx |= Constants.RF_SHELL_RED;
         }
 
         if (ent.health <= 0)
             return;
 
         if (ent.powerarmor_time > GameBase.level.time) {
-            if (ent.monsterinfo.power_armor_type == Defines.POWER_ARMOR_SCREEN) {
-                ent.s.effects |= Defines.EF_POWERSCREEN;
-            } else if (ent.monsterinfo.power_armor_type == Defines.POWER_ARMOR_SHIELD) {
-                ent.s.effects |= Defines.EF_COLOR_SHELL;
-                ent.s.renderfx |= Defines.RF_SHELL_GREEN;
+            if (ent.monsterinfo.power_armor_type == Constants.POWER_ARMOR_SCREEN) {
+                ent.s.effects |= Constants.EF_POWERSCREEN;
+            } else if (ent.monsterinfo.power_armor_type == Constants.POWER_ARMOR_SHIELD) {
+                ent.s.effects |= Constants.EF_COLOR_SHELL;
+                ent.s.renderfx |= Constants.RF_SHELL_GREEN;
             }
         }
     };
@@ -407,7 +399,7 @@ public final class ClientMonsterMethods {
         int index;
 
         move = self.monsterinfo.currentmove;
-        self.nextthink = GameBase.level.time + Defines.FRAMETIME;
+        self.nextthink = GameBase.level.time + Constants.FRAMETIME;
 
         if ((self.monsterinfo.nextframe != 0)
                 && (self.monsterinfo.nextframe >= move.firstframe)
@@ -423,16 +415,16 @@ public final class ClientMonsterMethods {
                     move = self.monsterinfo.currentmove;
 
                     // check for death
-                    if ((self.svflags & Defines.SVF_DEADMONSTER) != 0)
+                    if ((self.svflags & Constants.SVF_DEADMONSTER) != 0)
                         return;
                 }
             }
 
             if (self.s.frame < move.firstframe || self.s.frame > move.lastframe) {
-                self.monsterinfo.aiflags &= ~Defines.AI_HOLD_FRAME;
+                self.monsterinfo.aiflags &= ~Constants.AI_HOLD_FRAME;
                 self.s.frame = move.firstframe;
             } else {
-                if (0 == (self.monsterinfo.aiflags & Defines.AI_HOLD_FRAME)) {
+                if (0 == (self.monsterinfo.aiflags & Constants.AI_HOLD_FRAME)) {
                     self.s.frame++;
                     if (self.s.frame > move.lastframe)
                         self.s.frame = move.firstframe;
@@ -442,7 +434,7 @@ public final class ClientMonsterMethods {
 
         index = self.s.frame - move.firstframe;
         if (move.frame[index].ai != null)
-            if (0 == (self.monsterinfo.aiflags & Defines.AI_HOLD_FRAME))
+            if (0 == (self.monsterinfo.aiflags & Constants.AI_HOLD_FRAME))
                 move.frame[index].ai.ai(self, move.frame[index].dist
                         * self.monsterinfo.scale);
             else
@@ -456,7 +448,7 @@ public final class ClientMonsterMethods {
     public static EntityThinkAdapter M_FliesOff = new EntityThinkAdapter() {
         public String getID() { return "m_fliesoff";}
         public boolean think(Entity self) {
-            self.s.effects &= ~Defines.EF_FLIES;
+            self.s.effects &= ~Constants.EF_FLIES;
             self.s.sound = 0;
             return true;
         }
@@ -469,8 +461,8 @@ public final class ClientMonsterMethods {
             if (self.waterlevel != 0)
                 return true;
 
-            self.s.effects |= Defines.EF_FLIES;
-            self.s.sound = GameBase.gi.soundindex("infantry/inflies1.wav");
+            self.s.effects |= Constants.EF_FLIES;
+            self.s.sound = ServerInit.SV_SoundIndex("infantry/inflies1.wav");
             self.think = M_FliesOff;
             self.nextthink = GameBase.level.time + 60;
             return true;

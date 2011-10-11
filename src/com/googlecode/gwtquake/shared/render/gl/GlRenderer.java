@@ -27,7 +27,7 @@ import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.client.RendererState;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
 import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.render.RendererModel;
@@ -54,7 +54,7 @@ public abstract class GlRenderer extends Misc {
 		// post init		
 		boolean ok = R_Init2();
 		if (!ok) {
-			Window.Printf(Defines.PRINT_ALL, "Missing multi-texturing for LWJGL renderer\n");
+			Window.Printf(Constants.PRINT_ALL, "Missing multi-texturing for LWJGL renderer\n");
 		}
 		return ok;
 	}
@@ -176,7 +176,7 @@ public abstract class GlRenderer extends Misc {
 	}
 
 	public final int apiVersion() {
-		return Defines.API_VERSION;
+		return Constants.API_VERSION;
 	}
 
 	public boolean showVideo(String name) {

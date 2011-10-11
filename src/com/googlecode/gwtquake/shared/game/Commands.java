@@ -91,7 +91,7 @@ public final class Commands {
             }
 
             String s = Commands.Argv(1);
-            if (s.length() > Defines.MAX_ALIAS_NAME) {
+            if (s.length() > Constants.MAX_ALIAS_NAME) {
                 Com.Printf("Alias name is too long\n");
                 return;
             }
@@ -135,7 +135,7 @@ public final class Commands {
 
     public static int cmd_argc;
 
-    public static String[] cmd_argv = new String[Defines.MAX_STRING_TOKENS];
+    public static String[] cmd_argv = new String[Constants.MAX_STRING_TOKENS];
 
     public static String cmd_args;
 
@@ -153,17 +153,17 @@ public final class Commands {
         Commands.addCommand("wait", Wait_f);
     }
 
-    private static char expanded[] = new char[Defines.MAX_STRING_CHARS];
+    private static char expanded[] = new char[Constants.MAX_STRING_CHARS];
 
-    private static char temporary[] = new char[Defines.MAX_STRING_CHARS];
+    private static char temporary[] = new char[Constants.MAX_STRING_CHARS];
 
     public static Comparator PlayerSort = new Comparator() {
         public int compare(Object o1, Object o2) {
             int anum = ((Integer) o1).intValue();
             int bnum = ((Integer) o2).intValue();
     
-            int anum1 = GameBase.game.clients[anum].ps.stats[Defines.STAT_FRAGS];
-            int bnum1 = GameBase.game.clients[bnum].ps.stats[Defines.STAT_FRAGS];
+            int anum1 = GameBase.game.clients[anum].ps.stats[Constants.STAT_FRAGS];
+            int bnum1 = GameBase.game.clients[bnum].ps.stats[Constants.STAT_FRAGS];
     
             if (anum1 < bnum1)
                 return -1;
@@ -187,8 +187,8 @@ public final class Commands {
 
         scan = text;
 
-        if (len >= Defines.MAX_STRING_CHARS) {
-            Com.Printf("Line exceeded " + Defines.MAX_STRING_CHARS
+        if (len >= Constants.MAX_STRING_CHARS) {
+            Com.Printf("Line exceeded " + Constants.MAX_STRING_CHARS
                     + " chars, discarded.\n");
             return null;
         }
@@ -218,8 +218,8 @@ public final class Commands {
 
             len += j;
 
-            if (len >= Defines.MAX_STRING_CHARS) {
-                Com.Printf("Expanded line exceeded " + Defines.MAX_STRING_CHARS
+            if (len >= Constants.MAX_STRING_CHARS) {
+                Com.Printf("Expanded line exceeded " + Constants.MAX_STRING_CHARS
                         + " chars, discarded.\n");
                 return null;
             }
@@ -294,7 +294,7 @@ public final class Commands {
             if (ph.data == null)
                 return;
 
-            if (cmd_argc < Defines.MAX_STRING_TOKENS) {
+            if (cmd_argc < Constants.MAX_STRING_TOKENS) {
                 cmd_argv[cmd_argc] = com_token;
                 cmd_argc++;
             }
@@ -474,7 +474,7 @@ public final class Commands {
                 it = GameItemList.itemlist[i];
                 if (null == it.pickup)
                     continue;
-                if (0 == (it.flags & Defines.IT_WEAPON))
+                if (0 == (it.flags & Constants.IT_WEAPON))
                     continue;
                 ent.client.pers.inventory[i] += 1;
             }
@@ -487,7 +487,7 @@ public final class Commands {
                 it = GameItemList.itemlist[i];
                 if (null == it.pickup)
                     continue;
-                if (0 == (it.flags & Defines.IT_AMMO))
+                if (0 == (it.flags & Constants.IT_AMMO))
                     continue;
                 GameItems.Add_Ammo(ent, it, 1000);
             }
@@ -530,7 +530,7 @@ public final class Commands {
                 it = GameItemList.itemlist[i];
                 if (it.pickup != null)
                     continue;
-                if ((it.flags & (Defines.IT_ARMOR | Defines.IT_WEAPON | Defines.IT_AMMO)) != 0)
+                if ((it.flags & (Constants.IT_ARMOR | Constants.IT_WEAPON | Constants.IT_AMMO)) != 0)
                     continue;
                 ent.client.pers.inventory[i] = 1;
             }
@@ -542,19 +542,19 @@ public final class Commands {
             name = Commands.Argv(1);
             it = GameItems.FindItem(name);
             if (it == null) {
-                ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH, "unknown item\n");
+                ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, "unknown item\n");
                 return;
             }
         }
 
         if (it.pickup == null) {
-            ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH, "non-pickup item\n");
+            ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, "non-pickup item\n");
             return;
         }
 
         index = GameItems.ITEM_INDEX(it);
 
-        if ((it.flags & Defines.IT_AMMO) != 0) {
+        if ((it.flags & Constants.IT_AMMO) != 0) {
             if (Commands.Argc() == 3)
                 ent.client.pers.inventory[index] = Lib.atoi(Commands.Argv(2));
             else
@@ -585,13 +585,13 @@ public final class Commands {
             return;
         }
 
-        ent.flags ^= Defines.FL_GODMODE;
-        if (0 == (ent.flags & Defines.FL_GODMODE))
+        ent.flags ^= Constants.FL_GODMODE;
+        if (0 == (ent.flags & Constants.FL_GODMODE))
             msg = "godmode OFF\n";
         else
             msg = "godmode ON\n";
 
-        ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH, msg);
+        ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH, msg);
     }
 
     /** 
@@ -610,8 +610,8 @@ public final class Commands {
             return;
         }
 
-        ent.flags ^= Defines.FL_NOTARGET;
-        if (0 == (ent.flags & Defines.FL_NOTARGET))
+        ent.flags ^= Constants.FL_NOTARGET;
+        if (0 == (ent.flags & Constants.FL_NOTARGET))
             msg = "notarget OFF\n";
         else
             msg = "notarget ON\n";
@@ -633,11 +633,11 @@ public final class Commands {
             return;
         }
 
-        if (ent.movetype == Defines.MOVETYPE_NOCLIP) {
-            ent.movetype = Defines.MOVETYPE_WALK;
+        if (ent.movetype == Constants.MOVETYPE_NOCLIP) {
+            ent.movetype = Constants.MOVETYPE_WALK;
             msg = "noclip OFF\n";
         } else {
-            ent.movetype = Defines.MOVETYPE_NOCLIP;
+            ent.movetype = Constants.MOVETYPE_NOCLIP;
             msg = "noclip ON\n";
         }
 
@@ -692,7 +692,7 @@ public final class Commands {
             return;
         }
         if (it.drop == null) {
-            ServerGame.PF_cprintf(ent, Defines.PRINT_HIGH,
+            ServerGame.PF_cprintf(ent, Constants.PRINT_HIGH,
                     "Item is not dropable.\n");
             return;
         }
@@ -724,11 +724,11 @@ public final class Commands {
 
         cl.showinventory = true;
 
-        GameBase.gi.WriteByte(Defines.svc_inventory);
-        for (i = 0; i < Defines.MAX_ITEMS; i++) {
-            GameBase.gi.WriteShort(cl.pers.inventory[i]);
+        ServerGame.PF_WriteByte(Constants.svc_inventory);
+        for (i = 0; i < Constants.MAX_ITEMS; i++) {
+            ServerGame.PF_WriteShort(cl.pers.inventory[i]);
         }
-        GameBase.gi.unicast(ent, true);
+        ServerGame.PF_Unicast(ent, true);
     }
 
     /**
@@ -769,8 +769,8 @@ public final class Commands {
         selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         // scan for the next valid one
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (selected_weapon + i) % Defines.MAX_ITEMS;
+        for (i = 1; i <= Constants.MAX_ITEMS; i++) {
+            index = (selected_weapon + i) % Constants.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
                 continue;
 
@@ -778,7 +778,7 @@ public final class Commands {
             if (it.use == null)
                 continue;
 
-            if (0 == (it.flags & Defines.IT_WEAPON))
+            if (0 == (it.flags & Constants.IT_WEAPON))
                 continue;
             it.use.use(ent, it);
             if (cl.pers.weapon == it)
@@ -803,9 +803,9 @@ public final class Commands {
         selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         // scan for the next valid one
-        for (i = 1; i <= Defines.MAX_ITEMS; i++) {
-            index = (selected_weapon + Defines.MAX_ITEMS - i)
-                    % Defines.MAX_ITEMS;
+        for (i = 1; i <= Constants.MAX_ITEMS; i++) {
+            index = (selected_weapon + Constants.MAX_ITEMS - i)
+                    % Constants.MAX_ITEMS;
             //bugfix rst
             if (index == 0)
                 index++;
@@ -814,7 +814,7 @@ public final class Commands {
             it = GameItemList.itemlist[index];
             if (null == it.use)
                 continue;
-            if (0 == (it.flags & Defines.IT_WEAPON))
+            if (0 == (it.flags & Constants.IT_WEAPON))
                 continue;
             it.use.use(ent, it);
             if (cl.pers.weapon == it)
@@ -841,7 +841,7 @@ public final class Commands {
         it = GameItemList.itemlist[index];
         if (null == it.use)
             return;
-        if (0 == (it.flags & Defines.IT_WEAPON))
+        if (0 == (it.flags & Constants.IT_WEAPON))
             return;
         it.use.use(ent, it);
     }
@@ -922,9 +922,9 @@ public final class Commands {
     public static void Kill_f(Entity ent) {
         if ((GameBase.level.time - ent.client.respawn_time) < 5)
             return;
-        ent.flags &= ~Defines.FL_GODMODE;
+        ent.flags &= ~Constants.FL_GODMODE;
         ent.health = 0;
-        GameBase.meansOfDeath = Defines.MOD_SUICIDE;
+        GameBase.meansOfDeath = Constants.MOD_SUICIDE;
         PlayerClient.player_die.die(ent, ent, ent, 100000, Globals.vec3_origin);
     }
 
@@ -963,7 +963,7 @@ public final class Commands {
         large = "";
 
         for (i = 0; i < count; i++) {
-            small = GameBase.game.clients[index[i].intValue()].ps.stats[Defines.STAT_FRAGS]
+            small = GameBase.game.clients[index[i].intValue()].ps.stats[Constants.STAT_FRAGS]
                     + " "
                     + GameBase.game.clients[index[i].intValue()].pers.netname
                     + "\n";
@@ -991,10 +991,10 @@ public final class Commands {
         if ((ent.client.ps.pmove.pm_flags & PlayerMove.PMF_DUCKED) != 0)
             return;
 
-        if (ent.client.anim_priority > Defines.ANIM_WAVE)
+        if (ent.client.anim_priority > Constants.ANIM_WAVE)
             return;
 
-        ent.client.anim_priority = Defines.ANIM_WAVE;
+        ent.client.anim_priority = Constants.ANIM_WAVE;
 
         switch (i) {
         case 0:
@@ -1046,7 +1046,7 @@ public final class Commands {
         if (Commands.Argc() < 2 && !arg0)
             return;
 
-        if (0 == ((int) (GameBase.dmflags.value) & (Defines.DF_MODELTEAMS | Defines.DF_SKINTEAMS)))
+        if (0 == ((int) (GameBase.dmflags.value) & (Constants.DF_MODELTEAMS | Constants.DF_SKINTEAMS)))
             team = false;
 
         if (team)
@@ -1087,7 +1087,7 @@ public final class Commands {
             if (cl.flood_when[i] != 0
                     && GameBase.level.time - cl.flood_when[i] < GameBase.flood_persecond.value) {
                 cl.flood_locktill = GameBase.level.time + GameBase.flood_waitdelay.value;
-                ServerGame.PF_cprintf(ent, Defines.PRINT_CHAT,
+                ServerGame.PF_cprintf(ent, Constants.PRINT_CHAT,
                         "Flood protection:  You can't talk for "
                                 + (int) GameBase.flood_waitdelay.value
                                 + " seconds.\n");
@@ -1099,7 +1099,7 @@ public final class Commands {
         }
 
         if (Globals.dedicated.value != 0)
-            ServerGame.PF_cprintf(null, Defines.PRINT_CHAT, "" + text + "");
+            ServerGame.PF_cprintf(null, Constants.PRINT_CHAT, "" + text + "");
 
         for (j = 1; j <= GameBase.game.maxclients; j++) {
             other = GameBase.g_edicts[j];
@@ -1111,7 +1111,7 @@ public final class Commands {
                 if (!GameUtil.OnSameTeam(ent, other))
                     continue;
             }
-            ServerGame.PF_cprintf(other, Defines.PRINT_CHAT, "" + text + "");
+            ServerGame.PF_cprintf(other, Constants.PRINT_CHAT, "" + text + "");
         }
 
     }
@@ -1161,13 +1161,13 @@ public final class Commands {
         String cmd;
 
         cmd = Commands.Argv(0);
-        if (Globals.cls.state <= Defines.ca_connected || cmd.charAt(0) == '-'
+        if (Globals.cls.state <= Constants.ca_connected || cmd.charAt(0) == '-'
                 || cmd.charAt(0) == '+') {
             Com.Printf("Unknown command \"" + cmd + "\"\n");
             return;
         }
 
-        Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+        Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
         Buffer.Print(Globals.cls.netchan.message, cmd);
         if (Commands.Argc() > 1) {
             Buffer.Print(Globals.cls.netchan.message, " ");
@@ -1201,7 +1201,7 @@ public final class Commands {
         if (ent.client == null)
             return; // not fully in game yet
     
-        cmd = GameBase.gi.argv(0).toLowerCase();
+        cmd = Commands.Argv(0).toLowerCase();
     
         if (cmd.equals("players")) {
             Players_f(ent);
@@ -1246,13 +1246,13 @@ public final class Commands {
         else if (cmd.equals("invprev"))
             GameItems.SelectPrevItem(ent, -1);
         else if (cmd.equals("invnextw"))
-            GameItems.SelectNextItem(ent, Defines.IT_WEAPON);
+            GameItems.SelectNextItem(ent, Constants.IT_WEAPON);
         else if (cmd.equals("invprevw"))
-            GameItems.SelectPrevItem(ent, Defines.IT_WEAPON);
+            GameItems.SelectPrevItem(ent, Constants.IT_WEAPON);
         else if (cmd.equals("invnextp"))
-            GameItems.SelectNextItem(ent, Defines.IT_POWERUP);
+            GameItems.SelectNextItem(ent, Constants.IT_POWERUP);
         else if (cmd.equals("invprevp"))
-            GameItems.SelectPrevItem(ent, Defines.IT_POWERUP);
+            GameItems.SelectPrevItem(ent, Constants.IT_POWERUP);
         else if (cmd.equals("invuse"))
             InvUse_f(ent);
         else if (cmd.equals("invdrop"))

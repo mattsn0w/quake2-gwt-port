@@ -23,11 +23,15 @@
 */
 package com.googlecode.gwtquake.shared.game.monsters;
 
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntityDieAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityPainAdapter;
+import com.googlecode.gwtquake.shared.server.ServerGame;
+import com.googlecode.gwtquake.shared.server.ServerInit;
+import com.googlecode.gwtquake.shared.server.ServerSend;
+import com.googlecode.gwtquake.shared.server.World;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -563,8 +567,8 @@ public class MonsterSupertank {
     static EntityThinkAdapter TreadSound = new EntityThinkAdapter() {
     	public String getID(){ return "TreadSound"; }
         public boolean think(Entity self) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, tread_sound, 1,
-                    Defines.ATTN_NORM, 0);
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, tread_sound, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
             return true;
         }
     };
@@ -573,11 +577,11 @@ public class MonsterSupertank {
     	public String getID(){ return "supertank_search"; }
         public boolean think(Entity self) {
             if (Lib.random() < 0.5)
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search1, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search1, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             else
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_search2, 1,
-                        Defines.ATTN_NORM, 0);
+              ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_search2, (float) 1, (float) Constants.ATTN_NORM,
+              (float) 0);
             return true;
         }
     };
@@ -728,7 +732,7 @@ public class MonsterSupertank {
     static EntityThinkAdapter supertank_run = new EntityThinkAdapter() {
     	public String getID(){ return "supertank_run"; }
         public boolean think(Entity self) {
-            if ((self.monsterinfo.aiflags & Defines.AI_STAND_GROUND) != 0)
+            if ((self.monsterinfo.aiflags & Constants.AI_STAND_GROUND) != 0)
                 self.monsterinfo.currentmove = supertank_move_stand;
             else
                 self.monsterinfo.currentmove = supertank_move_run;
@@ -744,10 +748,10 @@ public class MonsterSupertank {
         public boolean think(Entity self) {
             Math3D.VectorSet(self.mins, -60, -60, 0);
             Math3D.VectorSet(self.maxs, 60, 60, 72);
-            self.movetype = Defines.MOVETYPE_TOSS;
-            self.svflags |= Defines.SVF_DEADMONSTER;
+            self.movetype = Constants.MOVETYPE_TOSS;
+            self.svflags |= Constants.SVF_DEADMONSTER;
             self.nextthink = 0;
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
             return true;
         }
     };
@@ -762,12 +766,12 @@ public class MonsterSupertank {
             int flash_number;
 
             if (self.s.frame == FRAME_attak2_8)
-                flash_number = Defines.MZ2_SUPERTANK_ROCKET_1;
+                flash_number = Constants.MZ2_SUPERTANK_ROCKET_1;
             else if (self.s.frame == FRAME_attak2_11)
-                flash_number = Defines.MZ2_SUPERTANK_ROCKET_2;
+                flash_number = Constants.MZ2_SUPERTANK_ROCKET_2;
             else
                 // (self.s.frame == FRAME_attak2_14)
-                flash_number = Defines.MZ2_SUPERTANK_ROCKET_3;
+                flash_number = Constants.MZ2_SUPERTANK_ROCKET_3;
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
             Math3D.G_ProjectSource(self.s.origin,
@@ -795,7 +799,7 @@ public class MonsterSupertank {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
             int flash_number;
 
-            flash_number = Defines.MZ2_SUPERTANK_MACHINEGUN_1
+            flash_number = Constants.MZ2_SUPERTANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak1_1);
 
             //FIXME!!!
@@ -817,8 +821,8 @@ public class MonsterSupertank {
             }
 
             Monster.monster_fire_bullet(self, start, forward, 6, 4,
-                    Defines.DEFAULT_BULLET_HSPREAD,
-                    Defines.DEFAULT_BULLET_VSPREAD, flash_number);
+                    Constants.DEFAULT_BULLET_HSPREAD,
+                    Constants.DEFAULT_BULLET_VSPREAD, flash_number);
             return true;
         }
     };
@@ -1120,16 +1124,16 @@ public class MonsterSupertank {
                 return; // no pain anims in nightmare
 
             if (damage <= 10) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain1, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = supertank_move_pain1;
             } else if (damage <= 25) {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain3, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain3, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = supertank_move_pain2;
             } else {
-                GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_pain2, 1,
-                        Defines.ATTN_NORM, 0);
+                ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_pain2, (float) 1, (float) Constants.ATTN_NORM,
+                (float) 0);
                 self.monsterinfo.currentmove = supertank_move_pain3;
             }
         }
@@ -1139,10 +1143,10 @@ public class MonsterSupertank {
     	public String getID(){ return "supertank_die"; }
         public void die(Entity self, Entity inflictor, Entity attacker,
                 int damage, float[] point) {
-            GameBase.gi.sound(self, Defines.CHAN_VOICE, sound_death, 1,
-                    Defines.ATTN_NORM, 0);
-            self.deadflag = Defines.DEAD_DEAD;
-            self.takedamage = Defines.DAMAGE_NO;
+            ServerGame.PF_StartSound(self, Constants.CHAN_VOICE, sound_death, (float) 1, (float) Constants.ATTN_NORM,
+            (float) 0);
+            self.deadflag = Constants.DEAD_DEAD;
+            self.takedamage = Constants.DAMAGE_NO;
             self.count = 0;
             self.monsterinfo.currentmove = supertank_move_death;
         }
@@ -1164,20 +1168,19 @@ public class MonsterSupertank {
                 return true;
             }
 
-            sound_pain1 = GameBase.gi.soundindex("bosstank/btkpain1.wav");
-            sound_pain2 = GameBase.gi.soundindex("bosstank/btkpain2.wav");
-            sound_pain3 = GameBase.gi.soundindex("bosstank/btkpain3.wav");
-            sound_death = GameBase.gi.soundindex("bosstank/btkdeth1.wav");
-            sound_search1 = GameBase.gi.soundindex("bosstank/btkunqv1.wav");
-            sound_search2 = GameBase.gi.soundindex("bosstank/btkunqv2.wav");
+            sound_pain1 = ServerInit.SV_SoundIndex("bosstank/btkpain1.wav");
+            sound_pain2 = ServerInit.SV_SoundIndex("bosstank/btkpain2.wav");
+            sound_pain3 = ServerInit.SV_SoundIndex("bosstank/btkpain3.wav");
+            sound_death = ServerInit.SV_SoundIndex("bosstank/btkdeth1.wav");
+            sound_search1 = ServerInit.SV_SoundIndex("bosstank/btkunqv1.wav");
+            sound_search2 = ServerInit.SV_SoundIndex("bosstank/btkunqv2.wav");
 
             //	self.s.sound = gi.soundindex ("bosstank/btkengn1.wav");
-            tread_sound = GameBase.gi.soundindex("bosstank/btkengn1.wav");
+            tread_sound = ServerInit.SV_SoundIndex("bosstank/btkengn1.wav");
 
-            self.movetype = Defines.MOVETYPE_STEP;
-            self.solid = Defines.SOLID_BBOX;
-            self.s.modelindex = GameBase.gi
-                    .modelindex("models/monsters/boss1/tris.md2");
+            self.movetype = Constants.MOVETYPE_STEP;
+            self.solid = Constants.SOLID_BBOX;
+            self.s.modelindex = ServerInit.SV_ModelIndex("models/monsters/boss1/tris.md2");
             Math3D.VectorSet(self.mins, -64, -64, 0);
             Math3D.VectorSet(self.maxs, 64, 64, 112);
 
@@ -1196,7 +1199,7 @@ public class MonsterSupertank {
             self.monsterinfo.melee = null;
             self.monsterinfo.sight = null;
 
-            GameBase.gi.linkentity(self);
+            World.SV_LinkEdict(self);
 
             self.monsterinfo.currentmove = supertank_move_stand;
             self.monsterinfo.scale = MODEL_SCALE;
@@ -1255,22 +1258,22 @@ public class MonsterSupertank {
                 self.s.sound = 0;
                 for (n = 0; n < 4; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/sm_meat/tris.md2", 500,
-                            Defines.GIB_ORGANIC);
+                            Constants.GIB_ORGANIC);
                 for (n = 0; n < 8; n++)
                     GameMisc.ThrowGib(self, "models/objects/gibs/sm_metal/tris.md2",
-                            500, Defines.GIB_METALLIC);
+                            500, Constants.GIB_METALLIC);
                 GameMisc.ThrowGib(self, "models/objects/gibs/chest/tris.md2", 500,
-                        Defines.GIB_ORGANIC);
+                        Constants.GIB_ORGANIC);
                 GameMisc.ThrowHead(self, "models/objects/gibs/gear/tris.md2", 500,
-                        Defines.GIB_METALLIC);
-                self.deadflag = Defines.DEAD_DEAD;
+                        Constants.GIB_METALLIC);
+                self.deadflag = Constants.DEAD_DEAD;
                 return true;
             }
     
-            GameBase.gi.WriteByte(Defines.svc_temp_entity);
-            GameBase.gi.WriteByte(Defines.TE_EXPLOSION1);
-            GameBase.gi.WritePosition(org);
-            GameBase.gi.multicast(self.s.origin, Defines.MULTICAST_PVS);
+            ServerGame.PF_WriteByte(Constants.svc_temp_entity);
+            ServerGame.PF_WriteByte(Constants.TE_EXPLOSION1);
+            ServerGame.PF_WritePos(org);
+            ServerSend.SV_Multicast(self.s.origin, Constants.MULTICAST_PVS);
     
             self.nextthink = GameBase.level.time + 0.1f;
             return true;

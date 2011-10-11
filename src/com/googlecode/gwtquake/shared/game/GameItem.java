@@ -26,6 +26,8 @@ package com.googlecode.gwtquake.shared.game;
 import com.googlecode.gwtquake.*;
 import com.googlecode.gwtquake.shared.game.adapters.EntInteractAdapter;
 import com.googlecode.gwtquake.shared.game.adapters.EntityThinkAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.ItemDropAdapter;
+import com.googlecode.gwtquake.shared.game.adapters.ItemUseAdapter;
 
 
 public class GameItem {

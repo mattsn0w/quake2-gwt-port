@@ -28,7 +28,7 @@ import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
 import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.render.RendererModel;
 import com.googlecode.gwtquake.shared.render.gl.Models;
@@ -41,7 +41,7 @@ public class ClientView {
 
     static int num_cl_weaponmodels;
 
-    static String[] cl_weaponmodels = new String[Defines.MAX_CLIENTWEAPONMODELS];
+    static String[] cl_weaponmodels = new String[Constants.MAX_CLIENTWEAPONMODELS];
 
     static boolean inPrepRefresh;
     
@@ -56,7 +56,7 @@ public class ClientView {
     static void PrepRefresh() {
         int i;
 
-        if ((i = Globals.cl.configstrings[Defines.CS_MODELS + 1].length()) == 0)
+        if ((i = Globals.cl.configstrings[Constants.CS_MODELS + 1].length()) == 0)
             return; // no map loaded
 
         if (inPrepRefresh) {
@@ -71,7 +71,7 @@ public class ClientView {
         Screen.AddDirtyPoint(Globals.viddef.width - 1, Globals.viddef.height - 1);
 
         // let the render dll load the map
-        String mapname = Globals.cl.configstrings[Defines.CS_MODELS + 1].substring(5,
+        String mapname = Globals.cl.configstrings[Constants.CS_MODELS + 1].substring(5,
                 i - 4); // skip "maps/"
         // cut off ".bsp"
 
@@ -94,9 +94,9 @@ public class ClientView {
             num_cl_weaponmodels = 1;
             cl_weaponmodels[0] = "weapon.md2";
 
-            for (int i = 1; i < Defines.MAX_MODELS
-                    && Globals.cl.configstrings[Defines.CS_MODELS + i].length() != 0; i++) {
-                String name = new String(Globals.cl.configstrings[Defines.CS_MODELS + i]);
+            for (int i = 1; i < Constants.MAX_MODELS
+                    && Globals.cl.configstrings[Constants.CS_MODELS + i].length() != 0; i++) {
+                String name = new String(Globals.cl.configstrings[Constants.CS_MODELS + i]);
                 if (name.length() > 37)
                     name = name.substring(0, 36);
 
@@ -107,8 +107,8 @@ public class ClientView {
                 Sys.SendKeyEvents(); // pump message loop
                 if (name.charAt(0) == '#') {
                     // special player weapon model
-                    if (num_cl_weaponmodels < Defines.MAX_CLIENTWEAPONMODELS) {
-                        cl_weaponmodels[num_cl_weaponmodels] = Globals.cl.configstrings[Defines.CS_MODELS
+                    if (num_cl_weaponmodels < Constants.MAX_CLIENTWEAPONMODELS) {
+                        cl_weaponmodels[num_cl_weaponmodels] = Globals.cl.configstrings[Constants.CS_MODELS
                                 + i].substring(1);
                         num_cl_weaponmodels++;
                     }
@@ -116,13 +116,13 @@ public class ClientView {
                   final int finalI = i;
                   final String finalName = name;
                   
-                  Globals.re.RegisterModel(Globals.cl.configstrings[Defines.CS_MODELS + i], 
+                  Globals.re.RegisterModel(Globals.cl.configstrings[Constants.CS_MODELS + i], 
                       new AsyncCallback<RendererModel>() {
                         public void onSuccess(RendererModel response) {
                           Globals.cl.model_draw[finalI] = response;
                           if (finalName.charAt(0) == '*')
                             Globals.cl.model_clip[finalI] = CM.InlineModel(
-                                Globals.cl.configstrings[Defines.CS_MODELS + finalI]);
+                                Globals.cl.configstrings[Constants.CS_MODELS + finalI]);
                               else
                                 Globals.cl.model_clip[finalI] = null;
                             }
@@ -140,16 +140,16 @@ public class ClientView {
 
             Com.Printf("images\r");
             Screen.UpdateScreen();
-            for (int i = 1; i < Defines.MAX_IMAGES
-                    && Globals.cl.configstrings[Defines.CS_IMAGES + i].length() > 0; i++) {
+            for (int i = 1; i < Constants.MAX_IMAGES
+                    && Globals.cl.configstrings[Constants.CS_IMAGES + i].length() > 0; i++) {
                 Globals.cl.image_precache[i] = Globals.re
-                        .RegisterPic(Globals.cl.configstrings[Defines.CS_IMAGES + i]);
+                        .RegisterPic(Globals.cl.configstrings[Constants.CS_IMAGES + i]);
                 Sys.SendKeyEvents(); // pump message loop
             }
 
             Com.Printf("                                     \r");
-            for (int i = 0; i < Defines.MAX_CLIENTS; i++) {
-                if (Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].length() == 0)
+            for (int i = 0; i < Constants.MAX_CLIENTS; i++) {
+                if (Globals.cl.configstrings[Constants.CS_PLAYERSKINS + i].length() == 0)
                     continue;
                 Com.Printf("client " + i + '\r');
                 Screen.UpdateScreen();
@@ -165,14 +165,14 @@ public class ClientView {
             Com.Printf("sky\r");
             Screen.UpdateScreen();
             float rotate = Float
-                    .parseFloat(Globals.cl.configstrings[Defines.CS_SKYROTATE]);
+                    .parseFloat(Globals.cl.configstrings[Constants.CS_SKYROTATE]);
             StringTokenizer st = new StringTokenizer(
-                    Globals.cl.configstrings[Defines.CS_SKYAXIS]);
+                    Globals.cl.configstrings[Constants.CS_SKYAXIS]);
             float[] axis = new float[3];
             axis[0] = Float.parseFloat(st.nextToken());
             axis[1] = Float.parseFloat(st.nextToken());
             axis[2] = Float.parseFloat(st.nextToken());
-            Globals.re.SetSky(Globals.cl.configstrings[Defines.CS_SKY], rotate,
+            Globals.re.SetSky(Globals.cl.configstrings[Constants.CS_SKY], rotate,
                     axis);
             Com.Printf("                                     \r");
 
@@ -209,7 +209,7 @@ public class ClientView {
 
         // see what the latency was on this packet
         in = Globals.cls.netchan.incoming_acknowledged
-                & (Defines.CMD_BACKUP - 1);
+                & (Constants.CMD_BACKUP - 1);
         ping = (int) (Globals.cls.realtime - Globals.cl.cmd_time[in]);
         ping /= 30;
         if (ping > 30)

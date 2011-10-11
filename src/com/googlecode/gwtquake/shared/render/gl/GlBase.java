@@ -29,7 +29,7 @@ import java.util.LinkedList;
 
 import com.googlecode.gwtquake.shared.client.Dimension;
 import com.googlecode.gwtquake.shared.client.Window;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.render.DisplayMode;
@@ -41,6 +41,12 @@ import com.googlecode.gwtquake.shared.render.GlAdapter;
  * @author dsanders/cwei
  */
 public abstract class GlBase {
+  // enum rserr_t
+  protected static final int rserr_ok = 0;
+  protected static final int rserr_invalid_fullscreen = 1;
+  protected static final int rserr_invalid_mode = 2;
+  protected static final int rserr_unknown = 3;
+  
 	// IMPORTED FUNCTIONS
 	protected DisplayMode oldDisplayMode; 
 
@@ -53,11 +59,6 @@ public abstract class GlBase {
 	
 	protected ConsoleVariable vid_fullscreen;
 
-	// enum rserr_t
-	protected static final int rserr_ok = 0;
-	protected static final int rserr_invalid_fullscreen = 1;
-	protected static final int rserr_invalid_mode = 2;
-	protected static final int rserr_unknown = 3;
 	
 	protected GlAdapter gl;
 	

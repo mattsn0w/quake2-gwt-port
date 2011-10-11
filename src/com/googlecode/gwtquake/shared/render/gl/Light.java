@@ -31,7 +31,7 @@ import java.util.Arrays;
 
 import com.googlecode.gwtquake.shared.client.DynamicLightData;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.Plane;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
@@ -166,8 +166,8 @@ public abstract class Light extends Warp {
 			 * bugfix for dlight behind the walls
 			 */			
 			dist = Math3D.DotProduct (light.origin, surf.plane.normal) - surf.plane.dist;
-			sidebit = (dist >= 0) ? 0 : Defines.SURF_PLANEBACK;
-			if ( (surf.flags & Defines.SURF_PLANEBACK) != sidebit )
+			sidebit = (dist >= 0) ? 0 : Constants.SURF_PLANEBACK;
+			if ( (surf.flags & Constants.SURF_PLANEBACK) != sidebit )
 				continue;
 			/*
 			 * cwei
@@ -271,7 +271,7 @@ public abstract class Light extends Warp {
 		{
 			surf = r_worldmodel.surfaces[surfIndex];
 			
-			if ((surf.flags & (Defines.SURF_DRAWTURB | Defines.SURF_DRAWSKY)) != 0) 
+			if ((surf.flags & (Constants.SURF_DRAWTURB | Constants.SURF_DRAWSKY)) != 0) 
 				continue;	// no lightmaps
 
 			tex = surf.texinfo;
@@ -304,7 +304,7 @@ public abstract class Light extends Warp {
 				lightmapIndex += 3 * (dt * ((surf.extents[0] >> 4) + 1) + ds);
 
 				float scale0, scale1, scale2;
-				for (maps = 0 ; maps < Defines.MAXLIGHTMAPS && surf.styles[maps] != (byte)255; maps++)
+				for (maps = 0 ; maps < Constants.MAXLIGHTMAPS && surf.styles[maps] != (byte)255; maps++)
 				{
 					rgb = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
 					scale0 = gl_modulate.value * rgb[0];
@@ -463,7 +463,7 @@ public abstract class Light extends Warp {
 	 */
 	void R_SetCacheState( ModelSurface surf )
 	{
-		for (int maps = 0 ; maps < Defines.MAXLIGHTMAPS && surf.styles[maps] != (byte)255 ; maps++)
+		for (int maps = 0 ; maps < Constants.MAXLIGHTMAPS && surf.styles[maps] != (byte)255 ; maps++)
 		{
 			surf.cached_light[maps] = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].white;
 		}
@@ -485,16 +485,16 @@ public abstract class Light extends Warp {
         float[] bl;
         //lightstyle_t style;
 
-        if ((surf.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33
-                | Defines.SURF_TRANS66 | Defines.SURF_WARP)) != 0)
-            Com.Error(Defines.ERR_DROP,
+        if ((surf.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33
+                | Constants.SURF_TRANS66 | Constants.SURF_WARP)) != 0)
+            Com.Error(Constants.ERR_DROP,
                     "R_BuildLightMap called for non-lit surface");
 
         int smax = (surf.extents[0] >> 4) + 1;
         int tmax = (surf.extents[1] >> 4) + 1;
         int size = smax * tmax;
-        if (size > ((s_blocklights.length * Defines.SIZE_OF_FLOAT) >> 4))
-        	Com.Error(Defines.ERR_DROP, "Bad s_blocklights size");
+        if (size > ((s_blocklights.length * Constants.SIZE_OF_FLOAT) >> 4))
+        	Com.Error(Constants.ERR_DROP, "Bad s_blocklights size");
 
         //   try {
         // set to full bright if no light data
@@ -515,7 +515,7 @@ public abstract class Light extends Warp {
         	//     throw gotoStore;
         } else {
         	// count the # of maps
-        	for (nummaps = 0; nummaps < Defines.MAXLIGHTMAPS
+        	for (nummaps = 0; nummaps < Constants.MAXLIGHTMAPS
         	&& surf.styles[nummaps] != (byte) 255; nummaps++)
         		;
 
@@ -529,7 +529,7 @@ public abstract class Light extends Warp {
         	if (nummaps == 1) {
         		int maps;
 
-        		for (maps = 0; maps < Defines.MAXLIGHTMAPS
+        		for (maps = 0; maps < Constants.MAXLIGHTMAPS
         		&& surf.styles[maps] != (byte) 255; maps++) {
         			bl = s_blocklights;
         			int blp = 0;
@@ -568,7 +568,7 @@ public abstract class Light extends Warp {
 
         		Arrays.fill(s_blocklights, 0, size * 3, 0.0f);
 
-        		for (maps = 0; maps < Defines.MAXLIGHTMAPS
+        		for (maps = 0; maps < Constants.MAXLIGHTMAPS
         		&& surf.styles[maps] != (byte) 255; maps++) {
         			bl = s_blocklights;
         			int blp = 0;

@@ -61,7 +61,7 @@ public class ServerEntities {
         int from_num_entities;
         int bits;
 
-        Buffer.WriteByte(msg, Defines.svc_packetentities);
+        Buffer.WriteByte(msg, Constants.svc_packetentities);
 
         if (from == null)
             from_num_entities = 0;
@@ -111,15 +111,15 @@ public class ServerEntities {
 
             if (newnum > oldnum) { 
             	// the old entity isn't present in the new message
-                bits = Defines.U_REMOVE;
+                bits = Constants.U_REMOVE;
                 if (oldnum >= 256)
-                    bits |= Defines.U_NUMBER16 | Defines.U_MOREBITS1;
+                    bits |= Constants.U_NUMBER16 | Constants.U_MOREBITS1;
 
                 Buffer.WriteByte(msg, bits & 255);
                 if ((bits & 0x0000ff00) != 0)
                     Buffer.WriteByte(msg, (bits >> 8) & 255);
 
-                if ((bits & Defines.U_NUMBER16) != 0)
+                if ((bits & Constants.U_NUMBER16) != 0)
                     Buffer.WriteShort(msg, oldnum);
                 else
                     Buffer.WriteByte(msg, oldnum);
@@ -158,121 +158,121 @@ public class ServerEntities {
         pflags = 0;
 
         if (ps.pmove.pm_type != ops.pmove.pm_type)
-            pflags |= Defines.PS_M_TYPE;
+            pflags |= Constants.PS_M_TYPE;
 
         if (ps.pmove.origin[0] != ops.pmove.origin[0]
                 || ps.pmove.origin[1] != ops.pmove.origin[1]
                 || ps.pmove.origin[2] != ops.pmove.origin[2])
-            pflags |= Defines.PS_M_ORIGIN;
+            pflags |= Constants.PS_M_ORIGIN;
 
         if (ps.pmove.velocity[0] != ops.pmove.velocity[0]
                 || ps.pmove.velocity[1] != ops.pmove.velocity[1]
                 || ps.pmove.velocity[2] != ops.pmove.velocity[2])
-            pflags |= Defines.PS_M_VELOCITY;
+            pflags |= Constants.PS_M_VELOCITY;
 
         if (ps.pmove.pm_time != ops.pmove.pm_time)
-            pflags |= Defines.PS_M_TIME;
+            pflags |= Constants.PS_M_TIME;
 
         if (ps.pmove.pm_flags != ops.pmove.pm_flags)
-            pflags |= Defines.PS_M_FLAGS;
+            pflags |= Constants.PS_M_FLAGS;
 
         if (ps.pmove.gravity != ops.pmove.gravity)
-            pflags |= Defines.PS_M_GRAVITY;
+            pflags |= Constants.PS_M_GRAVITY;
 
         if (ps.pmove.delta_angles[0] != ops.pmove.delta_angles[0]
                 || ps.pmove.delta_angles[1] != ops.pmove.delta_angles[1]
                 || ps.pmove.delta_angles[2] != ops.pmove.delta_angles[2])
-            pflags |= Defines.PS_M_DELTA_ANGLES;
+            pflags |= Constants.PS_M_DELTA_ANGLES;
 
         if (ps.viewoffset[0] != ops.viewoffset[0]
                 || ps.viewoffset[1] != ops.viewoffset[1]
                 || ps.viewoffset[2] != ops.viewoffset[2])
-            pflags |= Defines.PS_VIEWOFFSET;
+            pflags |= Constants.PS_VIEWOFFSET;
 
         if (ps.viewangles[0] != ops.viewangles[0]
                 || ps.viewangles[1] != ops.viewangles[1]
                 || ps.viewangles[2] != ops.viewangles[2])
-            pflags |= Defines.PS_VIEWANGLES;
+            pflags |= Constants.PS_VIEWANGLES;
 
         if (ps.kick_angles[0] != ops.kick_angles[0]
                 || ps.kick_angles[1] != ops.kick_angles[1]
                 || ps.kick_angles[2] != ops.kick_angles[2])
-            pflags |= Defines.PS_KICKANGLES;
+            pflags |= Constants.PS_KICKANGLES;
 
         if (ps.blend[0] != ops.blend[0] || ps.blend[1] != ops.blend[1]
                 || ps.blend[2] != ops.blend[2] || ps.blend[3] != ops.blend[3])
-            pflags |= Defines.PS_BLEND;
+            pflags |= Constants.PS_BLEND;
 
         if (ps.fov != ops.fov)
-            pflags |= Defines.PS_FOV;
+            pflags |= Constants.PS_FOV;
 
         if (ps.rdflags != ops.rdflags)
-            pflags |= Defines.PS_RDFLAGS;
+            pflags |= Constants.PS_RDFLAGS;
 
         if (ps.gunframe != ops.gunframe)
-            pflags |= Defines.PS_WEAPONFRAME;
+            pflags |= Constants.PS_WEAPONFRAME;
 
-        pflags |= Defines.PS_WEAPONINDEX;
+        pflags |= Constants.PS_WEAPONINDEX;
 
         // write it
-        Buffer.WriteByte(msg, Defines.svc_playerinfo);
+        Buffer.WriteByte(msg, Constants.svc_playerinfo);
         Buffer.WriteShort(msg, pflags);
 
         // write the pmove_state_t
-        if ((pflags & Defines.PS_M_TYPE) != 0)
+        if ((pflags & Constants.PS_M_TYPE) != 0)
             Buffer.WriteByte(msg, ps.pmove.pm_type);
 
-        if ((pflags & Defines.PS_M_ORIGIN) != 0) {
+        if ((pflags & Constants.PS_M_ORIGIN) != 0) {
             Buffer.WriteShort(msg, ps.pmove.origin[0]);
             Buffer.WriteShort(msg, ps.pmove.origin[1]);
             Buffer.WriteShort(msg, ps.pmove.origin[2]);
         }
 
-        if ((pflags & Defines.PS_M_VELOCITY) != 0) {
+        if ((pflags & Constants.PS_M_VELOCITY) != 0) {
             Buffer.WriteShort(msg, ps.pmove.velocity[0]);
             Buffer.WriteShort(msg, ps.pmove.velocity[1]);
             Buffer.WriteShort(msg, ps.pmove.velocity[2]);
         }
 
-        if ((pflags & Defines.PS_M_TIME) != 0)
+        if ((pflags & Constants.PS_M_TIME) != 0)
             Buffer.WriteByte(msg, ps.pmove.pm_time);
 
-        if ((pflags & Defines.PS_M_FLAGS) != 0)
+        if ((pflags & Constants.PS_M_FLAGS) != 0)
             Buffer.WriteByte(msg, ps.pmove.pm_flags);
 
-        if ((pflags & Defines.PS_M_GRAVITY) != 0)
+        if ((pflags & Constants.PS_M_GRAVITY) != 0)
             Buffer.WriteShort(msg, ps.pmove.gravity);
 
-        if ((pflags & Defines.PS_M_DELTA_ANGLES) != 0) {
+        if ((pflags & Constants.PS_M_DELTA_ANGLES) != 0) {
             Buffer.WriteShort(msg, ps.pmove.delta_angles[0]);
             Buffer.WriteShort(msg, ps.pmove.delta_angles[1]);
             Buffer.WriteShort(msg, ps.pmove.delta_angles[2]);
         }
 
         // write the rest of the player_state_t
-        if ((pflags & Defines.PS_VIEWOFFSET) != 0) {
+        if ((pflags & Constants.PS_VIEWOFFSET) != 0) {
             Buffer.WriteChar(msg, (int) (ps.viewoffset[0] * 4));
             Buffer.WriteChar(msg, (int) (ps.viewoffset[1] * 4));
             Buffer.WriteChar(msg, (int) (ps.viewoffset[2] * 4));
         }
 
-        if ((pflags & Defines.PS_VIEWANGLES) != 0) {
+        if ((pflags & Constants.PS_VIEWANGLES) != 0) {
             Buffer.WriteAngle16(msg, ps.viewangles[0]);
             Buffer.WriteAngle16(msg, ps.viewangles[1]);
             Buffer.WriteAngle16(msg, ps.viewangles[2]);
         }
 
-        if ((pflags & Defines.PS_KICKANGLES) != 0) {
+        if ((pflags & Constants.PS_KICKANGLES) != 0) {
             Buffer.WriteChar(msg, (int) (ps.kick_angles[0] * 4));
             Buffer.WriteChar(msg, (int) (ps.kick_angles[1] * 4));
             Buffer.WriteChar(msg, (int) (ps.kick_angles[2] * 4));
         }
 
-        if ((pflags & Defines.PS_WEAPONINDEX) != 0) {
+        if ((pflags & Constants.PS_WEAPONINDEX) != 0) {
             Buffer.WriteByte(msg, ps.gunindex);
         }
 
-        if ((pflags & Defines.PS_WEAPONFRAME) != 0) {
+        if ((pflags & Constants.PS_WEAPONFRAME) != 0) {
             Buffer.WriteByte(msg, ps.gunframe);
             Buffer.WriteChar(msg, (int) (ps.gunoffset[0] * 4));
             Buffer.WriteChar(msg, (int) (ps.gunoffset[1] * 4));
@@ -282,24 +282,24 @@ public class ServerEntities {
             Buffer.WriteChar(msg, (int) (ps.gunangles[2] * 4));
         }
 
-        if ((pflags & Defines.PS_BLEND) != 0) {
+        if ((pflags & Constants.PS_BLEND) != 0) {
             Buffer.WriteByte(msg, (int) (ps.blend[0] * 255));
             Buffer.WriteByte(msg, (int) (ps.blend[1] * 255));
             Buffer.WriteByte(msg, (int) (ps.blend[2] * 255));
             Buffer.WriteByte(msg, (int) (ps.blend[3] * 255));
         }
-        if ((pflags & Defines.PS_FOV) != 0)
+        if ((pflags & Constants.PS_FOV) != 0)
 			Buffer.WriteByte(msg, (int) ps.fov);
-        if ((pflags & Defines.PS_RDFLAGS) != 0)
+        if ((pflags & Constants.PS_RDFLAGS) != 0)
             Buffer.WriteByte(msg, ps.rdflags);
 
         // send stats
         statbits = 0;
-        for (i = 0; i < Defines.MAX_STATS; i++)
+        for (i = 0; i < Constants.MAX_STATS; i++)
             if (ps.stats[i] != ops.stats[i])
                 statbits |= 1 << i;
         Buffer.WriteLong(msg, statbits);
-        for (i = 0; i < Defines.MAX_STATS; i++)
+        for (i = 0; i < Constants.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)
                 Buffer.WriteShort(msg, ps.stats[i]);
     }
@@ -315,22 +315,22 @@ public class ServerEntities {
         //Com.Printf ("%i . %i\n", new
         // Vargs().add(client.lastframe).add(sv.framenum));
         // this is the frame we are creating
-        frame = client.frames[ServerInit.sv.framenum & Defines.UPDATE_MASK];
+        frame = client.frames[ServerInit.sv.framenum & Constants.UPDATE_MASK];
         if (client.lastframe <= 0) { // client is asking for a retransmit
             oldframe = null;
             lastframe = -1;
-        } else if (ServerInit.sv.framenum - client.lastframe >= (Defines.UPDATE_BACKUP - 3)) {
+        } else if (ServerInit.sv.framenum - client.lastframe >= (Constants.UPDATE_BACKUP - 3)) {
             // client hasn't gotten a good message through in a long time
             // Com_Printf ("%s: Delta request from out-of-date packet.\n",
             // client.name);
             oldframe = null;
             lastframe = -1;
         } else { // we have a valid message to delta from
-            oldframe = client.frames[client.lastframe & Defines.UPDATE_MASK];
+            oldframe = client.frames[client.lastframe & Constants.UPDATE_MASK];
             lastframe = client.lastframe;
         }
 
-        Buffer.WriteByte(msg, Defines.svc_frame);
+        Buffer.WriteByte(msg, Constants.svc_frame);
         Buffer.WriteLong(msg, ServerInit.sv.framenum);
         Buffer.WriteLong(msg, lastframe); // what we are delta'ing from
         Buffer.WriteByte(msg, client.surpressCount); // rate dropped packets
@@ -366,7 +366,7 @@ public class ServerEntities {
         count = CM.CM_BoxLeafnums(mins, maxs, leafs, 64, null);
 
         if (count < 1)
-            Com.Error(Defines.ERR_FATAL, "SV_FatPVS: count < 1");
+            Com.Error(Constants.ERR_FATAL, "SV_FatPVS: count < 1");
 
         longs = (CM.CM_NumClusters() + 31) >> 5;
 
@@ -421,7 +421,7 @@ public class ServerEntities {
             return; // not in game yet
 
         // this is the frame we are creating
-        frame = client.frames[ServerInit.sv.framenum & Defines.UPDATE_MASK];
+        frame = client.frames[ServerInit.sv.framenum & Constants.UPDATE_MASK];
 
         frame.senttime = ServerInit.svs.realtime; // save it for ping calc later
 
@@ -453,7 +453,7 @@ public class ServerEntities {
             ent = GameBase.g_edicts[e];
 
             // ignore ents without visible models
-            if ((ent.svflags & Defines.SVF_NOCLIENT) != 0)
+            if ((ent.svflags & Constants.SVF_NOCLIENT) != 0)
                 continue;
 
             // ignore ents without visible models unless they have an effect
@@ -471,7 +471,7 @@ public class ServerEntities {
                 }
 
                 // beams just check one point for PHS
-                if ((ent.s.renderfx & Defines.RF_BEAM) != 0) {
+                if ((ent.s.renderfx & Constants.RF_BEAM) != 0) {
                     l = ent.clusternums[0];
                     if (0 == (clientphs[l >> 3] & (1 << (l & 7))))
                         continue;
@@ -552,10 +552,10 @@ public class ServerEntities {
         Buffer.Init(buf, buf_data, buf_data.length);
 
         // write a frame message that doesn't contain a player_state_t
-        Buffer.WriteByte(buf, Defines.svc_frame);
+        Buffer.WriteByte(buf, Constants.svc_frame);
         Buffer.WriteLong(buf, ServerInit.sv.framenum);
 
-        Buffer.WriteByte(buf, Defines.svc_packetentities);
+        Buffer.WriteByte(buf, Constants.svc_packetentities);
 
         e = 1;
         ent = GameBase.g_edicts[e];
@@ -566,7 +566,7 @@ public class ServerEntities {
                     && ent.s.number != 0
                     && (ent.s.modelindex != 0 || ent.s.effects != 0
                             || ent.s.sound != 0 || ent.s.event != 0)
-                    && 0 == (ent.svflags & Defines.SVF_NOCLIENT))
+                    && 0 == (ent.svflags & Constants.SVF_NOCLIENT))
                 Delta.WriteDeltaEntity(nostate, ent.s, buf, false, true);
 
             e++;

@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.util.QuakeFile;
 
 public class GameState {
@@ -46,7 +46,7 @@ public class GameState {
 
     // and increment only if 1, 2, or 3
 
-    public GameClient clients[] = new GameClient[Defines.MAX_CLIENTS];
+    public GameClient clients[] = new GameClient[Constants.MAX_CLIENTS];
 
     // can't store spawnpoint in level, because
     // it would get overwritten by the savegame restore

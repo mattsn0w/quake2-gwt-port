@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.sys;
 import com.googlecode.gwtquake.shared.client.ClientInput;
 import com.googlecode.gwtquake.shared.client.Keys;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.Commands;
@@ -86,8 +86,8 @@ public final class IN {
     }
 
     public static void Init() {
-        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", Defines.CVAR_ARCHIVE);
-        Globals.in_joystick = ConsoleVariables.Get("in_joystick", "0", Defines.CVAR_ARCHIVE);
+        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", Constants.CVAR_ARCHIVE);
+        Globals.in_joystick = ConsoleVariables.Get("in_joystick", "0", Constants.CVAR_ARCHIVE);
     }
 
     public static void Shutdown() {
@@ -97,7 +97,7 @@ public final class IN {
     public static void Real_IN_Init() {
         // mouse variables
         Globals.m_filter = ConsoleVariables.Get("m_filter", "0", 0);
-        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", Defines.CVAR_ARCHIVE);
+        Globals.in_mouse = ConsoleVariables.Get("in_mouse", "1", Constants.CVAR_ARCHIVE);
         Globals.freelook = ConsoleVariables.Get("freelook", "1", 0);
         Globals.lookstrafe = ConsoleVariables.Get("lookstrafe", "0", 0);
         Globals.sensitivity = ConsoleVariables.Get("sensitivity", "3", 0);
@@ -151,16 +151,16 @@ public final class IN {
 
     public static void Frame() {
 
-        if (!Globals.cl.refresh_prepped || Globals.cls.key_dest == Defines.key_console
-                || Globals.cls.key_dest == Defines.key_menu)
+        if (!Globals.cl.refresh_prepped || Globals.cls.key_dest == Constants.key_console
+                || Globals.cls.key_dest == Constants.key_menu)
             DeactivateMouse();
         else
             ActivateMouse();
     }
 
     public static void CenterView() {
-        Globals.cl.viewangles[Defines.PITCH] = -Math3D
-                .SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
+        Globals.cl.viewangles[Constants.PITCH] = -Math3D
+                .SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Constants.PITCH]);
     }
 
     public static void Move(UserCommand cmd) {
@@ -183,12 +183,12 @@ public final class IN {
                 || ((Globals.lookstrafe.value != 0) && IN.mlooking)) {
             cmd.sidemove += Globals.m_side.value * KBD.mx;
         } else {
-            Globals.cl.viewangles[Defines.YAW] -= Globals.m_yaw.value * KBD.mx;
+            Globals.cl.viewangles[Constants.YAW] -= Globals.m_yaw.value * KBD.mx;
         }
 
         if ((IN.mlooking || Globals.freelook.value != 0.0f)
                 && (ClientInput.in_strafe.state & 1) == 0) {
-            Globals.cl.viewangles[Defines.PITCH] += Globals.m_pitch.value * KBD.my;
+            Globals.cl.viewangles[Constants.PITCH] += Globals.m_pitch.value * KBD.my;
         } else {
             cmd.forwardmove -= Globals.m_forward.value * KBD.my;
         }
@@ -205,6 +205,6 @@ public final class IN {
     }
 
     static void Force_CenterView_f() {
-        Globals.cl.viewangles[Defines.PITCH] = 0;
+        Globals.cl.viewangles[Constants.PITCH] = 0;
     }
 }

@@ -30,7 +30,9 @@ import java.nio.ByteBuffer;
 import java.util.StringTokenizer;
 
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.ConsoleVariables;
+import com.googlecode.gwtquake.shared.common.Constants;
+import com.googlecode.gwtquake.shared.server.ServerGame;
 import com.googlecode.gwtquake.shared.util.Lib;
 
 public class GameSVCmds {
@@ -75,7 +77,7 @@ public class GameSVCmds {
     };
 
     public static void Svcmd_Test_f() {
-        GameBase.gi.cprintf(null, Defines.PRINT_HIGH, "Svcmd_Test_f()\n");
+        ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Svcmd_Test_f()\n");
     }
 
     public static final int MAX_IPFILTERS = 1024;
@@ -108,8 +110,7 @@ public class GameSVCmds {
             f.mask = ByteBuffer.wrap(m).getInt();
             f.compare = ByteBuffer.wrap(b).getInt();
         } catch (Exception e) {
-            GameBase.gi.cprintf(null, Defines.PRINT_HIGH,
-                    "Bad filter address: " + s + "\n");
+            ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Bad filter address: " + s + "\n");
             return false;
         }
 
@@ -160,9 +161,8 @@ public class GameSVCmds {
     static void SVCmd_AddIP_f() {
         int i;
 
-        if (GameBase.gi.argc() < 3) {
-            GameBase.gi.cprintf(null, Defines.PRINT_HIGH,
-                    "Usage:  addip <ip-mask>\n");
+        if (Commands.Argc() < 3) {
+            ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Usage:  addip <ip-mask>\n");
             return;
         }
 
@@ -171,14 +171,13 @@ public class GameSVCmds {
                 break; // free spot
         if (i == numipfilters) {
             if (numipfilters == MAX_IPFILTERS) {
-                GameBase.gi.cprintf(null, Defines.PRINT_HIGH,
-                        "IP filter list is full\n");
+                ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "IP filter list is full\n");
                 return;
             }
             numipfilters++;
         }
 
-        if (!StringToFilter(GameBase.gi.argv(2), ipfilters[i]))
+        if (!StringToFilter(Commands.Argv(2), ipfilters[i]))
             ipfilters[i].compare = 0xffffffff;
     }
 
@@ -189,13 +188,12 @@ public class GameSVCmds {
         GameSVCmds.ipfilter_t f = new GameSVCmds.ipfilter_t();
         int i, j;
 
-        if (GameBase.gi.argc() < 3) {
-            GameBase.gi.cprintf(null, Defines.PRINT_HIGH,
-                    "Usage:  sv removeip <ip-mask>\n");
+        if (Commands.Argc() < 3) {
+            ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Usage:  sv removeip <ip-mask>\n");
             return;
         }
 
-        if (!StringToFilter(GameBase.gi.argv(2), f))
+        if (!StringToFilter(Commands.Argv(2), f))
             return;
 
         for (i = 0; i < numipfilters; i++)
@@ -204,11 +202,11 @@ public class GameSVCmds {
                 for (j = i + 1; j < numipfilters; j++)
                     ipfilters[j - 1] = ipfilters[j];
                 numipfilters--;
-                GameBase.gi.cprintf(null, Defines.PRINT_HIGH, "Removed.\n");
+                ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Removed.\n");
                 return;
             }
-        GameBase.gi.cprintf(null, Defines.PRINT_HIGH, "Didn't find "
-                + GameBase.gi.argv(2) + ".\n");
+        ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Didn't find "
+        + Commands.Argv(2) + ".\n");
     }
 
     /**
@@ -218,13 +216,12 @@ public class GameSVCmds {
         int i;
         byte b[];
 
-        GameBase.gi.cprintf(null, Defines.PRINT_HIGH, "Filter list:\n");
+        ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Filter list:\n");
         for (i = 0; i < numipfilters; i++) {
             b = Lib.getIntBytes(ipfilters[i].compare);
-            GameBase.gi
-                    .cprintf(null, Defines.PRINT_HIGH, (b[0] & 0xff) + "."
-                            + (b[1] & 0xff) + "." + (b[2] & 0xff) + "."
-                            + (b[3] & 0xff));
+            ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, (b[0] & 0xff) + "."
+            + (b[1] & 0xff) + "." + (b[2] & 0xff) + "."
+            + (b[3] & 0xff));
         }
     }
 
@@ -240,19 +237,19 @@ public class GameSVCmds {
         int i;
         ConsoleVariable game;
 
-        game = GameBase.gi.cvar("game", "", 0);
+        game = ConsoleVariables.Get("game", "", 0);
 
         if (game.string == null)
-            name = Defines.GAMEVERSION + "/listip.cfg";
+            name = Constants.GAMEVERSION + "/listip.cfg";
         else
             name = game.string + "/listip.cfg";
 
-        GameBase.gi.cprintf(null, Defines.PRINT_HIGH, "Writing " + name + ".\n");
+        ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Writing " + name + ".\n");
 
         f = Lib.fopen(name, "rw");
         if (f == null) {
-            GameBase.gi.cprintf(null, Defines.PRINT_HIGH, "Couldn't open "
-                    + name + "\n");
+            ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Couldn't open "
+            + name + "\n");
             return;
         }
 
@@ -282,7 +279,7 @@ public class GameSVCmds {
     public static void ServerCommand() {
         String cmd;
 
-        cmd = GameBase.gi.argv(1);
+        cmd = Commands.Argv(1);
         if (Lib.Q_stricmp(cmd, "test") == 0)
             Svcmd_Test_f();
         else if (Lib.Q_stricmp(cmd, "addip") == 0)
@@ -294,7 +291,6 @@ public class GameSVCmds {
         else if (Lib.Q_stricmp(cmd, "writeip") == 0)
             SVCmd_WriteIP_f();
         else
-            GameBase.gi.cprintf(null, Defines.PRINT_HIGH,
-                    "Unknown server command \"" + cmd + "\"\n");
+          ServerGame.PF_cprintf(null, Constants.PRINT_HIGH, "Unknown server command \"" + cmd + "\"\n");
     }
 }

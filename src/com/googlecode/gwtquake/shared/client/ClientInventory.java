@@ -25,7 +25,7 @@ package com.googlecode.gwtquake.shared.client;
 
 import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Vargs;
@@ -42,7 +42,7 @@ public class ClientInventory {
 	static void ParseInventory() {
 		int i;
 
-		for (i = 0; i < Defines.MAX_ITEMS; i++)
+		for (i = 0; i < Constants.MAX_ITEMS; i++)
 			Globals.cl.inventory[i] = Buffer.ReadShort(Globals.net_message);
 	}
 
@@ -72,7 +72,7 @@ public class ClientInventory {
 	static void DrawInventory() {
 		int i, j;
 		int num, selected_num, item;
-		int[] index = new int[Defines.MAX_ITEMS];
+		int[] index = new int[Constants.MAX_ITEMS];
 		String string;
 		int x, y;
 		String binding;
@@ -80,11 +80,11 @@ public class ClientInventory {
 		int selected;
 		int top;
 
-		selected = Globals.cl.frame.playerstate.stats[Defines.STAT_SELECTED_ITEM];
+		selected = Globals.cl.frame.playerstate.stats[Constants.STAT_SELECTED_ITEM];
 
 		num = 0;
 		selected_num = 0;
-		for (i = 0; i < Defines.MAX_ITEMS; i++) {
+		for (i = 0; i < Constants.MAX_ITEMS; i++) {
 			if (i == selected)
 				selected_num = num;
 			if (Globals.cl.inventory[i] != 0) {
@@ -118,7 +118,7 @@ public class ClientInventory {
 			// search for a binding
 			//Com_sprintf (binding, sizeof(binding), "use %s",
 			// cl.configstrings[CS_ITEMS+item]);
-			binding = "use " + Globals.cl.configstrings[Defines.CS_ITEMS + item];
+			binding = "use " + Globals.cl.configstrings[Constants.CS_ITEMS + item];
 			bind = "";
 			for (j = 0; j < 256; j++)
 				if (Globals.keybindings[j] != null && Globals.keybindings[j].equals(binding)) {
@@ -127,7 +127,7 @@ public class ClientInventory {
 				}
 
 			string = Com.sprintf("%6s %3i %s", new Vargs(3).add(bind).add(Globals.cl.inventory[item]).add(
-					Globals.cl.configstrings[Defines.CS_ITEMS + item]));
+					Globals.cl.configstrings[Constants.CS_ITEMS + item]));
 			if (item != selected)
 				string = getHighBitString(string);
 			else // draw a blinky cursor by the selected item
