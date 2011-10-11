@@ -333,7 +333,7 @@ public abstract class Surfaces extends Drawing {
 		// so scale it back down
 		float intens = gl_state.inverse_intensity;
 
-		glInterleavedArraysT2F_V3F(Polygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
+		glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
 
 		for (ModelSurface s = r_alpha_surfaces ; s != null ; s=s.texturechain)
 		{
@@ -707,13 +707,13 @@ public abstract class Surfaces extends Drawing {
 		GL_EnableMultitexture( true );
 		GL_SelectTexture(GL_TEXTURE0);
 		GL_TexEnv( GlAdapter.GL_REPLACE );
-		glInterleavedArraysT2F_V3F(Polygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
+		glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
 		GL_SelectTexture(GL_TEXTURE1);
 		GL_TexEnv( GlAdapter.GL_MODULATE );
 //		gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE, globalPolygonTexCoord1Buf);
 		gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 		gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, false, 
-				Polygon.BYTE_STRIDE, 20, globalPolygonInterleavedBuf, staticBufferId);
+				GlPolygon.BYTE_STRIDE, 20, globalPolygonInterleavedBuf, staticBufferId);
 
 		R_DrawInlineBModel();
 
@@ -896,12 +896,12 @@ public abstract class Surfaces extends Drawing {
 		
 		
 //		glInterleavedArraysT2F_V3F(Polygon.BYTE_STRIDE, globalPolygonInterleavedBuf);
-        glInterleavedArraysT2F_V3F(Polygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
+        glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
         
 		GL_SelectTexture( GL_TEXTURE1);
 		gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 		gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, 
-		    false, Polygon.BYTE_STRIDE, 20, globalPolygonInterleavedBuf, staticBufferId);
+		    false, GlPolygon.BYTE_STRIDE, 20, globalPolygonInterleavedBuf, staticBufferId);
 //		gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE, globalPolygonTexCoord1Buf);
 
 		if ( gl_lightmap.value != 0)
@@ -1112,7 +1112,7 @@ public abstract class Surfaces extends Drawing {
 		// draw texture
 		//
 		// poly = Hunk_Alloc (sizeof(glpoly_t) + (lnumverts-4) * VERTEXSIZE*sizeof(float));
-		GlPolygon poly = Polygon.create(lnumverts);
+		GlPolygon poly = GlPolygon.create(lnumverts);
 
 		poly.next = fa.polys;
 		poly.flags = fa.flags;
@@ -1337,11 +1337,11 @@ public abstract class Surfaces extends Drawing {
 	/*
 	 * new buffers for vertex array handling
 	 */
-	static FloatBuffer globalPolygonInterleavedBuf = Polygon.getInterleavedBuffer();
+	static FloatBuffer globalPolygonInterleavedBuf = GlPolygon.getInterleavedBuffer();
 	static FloatBuffer globalPolygonTexCoord1Buf = null;
 
 	static {
-	 	globalPolygonInterleavedBuf.position(Polygon.STRIDE - 2);
+	 	globalPolygonInterleavedBuf.position(GlPolygon.STRIDE - 2);
 	 	globalPolygonTexCoord1Buf = globalPolygonInterleavedBuf.slice();
 		globalPolygonInterleavedBuf.position(0);
 	 };

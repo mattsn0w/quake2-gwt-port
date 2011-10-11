@@ -198,7 +198,7 @@ public abstract class Warp extends Models {
 		// poly = Hunk_Alloc (sizeof(glpoly_t) + ((numverts-4)+2) * VERTEXSIZE*sizeof(float));
 
 		// init polys
-		GlPolygon poly = Polygon.create(numverts + 2);
+		GlPolygon poly = GlPolygon.create(numverts + 2);
 
 		poly.next = warpface.polys;
 		warpface.polys = poly;

@@ -38,6 +38,7 @@ import com.googlecode.gwtquake.shared.common.ResourceLoader;
 import com.googlecode.gwtquake.shared.common.TextureInfo;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.game.Plane;
+import com.googlecode.gwtquake.shared.render.GlPolygon;
 import com.googlecode.gwtquake.shared.render.ModelEdge;
 import com.googlecode.gwtquake.shared.render.ModelLeaf;
 import com.googlecode.gwtquake.shared.render.ModelNode;
@@ -1205,7 +1206,7 @@ public abstract class Models extends Surfaces {
 	protected void R_BeginRegistration(String model, final Command callback)
 	{
 		resetModelArrays();
-		Polygon.reset();
+		GlPolygon.reset();
 
 		ConsoleVariable flushmap;
 
