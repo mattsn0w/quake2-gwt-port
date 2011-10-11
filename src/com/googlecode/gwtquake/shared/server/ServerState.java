@@ -27,18 +27,18 @@ package com.googlecode.gwtquake.shared.server;
 import java.nio.ByteBuffer;
 
 import com.googlecode.gwtquake.shared.common.Buffer;
-import com.googlecode.gwtquake.shared.common.Defines;
+import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.EntityState;
 import com.googlecode.gwtquake.shared.game.Model;
 
-public class server_t {
+public class ServerState {
 
-    public server_t() {
-        models = new Model[Defines.MAX_MODELS];
-        for (int n = 0; n < Defines.MAX_MODELS; n++)
+    public ServerState() {
+        models = new Model[Constants.MAX_MODELS];
+        for (int n = 0; n < Constants.MAX_MODELS; n++)
             models[n] = new Model();
 
-        for (int n = 0; n < Defines.MAX_EDICTS; n++)
+        for (int n = 0; n < Constants.MAX_EDICTS; n++)
             baselines[n] = new EntityState(null);
     }
 
@@ -57,15 +57,15 @@ public class server_t {
 
     Model models[];
 
-    String configstrings[] = new String[Defines.MAX_CONFIGSTRINGS];
+    String configstrings[] = new String[Constants.MAX_CONFIGSTRINGS];
 
-    EntityState baselines[] = new EntityState[Defines.MAX_EDICTS];
+    EntityState baselines[] = new EntityState[Constants.MAX_EDICTS];
 
     // the multicast buffer is used to send a message to a set of clients
     // it is only used to marshall data until SV_Multicast is called
     Buffer multicast = new Buffer();
 
-    byte multicast_buf[] = new byte[Defines.MAX_MSGLEN];
+    byte multicast_buf[] = new byte[Constants.MAX_MSGLEN];
 
     // demo server information
     ByteBuffer demofile;

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 package com.googlecode.gwtquake.shared.common;
 
-public class Defines {
+public class Constants {
 
   public final static int WEAPON_READY = 0;
   public final static int WEAPON_ACTIVATING = 1;
@@ -1360,5 +1360,5 @@ public class Defines {
   public final static int SIZE_OF_DOUBLE = 8;
   public static final String __DATE__ = "2003";
   public static final float VERSION = 3.21f;
-  public static final String BASEDIRNAME = "war/baseq2";
+  public static final String BASEDIRNAME = "baseq2";
 }

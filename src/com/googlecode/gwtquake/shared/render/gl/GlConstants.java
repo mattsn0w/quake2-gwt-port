@@ -31,7 +31,7 @@ import com.googlecode.gwtquake.shared.render.GlAdapter;
  * 
  * @author dsanders/cwei
  */
-public abstract class Base extends GlBase {
+public abstract class GlConstants  {
     
   //  static final int GL_COLOR_INDEX8_EXT = GLAdapter._GL_COLOR_INDEX;
     
