@@ -99,7 +99,7 @@ public class ServerMain {
      */
     public static void SV_DropClient(ClientData drop) {
         // add the disconnect
-        Messages.WriteByte(drop.netchan.message, Defines.svc_disconnect);
+        Buffer.WriteByte(drop.netchan.message, Defines.svc_disconnect);
 
         if (drop.state == Defines.cs_spawned) {
             // call the prog function for removing a client
@@ -468,10 +468,10 @@ public class ServerMain {
         String s;
         String c;
 
-        Messages.BeginReading(Globals.net_message);
-        Messages.ReadLong(Globals.net_message); // skip the -1 marker
+        Buffer.BeginReading(Globals.net_message);
+        Buffer.ReadLong(Globals.net_message); // skip the -1 marker
 
-        s = Messages.ReadStringLine(Globals.net_message);
+        s = Buffer.ReadStringLine(Globals.net_message);
 
         Commands.TokenizeString(s.toCharArray(), false);
 
@@ -576,10 +576,10 @@ public class ServerMain {
 
             // read the qport out of the message so we can fix up
             // stupid address translating routers
-            Messages.BeginReading(Globals.net_message);
-            Messages.ReadLong(Globals.net_message); // sequence number
-            Messages.ReadLong(Globals.net_message); // sequence number
-            qport = Messages.ReadShort(Globals.net_message) & 0xffff;
+            Buffer.BeginReading(Globals.net_message);
+            Buffer.ReadLong(Globals.net_message); // sequence number
+            Buffer.ReadLong(Globals.net_message); // sequence number
+            qport = Buffer.ReadShort(Globals.net_message) & 0xffff;
 
             // check for packets from connected clients
             for (i = 0; i < ServerMain.maxclients.value; i++) {
@@ -920,14 +920,14 @@ public class ServerMain {
         ClientData cl;
 
         Globals.net_message.clear();
-        Messages.WriteByte(Globals.net_message, Defines.svc_print);
-        Messages.WriteByte(Globals.net_message, Defines.PRINT_HIGH);
-        Messages.WriteString(Globals.net_message, message);
+        Buffer.WriteByte(Globals.net_message, Defines.svc_print);
+        Buffer.WriteByte(Globals.net_message, Defines.PRINT_HIGH);
+        Buffer.WriteString(Globals.net_message, message);
 
         if (reconnect)
-            Messages.WriteByte(Globals.net_message, Defines.svc_reconnect);
+            Buffer.WriteByte(Globals.net_message, Defines.svc_reconnect);
         else
-            Messages.WriteByte(Globals.net_message, Defines.svc_disconnect);
+            Buffer.WriteByte(Globals.net_message, Defines.svc_disconnect);
 
         // send it twice
         // stagger the packets to crutch operating system limited buffers

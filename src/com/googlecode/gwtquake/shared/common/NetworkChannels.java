@@ -130,7 +130,7 @@ public final class NetworkChannels extends ServerMain {
         // write the packet header
         Buffer.Init(send, send_buf, Defines.MAX_MSGLEN);
 
-        Messages.WriteInt(send, -1); // -1 sequence means out of band
+        Buffer.WriteInt(send, -1); // -1 sequence means out of band
         Buffer.Write(send, data, length);
 
         // send the datagram
@@ -235,12 +235,12 @@ public final class NetworkChannels extends ServerMain {
         chan.outgoing_sequence++;
         chan.last_sent = (int) Globals.curtime;
 
-        Messages.WriteInt(send, w1);
-        Messages.WriteInt(send, w2);
+        Buffer.WriteInt(send, w1);
+        Buffer.WriteInt(send, w2);
 
         // send the qport if we are a client
         if (chan.sock == Defines.NS_CLIENT)
-            Messages.WriteShort(send, (int) qport.value);
+            Buffer.WriteShort(send, (int) qport.value);
 
         // copy the reliable message to the packet first
         if (send_reliable != 0) {
@@ -288,13 +288,13 @@ public final class NetworkChannels extends ServerMain {
         int qport;
 
         // get sequence numbers
-        Messages.BeginReading(msg);
-        sequence = Messages.ReadLong(msg);
-        sequence_ack = Messages.ReadLong(msg);
+        Buffer.BeginReading(msg);
+        sequence = Buffer.ReadLong(msg);
+        sequence_ack = Buffer.ReadLong(msg);
 
         // read the qport if we are a server
         if (chan.sock == Defines.NS_SERVER)
-            qport = Messages.ReadShort(msg);
+            qport = Buffer.ReadShort(msg);
 
         // achtung unsigned int
         reliable_message = sequence >>> 31;

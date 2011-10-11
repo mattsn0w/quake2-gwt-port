@@ -685,8 +685,8 @@ public class ClientInput {
 		if (Globals.userinfo_modified) {
 			Client.fixUpGender();
 			Globals.userinfo_modified = false;
-			Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_userinfo);
-			Messages.WriteString(Globals.cls.netchan.message, ConsoleVariables.Userinfo());
+			Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_userinfo);
+			Buffer.WriteString(Globals.cls.netchan.message, ConsoleVariables.Userinfo());
 		}
 
 		Buffer.Init(buf, data, data.length);
@@ -702,18 +702,18 @@ public class ClientInput {
 		}
 
 		// begin a client move command
-		Messages.WriteByte(buf, Defines.clc_move);
+		Buffer.WriteByte(buf, Defines.clc_move);
 
 		// save the position for a checksum byte
 		checksumIndex = buf.cursize;
-		Messages.WriteByte(buf, 0);
+		Buffer.WriteByte(buf, 0);
 
 		// let the server know what the last frame we
 		// got was, so the next message can be delta compressed
 		if (cl_nodelta.value != 0.0f || !Globals.cl.frame.valid || Globals.cls.demowaiting)
-			Messages.WriteLong(buf, -1); // no compression
+			Buffer.WriteLong(buf, -1); // no compression
 		else
-			Messages.WriteLong(buf, Globals.cl.frame.serverframe);
+			Buffer.WriteLong(buf, Globals.cl.frame.serverframe);
 
 		// send this and the previous cmds in the message, so
 		// if the last packet was dropped, it can be recovered
@@ -722,19 +722,19 @@ public class ClientInput {
 		//memset (nullcmd, 0, sizeof(nullcmd));
 		nullcmd.clear();
 
-		Messages.WriteDeltaUsercmd(buf, nullcmd, cmd);
+		Delta.WriteDeltaUsercmd(buf, nullcmd, cmd);
 		oldcmd = cmd;
 
 		i = (Globals.cls.netchan.outgoing_sequence - 1) & (Defines.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
 
-		Messages.WriteDeltaUsercmd(buf, oldcmd, cmd);
+		Delta.WriteDeltaUsercmd(buf, oldcmd, cmd);
 		oldcmd = cmd;
 
 		i = (Globals.cls.netchan.outgoing_sequence) & (Defines.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
 
-		Messages.WriteDeltaUsercmd(buf, oldcmd, cmd);
+		Delta.WriteDeltaUsercmd(buf, oldcmd, cmd);
 
 		// calculate a checksum over the move commands
 		buf.data[checksumIndex] = Com.BlockSequenceCRCByte(buf.data, checksumIndex + 1, buf.cursize - checksumIndex - 1,

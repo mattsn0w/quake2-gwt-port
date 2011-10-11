@@ -64,9 +64,9 @@ public class ServerInit {
         if (sv.state != Defines.ss_loading) { 
             // send the update to everyone
             sv.multicast.clear();
-            Messages.WriteChar(sv.multicast, Defines.svc_configstring);
-            Messages.WriteShort(sv.multicast, start + i);
-            Messages.WriteString(sv.multicast, name);
+            Buffer.WriteChar(sv.multicast, Defines.svc_configstring);
+            Buffer.WriteShort(sv.multicast, start + i);
+            Buffer.WriteString(sv.multicast, name);
             ServerSend.SV_Multicast(Globals.vec3_origin, Defines.MULTICAST_ALL_R);
         }
 
