@@ -29,6 +29,8 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.Hashtable;
 
+import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
+
 public class Unpak {
 
   public static class pack_t {
@@ -88,7 +90,7 @@ public class Unpak {
       System.exit(-1);
     }
 
-    createPath(imageSizesFile.getAbsolutePath());
+    QuakeFileSystem.CreatePath(imageSizesFile.getAbsolutePath());
     Writer imageSizes = new FileWriter(imageSizesFile);
     imageSizes.write("var __imageSizes = {\n");
     convertDir(indir, "", imageSizes);
@@ -127,7 +129,7 @@ public class Unpak {
 
     String canonicalPath = new File(outdir, destName).getCanonicalPath();
     File outFile = new File(canonicalPath);
-    createPath(outFile.getAbsolutePath());
+    QuakeFileSystem.CreatePath(outFile.getAbsolutePath());
  //   outFile.createNewFile();
 
     ByteBuffer buf = ByteBuffer.allocateDirect(len);
@@ -157,18 +159,6 @@ public class Unpak {
       outChannel.write(buf);
 
       outStream.close();
-    }
-  }
-
-  private static void createPath(String path) {
-    int index = path.lastIndexOf(File.separatorChar);
-    // -1 if not found and 0 means write to root
-    if (index > 0) {
-      File f = new File(path.substring(0, index));
-      if (!f.mkdirs() && !f.isDirectory()) {
-        System.err.println("can't create path \"" + path + '"' + "\n");
-        System.exit(-1);
-      }
     }
   }
 
