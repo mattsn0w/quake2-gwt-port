@@ -24,7 +24,7 @@
 package com.googlecode.gwtquake.shared.sys;
 
 import com.googlecode.gwtquake.shared.client.ClientInput;
-import com.googlecode.gwtquake.shared.client.Key;
+import com.googlecode.gwtquake.shared.client.Keys;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
@@ -148,10 +148,10 @@ public final class IN extends Globals {
 		KBD kbd=Globals.re.getKeyboardHandler();
 		for (i=0 ; i<3 ; i++) {
 			if ( (IN.mouse_buttonstate & (1<<i)) != 0 && (IN.mouse_oldbuttonstate & (1<<i)) == 0 )
-				kbd.Do_Key_Event(Key.K_MOUSE1 + i, true);
+				kbd.Do_Key_Event(Keys.K_MOUSE1 + i, true);
 	
 			if ( (IN.mouse_buttonstate & (1<<i)) == 0 && (IN.mouse_oldbuttonstate & (1<<i)) != 0 )
-				kbd.Do_Key_Event(Key.K_MOUSE1 + i, false);
+				kbd.Do_Key_Event(Keys.K_MOUSE1 + i, false);
 		}
 		IN.mouse_oldbuttonstate = IN.mouse_buttonstate;		
     }
