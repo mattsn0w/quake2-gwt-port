@@ -49,9 +49,9 @@ public class ServerSend {
 			NetworkChannels.Netchan_OutOfBand(Defines.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
 		}
 		else if (sv_redirected == Defines.RD_CLIENT) {
-			Messages.WriteByte(ServerMain.sv_client.netchan.message, Defines.svc_print);
-			Messages.WriteByte(ServerMain.sv_client.netchan.message, Defines.PRINT_HIGH);
-			Messages.WriteString(ServerMain.sv_client.netchan.message, outputbuf);
+			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Defines.svc_print);
+			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Defines.PRINT_HIGH);
+			Buffer.WriteStringTrimmed(ServerMain.sv_client.netchan.message, outputbuf);
         }
 	}
 	/*
@@ -74,9 +74,9 @@ public class ServerSend {
 		if (level < cl.messagelevel)
 			return;
 
-		Messages.WriteByte(cl.netchan.message, Defines.svc_print);
-		Messages.WriteByte(cl.netchan.message, level);
-		Messages.WriteString(cl.netchan.message, s);
+		Buffer.WriteByte(cl.netchan.message, Defines.svc_print);
+		Buffer.WriteByte(cl.netchan.message, level);
+		Buffer.WriteString(cl.netchan.message, s);
 	}
 	/*
 	=================
@@ -101,9 +101,9 @@ public class ServerSend {
 				continue;
 			if (cl.state != Defines.cs_spawned)
 				continue;
-			Messages.WriteByte(cl.netchan.message, Defines.svc_print);
-			Messages.WriteByte(cl.netchan.message, level);
-			Messages.WriteString(cl.netchan.message, s);
+			Buffer.WriteByte(cl.netchan.message, Defines.svc_print);
+			Buffer.WriteByte(cl.netchan.message, level);
+			Buffer.WriteString(cl.netchan.message, s);
 		}
 	}
 	/*
@@ -118,8 +118,8 @@ public class ServerSend {
 		if (ServerInit.sv.state == 0)
 			return;
 
-		Messages.WriteByte(ServerInit.sv.multicast, Defines.svc_stufftext);
-		Messages.WriteString(ServerInit.sv.multicast, s);
+		Buffer.WriteByte(ServerInit.sv.multicast, Defines.svc_stufftext);
+		Buffer.WriteString(ServerInit.sv.multicast, s);
 		SV_Multicast(null, Defines.MULTICAST_ALL_R);
 	}
 	/*
@@ -312,22 +312,22 @@ public class ServerSend {
 			}
 		}
 
-		Messages.WriteByte(ServerInit.sv.multicast, Defines.svc_sound);
-		Messages.WriteByte(ServerInit.sv.multicast, flags);
-		Messages.WriteByte(ServerInit.sv.multicast, soundindex);
+		Buffer.WriteByte(ServerInit.sv.multicast, Defines.svc_sound);
+		Buffer.WriteByte(ServerInit.sv.multicast, flags);
+		Buffer.WriteByte(ServerInit.sv.multicast, soundindex);
 
 		if ((flags & Defines.SND_VOLUME) != 0)
-			Messages.WriteByte(ServerInit.sv.multicast, volume * 255);
+			Buffer.WriteByte(ServerInit.sv.multicast, (int) (volume * 255));
 		if ((flags & Defines.SND_ATTENUATION) != 0)
-			Messages.WriteByte(ServerInit.sv.multicast, attenuation * 64);
+			Buffer.WriteByte(ServerInit.sv.multicast, (int) (attenuation * 64));
 		if ((flags & Defines.SND_OFFSET) != 0)
-			Messages.WriteByte(ServerInit.sv.multicast, timeofs * 1000);
+			Buffer.WriteByte(ServerInit.sv.multicast, (int) (timeofs * 1000));
 
 		if ((flags & Defines.SND_ENT) != 0)
-			Messages.WriteShort(ServerInit.sv.multicast, sendchan);
+			Buffer.WriteShort(ServerInit.sv.multicast, sendchan);
 
 		if ((flags & Defines.SND_POS) != 0)
-			Messages.WritePos(ServerInit.sv.multicast, origin);
+			Buffer.WritePos(ServerInit.sv.multicast, origin);
 
 		// if the sound doesn't attenuate,send it to everyone
 		// (global radio chatter, voiceovers, etc)

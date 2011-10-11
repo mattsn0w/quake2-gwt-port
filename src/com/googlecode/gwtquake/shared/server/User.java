@@ -32,7 +32,7 @@ import com.googlecode.gwtquake.shared.common.CommandBuffer;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.common.Messages;
+import com.googlecode.gwtquake.shared.common.Delta;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.common.ResourceLoader;
 import com.googlecode.gwtquake.shared.game.Commands;
@@ -168,16 +168,16 @@ public class User {
         gamedir = ConsoleVariables.VariableString("gamedir");
 
         // send the serverdata
-        Messages.WriteByte(ServerMain.sv_client.netchan.message,
+        Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                         Defines.svc_serverdata);
-        Messages.WriteInt(ServerMain.sv_client.netchan.message,
+        Buffer.WriteInt(ServerMain.sv_client.netchan.message,
                 Defines.PROTOCOL_VERSION);
         
-        Messages.WriteLong(ServerMain.sv_client.netchan.message,
+        Buffer.WriteLong(ServerMain.sv_client.netchan.message,
                         ServerInit.svs.spawncount);
-        Messages.WriteByte(ServerMain.sv_client.netchan.message,
+        Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                 ServerInit.sv.attractloop ? 1 : 0);
-        Messages.WriteString(ServerMain.sv_client.netchan.message, gamedir);
+        Buffer.WriteString(ServerMain.sv_client.netchan.message, gamedir);
 
         if (ServerInit.sv.state == Defines.ss_cinematic
                 || ServerInit.sv.state == Defines.ss_pic)
@@ -186,10 +186,10 @@ public class User {
             //playernum = sv_client - svs.clients;
             playernum = ServerMain.sv_client.serverindex;
 
-        Messages.WriteShort(ServerMain.sv_client.netchan.message, playernum);
+        Buffer.WriteShort(ServerMain.sv_client.netchan.message, playernum);
 
         // send full levelname
-        Messages.WriteString(ServerMain.sv_client.netchan.message,
+        Buffer.WriteString(ServerMain.sv_client.netchan.message,
                 ServerInit.sv.configstrings[Defines.CS_NAME]);
 
         //
@@ -203,9 +203,9 @@ public class User {
             ServerMain.sv_client.lastcmd = new UserCommand();
 
             // begin fetching configstrings
-            Messages.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                     Defines.svc_stufftext);
-            Messages.WriteString(ServerMain.sv_client.netchan.message,
+            Buffer.WriteString(ServerMain.sv_client.netchan.message,
                     "cmd configstrings " + ServerInit.svs.spawncount + " 0\n");
         }
         
@@ -239,10 +239,10 @@ public class User {
                 && start < Defines.MAX_CONFIGSTRINGS) {
             if (ServerInit.sv.configstrings[start] != null
                     && ServerInit.sv.configstrings[start].length() != 0) {
-                Messages.WriteByte(ServerMain.sv_client.netchan.message,
+                Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                         Defines.svc_configstring);
-                Messages.WriteShort(ServerMain.sv_client.netchan.message, start);
-                Messages.WriteString(ServerMain.sv_client.netchan.message,
+                Buffer.WriteShort(ServerMain.sv_client.netchan.message, start);
+                Buffer.WriteString(ServerMain.sv_client.netchan.message,
                         ServerInit.sv.configstrings[start]);
             }
             start++;
@@ -251,14 +251,14 @@ public class User {
         // send next command
 
         if (start == Defines.MAX_CONFIGSTRINGS) {
-            Messages.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                     Defines.svc_stufftext);
-            Messages.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
+            Buffer.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
                     + ServerInit.svs.spawncount + " 0\n");
         } else {
-            Messages.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                     Defines.svc_stufftext);
-            Messages.WriteString(ServerMain.sv_client.netchan.message,
+            Buffer.WriteString(ServerMain.sv_client.netchan.message,
                     "cmd configstrings " + ServerInit.svs.spawncount + " " + start
                             + "\n");
         }
@@ -297,9 +297,9 @@ public class User {
                 && start < Defines.MAX_EDICTS) {
             base = ServerInit.sv.baselines[start];
             if (base.modelindex != 0 || base.sound != 0 || base.effects != 0) {
-                Messages.WriteByte(ServerMain.sv_client.netchan.message,
+                Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                         Defines.svc_spawnbaseline);
-                Messages.WriteDeltaEntity(nullstate, base,
+                Delta.WriteDeltaEntity(nullstate, base,
                         ServerMain.sv_client.netchan.message, true, true);
             }
             start++;
@@ -308,14 +308,14 @@ public class User {
         // send next command
 
         if (start == Defines.MAX_EDICTS) {
-            Messages.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                     Defines.svc_stufftext);
-            Messages.WriteString(ServerMain.sv_client.netchan.message, "precache "
+            Buffer.WriteString(ServerMain.sv_client.netchan.message, "precache "
                     + ServerInit.svs.spawncount + "\n");
         } else {
-            Messages.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                     Defines.svc_stufftext);
-            Messages.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
+            Buffer.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
                     + ServerInit.svs.spawncount + " " + start + "\n");
         }
     }
@@ -358,15 +358,15 @@ public class User {
         if (r > 1024)
             r = 1024;
 
-        Messages.WriteByte(ServerMain.sv_client.netchan.message, Defines.svc_download);
-        Messages.WriteShort(ServerMain.sv_client.netchan.message, r);
+        Buffer.WriteByte(ServerMain.sv_client.netchan.message, Defines.svc_download);
+        Buffer.WriteShort(ServerMain.sv_client.netchan.message, r);
 
         ServerMain.sv_client.downloadcount += r;
         size = ServerMain.sv_client.downloadsize;
         if (size == 0)
             size = 1;
         percent = ServerMain.sv_client.downloadcount * 100 / size;
-        Messages.WriteByte(ServerMain.sv_client.netchan.message, percent);
+        Buffer.WriteByte(ServerMain.sv_client.netchan.message, percent);
         Buffer.Write(ServerMain.sv_client.netchan.message, ServerMain.sv_client.download,
                 ServerMain.sv_client.downloadcount - r, r);
 
@@ -409,10 +409,10 @@ public class User {
                                                                                         // subdirectory
                 || name.indexOf('/') == -1) { // don't allow anything with ..
                                               // path
-            Messages.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                     Defines.svc_download);
-            Messages.WriteShort(ServerMain.sv_client.netchan.message, -1);
-            Messages.WriteByte(ServerMain.sv_client.netchan.message, 0);
+            Buffer.WriteShort(ServerMain.sv_client.netchan.message, -1);
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message, 0);
             return;
         }
 
@@ -445,10 +445,10 @@ public class User {
                 ServerMain.sv_client.download = null;
             }
 
-            Messages.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
                     Defines.svc_download);
-            Messages.WriteShort(ServerMain.sv_client.netchan.message, -1);
-            Messages.WriteByte(ServerMain.sv_client.netchan.message, 0);
+            Buffer.WriteShort(ServerMain.sv_client.netchan.message, -1);
+            Buffer.WriteByte(ServerMain.sv_client.netchan.message, 0);
             return;
         }
 
@@ -599,7 +599,7 @@ public class User {
                 return;
             }
 
-            c = Messages.ReadByte(Globals.net_message);
+            c = Buffer.ReadByte(Globals.net_message);
             if (c == -1)
                 break;
 
@@ -613,7 +613,7 @@ public class User {
                 break;
 
             case Defines.clc_userinfo:
-                cl.userinfo = Messages.ReadString(Globals.net_message);
+                cl.userinfo = Buffer.ReadString(Globals.net_message);
                 ServerMain.SV_UserinfoChanged(cl);
                 break;
 
@@ -623,8 +623,8 @@ public class User {
 
                 move_issued = true;
                 checksumIndex = Globals.net_message.readcount;
-                checksum = Messages.ReadByte(Globals.net_message);
-                lastframe = Messages.ReadLong(Globals.net_message);
+                checksum = Buffer.ReadByte(Globals.net_message);
+                lastframe = Buffer.ReadLong(Globals.net_message);
 
                 if (lastframe != cl.lastframe) {
                     cl.lastframe = lastframe;
@@ -637,9 +637,9 @@ public class User {
 
                 //memset (nullcmd, 0, sizeof(nullcmd));
                 nullcmd = new UserCommand();
-                Messages.ReadDeltaUsercmd(Globals.net_message, nullcmd, oldest);
-                Messages.ReadDeltaUsercmd(Globals.net_message, oldest, oldcmd);
-                Messages.ReadDeltaUsercmd(Globals.net_message, oldcmd, newcmd);
+                Delta.ReadDeltaUsercmd(Globals.net_message, nullcmd, oldest);
+                Delta.ReadDeltaUsercmd(Globals.net_message, oldest, oldcmd);
+                Delta.ReadDeltaUsercmd(Globals.net_message, oldcmd, newcmd);
 
                 if (cl.state != Defines.cs_spawned) {
                     cl.lastframe = -1;
@@ -687,7 +687,7 @@ public class User {
                 break;
 
             case Defines.clc_stringcmd:
-                s = Messages.ReadString(Globals.net_message);
+                s = Buffer.ReadString(Globals.net_message);
 
                 // malicious users may try using too many string commands
                 if (++stringCmdCount < User.MAX_STRINGCMDS)

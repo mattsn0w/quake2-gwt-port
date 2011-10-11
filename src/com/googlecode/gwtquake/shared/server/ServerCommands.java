@@ -40,7 +40,6 @@ import com.googlecode.gwtquake.shared.common.ConsoleVariables;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.common.NetworkAddress;
 import com.googlecode.gwtquake.shared.common.NetworkChannels;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
@@ -972,21 +971,21 @@ public class ServerCommands {
 		// to make sure the protocol is right, and to set the gamedir
 		//
 		// send the serverdata
-		Messages.WriteByte(buf, Defines.svc_serverdata);
-		Messages.WriteLong(buf, Defines.PROTOCOL_VERSION);
-		Messages.WriteLong(buf, ServerInit.svs.spawncount);
+		Buffer.WriteByte(buf, Defines.svc_serverdata);
+		Buffer.WriteLong(buf, Defines.PROTOCOL_VERSION);
+		Buffer.WriteLong(buf, ServerInit.svs.spawncount);
 		// 2 means server demo
-		Messages.WriteByte(buf, 2); // demos are always attract loops
-		Messages.WriteString(buf, ConsoleVariables.VariableString("gamedir"));
-		Messages.WriteShort(buf, -1);
+		Buffer.WriteByte(buf, 2); // demos are always attract loops
+		Buffer.WriteString(buf, ConsoleVariables.VariableString("gamedir"));
+		Buffer.WriteShort(buf, -1);
 		// send full levelname
-		Messages.WriteString(buf, ServerInit.sv.configstrings[Defines.CS_NAME]);
+		Buffer.WriteString(buf, ServerInit.sv.configstrings[Defines.CS_NAME]);
 
 		for (i = 0; i < Defines.MAX_CONFIGSTRINGS; i++)
 			if (ServerInit.sv.configstrings[i].length() == 0) {
-				Messages.WriteByte(buf, Defines.svc_configstring);
-				Messages.WriteShort(buf, i);
-				Messages.WriteString(buf, ServerInit.sv.configstrings[i]);
+				Buffer.WriteByte(buf, Defines.svc_configstring);
+				Buffer.WriteShort(buf, i);
+				Buffer.WriteString(buf, ServerInit.sv.configstrings[i]);
 			}
 
 		// write it to the demo file

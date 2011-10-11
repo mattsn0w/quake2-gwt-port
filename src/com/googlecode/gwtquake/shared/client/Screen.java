@@ -60,7 +60,6 @@ import com.googlecode.gwtquake.shared.common.Compatibility;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.common.ResourceLoader;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
@@ -1409,7 +1408,7 @@ public final class Screen {
      */
     static void FinishCinematic() {
         // tell the server to advance to the next map / cinematic
-        Messages.WriteByte(cls.netchan.message, clc_stringcmd);
+        Buffer.WriteByte(cls.netchan.message, clc_stringcmd);
         Buffer.Print(cls.netchan.message, "nextserver " + cl.servercount + '\n');
         re.showVideo(null);
     }

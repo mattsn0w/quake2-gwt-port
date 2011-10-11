@@ -34,7 +34,6 @@ import com.googlecode.gwtquake.shared.common.CommandBuffer;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.EntityState;
@@ -117,13 +116,13 @@ public class ClientParser {
 
             // give the server an offset to start the download
             Com.Printf("Resuming " + Globals.cls.downloadname + "\n");
-            Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
-            Messages.WriteString(Globals.cls.netchan.message, "download "
+            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteString(Globals.cls.netchan.message, "download "
                     + Globals.cls.downloadname + " " + len);
         } else {
             Com.Printf("Downloading " + Globals.cls.downloadname + "\n");
-            Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
-            Messages.WriteString(Globals.cls.netchan.message, "download "
+            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteString(Globals.cls.netchan.message, "download "
                     + Globals.cls.downloadname);
         }
 
@@ -169,8 +168,8 @@ public class ClientParser {
                     .StripExtension(Globals.cls.downloadname);
             Globals.cls.downloadtempname += ".tmp";
 
-            Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
-            Messages.WriteString(Globals.cls.netchan.message, "download "
+            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteString(Globals.cls.netchan.message, "download "
                     + Globals.cls.downloadname);
 
             Globals.cls.downloadnumber++;
@@ -207,8 +206,8 @@ public class ClientParser {
     public static void ParseDownload() {
 
         // read the data
-        int size = Messages.ReadShort(Globals.net_message);
-        int percent = Messages.ReadByte(Globals.net_message);
+        int size = Buffer.ReadShort(Globals.net_message);
+        int percent = Buffer.ReadByte(Globals.net_message);
         if (size == -1) {
             Com.Printf("Server does not have this file.\n");
             if (Globals.cls.download != null) {
@@ -252,7 +251,7 @@ public class ClientParser {
             // request next block
             //	   change display routines by zoid
             Globals.cls.downloadpercent = percent;
-            Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+            Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
             Buffer.Print(Globals.cls.netchan.message, "nextdl");
         } else {
             String oldn, newn;
@@ -306,7 +305,7 @@ public class ClientParser {
         Globals.cls.state = Defines.ca_connected;
 
         //	   parse protocol version number
-        i = Messages.ReadLong(Globals.net_message);
+        i = Buffer.ReadLong(Globals.net_message);
         Globals.cls.serverProtocol = i;
 
         // BIG HACK to let demos from release work with the 3.0x patch!!!
@@ -315,11 +314,11 @@ public class ClientParser {
             Com.Error(Defines.ERR_DROP, "Server returned version " + i
                     + ", not " + Defines.PROTOCOL_VERSION);
 
-        Globals.cl.servercount = Messages.ReadLong(Globals.net_message);
-        Globals.cl.attractloop = Messages.ReadByte(Globals.net_message) != 0;
+        Globals.cl.servercount = Buffer.ReadLong(Globals.net_message);
+        Globals.cl.attractloop = Buffer.ReadByte(Globals.net_message) != 0;
 
         // game directory
-        str = Messages.ReadString(Globals.net_message);
+        str = Buffer.ReadString(Globals.net_message);
         Globals.cl.gamedir = str;
         Com.dprintln("gamedir=" + str);
 
@@ -334,10 +333,10 @@ public class ClientParser {
 //            Cvar.Set("game", str);
 
         // parse player entity number
-        Globals.cl.playernum = Messages.ReadShort(Globals.net_message);
+        Globals.cl.playernum = Buffer.ReadShort(Globals.net_message);
         Com.dprintln("numplayers=" + Globals.cl.playernum);
         // get the full level name
-        str = Messages.ReadString(Globals.net_message);
+        str = Buffer.ReadString(Globals.net_message);
         Com.dprintln("levelname=" + str);
 
         if (Globals.cl.playernum == -1) { // playing a cinematic or showing a
@@ -536,12 +535,12 @@ public class ClientParser {
      * ================ CL_ParseConfigString ================
      */
     public static void ParseConfigString() {
-        int i = Messages.ReadShort(Globals.net_message);
+        int i = Buffer.ReadShort(Globals.net_message);
 
         if (i < 0 || i >= Defines.MAX_CONFIGSTRINGS)
             Com.Error(Defines.ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
 
-        String s = Messages.ReadString(Globals.net_message);
+        String s = Buffer.ReadString(Globals.net_message);
 
         String olds = Globals.cl.configstrings[i];
         Globals.cl.configstrings[i] = s;
@@ -605,31 +604,31 @@ public class ClientParser {
      * ================== CL_ParseStartSoundPacket ==================
      */
     public static void ParseStartSoundPacket() {
-        int flags = Messages.ReadByte(Globals.net_message);
-        int sound_num = Messages.ReadByte(Globals.net_message);
+        int flags = Buffer.ReadByte(Globals.net_message);
+        int sound_num = Buffer.ReadByte(Globals.net_message);
 
         float volume;
         if ((flags & Defines.SND_VOLUME) != 0)
-            volume = Messages.ReadByte(Globals.net_message) / 255.0f;
+            volume = Buffer.ReadByte(Globals.net_message) / 255.0f;
         else
             volume = Defines.DEFAULT_SOUND_PACKET_VOLUME;
 
         float attenuation;
         if ((flags & Defines.SND_ATTENUATION) != 0)
-            attenuation = Messages.ReadByte(Globals.net_message) / 64.0f;
+            attenuation = Buffer.ReadByte(Globals.net_message) / 64.0f;
         else
             attenuation = Defines.DEFAULT_SOUND_PACKET_ATTENUATION;
 
         float ofs;
         if ((flags & Defines.SND_OFFSET) != 0)
-            ofs = Messages.ReadByte(Globals.net_message) / 1000.0f;
+            ofs = Buffer.ReadByte(Globals.net_message) / 1000.0f;
         else
             ofs = 0;
 
         int channel;
         int ent;
         if ((flags & Defines.SND_ENT) != 0) { // entity reletive
-            channel = Messages.ReadShort(Globals.net_message);
+            channel = Buffer.ReadShort(Globals.net_message);
             ent = channel >> 3;
             if (ent > Defines.MAX_EDICTS)
                 Com.Error(Defines.ERR_DROP, "CL_ParseStartSoundPacket: ent = "
@@ -643,7 +642,7 @@ public class ClientParser {
 
         float pos[];
         if ((flags & Defines.SND_POS) != 0) { // positioned in space
-            Messages.ReadPos(Globals.net_message, pos_v);
+            Buffer.ReadPos(Globals.net_message, pos_v);
             // is ok. sound driver copies
             pos = pos_v;
         } else
@@ -684,7 +683,7 @@ public class ClientParser {
                 break;
             }
 
-            int cmd = Messages.ReadByte(Globals.net_message);
+            int cmd = Buffer.ReadByte(Globals.net_message);
 
             if (cmd == -1) {
                 SHOWNET("END OF MESSAGE");
@@ -730,23 +729,23 @@ public class ClientParser {
                 break;
 
             case Defines.svc_print:
-                int i = Messages.ReadByte(Globals.net_message);
+                int i = Buffer.ReadByte(Globals.net_message);
                 if (i == Defines.PRINT_CHAT) {
                     Sound.StartLocalSound("misc/talk.wav");
                     Globals.con.ormask = 128;
                 }
-                String msgText = Messages.ReadString(Globals.net_message);
+                String msgText = Buffer.ReadString(Globals.net_message);
                 Com.Printf(msgText);
                 WebIntegration.onNetMessage(msgText);
                 Globals.con.ormask = 0;
                 break;
 
             case Defines.svc_centerprint:
-                Screen.CenterPrint(Messages.ReadString(Globals.net_message));
+                Screen.CenterPrint(Buffer.ReadString(Globals.net_message));
                 break;
 
             case Defines.svc_stufftext:
-                String s = Messages.ReadString(Globals.net_message);
+                String s = Buffer.ReadString(Globals.net_message);
                 Com.DPrintf("stufftext: " + s + "\n");
                 CommandBuffer.AddText(s);
                 break;
@@ -794,7 +793,7 @@ public class ClientParser {
                 break;
 
             case Defines.svc_layout:
-        	Globals.cl.layout = Messages.ReadString(Globals.net_message);
+        	Globals.cl.layout = Buffer.ReadString(Globals.net_message);
                 break;
 
             case Defines.svc_playerinfo:

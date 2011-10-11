@@ -108,8 +108,8 @@ public class ServerGame {
         if (n < 1 || n > ServerMain.maxclients.value)
             return; // Com_Error (ERR_DROP, "centerprintf to a non-client");
 
-        Messages.WriteByte(ServerInit.sv.multicast, Defines.svc_centerprint);
-        Messages.WriteString(ServerInit.sv.multicast, fmt);
+        Buffer.WriteByte(ServerInit.sv.multicast, Defines.svc_centerprint);
+        Buffer.WriteString(ServerInit.sv.multicast, fmt);
         PF_Unicast(ent, true);
     }
 
@@ -168,48 +168,48 @@ public class ServerGame {
         if (ServerInit.sv.state != Defines.ss_loading) { // send the update to
                                                       // everyone
             ServerInit.sv.multicast.clear();
-            Messages.WriteChar(ServerInit.sv.multicast, Defines.svc_configstring);
-            Messages.WriteShort(ServerInit.sv.multicast, index);
-            Messages.WriteString(ServerInit.sv.multicast, val);
+            Buffer.WriteChar(ServerInit.sv.multicast, Defines.svc_configstring);
+            Buffer.WriteShort(ServerInit.sv.multicast, index);
+            Buffer.WriteString(ServerInit.sv.multicast, val);
 
             ServerSend.SV_Multicast(Globals.vec3_origin, Defines.MULTICAST_ALL_R);
         }
     }
 
     public static void PF_WriteChar(int c) {
-        Messages.WriteChar(ServerInit.sv.multicast, c);
+        Buffer.WriteChar(ServerInit.sv.multicast, c);
     }
 
     public static void PF_WriteByte(int c) {
-        Messages.WriteByte(ServerInit.sv.multicast, c);
+        Buffer.WriteByte(ServerInit.sv.multicast, c);
     }
 
     public static void PF_WriteShort(int c) {
-        Messages.WriteShort(ServerInit.sv.multicast, c);
+        Buffer.WriteShort(ServerInit.sv.multicast, c);
     }
 
     public static void PF_WriteLong(int c) {
-        Messages.WriteLong(ServerInit.sv.multicast, c);
+        Buffer.WriteLong(ServerInit.sv.multicast, c);
     }
 
     public static void PF_WriteFloat(float f) {
-        Messages.WriteFloat(ServerInit.sv.multicast, f);
+        Buffer.WriteFloat(ServerInit.sv.multicast, f);
     }
 
     public static void PF_WriteString(String s) {
-        Messages.WriteString(ServerInit.sv.multicast, s);
+        Buffer.WriteString(ServerInit.sv.multicast, s);
     }
 
     public static void PF_WritePos(float[] pos) {
-        Messages.WritePos(ServerInit.sv.multicast, pos);
+        Buffer.WritePos(ServerInit.sv.multicast, pos);
     }
 
     public static void PF_WriteDir(float[] dir) {
-        Messages.WriteDir(ServerInit.sv.multicast, dir);
+        Buffer.WriteDir(ServerInit.sv.multicast, dir);
     }
 
     public static void PF_WriteAngle(float f) {
-        Messages.WriteAngle(ServerInit.sv.multicast, f);
+        Buffer.WriteAngle(ServerInit.sv.multicast, f);
     }
 
     /**

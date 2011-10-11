@@ -1167,7 +1167,7 @@ public final class Commands {
             return;
         }
 
-        Messages.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
+        Buffer.WriteByte(Globals.cls.netchan.message, Defines.clc_stringcmd);
         Buffer.Print(Globals.cls.netchan.message, cmd);
         if (Commands.Argc() > 1) {
             Buffer.Print(Globals.cls.netchan.message, " ");

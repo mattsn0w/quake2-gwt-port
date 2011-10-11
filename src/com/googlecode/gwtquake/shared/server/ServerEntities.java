@@ -61,7 +61,7 @@ public class ServerEntities {
         int from_num_entities;
         int bits;
 
-        Messages.WriteByte(msg, Defines.svc_packetentities);
+        Buffer.WriteByte(msg, Defines.svc_packetentities);
 
         if (from == null)
             from_num_entities = 0;
@@ -94,7 +94,7 @@ public class ServerEntities {
                 // all note that players are always 'newentities', this updates
                 // their oldorigin always
                 // and prevents warping
-                Messages.WriteDeltaEntity(oldent, newent, msg, false,
+                Delta.WriteDeltaEntity(oldent, newent, msg, false,
                         newent.number <= ServerMain.maxclients.value);
                 oldindex++;
                 newindex++;
@@ -103,7 +103,7 @@ public class ServerEntities {
 
             if (newnum < oldnum) { 
             	// this is a new entity, send it from the baseline
-                Messages.WriteDeltaEntity(ServerInit.sv.baselines[newnum], newent, msg,
+                Delta.WriteDeltaEntity(ServerInit.sv.baselines[newnum], newent, msg,
                         true, true);
                 newindex++;
                 continue;
@@ -115,21 +115,21 @@ public class ServerEntities {
                 if (oldnum >= 256)
                     bits |= Defines.U_NUMBER16 | Defines.U_MOREBITS1;
 
-                Messages.WriteByte(msg, bits & 255);
+                Buffer.WriteByte(msg, bits & 255);
                 if ((bits & 0x0000ff00) != 0)
-                    Messages.WriteByte(msg, (bits >> 8) & 255);
+                    Buffer.WriteByte(msg, (bits >> 8) & 255);
 
                 if ((bits & Defines.U_NUMBER16) != 0)
-                    Messages.WriteShort(msg, oldnum);
+                    Buffer.WriteShort(msg, oldnum);
                 else
-                    Messages.WriteByte(msg, oldnum);
+                    Buffer.WriteByte(msg, oldnum);
 
                 oldindex++;
                 continue;
             }
         }
 
-        Messages.WriteShort(msg, 0); // end of packetentities
+        Buffer.WriteShort(msg, 0); // end of packetentities
 
     }
 
@@ -215,93 +215,93 @@ public class ServerEntities {
         pflags |= Defines.PS_WEAPONINDEX;
 
         // write it
-        Messages.WriteByte(msg, Defines.svc_playerinfo);
-        Messages.WriteShort(msg, pflags);
+        Buffer.WriteByte(msg, Defines.svc_playerinfo);
+        Buffer.WriteShort(msg, pflags);
 
         // write the pmove_state_t
         if ((pflags & Defines.PS_M_TYPE) != 0)
-            Messages.WriteByte(msg, ps.pmove.pm_type);
+            Buffer.WriteByte(msg, ps.pmove.pm_type);
 
         if ((pflags & Defines.PS_M_ORIGIN) != 0) {
-            Messages.WriteShort(msg, ps.pmove.origin[0]);
-            Messages.WriteShort(msg, ps.pmove.origin[1]);
-            Messages.WriteShort(msg, ps.pmove.origin[2]);
+            Buffer.WriteShort(msg, ps.pmove.origin[0]);
+            Buffer.WriteShort(msg, ps.pmove.origin[1]);
+            Buffer.WriteShort(msg, ps.pmove.origin[2]);
         }
 
         if ((pflags & Defines.PS_M_VELOCITY) != 0) {
-            Messages.WriteShort(msg, ps.pmove.velocity[0]);
-            Messages.WriteShort(msg, ps.pmove.velocity[1]);
-            Messages.WriteShort(msg, ps.pmove.velocity[2]);
+            Buffer.WriteShort(msg, ps.pmove.velocity[0]);
+            Buffer.WriteShort(msg, ps.pmove.velocity[1]);
+            Buffer.WriteShort(msg, ps.pmove.velocity[2]);
         }
 
         if ((pflags & Defines.PS_M_TIME) != 0)
-            Messages.WriteByte(msg, ps.pmove.pm_time);
+            Buffer.WriteByte(msg, ps.pmove.pm_time);
 
         if ((pflags & Defines.PS_M_FLAGS) != 0)
-            Messages.WriteByte(msg, ps.pmove.pm_flags);
+            Buffer.WriteByte(msg, ps.pmove.pm_flags);
 
         if ((pflags & Defines.PS_M_GRAVITY) != 0)
-            Messages.WriteShort(msg, ps.pmove.gravity);
+            Buffer.WriteShort(msg, ps.pmove.gravity);
 
         if ((pflags & Defines.PS_M_DELTA_ANGLES) != 0) {
-            Messages.WriteShort(msg, ps.pmove.delta_angles[0]);
-            Messages.WriteShort(msg, ps.pmove.delta_angles[1]);
-            Messages.WriteShort(msg, ps.pmove.delta_angles[2]);
+            Buffer.WriteShort(msg, ps.pmove.delta_angles[0]);
+            Buffer.WriteShort(msg, ps.pmove.delta_angles[1]);
+            Buffer.WriteShort(msg, ps.pmove.delta_angles[2]);
         }
 
         // write the rest of the player_state_t
         if ((pflags & Defines.PS_VIEWOFFSET) != 0) {
-            Messages.WriteChar(msg, ps.viewoffset[0] * 4);
-            Messages.WriteChar(msg, ps.viewoffset[1] * 4);
-            Messages.WriteChar(msg, ps.viewoffset[2] * 4);
+            Buffer.WriteChar(msg, (int) (ps.viewoffset[0] * 4));
+            Buffer.WriteChar(msg, (int) (ps.viewoffset[1] * 4));
+            Buffer.WriteChar(msg, (int) (ps.viewoffset[2] * 4));
         }
 
         if ((pflags & Defines.PS_VIEWANGLES) != 0) {
-            Messages.WriteAngle16(msg, ps.viewangles[0]);
-            Messages.WriteAngle16(msg, ps.viewangles[1]);
-            Messages.WriteAngle16(msg, ps.viewangles[2]);
+            Buffer.WriteAngle16(msg, ps.viewangles[0]);
+            Buffer.WriteAngle16(msg, ps.viewangles[1]);
+            Buffer.WriteAngle16(msg, ps.viewangles[2]);
         }
 
         if ((pflags & Defines.PS_KICKANGLES) != 0) {
-            Messages.WriteChar(msg, ps.kick_angles[0] * 4);
-            Messages.WriteChar(msg, ps.kick_angles[1] * 4);
-            Messages.WriteChar(msg, ps.kick_angles[2] * 4);
+            Buffer.WriteChar(msg, (int) (ps.kick_angles[0] * 4));
+            Buffer.WriteChar(msg, (int) (ps.kick_angles[1] * 4));
+            Buffer.WriteChar(msg, (int) (ps.kick_angles[2] * 4));
         }
 
         if ((pflags & Defines.PS_WEAPONINDEX) != 0) {
-            Messages.WriteByte(msg, ps.gunindex);
+            Buffer.WriteByte(msg, ps.gunindex);
         }
 
         if ((pflags & Defines.PS_WEAPONFRAME) != 0) {
-            Messages.WriteByte(msg, ps.gunframe);
-            Messages.WriteChar(msg, ps.gunoffset[0] * 4);
-            Messages.WriteChar(msg, ps.gunoffset[1] * 4);
-            Messages.WriteChar(msg, ps.gunoffset[2] * 4);
-            Messages.WriteChar(msg, ps.gunangles[0] * 4);
-            Messages.WriteChar(msg, ps.gunangles[1] * 4);
-            Messages.WriteChar(msg, ps.gunangles[2] * 4);
+            Buffer.WriteByte(msg, ps.gunframe);
+            Buffer.WriteChar(msg, (int) (ps.gunoffset[0] * 4));
+            Buffer.WriteChar(msg, (int) (ps.gunoffset[1] * 4));
+            Buffer.WriteChar(msg, (int) (ps.gunoffset[2] * 4));
+            Buffer.WriteChar(msg, (int) (ps.gunangles[0] * 4));
+            Buffer.WriteChar(msg, (int) (ps.gunangles[1] * 4));
+            Buffer.WriteChar(msg, (int) (ps.gunangles[2] * 4));
         }
 
         if ((pflags & Defines.PS_BLEND) != 0) {
-            Messages.WriteByte(msg, ps.blend[0] * 255);
-            Messages.WriteByte(msg, ps.blend[1] * 255);
-            Messages.WriteByte(msg, ps.blend[2] * 255);
-            Messages.WriteByte(msg, ps.blend[3] * 255);
+            Buffer.WriteByte(msg, (int) (ps.blend[0] * 255));
+            Buffer.WriteByte(msg, (int) (ps.blend[1] * 255));
+            Buffer.WriteByte(msg, (int) (ps.blend[2] * 255));
+            Buffer.WriteByte(msg, (int) (ps.blend[3] * 255));
         }
         if ((pflags & Defines.PS_FOV) != 0)
-            Messages.WriteByte(msg, ps.fov);
+			Buffer.WriteByte(msg, (int) ps.fov);
         if ((pflags & Defines.PS_RDFLAGS) != 0)
-            Messages.WriteByte(msg, ps.rdflags);
+            Buffer.WriteByte(msg, ps.rdflags);
 
         // send stats
         statbits = 0;
         for (i = 0; i < Defines.MAX_STATS; i++)
             if (ps.stats[i] != ops.stats[i])
                 statbits |= 1 << i;
-        Messages.WriteLong(msg, statbits);
+        Buffer.WriteLong(msg, statbits);
         for (i = 0; i < Defines.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)
-                Messages.WriteShort(msg, ps.stats[i]);
+                Buffer.WriteShort(msg, ps.stats[i]);
     }
 
     /**
@@ -330,14 +330,14 @@ public class ServerEntities {
             lastframe = client.lastframe;
         }
 
-        Messages.WriteByte(msg, Defines.svc_frame);
-        Messages.WriteLong(msg, ServerInit.sv.framenum);
-        Messages.WriteLong(msg, lastframe); // what we are delta'ing from
-        Messages.WriteByte(msg, client.surpressCount); // rate dropped packets
+        Buffer.WriteByte(msg, Defines.svc_frame);
+        Buffer.WriteLong(msg, ServerInit.sv.framenum);
+        Buffer.WriteLong(msg, lastframe); // what we are delta'ing from
+        Buffer.WriteByte(msg, client.surpressCount); // rate dropped packets
         client.surpressCount = 0;
 
         // send over the areabits
-        Messages.WriteByte(msg, frame.areabytes);
+        Buffer.WriteByte(msg, frame.areabytes);
         Buffer.Write(msg, frame.areabits, frame.areabytes);
 
         // delta encode the playerstate
@@ -552,10 +552,10 @@ public class ServerEntities {
         Buffer.Init(buf, buf_data, buf_data.length);
 
         // write a frame message that doesn't contain a player_state_t
-        Messages.WriteByte(buf, Defines.svc_frame);
-        Messages.WriteLong(buf, ServerInit.sv.framenum);
+        Buffer.WriteByte(buf, Defines.svc_frame);
+        Buffer.WriteLong(buf, ServerInit.sv.framenum);
 
-        Messages.WriteByte(buf, Defines.svc_packetentities);
+        Buffer.WriteByte(buf, Defines.svc_packetentities);
 
         e = 1;
         ent = GameBase.g_edicts[e];
@@ -567,13 +567,13 @@ public class ServerEntities {
                     && (ent.s.modelindex != 0 || ent.s.effects != 0
                             || ent.s.sound != 0 || ent.s.event != 0)
                     && 0 == (ent.svflags & Defines.SVF_NOCLIENT))
-                Messages.WriteDeltaEntity(nostate, ent.s, buf, false, true);
+                Delta.WriteDeltaEntity(nostate, ent.s, buf, false, true);
 
             e++;
             ent = GameBase.g_edicts[e];
         }
 
-        Messages.WriteShort(buf, 0); // end of packetentities
+        Buffer.WriteShort(buf, 0); // end of packetentities
 
         // now add the accumulated multicast information
         Buffer.Write(buf, ServerInit.svs.demo_multicast.data,

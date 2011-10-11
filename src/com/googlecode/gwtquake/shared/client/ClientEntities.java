@@ -24,10 +24,10 @@
 package com.googlecode.gwtquake.shared.client;
 
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
+import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.game.EntityState;
 import com.googlecode.gwtquake.shared.game.PlayerMove;
 import com.googlecode.gwtquake.shared.game.PlayerState;
@@ -62,20 +62,20 @@ public class ClientEntities {
 		int i;
 		int number;
 
-		total = Messages.ReadByte(Globals.net_message);
+		total = Buffer.ReadByte(Globals.net_message);
 		if ((total & Defines.U_MOREBITS1) != 0) {
 		    
-			b = Messages.ReadByte(Globals.net_message);
+			b = Buffer.ReadByte(Globals.net_message);
 			total |= b << 8;
 		}
 		if ((total & Defines.U_MOREBITS2) != 0) {
 		    
-			b = Messages.ReadByte(Globals.net_message);
+			b = Buffer.ReadByte(Globals.net_message);
 			total |= b << 16;
 		}
 		if ((total & Defines.U_MOREBITS3) != 0) {
 		    
-			b = Messages.ReadByte(Globals.net_message);
+			b = Buffer.ReadByte(Globals.net_message);
 			total |= b << 24;
 		}
 
@@ -85,9 +85,9 @@ public class ClientEntities {
 				bitcounts[i]++;
 
 		if ((total & Defines.U_NUMBER16) != 0)
-			number = Messages.ReadShort(Globals.net_message);
+			number = Buffer.ReadShort(Globals.net_message);
 		else
-			number = Messages.ReadByte(Globals.net_message);
+			number = Buffer.ReadByte(Globals.net_message);
 
 		bits[0] = total;
 
@@ -108,70 +108,70 @@ public class ClientEntities {
 		to.number = number;
 
 		if ((bits & Defines.U_MODEL) != 0)
-			to.modelindex = Messages.ReadByte(Globals.net_message);
+			to.modelindex = Buffer.ReadByte(Globals.net_message);
 		if ((bits & Defines.U_MODEL2) != 0)
-			to.modelindex2 = Messages.ReadByte(Globals.net_message);
+			to.modelindex2 = Buffer.ReadByte(Globals.net_message);
 		if ((bits & Defines.U_MODEL3) != 0)
-			to.modelindex3 = Messages.ReadByte(Globals.net_message);
+			to.modelindex3 = Buffer.ReadByte(Globals.net_message);
 		if ((bits & Defines.U_MODEL4) != 0)
-			to.modelindex4 = Messages.ReadByte(Globals.net_message);
+			to.modelindex4 = Buffer.ReadByte(Globals.net_message);
 
 		if ((bits & Defines.U_FRAME8) != 0)
-			to.frame = Messages.ReadByte(Globals.net_message);
+			to.frame = Buffer.ReadByte(Globals.net_message);
 		if ((bits & Defines.U_FRAME16) != 0)
-			to.frame = Messages.ReadShort(Globals.net_message);
+			to.frame = Buffer.ReadShort(Globals.net_message);
 
 		if ((bits & Defines.U_SKIN8) != 0 && (bits & Defines.U_SKIN16) != 0) //used
 																			 // for
 																			 // laser
 																			 // colors
-			to.skinnum = Messages.ReadLong(Globals.net_message);
+			to.skinnum = Buffer.ReadLong(Globals.net_message);
 		else if ((bits & Defines.U_SKIN8) != 0)
-			to.skinnum = Messages.ReadByte(Globals.net_message);
+			to.skinnum = Buffer.ReadByte(Globals.net_message);
 		else if ((bits & Defines.U_SKIN16) != 0)
-			to.skinnum = Messages.ReadShort(Globals.net_message);
+			to.skinnum = Buffer.ReadShort(Globals.net_message);
 
 		if ((bits & (Defines.U_EFFECTS8 | Defines.U_EFFECTS16)) == (Defines.U_EFFECTS8 | Defines.U_EFFECTS16))
-			to.effects = Messages.ReadLong(Globals.net_message);
+			to.effects = Buffer.ReadLong(Globals.net_message);
 		else if ((bits & Defines.U_EFFECTS8) != 0)
-			to.effects = Messages.ReadByte(Globals.net_message);
+			to.effects = Buffer.ReadByte(Globals.net_message);
 		else if ((bits & Defines.U_EFFECTS16) != 0)
-			to.effects = Messages.ReadShort(Globals.net_message);
+			to.effects = Buffer.ReadShort(Globals.net_message);
 
 		if ((bits & (Defines.U_RENDERFX8 | Defines.U_RENDERFX16)) == (Defines.U_RENDERFX8 | Defines.U_RENDERFX16))
-			to.renderfx = Messages.ReadLong(Globals.net_message);
+			to.renderfx = Buffer.ReadLong(Globals.net_message);
 		else if ((bits & Defines.U_RENDERFX8) != 0)
-			to.renderfx = Messages.ReadByte(Globals.net_message);
+			to.renderfx = Buffer.ReadByte(Globals.net_message);
 		else if ((bits & Defines.U_RENDERFX16) != 0)
-			to.renderfx = Messages.ReadShort(Globals.net_message);
+			to.renderfx = Buffer.ReadShort(Globals.net_message);
 
 		if ((bits & Defines.U_ORIGIN1) != 0)
-			to.origin[0] = Messages.ReadCoord(Globals.net_message);
+			to.origin[0] = Buffer.ReadCoord(Globals.net_message);
 		if ((bits & Defines.U_ORIGIN2) != 0)
-			to.origin[1] = Messages.ReadCoord(Globals.net_message);
+			to.origin[1] = Buffer.ReadCoord(Globals.net_message);
 		if ((bits & Defines.U_ORIGIN3) != 0)
-			to.origin[2] = Messages.ReadCoord(Globals.net_message);
+			to.origin[2] = Buffer.ReadCoord(Globals.net_message);
 
 		if ((bits & Defines.U_ANGLE1) != 0)
-			to.angles[0] = Messages.ReadAngle(Globals.net_message);
+			to.angles[0] = Buffer.ReadAngle(Globals.net_message);
 		if ((bits & Defines.U_ANGLE2) != 0)
-			to.angles[1] = Messages.ReadAngle(Globals.net_message);
+			to.angles[1] = Buffer.ReadAngle(Globals.net_message);
 		if ((bits & Defines.U_ANGLE3) != 0)
-			to.angles[2] = Messages.ReadAngle(Globals.net_message);
+			to.angles[2] = Buffer.ReadAngle(Globals.net_message);
 
 		if ((bits & Defines.U_OLDORIGIN) != 0)
-			Messages.ReadPos(Globals.net_message, to.old_origin);
+			Buffer.ReadPos(Globals.net_message, to.old_origin);
 
 		if ((bits & Defines.U_SOUND) != 0)
-			to.sound = Messages.ReadByte(Globals.net_message);
+			to.sound = Buffer.ReadByte(Globals.net_message);
 
 		if ((bits & Defines.U_EVENT) != 0)
-			to.event = Messages.ReadByte(Globals.net_message);
+			to.event = Buffer.ReadByte(Globals.net_message);
 		else
 			to.event = 0;
 
 		if ((bits & Defines.U_SOLID) != 0)
-			to.solid = Messages.ReadShort(Globals.net_message);
+			to.solid = Buffer.ReadShort(Globals.net_message);
 	}
 
 	/*
@@ -370,40 +370,40 @@ public class ClientEntities {
 			//memset (state, 0, sizeof(*state));
 			state.clear();
 
-		flags = Messages.ReadShort(Globals.net_message);
+		flags = Buffer.ReadShort(Globals.net_message);
 
 		//
 		// parse the pmove_state_t
 		//
 		if ((flags & Defines.PS_M_TYPE) != 0)
-			state.pmove.pm_type = Messages.ReadByte(Globals.net_message);
+			state.pmove.pm_type = Buffer.ReadByte(Globals.net_message);
 
 		if ((flags & Defines.PS_M_ORIGIN) != 0) {
-			state.pmove.origin[0] = Messages.ReadShort(Globals.net_message);
-			state.pmove.origin[1] = Messages.ReadShort(Globals.net_message);
-			state.pmove.origin[2] = Messages.ReadShort(Globals.net_message);
+			state.pmove.origin[0] = Buffer.ReadShort(Globals.net_message);
+			state.pmove.origin[1] = Buffer.ReadShort(Globals.net_message);
+			state.pmove.origin[2] = Buffer.ReadShort(Globals.net_message);
 		}
 
 		if ((flags & Defines.PS_M_VELOCITY) != 0) {
-			state.pmove.velocity[0] = Messages.ReadShort(Globals.net_message);
-			state.pmove.velocity[1] = Messages.ReadShort(Globals.net_message);
-			state.pmove.velocity[2] = Messages.ReadShort(Globals.net_message);
+			state.pmove.velocity[0] = Buffer.ReadShort(Globals.net_message);
+			state.pmove.velocity[1] = Buffer.ReadShort(Globals.net_message);
+			state.pmove.velocity[2] = Buffer.ReadShort(Globals.net_message);
 		}
 
 		if ((flags & Defines.PS_M_TIME) != 0) {
-			state.pmove.pm_time = (byte) Messages.ReadByte(Globals.net_message);
+			state.pmove.pm_time = (byte) Buffer.ReadByte(Globals.net_message);
 		}
 
 		if ((flags & Defines.PS_M_FLAGS) != 0)
-			state.pmove.pm_flags = (byte) Messages.ReadByte(Globals.net_message);
+			state.pmove.pm_flags = (byte) Buffer.ReadByte(Globals.net_message);
 
 		if ((flags & Defines.PS_M_GRAVITY) != 0)
-			state.pmove.gravity = Messages.ReadShort(Globals.net_message);
+			state.pmove.gravity = Buffer.ReadShort(Globals.net_message);
 
 		if ((flags & Defines.PS_M_DELTA_ANGLES) != 0) {
-			state.pmove.delta_angles[0] = Messages.ReadShort(Globals.net_message);
-			state.pmove.delta_angles[1] = Messages.ReadShort(Globals.net_message);
-			state.pmove.delta_angles[2] = Messages.ReadShort(Globals.net_message);
+			state.pmove.delta_angles[0] = Buffer.ReadShort(Globals.net_message);
+			state.pmove.delta_angles[1] = Buffer.ReadShort(Globals.net_message);
+			state.pmove.delta_angles[2] = Buffer.ReadShort(Globals.net_message);
 		}
 
 		if (Globals.cl.attractloop)
@@ -413,57 +413,57 @@ public class ClientEntities {
 		// parse the rest of the player_state_t
 		//
 		if ((flags & Defines.PS_VIEWOFFSET) != 0) {
-			state.viewoffset[0] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.viewoffset[1] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.viewoffset[2] = Messages.ReadChar(Globals.net_message) * 0.25f;
+			state.viewoffset[0] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.viewoffset[1] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.viewoffset[2] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 		}
 
 		if ((flags & Defines.PS_VIEWANGLES) != 0) {
-			state.viewangles[0] = Messages.ReadAngle16(Globals.net_message);
-			state.viewangles[1] = Messages.ReadAngle16(Globals.net_message);
-			state.viewangles[2] = Messages.ReadAngle16(Globals.net_message);
+			state.viewangles[0] = Buffer.ReadAngle16(Globals.net_message);
+			state.viewangles[1] = Buffer.ReadAngle16(Globals.net_message);
+			state.viewangles[2] = Buffer.ReadAngle16(Globals.net_message);
 		}
 
 		if ((flags & Defines.PS_KICKANGLES) != 0) {
 
-			state.kick_angles[0] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.kick_angles[1] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.kick_angles[2] = Messages.ReadChar(Globals.net_message) * 0.25f;
+			state.kick_angles[0] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.kick_angles[1] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.kick_angles[2] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 
 		}
 
 		if ((flags & Defines.PS_WEAPONINDEX) != 0) {
-			state.gunindex = Messages.ReadByte(Globals.net_message);
+			state.gunindex = Buffer.ReadByte(Globals.net_message);
 		}
 
 		if ((flags & Defines.PS_WEAPONFRAME) != 0) {
-			state.gunframe = Messages.ReadByte(Globals.net_message);
-			state.gunoffset[0] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.gunoffset[1] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.gunoffset[2] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.gunangles[0] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.gunangles[1] = Messages.ReadChar(Globals.net_message) * 0.25f;
-			state.gunangles[2] = Messages.ReadChar(Globals.net_message) * 0.25f;
+			state.gunframe = Buffer.ReadByte(Globals.net_message);
+			state.gunoffset[0] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.gunoffset[1] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.gunoffset[2] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.gunangles[0] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.gunangles[1] = Buffer.ReadChar(Globals.net_message) * 0.25f;
+			state.gunangles[2] = Buffer.ReadChar(Globals.net_message) * 0.25f;
 		}
 
 		if ((flags & Defines.PS_BLEND) != 0) {
-			state.blend[0] = Messages.ReadByte(Globals.net_message) / 255.0f;
-			state.blend[1] = Messages.ReadByte(Globals.net_message) / 255.0f;
-			state.blend[2] = Messages.ReadByte(Globals.net_message) / 255.0f;
-			state.blend[3] = Messages.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[0] = Buffer.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[1] = Buffer.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[2] = Buffer.ReadByte(Globals.net_message) / 255.0f;
+			state.blend[3] = Buffer.ReadByte(Globals.net_message) / 255.0f;
 		}
 
 		if ((flags & Defines.PS_FOV) != 0)
-			state.fov = Messages.ReadByte(Globals.net_message);
+			state.fov = Buffer.ReadByte(Globals.net_message);
 
 		if ((flags & Defines.PS_RDFLAGS) != 0)
-			state.rdflags = Messages.ReadByte(Globals.net_message);
+			state.rdflags = Buffer.ReadByte(Globals.net_message);
 
 		// parse stats
-		statbits = Messages.ReadLong(Globals.net_message);
+		statbits = Buffer.ReadLong(Globals.net_message);
 		for (i = 0; i < Defines.MAX_STATS; i++)
 			if ((statbits & (1 << i)) != 0)
-				state.stats[i] = Messages.ReadShort(Globals.net_message);
+				state.stats[i] = Buffer.ReadShort(Globals.net_message);
 	}
 
 	/*
@@ -498,13 +498,13 @@ public class ClientEntities {
 		//memset( cl.frame, 0, sizeof(cl.frame));
 		Globals.cl.frame.reset();
 
-		Globals.cl.frame.serverframe = Messages.ReadLong(Globals.net_message);
-		Globals.cl.frame.deltaframe = Messages.ReadLong(Globals.net_message);
+		Globals.cl.frame.serverframe = Buffer.ReadLong(Globals.net_message);
+		Globals.cl.frame.deltaframe = Buffer.ReadLong(Globals.net_message);
 		Globals.cl.frame.servertime = Globals.cl.frame.serverframe * 100;
 
 		// BIG HACK to let old demos continue to work
 		if (Globals.cls.serverProtocol != 26)
-			Globals.cl.surpressCount = Messages.ReadByte(Globals.net_message);
+			Globals.cl.surpressCount = Buffer.ReadByte(Globals.net_message);
 
 		if (Globals.cl_shownet.value == 3)
 			Com.Printf("   frame:" + Globals.cl.frame.serverframe + "  delta:" + Globals.cl.frame.deltaframe + "\n");
@@ -542,18 +542,18 @@ public class ClientEntities {
 			Globals.cl.time = Globals.cl.frame.servertime - 100;
 
 		// read areabits
-		len = Messages.ReadByte(Globals.net_message);
-		Messages.ReadData(Globals.net_message, Globals.cl.frame.areabits, len);
+		len = Buffer.ReadByte(Globals.net_message);
+		Buffer.ReadData(Globals.net_message, Globals.cl.frame.areabits, len);
 
 		// read playerinfo
-		cmd = Messages.ReadByte(Globals.net_message);
+		cmd = Buffer.ReadByte(Globals.net_message);
 		ClientParser.SHOWNET(ClientParser.svc_strings[cmd]);
 		if (cmd != Defines.svc_playerinfo)
 			Com.Error(Defines.ERR_DROP, "CL_ParseFrame: not playerinfo");
 		ParsePlayerstate(old, Globals.cl.frame);
 
 		// read packet entities
-		cmd = Messages.ReadByte(Globals.net_message);
+		cmd = Buffer.ReadByte(Globals.net_message);
 		ClientParser.SHOWNET(ClientParser.svc_strings[cmd]);
 		if (cmd != Defines.svc_packetentities)
 			Com.Error(Defines.ERR_DROP, "CL_ParseFrame: not packetentities");

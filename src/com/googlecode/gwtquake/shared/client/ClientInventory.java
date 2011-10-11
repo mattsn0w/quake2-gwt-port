@@ -23,10 +23,10 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
+import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Defines;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.common.Messages;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Vargs;
 
@@ -43,7 +43,7 @@ public class ClientInventory {
 		int i;
 
 		for (i = 0; i < Defines.MAX_ITEMS; i++)
-			Globals.cl.inventory[i] = Messages.ReadShort(Globals.net_message);
+			Globals.cl.inventory[i] = Buffer.ReadShort(Globals.net_message);
 	}
 
 	/*
