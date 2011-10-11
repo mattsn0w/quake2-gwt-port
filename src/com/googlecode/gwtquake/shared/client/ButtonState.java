@@ -26,7 +26,7 @@ package com.googlecode.gwtquake.shared.client;
 /**
  * kbutton_t
  */
-public class KeyboardButtonState {
+public class ButtonState {
 	int[] down = new int[2];	// key nums holding it down
 	long downtime;				// msec timestamp
 	long msec;					// msec down this frame

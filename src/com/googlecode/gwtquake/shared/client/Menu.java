@@ -23,62 +23,7 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
-import static com.googlecode.gwtquake.shared.client.Key.K_BACKSPACE;
-import static com.googlecode.gwtquake.shared.client.Key.K_CTRL;
-import static com.googlecode.gwtquake.shared.client.Key.K_DEL;
-import static com.googlecode.gwtquake.shared.client.Key.K_DOWNARROW;
-import static com.googlecode.gwtquake.shared.client.Key.K_ENTER;
-import static com.googlecode.gwtquake.shared.client.Key.K_ESCAPE;
-import static com.googlecode.gwtquake.shared.client.Key.K_INS;
-import static com.googlecode.gwtquake.shared.client.Key.K_JOY1;
-import static com.googlecode.gwtquake.shared.client.Key.K_JOY2;
-import static com.googlecode.gwtquake.shared.client.Key.K_JOY3;
-import static com.googlecode.gwtquake.shared.client.Key.K_JOY4;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_5;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_DEL;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_DOWNARROW;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_END;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_ENTER;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_HOME;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_INS;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_LEFTARROW;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_MINUS;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_PGDN;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_PGUP;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_PLUS;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_RIGHTARROW;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_SLASH;
-import static com.googlecode.gwtquake.shared.client.Key.K_KP_UPARROW;
-import static com.googlecode.gwtquake.shared.client.Key.K_LEFTARROW;
-import static com.googlecode.gwtquake.shared.client.Key.K_MOUSE1;
-import static com.googlecode.gwtquake.shared.client.Key.K_MOUSE2;
-import static com.googlecode.gwtquake.shared.client.Key.K_MOUSE3;
-import static com.googlecode.gwtquake.shared.client.Key.K_RIGHTARROW;
-import static com.googlecode.gwtquake.shared.client.Key.K_SHIFT;
-import static com.googlecode.gwtquake.shared.client.Key.K_SPACE;
-import static com.googlecode.gwtquake.shared.client.Key.K_TAB;
-import static com.googlecode.gwtquake.shared.client.Key.K_UPARROW;
-import static com.googlecode.gwtquake.shared.common.Defines.CVAR_ARCHIVE;
-import static com.googlecode.gwtquake.shared.common.Defines.CVAR_USERINFO;
-import static com.googlecode.gwtquake.shared.common.Defines.ERR_FATAL;
-import static com.googlecode.gwtquake.shared.common.Defines.LCOLUMN_OFFSET;
-import static com.googlecode.gwtquake.shared.common.Defines.MAXMENUITEMS;
-import static com.googlecode.gwtquake.shared.common.Defines.MAX_PLAYERMODELS;
-import static com.googlecode.gwtquake.shared.common.Defines.MTYPE_ACTION;
-import static com.googlecode.gwtquake.shared.common.Defines.MTYPE_FIELD;
-import static com.googlecode.gwtquake.shared.common.Defines.MTYPE_LIST;
-import static com.googlecode.gwtquake.shared.common.Defines.MTYPE_SEPARATOR;
-import static com.googlecode.gwtquake.shared.common.Defines.MTYPE_SLIDER;
-import static com.googlecode.gwtquake.shared.common.Defines.MTYPE_SPINCONTROL;
-import static com.googlecode.gwtquake.shared.common.Defines.QMF_GRAYED;
-import static com.googlecode.gwtquake.shared.common.Defines.QMF_LEFT_JUSTIFY;
-import static com.googlecode.gwtquake.shared.common.Defines.QMF_NUMBERSONLY;
-import static com.googlecode.gwtquake.shared.common.Defines.RCOLUMN_OFFSET;
-import static com.googlecode.gwtquake.shared.common.Defines.RDF_NOWORLDMODEL;
-import static com.googlecode.gwtquake.shared.common.Defines.RF_FULLBRIGHT;
-import static com.googlecode.gwtquake.shared.common.Defines.key_console;
-import static com.googlecode.gwtquake.shared.common.Defines.key_game;
-import static com.googlecode.gwtquake.shared.common.Defines.key_menu;
+import static com.googlecode.gwtquake.shared.common.Defines.*;
 import static com.googlecode.gwtquake.shared.common.Globals.cl;
 import static com.googlecode.gwtquake.shared.common.Globals.cl_run;
 import static com.googlecode.gwtquake.shared.common.Globals.cls;
@@ -98,6 +43,7 @@ import static com.googlecode.gwtquake.shared.common.Globals.viddef;
 
 import java.util.Arrays;
 import java.util.Comparator;
+
 
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
 import com.googlecode.gwtquake.shared.common.Com;
@@ -341,54 +287,54 @@ public final class Menu {
         }
 
         switch (key) {
-        case K_ESCAPE:
+        case Keys.K_ESCAPE:
             PopMenu();
             return menu_out_sound;
-        case K_KP_UPARROW:
-        case K_UPARROW:
+        case Keys.K_KP_UPARROW:
+        case Keys.K_UPARROW:
             if (m != null) {
                 m.cursor--;
                 Menu_AdjustCursor(m, -1);
                 sound = menu_move_sound;
             }
             break;
-        case K_TAB:
+        case Keys.K_TAB:
             if (m != null) {
                 m.cursor++;
                 Menu_AdjustCursor(m, 1);
                 sound = menu_move_sound;
             }
             break;
-        case K_KP_DOWNARROW:
-        case K_DOWNARROW:
+        case Keys.K_KP_DOWNARROW:
+        case Keys.K_DOWNARROW:
             if (m != null) {
                 m.cursor++;
                 Menu_AdjustCursor(m, 1);
                 sound = menu_move_sound;
             }
             break;
-        case K_KP_LEFTARROW:
-        case K_LEFTARROW:
+        case Keys.K_KP_LEFTARROW:
+        case Keys.K_LEFTARROW:
             if (m != null) {
                 Menu_SlideItem(m, -1);
                 sound = menu_move_sound;
             }
             break;
-        case K_KP_RIGHTARROW:
-        case K_RIGHTARROW:
+        case Keys.K_KP_RIGHTARROW:
+        case Keys.K_RIGHTARROW:
             if (m != null) {
                 Menu_SlideItem(m, 1);
                 sound = menu_move_sound;
             }
             break;
 
-        case K_MOUSE1:
-        case K_MOUSE2:
-        case K_MOUSE3:
-        case K_JOY1:
-        case K_JOY2:
-        case K_JOY3:
-        case K_JOY4:
+        case Keys.K_MOUSE1:
+        case Keys.K_MOUSE2:
+        case Keys.K_MOUSE3:
+        case Keys.K_JOY1:
+        case Keys.K_JOY2:
+        case Keys.K_JOY3:
+        case Keys.K_JOY4:
         /*
          * case K_AUX1 : case K_AUX2 : case K_AUX3 : case K_AUX4 : case K_AUX5 :
          * case K_AUX6 : case K_AUX7 : case K_AUX8 : case K_AUX9 : case K_AUX10 :
@@ -398,8 +344,8 @@ public final class Menu {
          * K_AUX24 : case K_AUX25 : case K_AUX26 : case K_AUX27 : case K_AUX28 :
          * case K_AUX29 : case K_AUX30 : case K_AUX31 : case K_AUX32 :
          */
-        case K_KP_ENTER:
-        case K_ENTER:
+        case Keys.K_KP_ENTER:
+        case Keys.K_ENTER:
             if (m != null)
                 Menu_SelectItem(m);
             sound = menu_move_sound;
@@ -581,24 +527,24 @@ public final class Menu {
         String sound = menu_move_sound;
 
         switch (key) {
-        case Key.K_ESCAPE:
+        case Keys.K_ESCAPE:
             PopMenu();
             break;
 
-        case Key.K_KP_DOWNARROW:
-        case Key.K_DOWNARROW:
+        case Keys.K_KP_DOWNARROW:
+        case Keys.K_DOWNARROW:
             if (++m_main_cursor >= MAIN_MENU_NAMES.length)
                 m_main_cursor = 0;
             return sound;
 
-        case Key.K_KP_UPARROW:
-        case Key.K_UPARROW:
+        case Keys.K_KP_UPARROW:
+        case Keys.K_UPARROW:
             if (--m_main_cursor < 0)
                 m_main_cursor = MAIN_MENU_NAMES.length - 1;
             return sound;
 
-        case Key.K_KP_ENTER:
-        case Key.K_ENTER:
+        case Keys.K_KP_ENTER:
+        case Keys.K_ENTER:
             m_entersound = true;
 
             if (isMultiplayerEnabled()) {
@@ -1258,7 +1204,7 @@ public final class Menu {
         menuaction_s item = (menuaction_s) Menu_ItemAtCursor(s_keys_menu);
 
         if (bind_grab) {
-            if (key != K_ESCAPE && key != '`') {
+            if (key != Keys.K_ESCAPE && key != '`') {
                 //char cmd[1024];
                 String cmd;
 
@@ -1276,13 +1222,13 @@ public final class Menu {
         }
 
         switch (key) {
-        case K_KP_ENTER:
-        case K_ENTER:
+        case Keys.K_KP_ENTER:
+        case Keys.K_ENTER:
             KeyBindingFunc(item);
             return menu_in_sound;
-        case K_BACKSPACE: // delete bindings
-        case K_DEL: // delete bindings
-        case K_KP_DEL:
+        case Keys.K_BACKSPACE: // delete bindings
+        case Keys.K_DEL: // delete bindings
+        case Keys.K_KP_DEL:
             UnbindCommand(bindnames[item.localdata[0]][0]);
             return menu_out_sound;
         default:
@@ -1852,7 +1798,7 @@ public final class Menu {
 
     public static String Credits_Key(int key) {
         switch (key) {
-        case K_ESCAPE:
+        case Keys.K_ESCAPE:
             PopMenu();
             break;
         }
@@ -2222,7 +2168,7 @@ public final class Menu {
     }
 
     static String LoadGame_MenuKey(int key) {
-        if (key == K_ESCAPE || key == K_ENTER) {
+        if (key == Keys.K_ESCAPE || key == Keys.K_ENTER) {
             s_savegame_menu.cursor = s_loadgame_menu.cursor - 1;
             if (s_savegame_menu.cursor < 0)
                 s_savegame_menu.cursor = 0;
@@ -2308,7 +2254,7 @@ public final class Menu {
     }
 
     static String SaveGame_MenuKey(int key) {
-        if (key == K_ENTER || key == K_ESCAPE) {
+        if (key == Keys.K_ENTER || key == Keys.K_ESCAPE) {
             s_loadgame_menu.cursor = s_savegame_menu.cursor - 1;
             if (s_loadgame_menu.cursor < 0)
                 s_loadgame_menu.cursor = 0;
@@ -2903,7 +2849,7 @@ public final class Menu {
     static String PlayerConfig_MenuKey(int key) {
         int i;
 
-        if (key == K_ESCAPE) {
+        if (key == Keys.K_ESCAPE) {
             String scratch;
 
             ConsoleVariables.Set("name", s_player_name_field.buffer.toString());
@@ -2963,7 +2909,7 @@ public final class Menu {
 
     static String Quit_Key(int key) {
         switch (key) {
-        case K_ESCAPE:
+        case Keys.K_ESCAPE:
         case 'n':
         case 'N':
             PopMenu();
@@ -3159,53 +3105,53 @@ public final class Menu {
         char key = (char) k;
 
         switch (key) {
-        case K_KP_SLASH:
+        case Keys.K_KP_SLASH:
             key = '/';
             break;
-        case K_KP_MINUS:
+        case Keys.K_KP_MINUS:
             key = '-';
             break;
-        case K_KP_PLUS:
+        case Keys.K_KP_PLUS:
             key = '+';
             break;
-        case K_KP_HOME:
+        case Keys.K_KP_HOME:
             key = '7';
             break;
-        case K_KP_UPARROW:
+        case Keys.K_KP_UPARROW:
             key = '8';
             break;
-        case K_KP_PGUP:
+        case Keys.K_KP_PGUP:
             key = '9';
             break;
-        case K_KP_LEFTARROW:
+        case Keys.K_KP_LEFTARROW:
             key = '4';
             break;
-        case K_KP_5:
+        case Keys.K_KP_5:
             key = '5';
             break;
-        case K_KP_RIGHTARROW:
+        case Keys.K_KP_RIGHTARROW:
             key = '6';
             break;
-        case K_KP_END:
+        case Keys.K_KP_END:
             key = '1';
             break;
-        case K_KP_DOWNARROW:
+        case Keys.K_KP_DOWNARROW:
             key = '2';
             break;
-        case K_KP_PGDN:
+        case Keys.K_KP_PGDN:
             key = '3';
             break;
-        case K_KP_INS:
+        case Keys.K_KP_INS:
             key = '0';
             break;
-        case K_KP_DEL:
+        case Keys.K_KP_DEL:
             key = '.';
             break;
         }
 
         if (key > 127) {
             switch (key) {
-            case K_DEL:
+            case Keys.K_DEL:
             default:
                 return false;
             }
@@ -3214,8 +3160,8 @@ public final class Menu {
         /*
          * * support pasting from the clipboard
          */
-        if ((Character.toUpperCase(key) == 'V' && keydown[K_CTRL])
-                || (((key == K_INS) || (key == K_KP_INS)) && keydown[K_SHIFT])) {
+        if ((Character.toUpperCase(key) == 'V' && keydown[Keys.K_CTRL])
+                || (((key == Keys.K_INS) || (key == Keys.K_KP_INS)) && keydown[Keys.K_SHIFT])) {
             String cbd;
 
             if ((cbd = Sys.GetClipboardData()) != null) {
@@ -3236,9 +3182,9 @@ public final class Menu {
         }
 
         switch (key) {
-        case K_KP_LEFTARROW:
-        case K_LEFTARROW:
-        case K_BACKSPACE:
+        case Keys.K_KP_LEFTARROW:
+        case Keys.K_LEFTARROW:
+        case Keys.K_BACKSPACE:
             if (f.cursor > 0) {
                 f.buffer.deleteCharAt(f.cursor - 1);
                 //memmove(f.buffer[f.cursor - 1], f.buffer[f.cursor], strlen(&
@@ -3251,20 +3197,20 @@ public final class Menu {
             }
             break;
 
-        case K_KP_DEL:
-        case K_DEL:
+        case Keys.K_KP_DEL:
+        case Keys.K_DEL:
             //memmove(& f.buffer[f.cursor], & f.buffer[f.cursor + 1], strlen(&
             // f.buffer[f.cursor + 1]) + 1);
             f.buffer.deleteCharAt(f.cursor);
             break;
 
-        case K_KP_ENTER:
-        case K_ENTER:
-        case K_ESCAPE:
-        case K_TAB:
+        case Keys.K_KP_ENTER:
+        case Keys.K_ENTER:
+        case Keys.K_ESCAPE:
+        case Keys.K_TAB:
             return false;
 
-        case K_SPACE:
+        case Keys.K_SPACE:
         default:
             if (!Character.isDigit(key) && (f.flags & QMF_NUMBERSONLY) != 0)
                 return false;

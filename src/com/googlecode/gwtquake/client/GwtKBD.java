@@ -24,6 +24,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.googlecode.gwtquake.shared.client.Key;
+import com.googlecode.gwtquake.shared.client.Keys;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.sys.IN;
 import com.googlecode.gwtquake.shared.sys.KBD;
@@ -140,8 +141,8 @@ public double mouseUpTime;
           } 
           Do_Key_Event(button, false);
         } else if("mousewheel".equals(nevt.getType())) {
-          Do_Key_Event(nevt.getMouseWheelVelocityY() < 0 ? Key.K_MWHEELUP : Key.K_MWHEELDOWN, true);
-          Do_Key_Event(nevt.getMouseWheelVelocityY() < 0 ? Key.K_MWHEELUP : Key.K_MWHEELDOWN, false);
+          Do_Key_Event(nevt.getMouseWheelVelocityY() < 0 ? Keys.K_MWHEELUP : Keys.K_MWHEELDOWN, true);
+          Do_Key_Event(nevt.getMouseWheelVelocityY() < 0 ? Keys.K_MWHEELUP : Keys.K_MWHEELDOWN, false);
     		  nevt.preventDefault();
     		  nevt.stopPropagation();
         } else if("contextmenu".equals(nevt.getType())) {
@@ -171,11 +172,11 @@ public double mouseUpTime;
   private static int translateMouseButton(NativeEvent evt) {
     switch(evt.getButton()) {
       case NativeEvent.BUTTON_LEFT:
-        return Key.K_MOUSE1;
+        return Keys.K_MOUSE1;
       case NativeEvent.BUTTON_RIGHT:
-        return Key.K_MOUSE2;
+        return Keys.K_MOUSE2;
       default:
-        return Key.K_MOUSE3;
+        return Keys.K_MOUSE3;
     }
   }
 
@@ -209,35 +210,35 @@ public double mouseUpTime;
 
   private int XLateKey(int key) {
     switch(key) {
-      case KeyCodes.KEY_PAGEUP: key = Key.K_PGUP; break;
-      case KeyCodes.KEY_PAGEDOWN: key = Key.K_PGDN; break;
-      case KeyCodes.KEY_HOME: key = Key.K_HOME; break;
-      case KeyCodes.KEY_END: key = Key.K_END; break;
-      case KeyCodes.KEY_LEFT: key = Key.K_LEFTARROW; break;
-      case KeyCodes.KEY_RIGHT: key = Key.K_RIGHTARROW; break;
-      case KeyCodes.KEY_DOWN: key = Key.K_DOWNARROW; break;
-      case KeyCodes.KEY_UP: key = Key.K_UPARROW; break; 
-      case KeyCodes.KEY_ESCAPE: key = Key.K_ESCAPE; break; 
-      case KeyCodes.KEY_ENTER: key = Key.K_ENTER; break; 
-      case KeyCodes.KEY_TAB: key = Key.K_TAB; break; 
-      case KeyCodes.KEY_BACKSPACE: key = Key.K_BACKSPACE; break; 
-      case KeyCodes.KEY_DELETE: key = Key.K_DEL; break; 
-      case KeyCodes.KEY_SHIFT: key = Key.K_SHIFT; break; 
-      case KeyCodes.KEY_CTRL: key = Key.K_CTRL; break; 
+      case KeyCodes.KEY_PAGEUP: key = Keys.K_PGUP; break;
+      case KeyCodes.KEY_PAGEDOWN: key = Keys.K_PGDN; break;
+      case KeyCodes.KEY_HOME: key = Keys.K_HOME; break;
+      case KeyCodes.KEY_END: key = Keys.K_END; break;
+      case KeyCodes.KEY_LEFT: key = Keys.K_LEFTARROW; break;
+      case KeyCodes.KEY_RIGHT: key = Keys.K_RIGHTARROW; break;
+      case KeyCodes.KEY_DOWN: key = Keys.K_DOWNARROW; break;
+      case KeyCodes.KEY_UP: key = Keys.K_UPARROW; break; 
+      case KeyCodes.KEY_ESCAPE: key = Keys.K_ESCAPE; break; 
+      case KeyCodes.KEY_ENTER: key = Keys.K_ENTER; break; 
+      case KeyCodes.KEY_TAB: key = Keys.K_TAB; break; 
+      case KeyCodes.KEY_BACKSPACE: key = Keys.K_BACKSPACE; break; 
+      case KeyCodes.KEY_DELETE: key = Keys.K_DEL; break; 
+      case KeyCodes.KEY_SHIFT: key = Keys.K_SHIFT; break; 
+      case KeyCodes.KEY_CTRL: key = Keys.K_CTRL; break; 
       
       // Safari on MAC (TODO(jgw): other browsers may need tweaking):
-      case 112: key = Key.K_F1;break;
-      case 113: key = Key.K_F2;break;
-      case 114: key = Key.K_F3;break;
-      case 115: key = Key.K_F4;break;
-      case 116: key = Key.K_F5;break;
-      case 117: key = Key.K_F6;break;
-      case 118: key = Key.K_F7;break;
-      case 119: key = Key.K_F8;break;
-      case 120: key = Key.K_F9;break;
-      case 121: key = Key.K_F10;break;
-      case 122: key = Key.K_F11;break;
-      case 123: key = Key.K_F12;break;
+      case 112: key = Keys.K_F1;break;
+      case 113: key = Keys.K_F2;break;
+      case 114: key = Keys.K_F3;break;
+      case 115: key = Keys.K_F4;break;
+      case 116: key = Keys.K_F5;break;
+      case 117: key = Keys.K_F6;break;
+      case 118: key = Keys.K_F7;break;
+      case 119: key = Keys.K_F8;break;
+      case 120: key = Keys.K_F9;break;
+      case 121: key = Keys.K_F10;break;
+      case 122: key = Keys.K_F11;break;
+      case 123: key = Keys.K_F12;break;
       
       case 186: key = ';'; break;
       case 187: key = '='; break;

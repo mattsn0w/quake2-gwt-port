@@ -67,39 +67,39 @@ public class ClientInput {
 	 * ===============================================================================
 	 */
 
-	static KeyboardButtonState in_klook = new KeyboardButtonState();
+	static ButtonState in_klook = new ButtonState();
 
-	static KeyboardButtonState in_left = new KeyboardButtonState();
+	static ButtonState in_left = new ButtonState();
 
-	static KeyboardButtonState in_right = new KeyboardButtonState();
+	static ButtonState in_right = new ButtonState();
 
-	static KeyboardButtonState in_forward = new KeyboardButtonState();
+	static ButtonState in_forward = new ButtonState();
 
-	static KeyboardButtonState in_back = new KeyboardButtonState();
+	static ButtonState in_back = new ButtonState();
 
-	static KeyboardButtonState in_lookup = new KeyboardButtonState();
+	static ButtonState in_lookup = new ButtonState();
 
-	static KeyboardButtonState in_lookdown = new KeyboardButtonState();
+	static ButtonState in_lookdown = new ButtonState();
 
-	static KeyboardButtonState in_moveleft = new KeyboardButtonState();
+	static ButtonState in_moveleft = new ButtonState();
 
-	static KeyboardButtonState in_moveright = new KeyboardButtonState();
+	static ButtonState in_moveright = new ButtonState();
 
-	public static KeyboardButtonState in_strafe = new KeyboardButtonState();
+	public static ButtonState in_strafe = new ButtonState();
 
-	static KeyboardButtonState in_speed = new KeyboardButtonState();
+	static ButtonState in_speed = new ButtonState();
 
-	static KeyboardButtonState in_use = new KeyboardButtonState();
+	static ButtonState in_use = new ButtonState();
 
-	static KeyboardButtonState in_attack = new KeyboardButtonState();
+	static ButtonState in_attack = new ButtonState();
 
-	static KeyboardButtonState in_up = new KeyboardButtonState();
+	static ButtonState in_up = new ButtonState();
 
-	static KeyboardButtonState in_down = new KeyboardButtonState();
+	static ButtonState in_down = new ButtonState();
 
 	static int in_impulse;
 
-	static void KeyDown(KeyboardButtonState b) {
+	static void KeyDown(ButtonState b) {
 		int k;
 		String c;
 
@@ -133,7 +133,7 @@ public class ClientInput {
 		b.state |= 3; // down + impulse down
 	}
 
-	static void KeyUp(KeyboardButtonState b) {
+	static void KeyUp(ButtonState b) {
 		int k;
 		String c;
 		int uptime;
@@ -302,7 +302,7 @@ public class ClientInput {
 	 * 
 	 * Returns the fraction of the frame that the key was down ===============
 	 */
-	static float KeyState(KeyboardButtonState key) {
+	static float KeyState(ButtonState key) {
 		float val;
 		long msec;
 

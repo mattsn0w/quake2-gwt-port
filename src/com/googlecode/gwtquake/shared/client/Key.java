@@ -32,84 +32,12 @@ import com.googlecode.gwtquake.shared.common.*;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.util.Lib;
 
+import static com.googlecode.gwtquake.shared.client.Keys.*;
 /**
  * Key
  */
-public class Key extends Globals {
-	//
-	// these are the key numbers that should be passed to Key_Event
-	//
-	public static final int K_TAB = 9;
-	public static final int K_ENTER = 13;
-	public static final int K_ESCAPE = 27;
-	public static final int K_SPACE = 32;
-
-	// normal keys should be passed as lowercased ascii
-
-	public static final int K_BACKSPACE = 127;
-	public static final int K_UPARROW = 128;
-	public static final int K_DOWNARROW = 129;
-	public static final int K_LEFTARROW = 130;
-	public static final int K_RIGHTARROW = 131;
-
-	public static final int K_ALT = 132;
-	public static final int K_CTRL = 133;
-	public static final int K_SHIFT = 134;
-	public static final int K_F1 = 135;
-	public static final int K_F2 = 136;
-	public static final int K_F3 = 137;
-	public static final int K_F4 = 138;
-	public static final int K_F5 = 139;
-	public static final int K_F6 = 140;
-	public static final int K_F7 = 141;
-	public static final int K_F8 = 142;
-	public static final int K_F9 = 143;
-	public static final int K_F10 = 144;
-	public static final int K_F11 = 145;
-	public static final int K_F12 = 146;
-	public static final int K_INS = 147;
-	public static final int K_DEL = 148;
-	public static final int K_PGDN = 149;
-	public static final int K_PGUP = 150;
-	public static final int K_HOME = 151;
-	public static final int K_END = 152;
-
-	public static final int K_KP_HOME = 160;
-	public static final int K_KP_UPARROW = 161;
-	public static final int K_KP_PGUP = 162;
-	public static final int K_KP_LEFTARROW = 163;
-	public static final int K_KP_5 = 164;
-	public static final int K_KP_RIGHTARROW = 165;
-	public static final int K_KP_END = 166;
-	public static final int K_KP_DOWNARROW = 167;
-	public static final int K_KP_PGDN = 168;
-	public static final int K_KP_ENTER = 169;
-	public static final int K_KP_INS = 170;
-	public static final int K_KP_DEL = 171;
-	public static final int K_KP_SLASH = 172;
-	public static final int K_KP_MINUS = 173;
-	public static final int K_KP_PLUS = 174;
-
-	public static final int K_PAUSE = 255;
-
-	//
-	// mouse buttons generate virtual keys
-	//
-	public static final int K_MOUSE1 = 200;
-	public static final int K_MOUSE2 = 201;
-	public static final int K_MOUSE3 = 202;
-
-	//
-	// joystick buttons
-	//
-	public static final int K_JOY1 = 203;
-	public static final int K_JOY2 = 204;
-	public static final int K_JOY3 = 205;
-	public static final int K_JOY4 = 206;
-
-	public static final int K_MWHEELDOWN = 239;
-	public static final int K_MWHEELUP = 240;
-
+public class Key  {
+	
 	static int anykeydown = 0;
 	static int key_waiting;
 	static int history_line = 0;
@@ -119,12 +47,13 @@ public class Key extends Globals {
 	static boolean[] menubound = new boolean[256];
 	static boolean[] consolekeys = new boolean[256];
 
+	// Move to Keys?
 	static String[] keynames = new String[256];
 
 	static {
-		keynames[K_TAB] = "TAB";
-		keynames[K_ENTER] = "ENTER";
-		keynames[K_ESCAPE] = "ESCAPE";
+		keynames[Keys.K_TAB] = "TAB";
+		keynames[Keys.K_ENTER] = "ENTER";
+		keynames[Keys.K_ESCAPE] = "ESCAPE";
 		keynames[K_SPACE] = "SPACE";
 		keynames[K_BACKSPACE] = "BACKSPACE";
 		keynames[K_UPARROW] = "UPARROW";
@@ -205,9 +134,9 @@ public class Key extends Globals {
 		//
 		for (int i = 32; i < 128; i++)
 			consolekeys[i] = true;
-		consolekeys[K_ENTER] = true;
+		consolekeys[Keys.K_ENTER] = true;
 		consolekeys[K_KP_ENTER] = true;
-		consolekeys[K_TAB] = true;
+		consolekeys[Keys.K_TAB] = true;
 		consolekeys[K_LEFTARROW] = true;
 		consolekeys[K_KP_LEFTARROW] = true;
 		consolekeys[K_RIGHTARROW] = true;
@@ -263,7 +192,7 @@ public class Key extends Globals {
 //		keyshift['`'] = '~';
 //		keyshift['\\'] = '|';
 
-		menubound[K_ESCAPE] = true;
+		menubound[Keys.K_ESCAPE] = true;
 		for (int i = 0; i < 12; i++)
 			menubound[K_F1 + i] = true;
 
@@ -324,10 +253,10 @@ public class Key extends Globals {
 
 		// any key during the attract mode will bring up the menu
 		if (Globals.cl.attractloop && Globals.cls.key_dest != Defines.key_menu && !(key >= K_F1 && key <= K_F12))
-			key = K_ESCAPE;
+			key = Keys.K_ESCAPE;
 
 		// menu key is hardcoded, so the user can never unbind it
-		if (key == K_ESCAPE) {
+		if (key == Keys.K_ESCAPE) {
 			if (!down)
 				return;
 
@@ -470,7 +399,7 @@ public class Key extends Globals {
 
 	public static void Message(int key) {
 
-		if (key == K_ENTER || key == K_KP_ENTER) {
+		if (key == Keys.K_ENTER || key == K_KP_ENTER) {
 			if (Globals.chat_team)
 				CommandBuffer.AddText("say_team \"");
 			else
@@ -484,7 +413,7 @@ public class Key extends Globals {
 			return;
 		}
 
-		if (key == K_ESCAPE) {
+		if (key == Keys.K_ESCAPE) {
 			Globals.cls.key_dest = Defines.key_game;
 			Globals.chat_buffer = "";
 			return;
@@ -565,7 +494,7 @@ public class Key extends Globals {
 			}
 		}
 
-		if (key == K_ENTER || key == K_KP_ENTER) {
+		if (key == Keys.K_ENTER || key == K_KP_ENTER) {
 			// backslash text are commands, else chat
 			if (Globals.key_lines[Globals.edit_line][1] == '\\' || Globals.key_lines[Globals.edit_line][1] == '/')
 				CommandBuffer.AddText(
@@ -587,7 +516,7 @@ public class Key extends Globals {
 			return;
 		}
 
-		if (key == K_TAB) {
+		if (key == Keys.K_TAB) {
 			// command completion
 			CompleteCommand();
 			return;
@@ -675,13 +604,13 @@ public class Key extends Globals {
 	static void CompleteCommand() {
 		
 		int start = 1;
-		if (key_lines[edit_line][start] == '\\' ||  key_lines[edit_line][start] == '/')
+		if (Globals.key_lines[Globals.edit_line][start] == '\\' ||  Globals.key_lines[Globals.edit_line][start] == '/')
 			start++;
 		
 		int end = start;
-		while (key_lines[edit_line][end] != 0) end++;
+		while (Globals.key_lines[Globals.edit_line][end] != 0) end++;
 
-		String s = Compatibility.newString(key_lines[edit_line], start, end-start);
+		String s = Compatibility.newString(Globals.key_lines[Globals.edit_line], start, end-start);
 		
 		Vector cmds = Commands.CompleteCommand(s);
 		Vector vars = ConsoleVariables.CompleteVariable(s);
@@ -699,12 +628,12 @@ public class Key extends Globals {
 			s = (String)vars.get(0);
 		} else return;
 		
-		key_lines[edit_line][1] = '/';
+		Globals.key_lines[Globals.edit_line][1] = '/';
 		byte[] bytes = Lib.stringToBytes(s);
-		System.arraycopy(bytes, 0, key_lines[edit_line], 2, bytes.length);
-		key_linepos = bytes.length + 2;
-		key_lines[edit_line][key_linepos++] = ' ';
-		key_lines[edit_line][key_linepos] = 0;
+		System.arraycopy(bytes, 0, Globals.key_lines[Globals.edit_line], 2, bytes.length);
+		Globals.key_linepos = bytes.length + 2;
+		Globals.key_lines[Globals.edit_line][Globals.key_linepos++] = ' ';
+		Globals.key_lines[Globals.edit_line][Globals.key_linepos] = 0;
 		
 		return;
 	}
@@ -808,18 +737,18 @@ public class Key extends Globals {
 		Key.anykeydown = 0;
 
 		for (i = 0; i < 256; i++) {
-			if (keydown[i] || key_repeats[i]!=0)
+			if (Globals.keydown[i] || key_repeats[i]!=0)
 				Event(i, false, 0);
-			keydown[i] = false;
+			Globals.keydown[i] = false;
 			key_repeats[i] = 0;
 		}
 	}
 
 	public static void WriteBindings(RandomAccessFile f) {
 		for (int i = 0; i < 256; i++)
-			if (keybindings[i] != null && keybindings[i].length() > 0)
+			if (Globals.keybindings[i] != null && Globals.keybindings[i].length() > 0)
 				try {
-					f.writeBytes("bind " + KeynumToString(i) + " \"" + keybindings[i] + "\"\n");
+					f.writeBytes("bind " + KeynumToString(i) + " \"" + Globals.keybindings[i] + "\"\n");
 				} catch (IOException e) {}
 	}
 
