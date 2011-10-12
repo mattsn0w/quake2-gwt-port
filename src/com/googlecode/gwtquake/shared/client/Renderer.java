@@ -111,4 +111,7 @@ public interface Renderer {
 
 	boolean showVideo(String name);
 	boolean updateVideo();
+
+  void GL_ResampleTexture(int[] data, int width, int height, int[] scaled,
+      int scaled_width, int scaled_height);
 }

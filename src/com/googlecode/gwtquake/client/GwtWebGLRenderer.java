@@ -144,7 +144,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	}
 
 	@Override
-	protected void GL_ResampleTexture(int[] in, int inwidth, int inheight,
+	public void GL_ResampleTexture(int[] in, int inwidth, int inheight,
 			int[] out, int outwidth, int outheight) {
 		
 		if (canvas1.getWidth() < inwidth) {

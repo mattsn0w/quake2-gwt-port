@@ -214,4 +214,11 @@ public class DummyRenderer implements Renderer {
 		return false;
 	}
 
+  @Override
+  public void GL_ResampleTexture(int[] data, int width, int height,
+      int[] scaled, int scaled_width, int scaled_height) {
+    // TODO Auto-generated method stub
+    
+  }
+
 }
