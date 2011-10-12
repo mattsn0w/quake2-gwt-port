@@ -201,7 +201,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
     return $wnd.__imageSizes[name];
   }-*/;
 	
-	protected ModelImage GL_LoadNewImage(final String name, int type) {
+	public ModelImage GL_LoadNewImage(final String name, int type) {
 		final ModelImage image = GL_Find_free_image_t(name, type);
 
 		int cut = name.lastIndexOf('.');

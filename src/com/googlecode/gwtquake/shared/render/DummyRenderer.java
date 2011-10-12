@@ -221,4 +221,10 @@ public class DummyRenderer implements Renderer {
     
   }
 
+  @Override
+  public ModelImage GL_LoadNewImage(String name, int type) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

@@ -53,35 +53,35 @@ import com.googlecode.gwtquake.shared.util.Vargs;
  */
 public abstract class Images extends Main {
 
-    protected int waitingForImages = 0;
+    static int waitingForImages = 0;
     
     static ModelImage draw_chars;
-
-    ModelImage[] gltextures = new ModelImage[GlConstants.MAX_GLTEXTURES];
+ 
+    static ModelImage[] gltextures = new ModelImage[GlConstants.MAX_GLTEXTURES];
     //Map gltextures = new Hashtable(MAX_GLTEXTURES); // image_t
-    int numgltextures;
-    int base_textureid; // gltextures[i] = base_textureid+i
+    static int numgltextures;
+    static int base_textureid; // gltextures[i] = base_textureid+i
 
-    byte[] intensitytable = new byte[256];
-    byte[] gammatable = new byte[256];
+    static byte[] intensitytable = new byte[256];
+    static byte[] gammatable = new byte[256];
 
-    ConsoleVariable intensity;
+    static ConsoleVariable intensity;
 
     //
     //  qboolean GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky );
     //  qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
     //
 
-    int gl_solid_format = 3;
-    int gl_alpha_format = 4;
+    static int gl_solid_format = 3;
+    static int gl_alpha_format = 4;
 
-    int gl_tex_solid_format = 3;
-    int gl_tex_alpha_format = 4;
+    static int gl_tex_solid_format = 3;
+    static int gl_tex_alpha_format = 4;
 
-    int gl_filter_min = GlAdapter.GL_LINEAR;//GLAdapter.GL_LINEAR_MIPMAP_NEAREST;
-    int gl_filter_max = GlAdapter.GL_LINEAR;
+    static int gl_filter_min = GlAdapter.GL_LINEAR;//GLAdapter.GL_LINEAR_MIPMAP_NEAREST;
+    static int gl_filter_max = GlAdapter.GL_LINEAR;
     
-    Images() {
+    static {
         // init the texture cache
         for (int i = 0; i < gltextures.length; i++)
         {
@@ -300,7 +300,7 @@ public abstract class Images extends Main {
     GL_TextureSolidMode
     ===============
     */
-    void GL_TextureSolidMode(String string) {
+    static void GL_TextureSolidMode(String string) {
         int i;
         for (i = 0; i < NUM_GL_SOLID_MODES; i++) {
             if (gl_solid_modes[i].name.equalsIgnoreCase(string))
@@ -320,7 +320,7 @@ public abstract class Images extends Main {
     GL_ImageList_f
     ===============
     */
-    void GL_ImageList_f() {
+    static void GL_ImageList_f() {
 
         ModelImage image;
         int texels;
@@ -383,27 +383,12 @@ public abstract class Images extends Main {
     =================================================================
     */
 
-    private Throwable gotoBreakOut = new Throwable();
-    private Throwable gotoDone = gotoBreakOut;
+   // private Throwable gotoBreakOut = new Throwable();
+   // private Throwable gotoDone = gotoBreakOut;
 
     static class floodfill_t {
         short x, y;
     }
-
-    // must be a power of 2
-    static final int FLOODFILL_FIFO_SIZE = 0x1000;
-    static final int FLOODFILL_FIFO_MASK = FLOODFILL_FIFO_SIZE - 1;
-    //
-    //  #define FLOODFILL_STEP( off, dx, dy ) \
-    //  { \
-    //      if (pos[off] == fillcolor) \
-    //      { \
-    //          pos[off] = 255; \
-    //          fifo[inpt].x = x + (dx), fifo[inpt].y = y + (dy); \
-    //          inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
-    //      } \
-    //      else if (pos[off] != 255) fdc = pos[off]; \
-    //  }
 
     //  void FLOODFILL_STEP( int off, int dx, int dy )
     //  {
@@ -415,14 +400,14 @@ public abstract class Images extends Main {
     //      }
     //      else if (pos[off] != 255) fdc = pos[off];
     //  }
-    static floodfill_t[] fifo = new floodfill_t[FLOODFILL_FIFO_SIZE];
+    static floodfill_t[] fifo = new floodfill_t[GlConstants.FLOODFILL_FIFO_SIZE];
     static {
         for (int j = 0; j < fifo.length; j++) {
             fifo[j] = new floodfill_t();
         }       
     }
     // TODO check this: R_FloodFillSkin( byte[] skin, int skinwidth, int skinheight)
-    void R_FloodFillSkin(byte[] skin, int skinwidth, int skinheight) {
+    static void R_FloodFillSkin(byte[] skin, int skinwidth, int skinheight) {
         //      byte                fillcolor = *skin; // assume this is the pixel to fill
         int fillcolor = skin[0] & 0xff;
 //      floodfill_t[] fifo = new floodfill_t[FLOODFILL_FIFO_SIZE];
@@ -453,7 +438,7 @@ public abstract class Images extends Main {
 
         fifo[inpt].x = 0;
         fifo[inpt].y = 0;
-        inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
+        inpt = (inpt + 1) & GlConstants.FLOODFILL_FIFO_MASK;
 
         while (outpt != inpt) {
             int x = fifo[outpt].x;
@@ -462,7 +447,7 @@ public abstract class Images extends Main {
             //          byte        *pos = &skin[x + skinwidth * y];
             int pos = x + skinwidth * y;
             //
-            outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
+            outpt = (outpt + 1) & GlConstants.FLOODFILL_FIFO_MASK;
 
             int off, dx, dy;
 
@@ -475,7 +460,7 @@ public abstract class Images extends Main {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
-                    inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
+                    inpt = (inpt + 1) & GlConstants.FLOODFILL_FIFO_MASK;
                 }
                 else if (skin[pos + off] != (byte) 255)
                     fdc = skin[pos + off] & 0xff;
@@ -490,7 +475,7 @@ public abstract class Images extends Main {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
-                    inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
+                    inpt = (inpt + 1) & GlConstants.FLOODFILL_FIFO_MASK;
                 }
                 else if (skin[pos + off] != (byte) 255)
                     fdc = skin[pos + off] & 0xff;
@@ -505,7 +490,7 @@ public abstract class Images extends Main {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
-                    inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
+                    inpt = (inpt + 1) & GlConstants.FLOODFILL_FIFO_MASK;
                 }
                 else if (skin[pos + off] != (byte) 255)
                     fdc = skin[pos + off] & 0xff;
@@ -520,7 +505,7 @@ public abstract class Images extends Main {
                     skin[pos + off] = (byte) 255;
                     fifo[inpt].x = (short) (x + dx);
                     fifo[inpt].y = (short) (y + dy);
-                    inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
+                    inpt = (inpt + 1) & GlConstants.FLOODFILL_FIFO_MASK;
                 }
                 else if (skin[pos + off] != (byte) 255)
                     fdc = skin[pos + off] & 0xff;
@@ -596,7 +581,7 @@ public abstract class Images extends Main {
     Operates in place, quartering the size of the texture
     ================
     */
-    void GL_MipMap(int[] in, int width, int height) {
+    static void GL_MipMap(int[] in, int width, int height) {
         int i, j;
         int[] out;
 
@@ -626,7 +611,8 @@ public abstract class Images extends Main {
         }
     }
 
-    int upload_width, upload_height;
+    static int upload_width; 
+    static int upload_height;
 
     /*
     ===============
@@ -635,16 +621,15 @@ public abstract class Images extends Main {
     Returns has_alpha
     ===============
     */
-    int[] scaled = new int[256 * 256];
+    private static int[] scaled = new int[256 * 256];
     //byte[] paletted_texture = new byte[256 * 256];
 //  ByteBuffer paletted_texture;
-    IntBuffer tex = Lib.newIntBuffer(512 * 256, ByteOrder.LITTLE_ENDIAN);
-
-    private static HashMap<String,ModelImage> imageMap = new HashMap<String,ModelImage>();
+    private static IntBuffer tex = Lib.newIntBuffer(512 * 256, ByteOrder.LITTLE_ENDIAN);
+    static HashMap<String,ModelImage> imageMap = new HashMap<String,ModelImage>();
 
     
     
-    boolean GL_Upload32(int[] data, int width, int height, boolean mipmap) {
+    static boolean GL_Upload32(int[] data, int width, int height, boolean mipmap) {
         int samples;
         int scaled_width, scaled_height;
         int i, c;
@@ -737,7 +722,7 @@ public abstract class Images extends Main {
                             tex);
 //                  }
                     //goto done;
-                    throw gotoDone;
+                    throw new Exception("goto done");
                 }
                 //memcpy (scaled, data, width*height*4); were bytes
                 System.arraycopy(data, 0, scaled, 0, width * height);
@@ -835,12 +820,12 @@ public abstract class Images extends Main {
     */
 
 
-    boolean GL_Upload8(byte[] data, int width, int height, boolean mipmap, boolean is_sky) {
+    static boolean GL_Upload8(byte[] data, int width, int height, boolean mipmap, boolean is_sky) {
         return GL_Upload32(QuakeImage.applyPalette(data, width, height, QuakeImage.PALETTE_ABGR), 
                 width, height, mipmap);
     }
 
-    protected final ModelImage GL_Find_free_image_t(String name, int type) {
+    protected final static ModelImage GL_Find_free_image_t(String name, int type) {
         ModelImage image;
         int i;
 
@@ -875,13 +860,13 @@ public abstract class Images extends Main {
         
         return image;
     }
-    protected ModelImage GL_LoadPic(String name, byte[] pic, int width, int height, int type, int bits) {
+    static ModelImage GL_LoadPic(String name, byte[] pic, int width, int height, int type, int bits) {
         ModelImage image = GL_Find_free_image_t(name, type);
         GL_SetPicData(image, pic, width, height, bits);
         return image;
     }
         
-    protected void GL_SetPicData(ModelImage image, byte[] pic, int width, int height, int bits) {   
+    protected static void GL_SetPicData(ModelImage image, byte[] pic, int width, int height, int bits) {   
         image.width = width;
         image.height = height;
         image.complete = true;
@@ -914,7 +899,7 @@ public abstract class Images extends Main {
     Finds or loads the given image
     ===============
     */
-    ModelImage GL_FindImage(String name, int type) {
+    static ModelImage GL_FindImage(String name, int type) {
 
 //      // TODO loest das grossschreibungs problem
 //      name = name.toLowerCase();
@@ -936,12 +921,12 @@ public abstract class Images extends Main {
             return image;
         }
 
-        image = GL_LoadNewImage(name, type);
+        image = Globals.re.GL_LoadNewImage(name, type);
         imageMap.put(name, image);
         return image;
     }
-        
-    protected ModelImage GL_LoadNewImage(String name, int type) {
+        /*
+    static ModelImage GL_LoadNewImage(String name, int type) {
         //
         // load the pic from disk
         //
@@ -979,7 +964,7 @@ public abstract class Images extends Main {
 
         return image;
     }
-
+*/
     /*
     ===============
     R_RegisterSkin
