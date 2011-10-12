@@ -205,7 +205,7 @@ public class ServerGame {
     }
 
     public static void PF_WriteDir(float[] dir) {
-        Buffer.WriteDir(ServerInit.sv.multicast, dir);
+        ServerGame.WriteDir(ServerInit.sv.multicast, dir);
     }
 
     public static void PF_WriteAngle(float f) {
@@ -314,5 +314,27 @@ public class ServerGame {
         };
 
         GameSave.InitGame();
+    }
+
+    //should be ok.
+    public static void WriteDir(Buffer sb, float[] dir) {
+        int i, best;
+        float d, bestd;
+    
+        if (dir == null) {
+            Buffer.WriteByte(sb, 0);
+            return;
+        }
+    
+        bestd = 0;
+        best = 0;
+        for (i = 0; i < Constants.NUMVERTEXNORMALS; i++) {
+            d = Math3D.DotProduct(dir, Globals.bytedirs[i]);
+            if (d > bestd) {
+                bestd = d;
+                best = i;
+            }
+        }
+        Buffer.WriteByte(sb, best);
     }
 }

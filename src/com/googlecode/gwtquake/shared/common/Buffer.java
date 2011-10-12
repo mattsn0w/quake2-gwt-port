@@ -40,45 +40,13 @@ public final class Buffer {
 	public int readcount = 0;
 	// 2k read buffer.
 	public static byte readbuf[] = new byte[2048];
-	
+
 	public void clear()
 	{
 		if (data!=null)		
 			Arrays.fill(data,(byte)0);
 		cursize = 0;
 		overflowed = false;
-	}
-
-	//should be ok.
-	public static void ReadDir(Buffer sb, float[] dir) {
-	    int b;
-	
-	    b = ReadByte(sb);
-	    if (b >= Constants.NUMVERTEXNORMALS)
-	        Com.Error(Constants.ERR_DROP, "MSF_ReadDir: out of range");
-	    Math3D.VectorCopy(Globals.bytedirs[b], dir);
-	}
-
-	//should be ok.
-	public static void WriteDir(Buffer sb, float[] dir) {
-	    int i, best;
-	    float d, bestd;
-	
-	    if (dir == null) {
-	        WriteByte(sb, 0);
-	        return;
-	    }
-	
-	    bestd = 0;
-	    best = 0;
-	    for (i = 0; i < Constants.NUMVERTEXNORMALS; i++) {
-	        d = Math3D.DotProduct(dir, Globals.bytedirs[i]);
-	        if (d > bestd) {
-	            bestd = d;
-	            best = i;
-	        }
-	    }
-	    WriteByte(sb, best);
 	}
 
 	public static void BeginReading(Buffer msg) {
