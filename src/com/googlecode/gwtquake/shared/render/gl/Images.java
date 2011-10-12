@@ -37,6 +37,7 @@ import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
 import com.googlecode.gwtquake.shared.common.Constants;
+import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
@@ -742,7 +743,7 @@ public abstract class Images extends Main {
                 System.arraycopy(data, 0, scaled, 0, width * height);
             }
             else
-                GL_ResampleTexture(data, width, height, scaled, scaled_width, scaled_height);
+                Globals.re.GL_ResampleTexture(data, width, height, scaled, scaled_width, scaled_height);
 
         //  GL_LightScaleTexture(scaled, scaled_width, scaled_height, !mipmap);
 

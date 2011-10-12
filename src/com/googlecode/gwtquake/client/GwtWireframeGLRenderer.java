@@ -76,7 +76,7 @@ public class GwtWireframeGLRenderer extends GlRenderer implements Renderer {
 
 	
 	@Override
-	protected void GL_ResampleTexture(int[] in, int inwidth, int inheight,
+	public void GL_ResampleTexture(int[] in, int inwidth, int inheight,
 			int[] out, int outwidth, int outheight) {
 		// TODO(haustein) Auto-generated method stub
 		// Should be simple with canvas and is not needed for wireframe
