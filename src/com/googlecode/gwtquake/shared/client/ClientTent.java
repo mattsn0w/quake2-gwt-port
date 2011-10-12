@@ -707,7 +707,7 @@ public class ClientTent {
                 s[i].id = id;
                 s[i].count = Buffer.ReadByte(Globals.net_message);
                 Buffer.ReadPos(Globals.net_message, s[i].org);
-                Buffer.ReadDir(Globals.net_message, s[i].dir);
+                ClientTent.ReadDir(Globals.net_message, s[i].dir);
                 r = Buffer.ReadByte(Globals.net_message);
                 s[i].color = r & 0xff;
                 s[i].magnitude = Buffer.ReadShort(Globals.net_message);
@@ -725,7 +725,7 @@ public class ClientTent {
                 // FIXME - read the stuff anyway
                 cnt = Buffer.ReadByte(Globals.net_message);
                 Buffer.ReadPos(Globals.net_message, pos);
-                Buffer.ReadDir(Globals.net_message, dir);
+                ClientTent.ReadDir(Globals.net_message, dir);
                 r = Buffer.ReadByte(Globals.net_message);
                 magnitude = Buffer.ReadShort(Globals.net_message);
                 magnitude = Buffer.ReadLong(Globals.net_message); // really
@@ -735,7 +735,7 @@ public class ClientTent {
         {
             cnt = Buffer.ReadByte(Globals.net_message);
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             r = Buffer.ReadByte(Globals.net_message);
             magnitude = Buffer.ReadShort(Globals.net_message);
             color = r & 0xff;
@@ -837,7 +837,7 @@ public class ClientTent {
         switch (type) {
         case Constants.TE_BLOOD: // bullet hitting flesh
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             ClientEffects.ParticleEffect(pos, dir, 0xe8, 60);
             break;
 
@@ -845,7 +845,7 @@ public class ClientTent {
         case Constants.TE_SPARKS:
         case Constants.TE_BULLET_SPARKS:
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             if (type == Constants.TE_GUNSHOT)
                 ClientEffects.ParticleEffect(pos, dir, 0, 40);
             else
@@ -872,7 +872,7 @@ public class ClientTent {
         case Constants.TE_SCREEN_SPARKS:
         case Constants.TE_SHIELD_SPARKS:
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             if (type == Constants.TE_SCREEN_SPARKS)
                 ClientEffects.ParticleEffect(pos, dir, 0xd0, 40);
             else
@@ -883,7 +883,7 @@ public class ClientTent {
 
         case Constants.TE_SHOTGUN: // bullet hitting wall
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             ClientEffects.ParticleEffect(pos, dir, 0, 20);
             SmokeAndFlash(pos);
             break;
@@ -891,7 +891,7 @@ public class ClientTent {
         case Constants.TE_SPLASH: // bullet hitting water
             cnt = Buffer.ReadByte(Globals.net_message);
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             r = Buffer.ReadByte(Globals.net_message);
             if (r > 6)
                 color = 0x00;
@@ -916,7 +916,7 @@ public class ClientTent {
         case Constants.TE_LASER_SPARKS:
             cnt = Buffer.ReadByte(Globals.net_message);
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             color = Buffer.ReadByte(Globals.net_message);
             ClientEffects.ParticleEffect2(pos, dir, color, cnt);
             break;
@@ -930,7 +930,7 @@ public class ClientTent {
 
         case Constants.TE_BLASTER: // blaster hitting wall
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             ClientEffects.BlasterParticles(pos, dir);
 
             ex = AllocExplosion();
@@ -1104,7 +1104,7 @@ public class ClientTent {
         case Constants.TE_WELDING_SPARKS:
             cnt = Buffer.ReadByte(Globals.net_message);
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             color = Buffer.ReadByte(Globals.net_message);
             ClientEffects.ParticleEffect2(pos, dir, color, cnt);
 
@@ -1125,7 +1125,7 @@ public class ClientTent {
 
         case Constants.TE_GREENBLOOD:
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             ClientEffects.ParticleEffect2(pos, dir, 0xdf, 30);
             break;
 
@@ -1133,7 +1133,7 @@ public class ClientTent {
         case Constants.TE_TUNNEL_SPARKS:
             cnt = Buffer.ReadByte(Globals.net_message);
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             color = Buffer.ReadByte(Globals.net_message);
             ClientEffects.ParticleEffect3(pos, dir, color, cnt);
             break;
@@ -1144,7 +1144,7 @@ public class ClientTent {
         case Constants.TE_BLASTER2: // green blaster hitting wall
         case Constants.TE_FLECHETTE: // flechette
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
 
             // PMM
             if (type == Constants.TE_BLASTER2)
@@ -1256,7 +1256,7 @@ public class ClientTent {
             //			cnt = MSG.ReadByte (net_message);
             cnt = 50;
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             //			r = MSG.ReadByte (net_message);
             //			magnitude = MSG.ReadShort (net_message);
             r = 8;
@@ -1270,7 +1270,7 @@ public class ClientTent {
             //			cnt = MSG.ReadByte (net_message);
             cnt = 20;
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             //			r = MSG.ReadByte (net_message);
             //			magnitude = MSG.ReadShort (net_message);
             //			color = r & 0xff;
@@ -1295,7 +1295,7 @@ public class ClientTent {
 
         case Constants.TE_MOREBLOOD:
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             ClientEffects.ParticleEffect(pos, dir, 0xe8, 250);
             break;
 
@@ -1309,7 +1309,7 @@ public class ClientTent {
 
         case Constants.TE_ELECTRIC_SPARKS:
             Buffer.ReadPos(Globals.net_message, pos);
-            Buffer.ReadDir(Globals.net_message, dir);
+            ClientTent.ReadDir(Globals.net_message, dir);
             //			CL_ParticleEffect (pos, dir, 109, 40);
             ClientEffects.ParticleEffect(pos, dir, 0x75, 40);
             //FIXME : replace or remove this sound
@@ -1839,5 +1839,15 @@ public class ClientTent {
         AddLasers();
         // PMM - set up sustain
         ProcessSustain();
+    }
+
+    //should be ok.
+    public static void ReadDir(Buffer sb, float[] dir) {
+        int b;
+    
+        b = Buffer.ReadByte(sb);
+        if (b >= Constants.NUMVERTEXNORMALS)
+            Com.Error(Constants.ERR_DROP, "MSF_ReadDir: out of range");
+        Math3D.VectorCopy(Globals.bytedirs[b], dir);
     }
 }
