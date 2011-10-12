@@ -16,20 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-*/
+ */
 /* Modifications
-   Copyright 2003-2004 Bytonic Software
-   Copyright 2010 Google Inc.
-*/
+ Copyright 2003-2004 Bytonic Software
+ Copyright 2010 Google Inc.
+ */
 package com.googlecode.gwtquake.shared.common;
 
-public class Lump
-{
-	public Lump(int offset, int len)
-	{
-		this.fileofs = offset;
-		this.filelen = len;
-	}
+public class Lump {
+  public final int fileofs;
+  public final int filelen;
 
-	public int fileofs, filelen;
+  public Lump(int offset, int len) {
+    this.fileofs = offset;
+    this.filelen = len;
+  }
 }

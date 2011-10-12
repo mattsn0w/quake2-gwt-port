@@ -29,7 +29,6 @@ import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
 import com.googlecode.gwtquake.shared.render.GlPolygon;
-import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.render.ModelSurface;
 import com.googlecode.gwtquake.shared.util.Math3D;
 import com.googlecode.gwtquake.shared.util.Vec3Cache;
@@ -42,51 +41,6 @@ import com.googlecode.gwtquake.shared.util.Vec3Cache;
  * @author cwei
  */
 public abstract class Warp extends Models {
-	// warpsin.h
-	public static final float[] SIN = {
-		0f, 0.19633f, 0.392541f, 0.588517f, 0.784137f, 0.979285f, 1.17384f, 1.3677f,
-		 1.56072f, 1.75281f, 1.94384f, 2.1337f, 2.32228f, 2.50945f, 2.69512f, 2.87916f,
-		 3.06147f, 3.24193f, 3.42044f, 3.59689f, 3.77117f, 3.94319f, 4.11282f, 4.27998f,
-		 4.44456f, 4.60647f, 4.76559f, 4.92185f, 5.07515f, 5.22538f, 5.37247f, 5.51632f,
-		 5.65685f, 5.79398f, 5.92761f, 6.05767f, 6.18408f, 6.30677f, 6.42566f, 6.54068f,
-		 6.65176f, 6.75883f, 6.86183f, 6.9607f, 7.05537f, 7.14579f, 7.23191f, 7.31368f,
-		 7.39104f, 7.46394f, 7.53235f, 7.59623f, 7.65552f, 7.71021f, 7.76025f, 7.80562f,
-		 7.84628f, 7.88222f, 7.91341f, 7.93984f, 7.96148f, 7.97832f, 7.99036f, 7.99759f,
-		 8f, 7.99759f, 7.99036f, 7.97832f, 7.96148f, 7.93984f, 7.91341f, 7.88222f,
-		 7.84628f, 7.80562f, 7.76025f, 7.71021f, 7.65552f, 7.59623f, 7.53235f, 7.46394f,
-		 7.39104f, 7.31368f, 7.23191f, 7.14579f, 7.05537f, 6.9607f, 6.86183f, 6.75883f,
-		 6.65176f, 6.54068f, 6.42566f, 6.30677f, 6.18408f, 6.05767f, 5.92761f, 5.79398f,
-		 5.65685f, 5.51632f, 5.37247f, 5.22538f, 5.07515f, 4.92185f, 4.76559f, 4.60647f,
-		 4.44456f, 4.27998f, 4.11282f, 3.94319f, 3.77117f, 3.59689f, 3.42044f, 3.24193f,
-		 3.06147f, 2.87916f, 2.69512f, 2.50945f, 2.32228f, 2.1337f, 1.94384f, 1.75281f,
-		 1.56072f, 1.3677f, 1.17384f, 0.979285f, 0.784137f, 0.588517f, 0.392541f, 0.19633f,
-		 9.79717e-16f, -0.19633f, -0.392541f, -0.588517f, -0.784137f, -0.979285f, -1.17384f, -1.3677f,
-		 -1.56072f, -1.75281f, -1.94384f, -2.1337f, -2.32228f, -2.50945f, -2.69512f, -2.87916f,
-		 -3.06147f, -3.24193f, -3.42044f, -3.59689f, -3.77117f, -3.94319f, -4.11282f, -4.27998f,
-		 -4.44456f, -4.60647f, -4.76559f, -4.92185f, -5.07515f, -5.22538f, -5.37247f, -5.51632f,
-		 -5.65685f, -5.79398f, -5.92761f, -6.05767f, -6.18408f, -6.30677f, -6.42566f, -6.54068f,
-		 -6.65176f, -6.75883f, -6.86183f, -6.9607f, -7.05537f, -7.14579f, -7.23191f, -7.31368f,
-		 -7.39104f, -7.46394f, -7.53235f, -7.59623f, -7.65552f, -7.71021f, -7.76025f, -7.80562f,
-		 -7.84628f, -7.88222f, -7.91341f, -7.93984f, -7.96148f, -7.97832f, -7.99036f, -7.99759f,
-		 -8f, -7.99759f, -7.99036f, -7.97832f, -7.96148f, -7.93984f, -7.91341f, -7.88222f,
-		 -7.84628f, -7.80562f, -7.76025f, -7.71021f, -7.65552f, -7.59623f, -7.53235f, -7.46394f,
-		 -7.39104f, -7.31368f, -7.23191f, -7.14579f, -7.05537f, -6.9607f, -6.86183f, -6.75883f,
-		 -6.65176f, -6.54068f, -6.42566f, -6.30677f, -6.18408f, -6.05767f, -5.92761f, -5.79398f,
-		 -5.65685f, -5.51632f, -5.37247f, -5.22538f, -5.07515f, -4.92185f, -4.76559f, -4.60647f,
-		 -4.44456f, -4.27998f, -4.11282f, -3.94319f, -3.77117f, -3.59689f, -3.42044f, -3.24193f,
-		 -3.06147f, -2.87916f, -2.69512f, -2.50945f, -2.32228f, -2.1337f, -1.94384f, -1.75281f,
-		 -1.56072f, -1.3677f, -1.17384f, -0.979285f, -0.784137f, -0.588517f, -0.392541f, -0.19633f
-	};
-	
-	String skyname;
-	float	skyrotate;
-	float[] skyaxis = {0, 0, 0};
-	ModelImage[] sky_images = new ModelImage[6];
-
-	ModelSurface	warpface;
-
-	static final int SUBDIVIDE_SIZE = 64;
-
 	/**
 	 * BoundPoly
 	 * @param numverts
@@ -94,7 +48,7 @@ public abstract class Warp extends Models {
 	 * @param mins
 	 * @param maxs
 	 */
-	void BoundPoly(int numverts, float[][] verts, float[] mins, float[] maxs) {
+	static void BoundPoly(int numverts, float[][] verts, float[] mins, float[] maxs) {
 		mins[0] = mins[1] = mins[2] = 9999;
 		maxs[0] = maxs[1] = maxs[2] = -9999;
 
@@ -116,7 +70,7 @@ public abstract class Warp extends Models {
 	 * @param numverts
 	 * @param verts
 	 */
-	void SubdividePolygon(int numverts, float[][] verts)
+	static void SubdividePolygon(int numverts, float[][] verts)
 	{
 		int i, j, k;
 		float	m;
@@ -139,7 +93,7 @@ public abstract class Warp extends Models {
 		for (i=0 ; i<3 ; i++)
 		{
 			m = (mins[i] + maxs[i]) * 0.5f;
-			m = SUBDIVIDE_SIZE * (float)Math.floor(m / SUBDIVIDE_SIZE + 0.5f);
+			m = GlConstants.SUBDIVIDE_SIZE * (float)Math.floor(m / GlConstants.SUBDIVIDE_SIZE + 0.5f);
 			if (maxs[i] - m < 8)
 				continue;
 			if (m - mins[i] < 8)
@@ -200,8 +154,8 @@ public abstract class Warp extends Models {
 		// init polys
 		GlPolygon poly = GlPolygon.create(numverts + 2);
 
-		poly.next = warpface.polys;
-		warpface.polys = poly;
+		poly.next = GlState.warpface.polys;
+		GlState.warpface.polys = poly;
 		
 		float[] total = Vec3Cache.get();
 		Math3D.VectorClear(total);
@@ -212,8 +166,8 @@ public abstract class Warp extends Models {
             poly.x(i + 1, verts[i][0]);
             poly.y(i + 1, verts[i][1]);
             poly.z(i + 1, verts[i][2]);
-            s = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[0]);
-            t = Math3D.DotProduct(verts[i], warpface.texinfo.vecs[1]);
+            s = Math3D.DotProduct(verts[i], GlState.warpface.texinfo.vecs[0]);
+            t = Math3D.DotProduct(verts[i], GlState.warpface.texinfo.vecs[1]);
 
             total_s += s;
             total_t += t;
@@ -241,7 +195,7 @@ public abstract class Warp extends Models {
         Vec3Cache.release(); // total
 	}
 
-	private final float[][] tmpVerts = new float[64][3];
+	private static  final float[][] tmpVerts = new float[64][3];
 
 	/**
 	 * GL_SubdivideSurface
@@ -249,10 +203,10 @@ public abstract class Warp extends Models {
 	 * boundaries so that turbulent and sky warps
 	 * can be done reasonably.
 	 */
-    void GL_SubdivideSurface(ModelSurface fa) {
+    static void GL_SubdivideSurface(ModelSurface fa) {
         float[][] verts = tmpVerts;
         float[] vec;
-        warpface = fa;
+        GlState.warpface = fa;
         //
         // convert edges back to a normal polygon
         //
@@ -270,20 +224,17 @@ public abstract class Warp extends Models {
         SubdividePolygon(numverts, verts);
     }
 
-// =========================================================
-	static final float TURBSCALE = (float)(256.0f / (2 * Math.PI));
-
-	/**
+/**
 	 * EmitWaterPolys
 	 * Does a water warp on the pre-fragmented glpoly_t chain
 	 */
-	void EmitWaterPolys(ModelSurface fa)
+	static void EmitWaterPolys(ModelSurface fa)
 	{
-		float rdt = r_newrefdef.time;
+		float rdt = GlState.r_newrefdef.time;
 
 		float scroll;
 		if ((fa.texinfo.flags & Constants.SURF_FLOWING) != 0)
-			scroll = -64 * ( (r_newrefdef.time*0.5f) - (int)(r_newrefdef.time*0.5f) );
+			scroll = -64 * ( (GlState.r_newrefdef.time*0.5f) - (int)(GlState.r_newrefdef.time*0.5f) );
 		else
 			scroll = 0;
 		
@@ -293,30 +244,30 @@ public abstract class Warp extends Models {
         for (bp = fa.polys; bp != null; bp = bp.next) {
             p = bp;
 
-            gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
+            GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
             for (i = 0; i < p.numverts; i++) {
                 os = p.s1(i);
                 ot = p.t1(i);
 
                 s = os
-                        + Warp.SIN[(int) ((ot * 0.125f + r_newrefdef.time) * TURBSCALE) & 255];
+                        + GlConstants.SIN[(int) ((ot * 0.125f + GlState.r_newrefdef.time) * GlConstants.TURBSCALE) & 255];
                 s += scroll;
                 s *= (1.0f / 64);
 
                 t = ot
-                        + Warp.SIN[(int) ((os * 0.125f + rdt) * TURBSCALE) & 255];
+                        + GlConstants.SIN[(int) ((os * 0.125f + rdt) * GlConstants.TURBSCALE) & 255];
                 t *= (1.0f / 64);
 
-                gl.glTexCoord2f(s, t);
-                gl.glVertex3f(p.x(i), p.y(i), p.z(i));
+                GlState.gl.glTexCoord2f(s, t);
+                GlState.gl.glVertex3f(p.x(i), p.y(i), p.z(i));
             }
-            gl.glEnd();
+            GlState.gl.glEnd();
         }
 	}
 
 //	  ===================================================================
 
-	float[][] skyclip = {
+	static float[][] skyclip = {
 		{ 1,  1, 0},
 		{ 1, -1, 0},
 		{ 0, -1, 1},
@@ -325,10 +276,10 @@ public abstract class Warp extends Models {
 		{-1,  0, 1} 
 	};
 
-	int c_sky;
+	static int c_sky;
 
 	// 1 = s, 2 = t, 3 = 2048
-	int[][]	st_to_vec =
+	static int[][]	st_to_vec =
 	{
 		{3,-1,2},
 		{-3,1,2},
@@ -341,7 +292,7 @@ public abstract class Warp extends Models {
 
 	};
 
-	int[][]	vec_to_st =
+	static int[][]	vec_to_st =
 	{
 		{-2,3,1},
 		{2,3,-1},
@@ -354,19 +305,19 @@ public abstract class Warp extends Models {
 
 	};
 
-	float[][] skymins = new float[2][6];
-	float[][] skymaxs = new float[2][6];
-	float	sky_min, sky_max;
+	static float[][] skymins = new float[2][6];
+	static float[][] skymaxs = new float[2][6];
+	static float	sky_min, sky_max;
 
 	// stack variable
-	private final float[] v = {0, 0, 0};
-	private final float[] av = {0, 0, 0};
+	static  float[] v = {0, 0, 0};
+	static  float[] av = {0, 0, 0};
 	/**
 	 * DrawSkyPolygon
 	 * @param nump
 	 * @param vecs
 	 */
-	void DrawSkyPolygon(int nump, float[][] vecs)
+	static void DrawSkyPolygon(int nump, float[][] vecs)
 	{
 		c_sky++;
 		// decide which face it maps to
@@ -435,16 +386,12 @@ public abstract class Warp extends Models {
 		}
 	}
 
-	static final float ON_EPSILON = 0.1f; // point on plane side epsilon
-	static final int MAX_CLIP_VERTS = 64;
-	
 	static final int SIDE_BACK = 1;
 	static final int SIDE_FRONT = 0;
 	static final int SIDE_ON = 2;
 	
-	float[] dists = new float[MAX_CLIP_VERTS];
-	int[] sides = new int[MAX_CLIP_VERTS];
-	float[][][][] newv = new float[6][2][MAX_CLIP_VERTS][3];
+	static int[] sides = new int[GlConstants.MAX_CLIP_VERTS];
+	static float[][][][] newv = new float[6][2][GlConstants.MAX_CLIP_VERTS][3];
 
 	/**
 	 * ClipSkyPolygon
@@ -452,9 +399,9 @@ public abstract class Warp extends Models {
 	 * @param vecs
 	 * @param stage
 	 */
-	void ClipSkyPolygon(int nump, float[][] vecs, int stage)
+	static void ClipSkyPolygon(int nump, float[][] vecs, int stage)
 	{
-		if (nump > MAX_CLIP_VERTS-2)
+		if (nump > GlConstants.MAX_CLIP_VERTS-2)
 			Com.Error(Constants.ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
 		if (stage == 6)
 		{	// fully clipped, so draw it
@@ -471,19 +418,19 @@ public abstract class Warp extends Models {
 		for (i=0 ; i<nump ; i++)
 		{
 			d = Math3D.DotProduct(vecs[i], norm);
-			if (d > ON_EPSILON)
+			if (d > GlConstants.ON_EPSILON)
 			{
 				front = true;
 				sides[i] = SIDE_FRONT;
 			}
-			else if (d < -ON_EPSILON)
+			else if (d < -GlConstants.ON_EPSILON)
 			{
 				back = true;
 				sides[i] = SIDE_BACK;
 			}
 			else
 				sides[i] = SIDE_ON;
-			dists[i] = d;
+			GlState.dists[i] = d;
 		}
 
 		if (!front || !back)
@@ -494,7 +441,7 @@ public abstract class Warp extends Models {
 
 		// clip it
 		sides[i] = sides[0];
-		dists[i] = dists[0];
+		GlState.dists[i] = GlState.dists[0];
 		Math3D.VectorCopy(vecs[0], vecs[i]);
 
 		int newc0 = 0; 	int  newc1 = 0;
@@ -525,7 +472,7 @@ public abstract class Warp extends Models {
 			if (sides[i] == SIDE_ON || sides[i+1] == SIDE_ON || sides[i+1] == sides[i])
 				continue;
 
-			d = dists[i] / (dists[i] - dists[i+1]);
+			d = GlState.dists[i] / (GlState.dists[i] - GlState.dists[i+1]);
 			for (j=0 ; j<3 ; j++)
 			{
 				e = v[j] + d * (vecs[i + 1][j] - v[j]);
@@ -541,19 +488,19 @@ public abstract class Warp extends Models {
 		ClipSkyPolygon(newc1, newv[stage][1], stage+1);
 	}
 
-	float[][] verts = new float[MAX_CLIP_VERTS][3];
+	static float[][] verts = new float[GlConstants.MAX_CLIP_VERTS][3];
 
 	/**
 	 * R_AddSkySurface
 	 */
-	void R_AddSkySurface(ModelSurface fa)
+	static void R_AddSkySurface(ModelSurface fa)
 	{
 	    // calculate vertex values for sky box
         for (GlPolygon p = fa.polys; p != null; p = p.next) {
             for (int i = 0; i < p.numverts; i++) {
-                verts[i][0] = p.x(i) - r_origin[0];
-                verts[i][1] = p.y(i) - r_origin[1];
-                verts[i][2] = p.z(i) - r_origin[2];
+                verts[i][0] = p.x(i) - GlState.r_origin[0];
+                verts[i][1] = p.y(i) - GlState.r_origin[1];
+                verts[i][2] = p.z(i) - GlState.r_origin[2];
             }
             ClipSkyPolygon(p.numverts, verts, 0);
         }
@@ -562,7 +509,7 @@ public abstract class Warp extends Models {
 	/**
 	 * R_ClearSkyBox
 	 */
-	void R_ClearSkyBox()
+	static void R_ClearSkyBox()
 	{
 		float[] skymins0 = skymins[0];
 		float[] skymins1 = skymins[1];
@@ -578,15 +525,15 @@ public abstract class Warp extends Models {
 	
 	
 	// stack variable
-	private final float[] v1 = {0, 0, 0};
-	private final float[] b = {0, 0, 0};
+	static float[] v1 = {0, 0, 0};
+	static float[] b = {0, 0, 0};
 	/**
 	 * MakeSkyVec
 	 * @param s
 	 * @param t
 	 * @param axis
 	 */
-	void MakeSkyVec(float s, float t, int axis)
+	static void MakeSkyVec(float s, float t, int axis)
 	{
 		b[0] = s*2300;
 		b[1] = t*2300;
@@ -616,20 +563,20 @@ public abstract class Warp extends Models {
 			t = sky_max;
 
 		t = 1.0f - t;
-		gl.glTexCoord2f (s, t);
-		gl.glVertex3f(v1[0], v1[1], v1[2]);
+		GlState.gl.glTexCoord2f (s, t);
+		GlState.gl.glVertex3f(v1[0], v1[1], v1[2]);
 	}
 
-	int[] skytexorder = {0,2,1,3,4,5};
+	static int[] skytexorder = {0,2,1,3,4,5};
 
 	/**
 	 * R_DrawSkyBox
 	 */
-	void R_DrawSkyBox()
+	static void R_DrawSkyBox()
 	{
 		int i;
 		
-		if (skyrotate != 0)
+		if (GlState.skyrotate != 0)
 		{	// check for no sky at all
 			for (i=0 ; i<6 ; i++)
 				if (skymins[0][i] < skymaxs[0][i]
@@ -640,13 +587,13 @@ public abstract class Warp extends Models {
 		}
 		
 
-		gl.glPushMatrix ();
-		gl.glTranslatef (r_origin[0], r_origin[1], r_origin[2]);
-		gl.glRotatef (r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
+		GlState.gl.glPushMatrix ();
+		GlState.gl.glTranslatef (GlState.r_origin[0], GlState.r_origin[1], GlState.r_origin[2]);
+		GlState.gl.glRotatef (GlState.r_newrefdef.time * GlState.skyrotate, GlState.skyaxis[0], GlState.skyaxis[1], GlState.skyaxis[2]);
 		
 		for (i=0 ; i<6 ; i++)
 		{
-			if (skyrotate != 0)
+			if (GlState.skyrotate != 0)
 			{	// hack, forces full sky to draw when rotating
 				skymins[0][i] = -1;
 				skymins[1][i] = -1;
@@ -658,20 +605,20 @@ public abstract class Warp extends Models {
 			|| skymins[1][i] >= skymaxs[1][i])
 				continue;
 
-			GL_Bind(sky_images[skytexorder[i]].texnum);
+			GL_Bind(GlState.sky_images[skytexorder[i]].texnum);
 			
-			gl.glBegin(GlAdapter._GL_QUADS);
+			GlState.gl.glBegin(GlAdapter._GL_QUADS);
 			MakeSkyVec(skymins[0][i], skymins[1][i], i);
 			MakeSkyVec(skymins[0][i], skymaxs[1][i], i);
 			MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i);
 			MakeSkyVec(skymaxs[0][i], skymins[1][i], i);
-			gl.glEnd ();
+			GlState.gl.glEnd ();
 		}
-		gl.glPopMatrix ();
+		GlState.gl.glPopMatrix ();
 	}
 
 	// 3dstudio environment map names
-	String[] suf = {"rt", "bk", "lf", "ft", "up", "dn"};
+	static String[] suf = {"rt", "bk", "lf", "ft", "up", "dn"};
 	
 	/**
 	 * R_SetSky
@@ -679,34 +626,34 @@ public abstract class Warp extends Models {
 	 * @param rotate
 	 * @param axis
 	 */
-	protected void R_SetSky(String name, float rotate, float[] axis)
+	void R_SetSky(String name, float rotate, float[] axis)
 	{
 		assert (axis.length == 3) : "vec3_t bug";
 		String pathname;
-		skyname = name;
+		GlState.skyname = name;
 
-		skyrotate = rotate;
-		Math3D.VectorCopy(axis, skyaxis);
+		GlState.skyrotate = rotate;
+		Math3D.VectorCopy(axis, GlState.skyaxis);
 
 		for (int i=0 ; i<6 ; i++)
 		{
 			// chop down rotating skies for less memory
-			if (gl_skymip.value != 0 || skyrotate != 0)
-				gl_picmip.value++;
+			if (GlState.gl_skymip.value != 0 || GlState.skyrotate != 0)
+				GlState.gl_picmip.value++;
 
 			// Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
-			pathname = "env/" + skyname + suf[i] + ".tga";
+			pathname = "env/" + GlState.skyname + suf[i] + ".tga";
 
 //			gl.log("loadSky:" + pathname);
 			
-			sky_images[i] = GL_FindImage(pathname, QuakeImage.it_sky);
+			GlState.sky_images[i] = GL_FindImage(pathname, QuakeImage.it_sky);
 
-			if (sky_images[i] == null)
-				sky_images[i] = r_notexture;
+			if (GlState.sky_images[i] == null)
+				GlState.sky_images[i] = GlState.r_notexture;
 
-			if (gl_skymip.value != 0 || skyrotate != 0)
+			if (GlState.gl_skymip.value != 0 || GlState.skyrotate != 0)
 			{	// take less memory
-				gl_picmip.value--;
+				GlState.gl_picmip.value--;
 				sky_min = 1.0f / 256;
 				sky_max = 255.0f / 256;
 			}

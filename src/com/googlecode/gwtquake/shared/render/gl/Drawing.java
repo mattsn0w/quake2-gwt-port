@@ -82,14 +82,14 @@ public abstract class Drawing extends Images {
 		float size = 0.0625f;
 
 		
-		gl.glTexCoord2f (fcol, frow);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (fcol + size, frow);
-		gl.glVertex2f (x+8, y);
-		gl.glTexCoord2f (fcol + size, frow + size);
-		gl.glVertex2f (x+8, y+8);
-		gl.glTexCoord2f (fcol, frow + size);
-		gl.glVertex2f (x, y+8);
+		GlState.gl.glTexCoord2f (fcol, frow);
+		GlState.gl.glVertex2f (x, y);
+		GlState.gl.glTexCoord2f (fcol + size, frow);
+		GlState.gl.glVertex2f (x+8, y);
+		GlState.gl.glTexCoord2f (fcol + size, frow + size);
+		GlState.gl.glVertex2f (x+8, y+8);
+		GlState.gl.glTexCoord2f (fcol, frow + size);
+		GlState.gl.glVertex2f (x, y+8);
 	}
 
 
@@ -146,12 +146,12 @@ public abstract class Drawing extends Images {
 //		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
-		gl.glBegin (GlAdapter.SIMPLE_TEXUTRED_QUAD);
-		gl.glVertex2f (x, y);
-		gl.glVertex2f (x+w, y);
-		gl.glVertex2f (x+w, y+h);
-		gl.glVertex2f (x, y+h);
-		gl.glEnd ();
+		GlState.gl.glBegin (GlAdapter.SIMPLE_TEXUTRED_QUAD);
+		GlState.gl.glVertex2f (x, y);
+		GlState.gl.glVertex2f (x+w, y);
+		GlState.gl.glVertex2f (x+w, y+h);
+		GlState.gl.glVertex2f (x, y+h);
+		GlState.gl.glEnd ();
 
 //		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) !=0 ) ) && !image.has_alpha)
 //		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
@@ -181,12 +181,12 @@ public abstract class Drawing extends Images {
 
 		GL_Bind(image.texnum);
 
-		gl.glBegin (GlAdapter.SIMPLE_TEXUTRED_QUAD);
-		gl.glVertex2f (x, y);
-		gl.glVertex2f (x+image.width, y);
-		gl.glVertex2f (x+image.width, y+image.height);
-		gl.glVertex2f (x, y+image.height);
-		gl.glEnd ();
+		GlState.gl.glBegin (GlAdapter.SIMPLE_TEXUTRED_QUAD);
+		GlState.gl.glVertex2f (x, y);
+		GlState.gl.glVertex2f (x+image.width, y);
+		GlState.gl.glVertex2f (x+image.width, y+image.height);
+		GlState.gl.glVertex2f (x, y+image.height);
+		GlState.gl.glEnd ();
 
 //		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
 //		  gl.glEnable (GLAdapter.GL_ALPHA_TEST);
@@ -214,16 +214,16 @@ public abstract class Drawing extends Images {
 //		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
 		GL_Bind(image.texnum);
-		gl.glBegin (GlAdapter._GL_QUADS);
-		gl.glTexCoord2f(x/64.0f, y/64.0f);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f( (x+w)/64.0f, y/64.0f);
-		gl.glVertex2f(x+w, y);
-		gl.glTexCoord2f( (x+w)/64.0f, (y+h)/64.0f);
-		gl.glVertex2f(x+w, y+h);
-		gl.glTexCoord2f( x/64.0f, (y+h)/64.0f );
-		gl.glVertex2f (x, y+h);
-		gl.glEnd ();
+		GlState.gl.glBegin (GlAdapter._GL_QUADS);
+		GlState.gl.glTexCoord2f(x/64.0f, y/64.0f);
+		GlState.gl.glVertex2f (x, y);
+		GlState.gl.glTexCoord2f( (x+w)/64.0f, y/64.0f);
+		GlState.gl.glVertex2f(x+w, y);
+		GlState.gl.glTexCoord2f( (x+w)/64.0f, (y+h)/64.0f);
+		GlState.gl.glVertex2f(x+w, y+h);
+		GlState.gl.glTexCoord2f( x/64.0f, (y+h)/64.0f );
+		GlState.gl.glVertex2f (x, y+h);
+		GlState.gl.glEnd ();
 
 //		if ( ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) )  && !image.has_alpha)
 //		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
@@ -245,26 +245,26 @@ public abstract class Drawing extends Images {
 		if ( colorIndex > 255)
 			Com.Error(Constants.ERR_FATAL, "Draw_Fill: bad color");
 
-		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
 
 		int color = QuakeImage.PALETTE_ABGR[colorIndex]; 
 
-		gl.glColor3ub(
+		GlState.gl.glColor3ub(
 			(byte)((color >> 0) & 0xff), // r
 			(byte)((color >> 8) & 0xff), // g
 			(byte)((color >> 16) & 0xff) // b
 		);
 
-		gl.glBegin (GlAdapter._GL_QUADS);
+		GlState.gl.glBegin (GlAdapter._GL_QUADS);
 
-		gl.glVertex2f(x,y);
-		gl.glVertex2f(x+w, y);
-		gl.glVertex2f(x+w, y+h);
-		gl.glVertex2f(x, y+h);
+		GlState.gl.glVertex2f(x,y);
+		GlState.gl.glVertex2f(x+w, y);
+		GlState.gl.glVertex2f(x+w, y+h);
+		GlState.gl.glVertex2f(x, y+h);
 
-		gl.glEnd();
-		gl.glColor3f(1,1,1);
-		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glEnd();
+		GlState.gl.glColor3f(1,1,1);
+		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 	}
 
 	//=============================================================================
@@ -278,20 +278,20 @@ public abstract class Drawing extends Images {
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#DrawFadeScreen()
 	 */
 	public void DrawFadeScreen()	{
-	  gl.glEnable(GlAdapter.GL_BLEND);
-	  gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-	  gl.glColor4f(0, 0, 0, 0.8f);
-	  gl.glBegin(GlAdapter._GL_QUADS);
+	  GlState.gl.glEnable(GlAdapter.GL_BLEND);
+	  GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+	  GlState.gl.glColor4f(0, 0, 0, 0.8f);
+	  GlState.gl.glBegin(GlAdapter._GL_QUADS);
 
-	  gl.glVertex2f(0,0);
-	  gl.glVertex2f(vid.width, 0);
-	  gl.glVertex2f(vid.width, vid.height);
-	  gl.glVertex2f(0, vid.height);
+	  GlState.gl.glVertex2f(0,0);
+	  GlState.gl.glVertex2f(GlState.vid.width, 0);
+	  GlState.gl.glVertex2f(GlState.vid.width, GlState.vid.height);
+	  GlState.gl.glVertex2f(0, GlState.vid.height);
 
-	  gl.glEnd();
-	  gl.glColor4f(1,1,1,1);
-	  gl.glEnable(GlAdapter.GL_TEXTURE_2D);
-	  gl.glDisable(GlAdapter.GL_BLEND);
+	  GlState.gl.glEnd();
+	  GlState.gl.glColor4f(1,1,1,1);
+	  GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+	  GlState.gl.glDisable(GlAdapter.GL_BLEND);
 	}
 
 // ====================================================================
@@ -346,11 +346,11 @@ public abstract class Drawing extends Images {
 				frac = fracstep >> 1;
 				for (j=0 ; j<256 ; j++)
 				{
-					image32.put(destIndex + j, r_rawpalette[data[sourceIndex + (frac>>16)] & 0xff]);
+					image32.put(destIndex + j, GlState.r_rawpalette[data[sourceIndex + (frac>>16)] & 0xff]);
 					frac += fracstep;
 				}
 			}
-			gl.glTexImage2D (GlAdapter.GL_TEXTURE_2D, 0, GlAdapter.GL_RGBA/*gl_tex_solid_format*/, 256, 256, 0, GlAdapter.GL_RGBA, GlAdapter.GL_UNSIGNED_BYTE, image32);
+			GlState.gl.glTexImage2D (GlAdapter.GL_TEXTURE_2D, 0, GlAdapter.GL_RGBA/*gl_tex_solid_format*/, 256, 256, 0, GlAdapter.GL_RGBA, GlAdapter.GL_UNSIGNED_BYTE, image32);
 //		}
 //		else
 //		{
@@ -383,22 +383,22 @@ public abstract class Drawing extends Images {
 //						   GLAdapter.GL_UNSIGNED_BYTE, 
 //						   image8 );
 //		}
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
 
 //		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
 //		  gl.glDisable (GLAdapter.GL_ALPHA_TEST);
 
-		gl.glBegin (GlAdapter._GL_QUADS);
-		gl.glTexCoord2f (0, 0);
-		gl.glVertex2f (x, y);
-		gl.glTexCoord2f (1, 0);
-		gl.glVertex2f (x+w, y);
-		gl.glTexCoord2f (1, t);
-		gl.glVertex2f (x+w, y+h);
-		gl.glTexCoord2f (0, t);
-		gl.glVertex2f (x, y+h);
-		gl.glEnd ();
+		GlState.gl.glBegin (GlAdapter._GL_QUADS);
+		GlState.gl.glTexCoord2f (0, 0);
+		GlState.gl.glVertex2f (x, y);
+		GlState.gl.glTexCoord2f (1, 0);
+		GlState.gl.glVertex2f (x+w, y);
+		GlState.gl.glTexCoord2f (1, t);
+		GlState.gl.glVertex2f (x+w, y+h);
+		GlState.gl.glTexCoord2f (0, t);
+		GlState.gl.glVertex2f (x, y+h);
+		GlState.gl.glEnd ();
 
 //		if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
 //		  gl.glEnable (GLAdapter.GL_ALPHA_TEST);

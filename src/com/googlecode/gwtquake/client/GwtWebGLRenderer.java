@@ -43,11 +43,22 @@ import com.googlecode.gwtquake.shared.client.Renderer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ResourceLoader;
 import com.googlecode.gwtquake.shared.render.ModelImage;
+import com.googlecode.gwtquake.shared.render.gl.GlRenderer;
+import com.googlecode.gwtquake.shared.render.gl.GlState;
+import com.googlecode.gwtquake.shared.sys.KBD;
 
 import static com.google.gwt.webgl.client.WebGLRenderingContext.*;
 
-public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer {
+public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	
+  KBD kbd = new GwtKBD();
+  
+  
+  public KBD getKeyboardHandler() {
+      return kbd;
+  }
+  
+  
 	static class VideoElement extends Element {
 		protected VideoElement() {
 		}
@@ -103,7 +114,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 	CanvasElement canvas;
 	
 	public GwtWebGLRenderer(CanvasElement canvas, Element video) {
-		this.gl = this.webGL = new WebGLAdapter(canvas);
+		GlState.gl = this.webGL = new WebGLAdapter(canvas);
 		this.canvas = canvas;
 		this.video = (VideoElement) video;
 		
@@ -186,6 +197,10 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 		}
 	}
 	
+	static native JsArrayInteger getImageSize(String name) /*-{
+    return $wnd.__imageSizes[name];
+  }-*/;
+	
 	protected ModelImage GL_LoadNewImage(final String name, int type) {
 		final ModelImage image = GL_Find_free_image_t(name, type);
 
@@ -193,7 +208,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 		String normalizedName = cut == -1 ? name : name.substring(0, cut);
 		JsArrayInteger d = getImageSize(normalizedName);
 		if (d == null) {
-			gl.log("Size not found for " + name);
+			GlState.gl.log("Size not found for " + name);
 			image.width = 128;
 			image.height = 128;
 		} else {
@@ -202,10 +217,10 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 		}
 		
 		if (type != com.googlecode.gwtquake.shared.common.QuakeImage.it_pic) {
-			gl.glTexImage2D(TEXTURE_2D, 0, RGBA, HOLODECK_TEXTURE_SIZE, HOLODECK_TEXTURE_SIZE, 0, RGBA, 
+			GlState.gl.glTexImage2D(TEXTURE_2D, 0, RGBA, HOLODECK_TEXTURE_SIZE, HOLODECK_TEXTURE_SIZE, 0, RGBA, 
 			    UNSIGNED_BYTE, holoDeckTexture);
-			gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
-			gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
+			GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
+			GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
 		}
 
 		imageQueue.add(image);
@@ -250,7 +265,7 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 	          public void onError(ErrorEvent event) {
 	           // String src = finalImg.getSrc();
 	           // if (src.endsWith("&rt&rt&rt&rt")) {
-	              gl.log("load errors for " + finalImg.getSrc() );
+	              GlState.gl.log("load errors for " + finalImg.getSrc() );
 	              waitingForImages(-1);
 	              image.complete = true;
 	//            } else {
@@ -320,9 +335,9 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
 		}
 		while(mipMap && p2w > 0);
 		
-		gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, 
+		GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, 
 				mipMap ? LINEAR_MIPMAP_NEAREST : LINEAR);
-		gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
+		GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
 	}
 
   public void __setPicDataHighLevel(ModelImage image, ImageElement img) {
@@ -334,8 +349,8 @@ public class GwtWebGLRenderer extends AbstractGwtGLRenderer implements Renderer 
     image.upload_width = image.width;
     GL_Bind(image.texnum);
     webGL.glTexImage2d(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, img);
-    gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
-    gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
+    GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
+    GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
   }
 
 	public void setPicDataLowLevel(ModelImage image, ImageElement img) {

@@ -116,9 +116,9 @@ public abstract class GlRenderer extends Misc {
 
   public void DrawChar(int x, int y, int ch) {
     GL_Bind(draw_chars.texnum);
-    gl.glBegin (GlAdapter._GL_QUADS);
+    GlState.gl.glBegin (GlAdapter._GL_QUADS);
     DrawChar_(x, y, ch);
-    gl.glEnd();
+    GlState.gl.glEnd();
   }
 
   public void DrawString(int x, int y, String str) {
@@ -135,22 +135,22 @@ public abstract class GlRenderer extends Misc {
 
   public void DrawString(int x, int y, String str, int ofs, int len, boolean alt) {
     GL_Bind(draw_chars.texnum);
-    gl.glBegin (GlAdapter._GL_QUADS);
+    GlState.gl.glBegin (GlAdapter._GL_QUADS);
     for (int i = 0; i < len; ++i) {
       DrawChar_(x, y, str.charAt(ofs + i) + (alt ? 128 : 0));
       x += 8;
     }
-    gl.glEnd();
+    GlState.gl.glEnd();
   }
 
   public void DrawString(int x, int y, byte[] str, int ofs, int len) {
     GL_Bind(draw_chars.texnum);
-    gl.glBegin (GlAdapter._GL_QUADS);
+    GlState.gl.glBegin (GlAdapter._GL_QUADS);
     for (int i = 0; i < len; ++i) {
       DrawChar_(x, y, str[ofs + i]);
       x += 8;
     }
-    gl.glEnd();
+    GlState.gl.glEnd();
   }
 
 	/** 

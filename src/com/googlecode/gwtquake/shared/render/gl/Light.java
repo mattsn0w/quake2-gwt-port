@@ -49,9 +49,9 @@ import com.googlecode.gwtquake.shared.util.Vec3Cache;
 public abstract class Light extends Warp {
 	// r_light.c
 
-	int r_dlightframecount;
+	
 
-	static final int DLIGHT_CUTOFF = 64;
+	
 
 	/*
 	=============================================================================
@@ -70,16 +70,16 @@ public abstract class Light extends Warp {
 	{
 		float rad = light.intensity * 0.35f;
 
-		Math3D.VectorSubtract (light.origin, r_origin, v);
+		Math3D.VectorSubtract (light.origin, GlState.r_origin, v);
 
-		gl.glBegin (GlAdapter.GL_TRIANGLE_FAN);
-		gl.glColor3f (light.color[0]*0.2f, light.color[1]*0.2f, light.color[2]*0.2f);
+		GlState.gl.glBegin (GlAdapter.GL_TRIANGLE_FAN);
+		GlState.gl.glColor3f (light.color[0]*0.2f, light.color[1]*0.2f, light.color[2]*0.2f);
 		int i;
 		for (i=0 ; i<3 ; i++)
-			v[i] = light.origin[i] - vpn[i]*rad;
+			v[i] = light.origin[i] - GlState.vpn[i]*rad;
 		
-		gl.glVertex3f(v[0], v[1], v[2]);
-		gl.glColor3f (0,0,0);
+		GlState.gl.glVertex3f(v[0], v[1], v[2]);
+		GlState.gl.glColor3f (0,0,0);
 
 		int j;
 		float a;
@@ -87,11 +87,11 @@ public abstract class Light extends Warp {
 		{
 			a = (float)(i/16.0f * Math.PI*2);
 			for (j=0 ; j<3 ; j++)
-				v[j] = (float)(light.origin[j] + vright[j]*Math.cos(a)*rad
-					+ vup[j]*Math.sin(a)*rad);
-			gl.glVertex3f(v[0], v[1], v[2]);
+				v[j] = (float)(light.origin[j] + GlState.vright[j]*Math.cos(a)*rad
+					+ GlState.vup[j]*Math.sin(a)*rad);
+			GlState.gl.glVertex3f(v[0], v[1], v[2]);
 		}
-		gl.glEnd ();
+		GlState.gl.glEnd ();
 	}
 
 	/**
@@ -99,27 +99,27 @@ public abstract class Light extends Warp {
 	 */
 	void R_RenderDlights()
 	{
-		if (gl_flashblend.value == 0)
+		if (GlState.gl_flashblend.value == 0)
 			return;
 
-		r_dlightframecount = r_framecount + 1;	// because the count hasn't
+		GlState.r_dlightframecount = GlState.r_framecount + 1;	// because the count hasn't
 												//  advanced yet for this frame
-		gl.glDepthMask(false);
-		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-		gl.glShadeModel (GlAdapter.GL_SMOOTH);
-		gl.glEnable (GlAdapter.GL_BLEND);
-		gl.glBlendFunc (GlAdapter.GL_ONE, GlAdapter.GL_ONE);
+		GlState.gl.glDepthMask(false);
+		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glShadeModel (GlAdapter.GL_SMOOTH);
+		GlState.gl.glEnable (GlAdapter.GL_BLEND);
+		GlState.gl.glBlendFunc (GlAdapter.GL_ONE, GlAdapter.GL_ONE);
 
-		for (int i=0 ; i<r_newrefdef.num_dlights ; i++)
+		for (int i=0 ; i<GlState.r_newrefdef.num_dlights ; i++)
 		{
-			R_RenderDlight(r_newrefdef.dlights[i]);
+			R_RenderDlight(GlState.r_newrefdef.dlights[i]);
 		}
 
-		gl.glColor3f (1,1,1);
-		gl.glDisable(GlAdapter.GL_BLEND);
-		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
-		gl.glBlendFunc(GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glDepthMask(true);
+		GlState.gl.glColor3f (1,1,1);
+		GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glBlendFunc(GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
+		GlState.gl.glDepthMask(true);
 	}
 
 
@@ -142,12 +142,12 @@ public abstract class Light extends Warp {
 		Plane 	splitplane = node.plane;
 		float dist = Math3D.DotProduct (light.origin, splitplane.normal) - splitplane.dist;
 	
-		if (dist > light.intensity - DLIGHT_CUTOFF)
+		if (dist > light.intensity - GlConstants.DLIGHT_CUTOFF)
 		{
 			R_MarkLights (light, bit, node.children[0]);
 			return;
 		}
-		if (dist < -light.intensity + DLIGHT_CUTOFF)
+		if (dist < -light.intensity + GlConstants.DLIGHT_CUTOFF)
 		{
 			R_MarkLights (light, bit, node.children[1]);
 			return;
@@ -159,7 +159,7 @@ public abstract class Light extends Warp {
 		for (int i=0 ; i<node.numsurfaces ; i++)
 		{
 
-			surf = r_worldmodel.surfaces[node.firstsurface + i];
+			surf = GlState.r_worldmodel.surfaces[node.firstsurface + i];
 
 			/*
 			 * cwei
@@ -174,10 +174,10 @@ public abstract class Light extends Warp {
 			 * bugfix end
 			 */			
 
-			if (surf.dlightframe != r_dlightframecount)
+			if (surf.dlightframe != GlState.r_dlightframecount)
 			{
 				surf.dlightbits = 0;
-				surf.dlightframe = r_dlightframecount;
+				surf.dlightframe = GlState.r_dlightframecount;
 			}
 			surf.dlightbits |= bit;
 		}
@@ -191,15 +191,15 @@ public abstract class Light extends Warp {
 	 */
 	void R_PushDlights()
 	{
-		if (gl_flashblend.value != 0)
+		if (GlState.gl_flashblend.value != 0)
 			return;
 
-		r_dlightframecount = r_framecount + 1;	// because the count hasn't
+		GlState.r_dlightframecount = GlState.r_framecount + 1;	// because the count hasn't
 												//  advanced yet for this frame
 		DynamicLightData l;
-		for (int i=0 ; i<r_newrefdef.num_dlights ; i++) {
-			l = r_newrefdef.dlights[i];
-			R_MarkLights( l, 1<<i, r_worldmodel.nodes[0] );
+		for (int i=0 ; i<GlState.r_newrefdef.num_dlights ; i++) {
+			l = GlState.r_newrefdef.dlights[i];
+			R_MarkLights( l, 1<<i, GlState.r_worldmodel.nodes[0] );
 		}
 	}
 
@@ -269,7 +269,7 @@ public abstract class Light extends Warp {
 		int maps;
 		for (int i=0 ; i<node.numsurfaces ; i++, surfIndex++)
 		{
-			surf = r_worldmodel.surfaces[surfIndex];
+			surf = GlState.r_worldmodel.surfaces[surfIndex];
 			
 			if ((surf.flags & (Constants.SURF_DRAWTURB | Constants.SURF_DRAWSKY)) != 0) 
 				continue;	// no lightmaps
@@ -306,10 +306,10 @@ public abstract class Light extends Warp {
 				float scale0, scale1, scale2;
 				for (maps = 0 ; maps < Constants.MAXLIGHTMAPS && surf.styles[maps] != (byte)255; maps++)
 				{
-					rgb = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
-					scale0 = gl_modulate.value * rgb[0];
-					scale1 = gl_modulate.value * rgb[1];
-					scale2 = gl_modulate.value * rgb[2];
+					rgb = GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
+					scale0 = GlState.gl_modulate.value * rgb[0];
+					scale1 = GlState.gl_modulate.value * rgb[1];
+					scale2 = GlState.gl_modulate.value * rgb[2];
 
 					pointcolor[0] += (lightmap.get(lightmapIndex + 0) & 0xFF) * scale0 * (1.0f/255);
 					pointcolor[1] += (lightmap.get(lightmapIndex + 1) & 0xFF) * scale1 * (1.0f/255);
@@ -337,7 +337,7 @@ public abstract class Light extends Warp {
 		assert (p.length == 3) : "vec3_t bug";
 		assert (color.length == 3) : "rgb bug";
 
-		if (r_worldmodel.lightdata == null)
+		if (GlState.r_worldmodel.lightdata == null)
 		{
 			color[0] = color[1] = color[2] = 1.0f;
 			return;
@@ -347,7 +347,7 @@ public abstract class Light extends Warp {
 		end[1] = p[1];
 		end[2] = p[2] - 2048;
 	
-		float r = RecursiveLightPoint(r_worldmodel.nodes[0], p, end);
+		float r = RecursiveLightPoint(GlState.r_worldmodel.nodes[0], p, end);
 	
 		if (r == -1)
 		{
@@ -363,11 +363,11 @@ public abstract class Light extends Warp {
 		//
 		DynamicLightData dl;
 		float add;
-		for (int lnum=0 ; lnum<r_newrefdef.num_dlights ; lnum++)
+		for (int lnum=0 ; lnum<GlState.r_newrefdef.num_dlights ; lnum++)
 		{
-			dl = r_newrefdef.dlights[lnum];
+			dl = GlState.r_newrefdef.dlights[lnum];
 			
-			Math3D.VectorSubtract (currententity.origin, dl.origin, end);
+			Math3D.VectorSubtract (GlState.currententity.origin, dl.origin, end);
 			add = dl.intensity - Math3D.VectorLength(end);
 			add *= (1.0f/256);
 			if (add > 0)
@@ -375,7 +375,7 @@ public abstract class Light extends Warp {
 				Math3D.VectorMA (color, add, dl.color, color);
 			}
 		}
-		Math3D.VectorScale (color, gl_modulate.value, color);
+		Math3D.VectorScale (color, GlState.gl_modulate.value, color);
 	}
 
 //	  ===================================================================
@@ -401,19 +401,19 @@ public abstract class Light extends Warp {
 		ModelTextureInfo tex = surf.texinfo;
 
 		float local0, local1;
-		for (int lnum=0 ; lnum<r_newrefdef.num_dlights ; lnum++)
+		for (int lnum=0 ; lnum<GlState.r_newrefdef.num_dlights ; lnum++)
 		{
 			if ( (surf.dlightbits & (1<<lnum)) == 0 )
 				continue;		// not lit by this light
 
-			dl = r_newrefdef.dlights[lnum];
+			dl = GlState.r_newrefdef.dlights[lnum];
 			frad = dl.intensity;
 			fdist = Math3D.DotProduct (dl.origin, surf.plane.normal) -
 					surf.plane.dist;
 			frad -= Math.abs(fdist);
 			// rad is now the highest intensity on the plane
 
-			fminlight = DLIGHT_CUTOFF;	// FIXME: make configurable?
+			fminlight = GlConstants.DLIGHT_CUTOFF;	// FIXME: make configurable?
 			if (frad < fminlight)
 				continue;
 			fminlight = frad - fminlight;
@@ -465,7 +465,7 @@ public abstract class Light extends Warp {
 	{
 		for (int maps = 0 ; maps < Constants.MAXLIGHTMAPS && surf.styles[maps] != (byte)255 ; maps++)
 		{
-			surf.cached_light[maps] = r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].white;
+			surf.cached_light[maps] = GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].white;
 		}
 	}
 	
@@ -537,9 +537,9 @@ public abstract class Light extends Warp {
         			//                    for (i = 0; i < 3; i++)
         			//                        scale[i] = gl_modulate.value
         			//                                * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
-        			scale0 = gl_modulate.value * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[0];
-        			scale1 = gl_modulate.value * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[1];
-        			scale2 = gl_modulate.value * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[2];
+        			scale0 = GlState.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[0];
+        			scale1 = GlState.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[1];
+        			scale2 = GlState.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[2];
 
         			if (scale0 == 1.0F && scale1 == 1.0F
         					&& scale2 == 1.0F) {
@@ -576,12 +576,12 @@ public abstract class Light extends Warp {
         			//                    for (i = 0; i < 3; i++)
         			//                        scale[i] = gl_modulate.value
         			//                                * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
-        			scale0 = gl_modulate.value
-        			* r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[0];
-        			scale1 = gl_modulate.value
-        			* r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[1];
-        			scale2 = gl_modulate.value
-        			* r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[2];
+        			scale0 = GlState.gl_modulate.value
+        			* GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[0];
+        			scale1 = GlState.gl_modulate.value
+        			* GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[1];
+        			scale2 = GlState.gl_modulate.value
+        			* GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[2];
 
 
 
@@ -608,7 +608,7 @@ public abstract class Light extends Warp {
         	}
 
         	// add all the dynamic lights
-        	if (surf.dlightframe == r_framecount) {
+        	if (surf.dlightframe == GlState.r_framecount) {
             		R_AddDynamicLights(surf);
         	}
 
@@ -621,7 +621,7 @@ public abstract class Light extends Warp {
         bl = s_blocklights;
         int blp = 0;
 
-        int monolightmap = gl_monolightmap.string.charAt(0);
+        int monolightmap = GlState.gl_monolightmap.string.charAt(0);
 
         int destp = 0;
 
