@@ -626,7 +626,7 @@ public abstract class Warp extends Models {
 	 * @param rotate
 	 * @param axis
 	 */
-	void R_SetSky(String name, float rotate, float[] axis)
+	static void R_SetSky(String name, float rotate, float[] axis)
 	{
 		assert (axis.length == 3) : "vec3_t bug";
 		String pathname;

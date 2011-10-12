@@ -114,4 +114,6 @@ public interface Renderer {
 
   void GL_ResampleTexture(int[] data, int width, int height, int[] scaled,
       int scaled_width, int scaled_height);
+
+  ModelImage GL_LoadNewImage(String name, int type);
 }

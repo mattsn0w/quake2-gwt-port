@@ -63,7 +63,7 @@ public abstract class Main extends GlBase {
 	//	=================
 	protected abstract void Draw_GetPalette();
 
-	abstract void GL_ImageList_f();
+
 	abstract void GL_ScreenShot_f();
 	abstract void GL_SetTexturePalette(int[] palette);
 	abstract void GL_Strings_f();
@@ -92,7 +92,6 @@ public abstract class Main extends GlBase {
 	abstract void GL_TexEnv(int mode);
 	abstract void GL_TextureMode(String string);
 	abstract void GL_TextureAlphaMode(String string);
-	abstract void GL_TextureSolidMode(String string);
 	abstract void GL_UpdateSwapInterval();
 
 	/*
@@ -868,7 +867,7 @@ public abstract class Main extends GlBase {
 
 		Commands.addCommand("imagelist", new ExecutableCommand() {
 			public void execute() {
-				GL_ImageList_f();
+				Images.GL_ImageList_f();
 			}
 		});
 
@@ -1084,7 +1083,7 @@ public abstract class Main extends GlBase {
 		}
 
 		if (GlState.gl_texturesolidmode.modified) {
-			GL_TextureSolidMode(GlState.gl_texturesolidmode.string);
+			Images.GL_TextureSolidMode(GlState.gl_texturesolidmode.string);
 			GlState.gl_texturesolidmode.modified = false;
 		}
 

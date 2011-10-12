@@ -223,4 +223,20 @@ public abstract class GlConstants  {
     static final int SHADEDOT_QUANT = 16;
 
     static final int NUMVERTEXNORMALS =	162;
+
+    // must be a power of 2
+    static final int FLOODFILL_FIFO_SIZE = 0x1000;
+
+    static final int FLOODFILL_FIFO_MASK = FLOODFILL_FIFO_SIZE - 1;
+    //
+    //  #define FLOODFILL_STEP( off, dx, dy ) \
+    //  { \
+    //      if (pos[off] == fillcolor) \
+    //      { \
+    //          pos[off] = 255; \
+    //          fifo[inpt].x = x + (dx), fifo[inpt].y = y + (dy); \
+    //          inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
+    //      } \
+    //      else if (pos[off] != 255) fdc = pos[off]; \
+    //  }
 }
