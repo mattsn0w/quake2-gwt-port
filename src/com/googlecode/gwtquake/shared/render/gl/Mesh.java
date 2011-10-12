@@ -44,27 +44,14 @@ import com.googlecode.gwtquake.shared.util.Math3D;
  */
 public abstract class Mesh extends Light {
 
-  // g_mesh.c: triangle model functions
-  /*
-	=============================================================
-
-	  ALIAS MODELS
-
-	=============================================================
-   */
-  // precalculated dot products for quantized angles
-  static final int SHADEDOT_QUANT = 16;
-
-  static final int NUMVERTEXNORMALS =	162;
-
-  float[][] r_avertexnormals = Anorms.VERTEXNORMALS;
-  float[] shadevector = {0, 0, 0};
-  float[] shadelight = {0, 0, 0};
+  static float[][] r_avertexnormals = Anorms.VERTEXNORMALS;
+  static float[] shadevector = {0, 0, 0};
+  static float[] shadelight = {0, 0, 0};
 
 
-  float[][]	r_avertexnormal_dots = Anorms.VERTEXNORMAL_DOTS;
+  static float[][]	r_avertexnormal_dots = Anorms.VERTEXNORMAL_DOTS;
 
-  float[] shadedots = r_avertexnormal_dots[0];
+  static float[] shadedots = r_avertexnormal_dots[0];
 
   /**
    * GL_LerpVerts
@@ -82,7 +69,7 @@ public abstract class Mesh extends Light {
 
     int ovv, vv;
     //PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
-    if ( (currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
+    if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
     {
       float[] normal;
       int j = 0;
@@ -126,16 +113,16 @@ public abstract class Mesh extends Light {
   @Override
   public void init() {
     super.init();
-    colorArrayBuf = gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 4);
-    vertexArrayBuf = gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 3);
-    textureArrayBuf = gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 2);
+    colorArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 4);
+    vertexArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 3);
+    textureArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 2);
 
 
     int FACTOR = 4;
 
-    colorArrayBuf2 = gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 4 *FACTOR);
-    vertexArrayBuf2 = gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 3 * FACTOR);
-    textureArrayBuf2 = gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 2 * FACTOR);
+    colorArrayBuf2 = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 4 *FACTOR);
+    vertexArrayBuf2 = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 3 * FACTOR);
+    textureArrayBuf2 = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 2 * FACTOR);
 
   }
 
@@ -157,29 +144,29 @@ public abstract class Mesh extends Light {
    */
   void GL_DrawAliasFrameLerp(QuakeFiles.dmdl_t paliashdr, float backlerp)
   {
-    QuakeFiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
+    QuakeFiles.daliasframe_t frame = paliashdr.aliasFrames[GlState.currententity.frame];
 
     int[] verts = frame.verts;
 
-    QuakeFiles.daliasframe_t oldframe = paliashdr.aliasFrames[currententity.oldframe];
+    QuakeFiles.daliasframe_t oldframe = paliashdr.aliasFrames[GlState.currententity.oldframe];
 
     int[] ov = oldframe.verts;
 
     float	alpha;
-    if ((currententity.flags & Constants.RF_TRANSLUCENT) != 0)
-      alpha = currententity.alpha;
+    if ((GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0)
+      alpha = GlState.currententity.alpha;
     else
       alpha = 1.0f;
 
     // PMM - added double shell
-    if ( (currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
-      gl.glDisable( GlAdapter.GL_TEXTURE_2D );
+    if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
+      GlState.gl.glDisable( GlAdapter.GL_TEXTURE_2D );
 
     float frontlerp = 1.0f - backlerp;
 
     // move should be the delta back to the previous frame * backlerp
-    Math3D.VectorSubtract (currententity.oldorigin, currententity.origin, frontv);
-    Math3D.AngleVectors (currententity.angles, vectors[0], vectors[1], vectors[2]);
+    Math3D.VectorSubtract (GlState.currententity.oldorigin, GlState.currententity.origin, frontv);
+    Math3D.AngleVectors (GlState.currententity.angles, vectors[0], vectors[1], vectors[2]);
 
     move[0] = Math3D.DotProduct (frontv, vectors[0]);	// forward
     move[1] = -Math3D.DotProduct (frontv, vectors[1]);	// left
@@ -202,21 +189,21 @@ public abstract class Mesh extends Light {
     vertexArrayBuf.limit(num_xyz * 3);
 
     //gl.glEnableClientState( GLAdapter.GL_VERTEX_ARRAY );
-    gl.glVertexPointer( 3, 0, vertexArrayBuf );
+    GlState.gl.glVertexPointer( 3, 0, vertexArrayBuf );
 
     // PMM - added double damage shell
-    if ( (currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
+    if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
     {
-      gl.glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
+      GlState.gl.glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
     }
     else
     {
-      gl.glEnableClientState( GlAdapter.GL_COLOR_ARRAY );
+      GlState.gl.glEnableClientState( GlAdapter.GL_COLOR_ARRAY );
 
       FloatBuffer color = colorArrayBuf;
       color.limit(num_xyz * 4);
 
-      gl.glColorPointer( 4, 0, color );
+      GlState.gl.glColorPointer( 4, 0, color );
 
       //
       // pre light everything
@@ -234,11 +221,11 @@ public abstract class Mesh extends Light {
       }
     }
 
-    gl.glClientActiveTexture(GL_TEXTURE0);
+    GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);
     FloatBuffer dstTextureCoords = textureArrayBuf;
 
-    gl.glTexCoordPointer( 2, 0, dstTextureCoords);
-    gl.glEnableClientState( GlAdapter.GL_TEXTURE_COORD_ARRAY);
+    GlState.gl.glTexCoordPointer( 2, 0, dstTextureCoords);
+    GlState.gl.glEnableClientState( GlAdapter.GL_TEXTURE_COORD_ARRAY);
 
     int pos = 0;
     int[] counts = paliashdr.counts;
@@ -288,17 +275,17 @@ public abstract class Mesh extends Light {
       //gl.updatTCBuffer(dstTextureCoords, minIdx, maxIdx - minIdx + 2);
 
       dstTextureCoords.limit(maxIdx + 2);
-      gl.glTexCoordPointer( 2, 0, dstTextureCoords);
+      GlState.gl.glTexCoordPointer( 2, 0, dstTextureCoords);
 
-      gl.glDrawElements(mode, srcIndexBuf);
+      GlState.gl.glDrawElements(mode, srcIndexBuf);
       pos += count;
     }
 
     // PMM - added double damage shell
-    if ( (currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
-      gl.glEnable( GlAdapter.GL_TEXTURE_2D );
+    if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
+      GlState.gl.glEnable( GlAdapter.GL_TEXTURE_2D );
 
-    gl.glDisableClientState( GlAdapter.GL_COLOR_ARRAY );
+    GlState.gl.glDisableClientState( GlAdapter.GL_COLOR_ARRAY );
   }
 
 
@@ -307,29 +294,29 @@ public abstract class Mesh extends Light {
    */
   void GL_DrawAliasFrameLerpDA(QuakeFiles.dmdl_t paliashdr, float backlerp)
   {
-    QuakeFiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
+    QuakeFiles.daliasframe_t frame = paliashdr.aliasFrames[GlState.currententity.frame];
 
     int[] verts = frame.verts;
 
-    QuakeFiles.daliasframe_t oldframe = paliashdr.aliasFrames[currententity.oldframe];
+    QuakeFiles.daliasframe_t oldframe = paliashdr.aliasFrames[GlState.currententity.oldframe];
 
     int[] ov = oldframe.verts;
 
     float	alpha;
-    if ((currententity.flags & Constants.RF_TRANSLUCENT) != 0)
-      alpha = currententity.alpha;
+    if ((GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0)
+      alpha = GlState.currententity.alpha;
     else
       alpha = 1.0f;
 
     // PMM - added double shell
-    if ( (currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
-      gl.glDisable( GlAdapter.GL_TEXTURE_2D );
+    if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
+      GlState.gl.glDisable( GlAdapter.GL_TEXTURE_2D );
 
     float frontlerp = 1.0f - backlerp;
 
     // move should be the delta back to the previous frame * backlerp
-    Math3D.VectorSubtract (currententity.oldorigin, currententity.origin, frontv);
-    Math3D.AngleVectors (currententity.angles, vectors[0], vectors[1], vectors[2]);
+    Math3D.VectorSubtract (GlState.currententity.oldorigin, GlState.currententity.origin, frontv);
+    Math3D.AngleVectors (GlState.currententity.angles, vectors[0], vectors[1], vectors[2]);
 
     move[0] = Math3D.DotProduct (frontv, vectors[0]);	// forward
     move[1] = -Math3D.DotProduct (frontv, vectors[1]);	// left
@@ -354,7 +341,7 @@ public abstract class Mesh extends Light {
     // PMM - added double damage shell
     boolean hasColorArray;
     FloatBuffer color = colorArrayBuf;
-    hasColorArray = (currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) == 0;
+    hasColorArray = (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) == 0;
     if (hasColorArray) {
       //
       // pre light everything
@@ -371,7 +358,7 @@ public abstract class Mesh extends Light {
         j += 4;
       } 
     } else {
-      gl.glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
+      GlState.gl.glColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
     }
 
     int pos = 0;
@@ -418,23 +405,23 @@ public abstract class Mesh extends Light {
     }
 
     if (hasColorArray) {
-      gl.glEnableClientState( GlAdapter.GL_COLOR_ARRAY );
+      GlState.gl.glEnableClientState( GlAdapter.GL_COLOR_ARRAY );
       dstColors.flip();
-      gl.glColorPointer(4, 0, dstColors);
+      GlState.gl.glColorPointer(4, 0, dstColors);
     }
 
-    gl.glClientActiveTexture(GL_TEXTURE0);	
-    gl.glEnableClientState( GlAdapter.GL_TEXTURE_COORD_ARRAY);
+    GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);	
+    GlState.gl.glEnableClientState( GlAdapter.GL_TEXTURE_COORD_ARRAY);
 
     FloatBuffer tc0 = paliashdr.textureCoordBuf;
     int limit = tc0.limit();
     tc0.limit(tc0.position() + pos * 2);
-    gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_0, 2, GlAdapter.GL_FLOAT, false, 0, 0,
+    GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_0, 2, GlAdapter.GL_FLOAT, false, 0, 0,
         paliashdr.textureCoordBuf, paliashdr.staticTextureBufId);
     tc0.limit(limit);
 
     dstVertexCoords.flip();
-    gl.glVertexPointer(3, 0, dstVertexCoords);
+    GlState.gl.glVertexPointer(3, 0, dstVertexCoords);
 
     pos = 0;
     for (int j = 0; j < size; j++) {
@@ -448,16 +435,16 @@ public abstract class Mesh extends Light {
         mode = GlAdapter.GL_TRIANGLE_FAN;
         count = -count;
       }
-      gl.glDrawArrays(mode, pos, count);
+      GlState.gl.glDrawArrays(mode, pos, count);
       pos += count;
     }
 
 
     // PMM - added double damage shell
-    if ( (currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
-      gl.glEnable( GlAdapter.GL_TEXTURE_2D );
+    if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
+      GlState.gl.glEnable( GlAdapter.GL_TEXTURE_2D );
 
-    gl.glDisableClientState( GlAdapter.GL_COLOR_ARRAY );
+    GlState.gl.glDisableClientState( GlAdapter.GL_COLOR_ARRAY );
   }
 
 
@@ -467,7 +454,7 @@ public abstract class Mesh extends Light {
    */
   void GL_DrawAliasShadow(QuakeFiles.dmdl_t paliashdr, int posenum)
   {
-    float lheight = currententity.origin[2] - lightspot[2];
+    float lheight = GlState.currententity.origin[2] - lightspot[2];
     //		qfiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
     int[] order = paliashdr.glCmds;
     float height = -lheight + 1.0f;
@@ -487,10 +474,10 @@ public abstract class Mesh extends Light {
       if (count < 0)
       {
         count = -count;
-        gl.glBegin (GlAdapter.GL_TRIANGLE_FAN);
+        GlState.gl.glBegin (GlAdapter.GL_TRIANGLE_FAN);
       }
       else
-        gl.glBegin (GlAdapter.GL_TRIANGLE_STRIP);
+        GlState.gl.glBegin (GlAdapter.GL_TRIANGLE_STRIP);
 
       do
       {
@@ -502,13 +489,13 @@ public abstract class Mesh extends Light {
         point[0] -= shadevector[0]*(point[2]+lheight);
         point[1] -= shadevector[1]*(point[2]+lheight);
         point[2] = height;
-        gl.glVertex3f(point[0], point[1], point[2]);
+        GlState.gl.glVertex3f(point[0], point[1], point[2]);
 
         orderIndex += 3;
 
       } while (--count != 0);
 
-      gl.glEnd ();
+      GlState.gl.glEnd ();
     }	
   }
 
@@ -520,14 +507,14 @@ public abstract class Mesh extends Light {
    * R_CullAliasModel
    */
   boolean R_CullAliasModel(EntityType e) {
-    QuakeFiles.dmdl_t paliashdr = (QuakeFiles.dmdl_t) currentmodel.extradata;
+    QuakeFiles.dmdl_t paliashdr = (QuakeFiles.dmdl_t) GlState.currentmodel.extradata;
 
     if ((e.frame >= paliashdr.num_frames) || (e.frame < 0)) {
-      Window.Printf(Constants.PRINT_ALL, "R_CullAliasModel " + currentmodel.name + ": no such frame " + e.frame + '\n');
+      Window.Printf(Constants.PRINT_ALL, "R_CullAliasModel " + GlState.currentmodel.name + ": no such frame " + e.frame + '\n');
       e.frame = 0;
     }
     if ((e.oldframe >= paliashdr.num_frames) || (e.oldframe < 0)) {
-      Window.Printf(Constants.PRINT_ALL, "R_CullAliasModel " + currentmodel.name + ": no such oldframe " + e.oldframe + '\n');
+      Window.Printf(Constants.PRINT_ALL, "R_CullAliasModel " + GlState.currentmodel.name + ": no such oldframe " + e.oldframe + '\n');
       e.oldframe = 0;
     }
 
@@ -608,9 +595,9 @@ public abstract class Mesh extends Light {
       mask = 0;
 
       for (f = 0; f < 4; f++) {
-        float dp = Math3D.DotProduct(frustum[f].normal, bbox[p]);
+        float dp = Math3D.DotProduct(GlState.frustum[f].normal, bbox[p]);
 
-        if ((dp - frustum[f].dist) < 0) {
+        if ((dp - GlState.frustum[f].dist) < 0) {
           mask |= (1 << f);
         }
       }
@@ -646,11 +633,11 @@ public abstract class Mesh extends Light {
 
     if ( (e.flags & Constants.RF_WEAPONMODEL) != 0 )
     {
-      if ( r_lefthand.value == 2.0f )
+      if ( GlState.r_lefthand.value == 2.0f )
         return;
     }
 
-    QuakeFiles.dmdl_t paliashdr = (QuakeFiles.dmdl_t)currentmodel.extradata;
+    QuakeFiles.dmdl_t paliashdr = (QuakeFiles.dmdl_t)GlState.currentmodel.extradata;
 
     //
     // get lighting information
@@ -659,60 +646,60 @@ public abstract class Mesh extends Light {
     // PMM - 3.20 code .. replaced with original way of doing it to keep mod authors happy
     //
     int i;
-    if ( (currententity.flags & ( Constants.RF_SHELL_HALF_DAM | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_RED | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE )) != 0 )
+    if ( (GlState.currententity.flags & ( Constants.RF_SHELL_HALF_DAM | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_RED | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE )) != 0 )
     {
       Math3D.VectorClear(shadelight);
-      if ((currententity.flags & Constants.RF_SHELL_HALF_DAM) != 0)
+      if ((GlState.currententity.flags & Constants.RF_SHELL_HALF_DAM) != 0)
       {
         shadelight[0] = 0.56f;
         shadelight[1] = 0.59f;
         shadelight[2] = 0.45f;
       }
-      if ( (currententity.flags & Constants.RF_SHELL_DOUBLE) != 0 )
+      if ( (GlState.currententity.flags & Constants.RF_SHELL_DOUBLE) != 0 )
       {
         shadelight[0] = 0.9f;
         shadelight[1] = 0.7f;
       }
-      if ( (currententity.flags & Constants.RF_SHELL_RED) != 0 )
+      if ( (GlState.currententity.flags & Constants.RF_SHELL_RED) != 0 )
         shadelight[0] = 1.0f;
-      if ( (currententity.flags & Constants.RF_SHELL_GREEN) != 0 )
+      if ( (GlState.currententity.flags & Constants.RF_SHELL_GREEN) != 0 )
         shadelight[1] = 1.0f;
-      if ( (currententity.flags & Constants.RF_SHELL_BLUE) != 0 )
+      if ( (GlState.currententity.flags & Constants.RF_SHELL_BLUE) != 0 )
         shadelight[2] = 1.0f;
     }
 
-    else if ( (currententity.flags & Constants.RF_FULLBRIGHT) != 0 )
+    else if ( (GlState.currententity.flags & Constants.RF_FULLBRIGHT) != 0 )
     {
       for (i=0 ; i<3 ; i++)
         shadelight[i] = 1.0f;
     }
     else
     {
-      R_LightPoint (currententity.origin, shadelight);
+      R_LightPoint (GlState.currententity.origin, shadelight);
 
       // player lighting hack for communication back to server
       // big hack!
-      if ( (currententity.flags & Constants.RF_WEAPONMODEL) != 0 )
+      if ( (GlState.currententity.flags & Constants.RF_WEAPONMODEL) != 0 )
       {
         // pick the greatest component, which should be the same
         // as the mono value returned by software
         if (shadelight[0] > shadelight[1])
         {
           if (shadelight[0] > shadelight[2])
-            r_lightlevel.value = 150*shadelight[0];
+            GlState.r_lightlevel.value = 150*shadelight[0];
           else
-            r_lightlevel.value = 150*shadelight[2];
+            GlState.r_lightlevel.value = 150*shadelight[2];
         }
         else
         {
           if (shadelight[1] > shadelight[2])
-            r_lightlevel.value = 150*shadelight[1];
+            GlState.r_lightlevel.value = 150*shadelight[1];
           else
-            r_lightlevel.value = 150*shadelight[2];
+            GlState.r_lightlevel.value = 150*shadelight[2];
         }
       }
 
-      if ( gl_monolightmap.string.charAt(0) != '0' )
+      if ( GlState.gl_monolightmap.string.charAt(0) != '0' )
       {
         float s = shadelight[0];
 
@@ -727,7 +714,7 @@ public abstract class Mesh extends Light {
       }
     }
 
-    if ( (currententity.flags & Constants.RF_MINLIGHT) != 0 )
+    if ( (GlState.currententity.flags & Constants.RF_MINLIGHT) != 0 )
     {
       for (i=0 ; i<3 ; i++)
         if (shadelight[i] > 0.1f)
@@ -740,12 +727,12 @@ public abstract class Mesh extends Light {
       }
     }
 
-    if ( (currententity.flags & Constants.RF_GLOW) != 0 )
+    if ( (GlState.currententity.flags & Constants.RF_GLOW) != 0 )
     {	// bonus items will pulse with time
       float	scale;
       float	min;
 
-      scale = (float)(0.1f * Math.sin(r_newrefdef.time*7));
+      scale = (float)(0.1f * Math.sin(GlState.r_newrefdef.time*7));
       for (i=0 ; i<3 ; i++)
       {
         min = shadelight[i] * 0.8f;
@@ -757,7 +744,7 @@ public abstract class Mesh extends Light {
 
     // =================
     // PGM	ir goggles color override
-    if ( (r_newrefdef.rdflags & Constants.RDF_IRGOGGLES) != 0 && (currententity.flags & Constants.RF_IR_VISIBLE) != 0)
+    if ( (GlState.r_newrefdef.rdflags & Constants.RDF_IRGOGGLES) != 0 && (GlState.currententity.flags & Constants.RF_IR_VISIBLE) != 0)
     {
       shadelight[0] = 1.0f;
       shadelight[1] = 0.0f;
@@ -766,9 +753,9 @@ public abstract class Mesh extends Light {
     // PGM	
     // =================
 
-    shadedots = r_avertexnormal_dots[((int)(currententity.angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
+    shadedots = r_avertexnormal_dots[((int)(GlState.currententity.angles[1] * (GlConstants.SHADEDOT_QUANT / 360.0))) & (GlConstants.SHADEDOT_QUANT - 1)];
 
-    float an = (float)(currententity.angles[1]/180*Math.PI);
+    float an = (float)(GlState.currententity.angles[1]/180*Math.PI);
     shadevector[0] = (float)Math.cos(-an);
     shadevector[1] = (float)Math.sin(-an);
     shadevector[2] = 1;
@@ -778,27 +765,27 @@ public abstract class Mesh extends Light {
     // locate the proper data
     //
 
-    c_alias_polys += paliashdr.num_tris;
+    GlState.c_alias_polys += paliashdr.num_tris;
 
     //
     // draw all the triangles
     //
-    if ( (currententity.flags & Constants.RF_DEPTHHACK) != 0) // hack the depth range to prevent view model from poking into walls
-      gl.glDepthRange(gldepthmin, (float) (gldepthmin + 0.3*(gldepthmax-gldepthmin)));
+    if ( (GlState.currententity.flags & Constants.RF_DEPTHHACK) != 0) // hack the depth range to prevent view model from poking into walls
+      GlState.gl.glDepthRange(GlState.gldepthmin, (float) (GlState.gldepthmin + 0.3*(GlState.gldepthmax-GlState.gldepthmin)));
 
-    if ( (currententity.flags & Constants.RF_WEAPONMODEL) != 0 && (r_lefthand.value == 1.0f) )
+    if ( (GlState.currententity.flags & Constants.RF_WEAPONMODEL) != 0 && (GlState.r_lefthand.value == 1.0f) )
     {
-      gl.glMatrixMode( GlAdapter.GL_PROJECTION );
-      gl.glPushMatrix();
-      gl.glLoadIdentity();
-      gl.glScalef( -1, 1, 1 );
-      MYgluPerspective( r_newrefdef.fov_y, ( float ) r_newrefdef.width / r_newrefdef.height,  4,  4096);
-      gl.glMatrixMode( GlAdapter.GL_MODELVIEW );
+      GlState.gl.glMatrixMode( GlAdapter.GL_PROJECTION );
+      GlState.gl.glPushMatrix();
+      GlState.gl.glLoadIdentity();
+      GlState.gl.glScalef( -1, 1, 1 );
+      MYgluPerspective( GlState.r_newrefdef.fov_y, ( float ) GlState.r_newrefdef.width / GlState.r_newrefdef.height,  4,  4096);
+      GlState.gl.glMatrixMode( GlAdapter.GL_MODELVIEW );
 
-      gl.glCullFace( GlAdapter.GL_BACK );
+      GlState.gl.glCullFace( GlAdapter.GL_BACK );
     }
 
-    gl.glPushMatrix ();
+    GlState.gl.glPushMatrix ();
     e.angles[GlConstants.PITCH] = -e.angles[GlConstants.PITCH];	// sigh.
     R_RotateForEntity (e);
     e.angles[GlConstants.PITCH] = -e.angles[GlConstants.PITCH];	// sigh.
@@ -807,88 +794,88 @@ public abstract class Mesh extends Light {
 
     ModelImage		skin;
     // select skin
-    if (currententity.skin != null)
-      skin = currententity.skin;	// custom player skin
+    if (GlState.currententity.skin != null)
+      skin = GlState.currententity.skin;	// custom player skin
     else
     {
-      if (currententity.skinnum >= QuakeFiles.MAX_MD2SKINS)
-        skin = currentmodel.skins[0];
+      if (GlState.currententity.skinnum >= QuakeFiles.MAX_MD2SKINS)
+        skin = GlState.currentmodel.skins[0];
       else
       {
-        skin = currentmodel.skins[currententity.skinnum];
+        skin = GlState.currentmodel.skins[GlState.currententity.skinnum];
         if (skin == null)
-          skin = currentmodel.skins[0];
+          skin = GlState.currentmodel.skins[0];
       }
     }
     if (skin == null)
-      skin = r_notexture;	// fallback...
+      skin = GlState.r_notexture;	// fallback...
     GL_Bind(skin.texnum);
 
     // draw it
 
-    gl.glShadeModel (GlAdapter.GL_SMOOTH);
+    GlState.gl.glShadeModel (GlAdapter.GL_SMOOTH);
 
     GL_TexEnv( GlAdapter.GL_MODULATE );
-    if ( (currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
+    if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
     {
-      gl.glEnable (GlAdapter.GL_BLEND);
+      GlState.gl.glEnable (GlAdapter.GL_BLEND);
     }
 
 
-    if ( (currententity.frame >= paliashdr.num_frames) 
-        || (currententity.frame < 0) )
+    if ( (GlState.currententity.frame >= paliashdr.num_frames) 
+        || (GlState.currententity.frame < 0) )
     {
-      Window.Printf (Constants.PRINT_ALL, "R_DrawAliasModel " + currentmodel.name +": no such frame " + currententity.frame + '\n');
-      currententity.frame = 0;
-      currententity.oldframe = 0;
+      Window.Printf (Constants.PRINT_ALL, "R_DrawAliasModel " + GlState.currentmodel.name +": no such frame " + GlState.currententity.frame + '\n');
+      GlState.currententity.frame = 0;
+      GlState.currententity.oldframe = 0;
     }
 
-    if ( (currententity.oldframe >= paliashdr.num_frames)
-        || (currententity.oldframe < 0))
+    if ( (GlState.currententity.oldframe >= paliashdr.num_frames)
+        || (GlState.currententity.oldframe < 0))
     {
-      Window.Printf (Constants.PRINT_ALL, "R_DrawAliasModel " + currentmodel.name +": no such oldframe " + currententity.oldframe + '\n');
-      currententity.frame = 0;
-      currententity.oldframe = 0;
+      Window.Printf (Constants.PRINT_ALL, "R_DrawAliasModel " + GlState.currentmodel.name +": no such oldframe " + GlState.currententity.oldframe + '\n');
+      GlState.currententity.frame = 0;
+      GlState.currententity.oldframe = 0;
     }
 
-    if ( r_lerpmodels.value == 0.0f)
-      currententity.backlerp = 0;
+    if ( GlState.r_lerpmodels.value == 0.0f)
+      GlState.currententity.backlerp = 0;
 
-    GL_DrawAliasFrameLerpDA(paliashdr, currententity.backlerp);
+    GL_DrawAliasFrameLerpDA(paliashdr, GlState.currententity.backlerp);
 
     GL_TexEnv( GlAdapter.GL_REPLACE );
-    gl.glShadeModel (GlAdapter.GL_FLAT);
+    GlState.gl.glShadeModel (GlAdapter.GL_FLAT);
 
-    gl.glPopMatrix ();
+    GlState.gl.glPopMatrix ();
 
-    if ( ( currententity.flags & Constants.RF_WEAPONMODEL ) != 0 && ( r_lefthand.value == 1.0F ) )
+    if ( ( GlState.currententity.flags & Constants.RF_WEAPONMODEL ) != 0 && ( GlState.r_lefthand.value == 1.0F ) )
     {
-      gl.glMatrixMode( GlAdapter.GL_PROJECTION );
-      gl.glPopMatrix();
-      gl.glMatrixMode( GlAdapter.GL_MODELVIEW );
-      gl.glCullFace( GlAdapter.GL_FRONT );
+      GlState.gl.glMatrixMode( GlAdapter.GL_PROJECTION );
+      GlState.gl.glPopMatrix();
+      GlState.gl.glMatrixMode( GlAdapter.GL_MODELVIEW );
+      GlState.gl.glCullFace( GlAdapter.GL_FRONT );
     }
 
-    if ( (currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
+    if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
     {
-      gl.glDisable (GlAdapter.GL_BLEND);
+      GlState.gl.glDisable (GlAdapter.GL_BLEND);
     }
 
-    if ( (currententity.flags & Constants.RF_DEPTHHACK) != 0)
-      gl.glDepthRange (gldepthmin, gldepthmax);
+    if ( (GlState.currententity.flags & Constants.RF_DEPTHHACK) != 0)
+      GlState.gl.glDepthRange (GlState.gldepthmin, GlState.gldepthmax);
 
-    if ( gl_shadows.value != 0.0f && (currententity.flags & (Constants.RF_TRANSLUCENT | Constants.RF_WEAPONMODEL)) == 0)
+    if ( GlState.gl_shadows.value != 0.0f && (GlState.currententity.flags & (Constants.RF_TRANSLUCENT | Constants.RF_WEAPONMODEL)) == 0)
     {
-      gl.glPushMatrix ();
+      GlState.gl.glPushMatrix ();
       R_RotateForEntity (e);
-      gl.glDisable (GlAdapter.GL_TEXTURE_2D);
-      gl.glEnable (GlAdapter.GL_BLEND);
-      gl.glColor4f (0,0,0,0.5f);
-      GL_DrawAliasShadow (paliashdr, currententity.frame );
-      gl.glEnable (GlAdapter.GL_TEXTURE_2D);
-      gl.glDisable (GlAdapter.GL_BLEND);
-      gl.glPopMatrix ();
+      GlState.gl.glDisable (GlAdapter.GL_TEXTURE_2D);
+      GlState.gl.glEnable (GlAdapter.GL_BLEND);
+      GlState.gl.glColor4f (0,0,0,0.5f);
+      GL_DrawAliasShadow (paliashdr, GlState.currententity.frame );
+      GlState.gl.glEnable (GlAdapter.GL_TEXTURE_2D);
+      GlState.gl.glDisable (GlAdapter.GL_BLEND);
+      GlState.gl.glPopMatrix ();
     }
-    gl.glColor4f (1,1,1,1);
+    GlState.gl.glColor4f (1,1,1,1);
   }
 }

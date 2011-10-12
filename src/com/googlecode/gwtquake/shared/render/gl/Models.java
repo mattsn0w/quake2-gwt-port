@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 package com.googlecode.gwtquake.shared.render.gl;
 
 
+
 import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
@@ -71,18 +72,18 @@ import java.util.Vector;
 public abstract class Models extends Surfaces {
 	
 	// models.c -- model loading and caching
-	RendererModel	loadmodel;
-	int modfilelen;
+	static RendererModel	loadmodel;
+	static int modfilelen;
 
-	byte[] mod_novis = new byte[Constants.MAX_MAP_LEAFS/8];
+	static byte[] mod_novis = new byte[Constants.MAX_MAP_LEAFS/8];
 
 	static final int MAX_MOD_KNOWN = 512;
-	RendererModel world_model;
+	static RendererModel world_model;
 
 	// the inline * models from the current map are kept seperate
-	RendererModel[] mod_inline = new RendererModel[MAX_MOD_KNOWN];
+	static RendererModel[] mod_inline = new RendererModel[MAX_MOD_KNOWN];
 
-	abstract void GL_SubdivideSurface(ModelSurface surface); // Warp.java
+//	abstract void GL_SubdivideSurface(ModelSurface surface); // Warp.java
 
 	/*
 	===============
@@ -259,9 +260,9 @@ public abstract class Models extends Surfaces {
 		if (name.charAt(0) == '*')
 		{
 			i = Integer.parseInt(name.substring(1));
-			if (i < 1 || r_worldmodel == null || i >= r_worldmodel.numsubmodels) {
+			if (i < 1 || GlState.r_worldmodel == null || i >= GlState.r_worldmodel.numsubmodels) {
 	            Compatibility.printStackTrace(new Exception("inline model number issue; world model: " + world_model));
-	            Com.Error (Constants.ERR_DROP, "bad inline model number " + i + "; worldmodel: " + r_worldmodel + " numsubmodels: " + r_worldmodel.numsubmodels);
+	            Com.Error (Constants.ERR_DROP, "bad inline model number " + i + "; worldmodel: " + GlState.r_worldmodel + " numsubmodels: " + GlState.r_worldmodel.numsubmodels);
 			}
 			callback.onSuccess(mod_inline[i]);
 			return;
@@ -578,7 +579,7 @@ public abstract class Models extends Surfaces {
 			out[i].image = GL_FindImage(name, QuakeImage.it_wall);
 			if (out[i].image == null) {
 				Window.Printf(Constants.PRINT_ALL, "Couldn't load " + name + '\n');
-				out[i].image = r_notexture;
+				out[i].image = GlState.r_notexture;
 			}
 		}
 
@@ -673,7 +674,7 @@ public abstract class Models extends Surfaces {
 	    ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 	    bb.order(ByteOrder.LITTLE_ENDIAN);
 	    
-	    currentmodel = loadmodel;
+	    GlState.currentmodel = loadmodel;
 	    
 	    GL_BeginBuildingLightmaps(loadmodel);
 	    
@@ -728,7 +729,7 @@ public abstract class Models extends Surfaces {
 	                out.extents[i] = 16384;
 	                out.texturemins[i] = -8192;
 	            }
-	            GL_SubdivideSurface(out); // cut up polygon for warps
+	           Warp.GL_SubdivideSurface(out); // cut up polygon for warps
 	        }
 	        
 	        // create lightmaps and polygons
@@ -1033,7 +1034,7 @@ public abstract class Models extends Surfaces {
 			starmod.numleafs = bm.visleafs;
 		}
 		
-        staticBufferId = gl.generateStaticBufferId();
+        staticBufferId = GlState.gl.generateStaticBufferId();
 	}
 
 	/*
@@ -1210,8 +1211,8 @@ public abstract class Models extends Surfaces {
 
 		ConsoleVariable flushmap;
 
-		registration_sequence++;
-		r_oldviewcluster = -1;		// force markleafs
+		GlState.registration_sequence++;
+		GlState.r_oldviewcluster = -1;		// force markleafs
 
 		final String fullname = "maps/" + model + ".bsp";
 
@@ -1229,7 +1230,7 @@ public abstract class Models extends Surfaces {
       public void onSuccess(RendererModel response) {
         // TODO(jgw): Not sure if this is creating a race condition.
         Com.Println("setting world_model to " + response);
-        r_worldmodel = response;
+        GlState.r_worldmodel = response;
         callback.execute();
       }
 
@@ -1238,7 +1239,7 @@ public abstract class Models extends Surfaces {
       }
     });
 
-		r_viewcluster = -1;
+		GlState.r_viewcluster = -1;
 	}
 
 
@@ -1254,7 +1255,7 @@ public abstract class Models extends Surfaces {
         QuakeFiles.dmdl_t pheader;
         QuakeFiles.dsprite_t sprout;
 
-        mod.registration_sequence = registration_sequence;
+        mod.registration_sequence = GlState.registration_sequence;
 
         // register any images used by the models
         if (mod.type == GlConstants.mod_sprite)
@@ -1275,7 +1276,7 @@ public abstract class Models extends Surfaces {
         else if (mod.type == GlConstants.mod_brush)
         {
           for (i=0 ; i<mod.numtexinfo ; i++)
-            mod.texinfo[i].image.registration_sequence = registration_sequence;
+            mod.texinfo[i].image.registration_sequence = GlState.registration_sequence;
         }
 
         if (callback != null) {
@@ -1320,7 +1321,7 @@ public abstract class Models extends Surfaces {
 		  mod = req.model;
       if (mod.name.length() == 0)
         continue;
-      if (mod.registration_sequence != registration_sequence)
+      if (mod.registration_sequence != GlState.registration_sequence)
       { // don't need this model
         Mod_Free(mod);
       } else {
@@ -1374,11 +1375,10 @@ public abstract class Models extends Surfaces {
 	
 	protected void init() {
 		super.init();
-		globalModelTextureCoordBuf = gl.createFloatBuffer(MODEL_BUFFER_SIZE * 2);
-		globalModelVertexIndexBuf = gl.createShortBuffer(MODEL_BUFFER_SIZE);
+		globalModelTextureCoordBuf = GlState.gl.createFloatBuffer(MODEL_BUFFER_SIZE * 2);
+		globalModelVertexIndexBuf = GlState.gl.createShortBuffer(MODEL_BUFFER_SIZE);
 	}
 	
-	protected abstract float intBitsToFloat(int i); 
 	
 	
 	void precompileGLCmds(QuakeFiles.dmdl_t model) {
@@ -1410,8 +1410,8 @@ public abstract class Models extends Surfaces {
 
 			do {
 				// texture coordinates come from the draw list
-				globalModelTextureCoordBuf.put(intBitsToFloat(order[orderIndex + 0]));
-				globalModelTextureCoordBuf.put(intBitsToFloat(order[orderIndex + 1]));
+				globalModelTextureCoordBuf.put(Compatibility.intBitsToFloat(order[orderIndex + 0]));
+				globalModelTextureCoordBuf.put(Compatibility.intBitsToFloat(order[orderIndex + 1]));
 				globalModelVertexIndexBuf.put((short) order[orderIndex + 2]);
 
 				orderIndex += 3;
@@ -1436,7 +1436,7 @@ public abstract class Models extends Surfaces {
 			pos += count;
 		}
 		
-		model.staticTextureBufId = gl.generateStaticBufferId();
+		model.staticTextureBufId = GlState.gl.generateStaticBufferId();
 	}
 		
 	static void resetModelArrays() {

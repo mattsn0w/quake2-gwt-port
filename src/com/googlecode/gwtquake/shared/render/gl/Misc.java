@@ -40,23 +40,6 @@ import com.googlecode.gwtquake.shared.render.GlAdapter;
  */
 public abstract class Misc extends Mesh {
 
-	/*
-	==================
-	R_InitParticleTexture
-	==================
-	*/
-	byte[][] dottexture =
-	{
-		{0,0,0,0,0,0,0,0},
-		{0,0,1,1,0,0,0,0},
-		{0,1,1,1,1,0,0,0},
-		{0,1,1,1,1,0,0,0},
-		{0,0,1,1,0,0,0,0},
-		{0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0},
-		{0,0,0,0,0,0,0,0},
-	};
-
 	void R_InitParticleTexture()
 	{
 		int		x,y;
@@ -72,11 +55,11 @@ public abstract class Misc extends Mesh {
 				data[y * 32 + x * 4 + 0] = (byte)255;
 				data[y * 32 + x * 4 + 1] = (byte)255;
 				data[y * 32 + x * 4 + 2] = (byte)255;
-				data[y * 32 + x * 4 + 3] = (byte)(dottexture[x][y]*255);
+				data[y * 32 + x * 4 + 3] = (byte)(GlConstants.dottexture[x][y]*255);
 
 			}
 		}
-		r_particletexture = GL_LoadPic("***particle***", data, 8, 8, QuakeImage.it_sprite, 32);
+		GlState.r_particletexture = GL_LoadPic("***particle***", data, 8, 8, QuakeImage.it_sprite, 32);
 
 		//
 		// also use this for bad textures, but without alpha
@@ -85,13 +68,13 @@ public abstract class Misc extends Mesh {
 		{
 			for (y=0 ; y<8 ; y++)
 			{
-				data[y * 32 + x * 4 + 0] = (byte)(dottexture[x&3][y&3]*255);
+				data[y * 32 + x * 4 + 0] = (byte)(GlConstants.dottexture[x&3][y&3]*255);
 				data[y * 32 + x * 4 + 1] = 0; // dottexture[x&3][y&3]*255;
 				data[y * 32 + x * 4 + 2] = 0; //dottexture[x&3][y&3]*255;
 				data[y * 32 + x * 4 + 3] = (byte)255;
 			}
 		}
-		r_notexture = GL_LoadPic("***r_notexture***", data, 8, 8, QuakeImage.it_wall, 32);
+		GlState.r_notexture = GL_LoadPic("***r_notexture***", data, 8, 8, QuakeImage.it_wall, 32);
 	}
 
 //	/* 
@@ -110,8 +93,6 @@ public abstract class Misc extends Mesh {
 //		unsigned char	pixel_size, attributes;
 //	} TargaHeader;
 
-	private final static int TGA_HEADER_SIZE = 18;
-	
 	/* 
 	================== 
 	GL_ScreenShot_f
@@ -205,48 +186,48 @@ public abstract class Misc extends Mesh {
 	*/
 	void GL_SetDefaultState()
 	{
-	  gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
+	  GlState.gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
 		//gl.glClearColor(0, 0, 0, 0); // replaced with black
-	  gl.glCullFace(GlAdapter.GL_FRONT);
-	  gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+	  GlState.gl.glCullFace(GlAdapter.GL_FRONT);
+	  GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 
 //	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
-	  gl.glAlphaFunc(GlAdapter.GL_GREATER, 0.666f);
+	  GlState.gl.glAlphaFunc(GlAdapter.GL_GREATER, 0.666f);
 
-	  gl.glDisable (GlAdapter.GL_DEPTH_TEST);
-	  gl.glDisable (GlAdapter.GL_CULL_FACE);
-	  gl.glDisable (GlAdapter.GL_BLEND);
+	  GlState.gl.glDisable (GlAdapter.GL_DEPTH_TEST);
+	  GlState.gl.glDisable (GlAdapter.GL_CULL_FACE);
+	  GlState.gl.glDisable (GlAdapter.GL_BLEND);
 
-	  gl.glColor4f (1,1,1,1);
+	  GlState.gl.glColor4f (1,1,1,1);
 
 	  System.out.println("   gl.glPolygonMode (GLAdapter.GL_FRONT_AND_BACK, GLAdapter.GL_FILL);");
-	  gl.glShadeModel (GlAdapter.GL_FLAT);
+	  GlState.gl.glShadeModel (GlAdapter.GL_FLAT);
 
-		GL_TextureMode( gl_texturemode.string );
-		GL_TextureAlphaMode( gl_texturealphamode.string );
-		GL_TextureSolidMode( gl_texturesolidmode.string );
+		GL_TextureMode( GlState.gl_texturemode.string );
+		GL_TextureAlphaMode( GlState.gl_texturealphamode.string );
+		GL_TextureSolidMode( GlState.gl_texturesolidmode.string );
 
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
 
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_S, GlAdapter.GL_REPEAT);
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_T, GlAdapter.GL_REPEAT);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_S, GlAdapter.GL_REPEAT);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_T, GlAdapter.GL_REPEAT);
 
-		gl.glBlendFunc (GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
+		GlState.gl.glBlendFunc (GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
 
 		GL_TexEnv( GlAdapter.GL_REPLACE );
 
-		if ( qglPointParameterfEXT )
+		if ( GlState.qglPointParameterfEXT )
 		{
 			// float[] attenuations = { gl_particle_att_a.value, gl_particle_att_b.value, gl_particle_att_c.value };
-			FloatBuffer att_buffer=gl.createFloatBuffer(4);
-			att_buffer.put(0,gl_particle_att_a.value);
-			att_buffer.put(1,gl_particle_att_b.value);
-			att_buffer.put(2,gl_particle_att_c.value);
+			FloatBuffer att_buffer=GlState.gl.createFloatBuffer(4);
+			att_buffer.put(0,GlState.gl_particle_att_a.value);
+			att_buffer.put(1,GlState.gl_particle_att_b.value);
+			att_buffer.put(2,GlState.gl_particle_att_c.value);
 			
-			gl.glEnable( GlAdapter.GL_POINT_SMOOTH );
-			gl.glPointParameterf(GlAdapter.GL_POINT_SIZE_MIN, gl_particle_min_size.value );
-			gl.glPointParameterf( GlAdapter.GL_POINT_SIZE_MAX, gl_particle_max_size.value );
+			GlState.gl.glEnable( GlAdapter.GL_POINT_SMOOTH );
+			GlState.gl.glPointParameterf(GlAdapter.GL_POINT_SIZE_MIN, GlState.gl_particle_min_size.value );
+			GlState.gl.glPointParameterf( GlAdapter.GL_POINT_SIZE_MAX, GlState.gl_particle_max_size.value );
 			System.out.println("  gl.glPointParameter( GLAdapter.GL_DISTANCE_ATTENUATION, att_buffer );");
 		}
 
@@ -262,16 +243,16 @@ public abstract class Misc extends Mesh {
 		/*
 		 * vertex array extension
 		 */
-		gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
-		gl.glClientActiveTexture(GL_TEXTURE0);
-		gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+		GlState.gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
+		GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);
+		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 	}
 
 	void GL_UpdateSwapInterval()
 	{
-		if ( gl_swapinterval.modified )
+		if ( GlState.gl_swapinterval.modified )
 		{
-			gl_swapinterval.modified = false;
+			GlState.gl_swapinterval.modified = false;
 		}
 	}
 }

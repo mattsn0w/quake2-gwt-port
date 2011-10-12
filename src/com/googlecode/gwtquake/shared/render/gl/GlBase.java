@@ -31,9 +31,7 @@ import com.googlecode.gwtquake.shared.client.Dimension;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
-import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.render.DisplayMode;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
 
 /**
  * LWJGLBase
@@ -41,35 +39,17 @@ import com.googlecode.gwtquake.shared.render.GlAdapter;
  * @author dsanders/cwei
  */
 public abstract class GlBase {
-  // enum rserr_t
-  protected static final int rserr_ok = 0;
-  protected static final int rserr_invalid_fullscreen = 1;
-  protected static final int rserr_invalid_mode = 2;
-  protected static final int rserr_unknown = 3;
-  
-	// IMPORTED FUNCTIONS
-	protected DisplayMode oldDisplayMode; 
-
-	// window position on the screen
-	int window_xpos, window_ypos;
-	protected Dimension vid = new Dimension();
-
-	// handles the post initialization with LWJGLRenderer
+  // handles the post initialization with LWJGLRenderer
 	protected abstract boolean R_Init2();
-	
-	protected ConsoleVariable vid_fullscreen;
-
-	
-	protected GlAdapter gl;
 	
 	protected void init() {
 	}
 	
-	public DisplayMode[] getModeList() {
-		DisplayMode[] modes = gl.getAvailableDisplayModes();
+	public static DisplayMode[] getModeList() {
+		DisplayMode[] modes = GlState.gl.getAvailableDisplayModes();
 		
 		LinkedList<DisplayMode> l = new LinkedList<DisplayMode>();
-		l.add(oldDisplayMode);
+		l.add(GlState.oldDisplayMode);
 		
 		for (int i = 0; i < modes.length; i++) {
 			DisplayMode m = modes[i];
@@ -78,8 +58,8 @@ public abstract class GlBase {
 ////			if (m.getFrequency() > oldDisplayMode.getFrequency()) continue;
 ////			if (m.getHeight() < 240 || m.getWidth() < 320) continue;
 			
-			if (m.height != oldDisplayMode.height || 
-					m.width != oldDisplayMode.width) {
+			if (m.height != GlState.oldDisplayMode.height || 
+					m.width != GlState.oldDisplayMode.width) {
 				l.add(m);
 			}
 		}
@@ -88,7 +68,7 @@ public abstract class GlBase {
 		return ma;
 	}
 	
-	private DisplayMode findDisplayMode(Dimension dim) {
+	private static DisplayMode findDisplayMode(Dimension dim) {
 		DisplayMode mode = null;
 		DisplayMode m = null;
 		DisplayMode[] modes = getModeList();
@@ -102,11 +82,11 @@ public abstract class GlBase {
 				break;
 			}
 		}
-		if (mode == null) mode = oldDisplayMode;
+		if (mode == null) mode = GlState.oldDisplayMode;
 		return mode;		
 	}
 		
-	String getModeString(DisplayMode m) {
+	static String getModeString(DisplayMode m) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(m.getWidth());
 		sb.append('x');
@@ -132,7 +112,7 @@ public abstract class GlBase {
 	  // TODO: jgw
 	  fullscreen = false;
 	  
-	  gl.log("GLimp_SetMode");
+	  GlState.gl.log("GLimp_SetMode");
 
 	  Dimension newDim = new Dimension(dim.width, dim.height);
 
@@ -141,51 +121,51 @@ public abstract class GlBase {
 		 * fullscreen handling
 		 */
 	  
-	  gl.log("determining old display mode");
-		if (oldDisplayMode == null) {
-			oldDisplayMode = gl.getDisplayMode();
+	  GlState.gl.log("determining old display mode");
+		if (GlState.oldDisplayMode == null) {
+			GlState.oldDisplayMode = GlState.gl.getDisplayMode();
 		}
 
 		// destroy the existing window
 		GLimp_Shutdown();
 
 
-		  gl.log("searching new display mode");
+		  GlState.gl.log("searching new display mode");
 		DisplayMode displayMode = findDisplayMode(newDim);
-		  gl.log("copying w/h");
+		  GlState.gl.log("copying w/h");
 		newDim.width = displayMode.getWidth();
 		newDim.height = displayMode.getHeight();
 		
-		  gl.log("setting mode: " + displayMode);
+		  GlState.gl.log("setting mode: " + displayMode);
 
-		gl.setDisplayMode(displayMode);
+		GlState.gl.setDisplayMode(displayMode);
 
-		  gl.log("storing mode");
-		vid.width = newDim.width;
-		vid.height = newDim.height;
+		  GlState.gl.log("storing mode");
+		GlState.vid.width = newDim.width;
+		GlState.vid.height = newDim.height;
 		
 		// let the sound and input subsystems know about the new window
-		  gl.log("newWindow notification");
-		Window.NewWindow(vid.width, vid.height);
-		return rserr_ok;
+		  GlState.gl.log("newWindow notification");
+		Window.NewWindow(GlState.vid.width, GlState.vid.height);
+		return GlConstants.rserr_ok;
 	}
 
-	protected void GLimp_Shutdown() {
-		gl.shutdow();
+	protected static void GLimp_Shutdown() {
+		GlState.gl.shutdow();
 	}
 
 	/**
 	 * @return true
 	 */
-	protected boolean GLimp_Init(int xpos, int ypos) {
+	protected static boolean GLimp_Init(int xpos, int ypos) {
 		// do nothing
-		window_xpos = xpos;
-		window_ypos = ypos;
+		GlState.window_xpos = xpos;
+		GlState.window_ypos = ypos;
 		return true;
 	}
 
-	protected void GLimp_EndFrame() {
-		gl.swapBuffers();
+	protected static void GLimp_EndFrame() {
+		GlState.gl.swapBuffers();
 		// swap buffers
 
 	}

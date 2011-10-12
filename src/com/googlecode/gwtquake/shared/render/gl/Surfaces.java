@@ -57,9 +57,9 @@ import com.googlecode.gwtquake.shared.util.Math3D;
 public abstract class Surfaces extends Drawing {
 
 	// GL_RSURF.C: surface-related refresh code
-	float[] modelorg = {0, 0, 0};		// relative to viewpoint
+	static float[] modelorg = {0, 0, 0};		// relative to viewpoint
 
-	ModelSurface	r_alpha_surfaces;
+	static ModelSurface	r_alpha_surfaces;
 
 	static final int DYNAMIC_LIGHT_WIDTH = 128;
 	static final int DYNAMIC_LIGHT_HEIGHT = 128;
@@ -71,10 +71,10 @@ public abstract class Surfaces extends Drawing {
 
 	static final int MAX_LIGHTMAPS = 128;
 
-	int c_visible_lightmaps;
-	int c_visible_textures;
+	static int c_visible_lightmaps;
+	static int c_visible_textures;
 
-    int staticBufferId;
+    static int staticBufferId;
 	
 	static final int GL_LIGHTMAP_FORMAT = GlAdapter.GL_RGBA;
 
@@ -104,15 +104,11 @@ public abstract class Surfaces extends Drawing {
 		
 	} 
 
-	gllightmapstate_t gl_lms = new gllightmapstate_t();
+	static gllightmapstate_t gl_lms = new gllightmapstate_t();
 
 	// Model.java
 	abstract byte[] Mod_ClusterPVS(int cluster, RendererModel model);
 	// Warp.java
-	abstract void R_DrawSkyBox();
-	abstract void R_AddSkySurface(ModelSurface surface);
-	abstract void R_ClearSkyBox();
-	abstract void EmitWaterPolys(ModelSurface fa);
 	// Light.java
 	abstract void R_MarkLights (DynamicLightData light, int bit, ModelNode node);
 	abstract void R_SetCacheState( ModelSurface surf );
@@ -135,7 +131,7 @@ public abstract class Surfaces extends Drawing {
 		if (tex.next == null)
 			return tex.image;
 
-		int c = currententity.frame % tex.numframes;
+		int c = GlState.currententity.frame % tex.numframes;
 		while (c != 0)
 		{
 			tex = tex.next;
@@ -150,7 +146,7 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void DrawGLPoly(GlPolygon p)
 	{
-	  gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
+	  GlState.gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
 	}
 
 	/**
@@ -159,11 +155,11 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void DrawGLFlowingPoly(GlPolygon p)
 	{
-		float scroll = -64 * ( (r_newrefdef.time / 40.0f) - (int)(r_newrefdef.time / 40.0f) );
+		float scroll = -64 * ( (GlState.r_newrefdef.time / 40.0f) - (int)(GlState.r_newrefdef.time / 40.0f) );
 		if(scroll == 0.0f)
 			scroll = -64.0f;
 		p.beginScrolling(scroll);
-		gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
+		GlState.gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
 		p.endScrolling();
 	}
 
@@ -172,12 +168,12 @@ public abstract class Surfaces extends Drawing {
 	*/
 	void R_DrawTriangleOutlines()
 	{
-        if (gl_showtris.value == 0)
+        if (GlState.gl_showtris.value == 0)
             return;
 
-        gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-        gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-        gl.glColor4f(1, 1, 1, 1);
+        GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+        GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
+        GlState.gl.glColor4f(1, 1, 1, 1);
 
         ModelSurface surf;
         GlPolygon p;
@@ -186,29 +182,29 @@ public abstract class Surfaces extends Drawing {
              for (surf = gl_lms.lightmap_surfaces[i]; surf != null; surf = surf.lightmapchain) {
                 for (p = surf.polys; p != null; p = p.chain) {
                     for (j = 2; j < p.numverts; j++) {
-                      gl.glBegin(GlAdapter.GL_LINE_STRIP);
-                      gl.glVertex3f(p.x(0), p.y(0), p.z(0));
-                      gl.glVertex3f(p.x(j-1), p.y(j-1), p.z(j-1));
-                      gl.glVertex3f(p.x(j), p.y(j), p.z(j));
-                      gl.glVertex3f(p.x(0), p.y(0), p.z(0));
-                      gl.glEnd();
+                      GlState.gl.glBegin(GlAdapter.GL_LINE_STRIP);
+                      GlState.gl.glVertex3f(p.x(0), p.y(0), p.z(0));
+                      GlState.gl.glVertex3f(p.x(j-1), p.y(j-1), p.z(j-1));
+                      GlState.gl.glVertex3f(p.x(j), p.y(j), p.z(j));
+                      GlState.gl.glVertex3f(p.x(0), p.y(0), p.z(0));
+                      GlState.gl.glEnd();
                     }
                 }
             }
         }
 
-        gl.glEnable(GlAdapter.GL_DEPTH_TEST);
-        gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+        GlState.gl.glEnable(GlAdapter.GL_DEPTH_TEST);
+        GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 	}
 
-	private final IntBuffer temp2 = Lib.newIntBuffer(34 * 34, ByteOrder.LITTLE_ENDIAN);
+	private static final IntBuffer temp2 = Lib.newIntBuffer(34 * 34, ByteOrder.LITTLE_ENDIAN);
 
 	/**
 	 * R_RenderBrushPoly
 	 */
 	void R_RenderBrushPoly(ModelSurface fa)
 	{
-		c_brush_polys++;
+		GlState.c_brush_polys++;
 
 		ModelImage image = R_TextureAnimation(fa.texinfo);
 
@@ -218,11 +214,11 @@ public abstract class Surfaces extends Drawing {
 
 			// warp texture, no lightmaps
 			GL_TexEnv( GlAdapter.GL_MODULATE );
-			gl.glColor4f( gl_state.inverse_intensity, 
-						gl_state.inverse_intensity,
-						gl_state.inverse_intensity,
+			GlState.gl.glColor4f( GlState.gl_state.inverse_intensity, 
+						GlState.gl_state.inverse_intensity,
+						GlState.gl_state.inverse_intensity,
 						1.0F );
-			EmitWaterPolys (fa);
+			Warp.EmitWaterPolys (fa);
 			GL_TexEnv( GlAdapter.GL_REPLACE );
 
 			return;
@@ -250,7 +246,7 @@ public abstract class Surfaces extends Drawing {
 		int maps;
 		for ( maps = 0; maps < Constants.MAXLIGHTMAPS && fa.styles[maps] != (byte)255; maps++ )
 		{
-			if ( r_newrefdef.lightstyles[fa.styles[maps] & 0xFF].white != fa.cached_light[maps] ) {
+			if ( GlState.r_newrefdef.lightstyles[fa.styles[maps] & 0xFF].white != fa.cached_light[maps] ) {
 				gotoDynamic = true;
 				break;
 			}
@@ -261,10 +257,10 @@ public abstract class Surfaces extends Drawing {
 
 		// dynamic this frame or dynamic previously
 		boolean is_dynamic = false;
-		if ( gotoDynamic || ( fa.dlightframe == r_framecount ) )
+		if ( gotoDynamic || ( fa.dlightframe == GlState.r_framecount ) )
 		{
 			//	label dynamic:
-			if ( gl_dynamic.value != 0 )
+			if ( GlState.gl_dynamic.value != 0 )
 			{
 				if (( fa.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33 | Constants.SURF_TRANS66 | Constants.SURF_WARP ) ) == 0)
 				{
@@ -275,7 +271,7 @@ public abstract class Surfaces extends Drawing {
 
 		if ( is_dynamic )
 		{
-			if ( ( (fa.styles[maps] & 0xFF) >= 32 || fa.styles[maps] == 0 ) && ( fa.dlightframe != r_framecount ) )
+			if ( ( (fa.styles[maps] & 0xFF) >= 32 || fa.styles[maps] == 0 ) && ( fa.dlightframe != GlState.r_framecount ) )
 			{
 				// ist ersetzt durch temp2:	unsigned	temp[34*34];
 				int smax, tmax;
@@ -286,9 +282,9 @@ public abstract class Surfaces extends Drawing {
 				R_BuildLightMap( fa, temp2, smax);
 				R_SetCacheState( fa );
 
-				GL_Bind( gl_state.lightmap_textures + fa.lightmaptexturenum );
+				GL_Bind( GlState.gl_state.lightmap_textures + fa.lightmaptexturenum );
 
-				gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 0,
+				GlState.gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 0,
 								  fa.light_s, fa.light_t, 
 								  smax, tmax, 
 								  GL_LIGHTMAP_FORMAT, 
@@ -319,34 +315,34 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void R_DrawAlphaSurfaces()
 	{
-		r_world_matrix.clear();
+		GlState.r_world_matrix.clear();
 		//
 		// go back to the world matrix
 		//
-		gl.glLoadMatrix(r_world_matrix);
+		GlState.gl.glLoadMatrix(GlState.r_world_matrix);
 
-		gl.glEnable (GlAdapter.GL_BLEND);
+		GlState.gl.glEnable (GlAdapter.GL_BLEND);
 		GL_TexEnv(GlAdapter.GL_MODULATE );
 		
 
 		// the textures are prescaled up for a better lighting range,
 		// so scale it back down
-		float intens = gl_state.inverse_intensity;
+		float intens = GlState.gl_state.inverse_intensity;
 
 		glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
 
 		for (ModelSurface s = r_alpha_surfaces ; s != null ; s=s.texturechain)
 		{
 			GL_Bind(s.texinfo.image.texnum);
-			c_brush_polys++;
+			GlState.c_brush_polys++;
 			if ((s.texinfo.flags & Constants.SURF_TRANS33) != 0)
-			  gl.glColor4f (intens, intens, intens, 0.33f);
+			  GlState.gl.glColor4f (intens, intens, intens, 0.33f);
 			else if ((s.texinfo.flags & Constants.SURF_TRANS66) != 0)
-			  gl.glColor4f (intens, intens, intens, 0.66f);
+			  GlState.gl.glColor4f (intens, intens, intens, 0.66f);
 			else
-			  gl.glColor4f (intens,intens,intens,1);
+			  GlState.gl.glColor4f (intens,intens,intens,1);
 			if ((s.flags & Constants.SURF_DRAWTURB) != 0)
-				EmitWaterPolys(s);
+				Warp.EmitWaterPolys(s);
 			else if((s.texinfo.flags & Constants.SURF_FLOWING) != 0)			// PGM	9/16/98
 				DrawGLFlowingPoly(s.polys);							// PGM
 			else
@@ -354,32 +350,32 @@ public abstract class Surfaces extends Drawing {
 		}
 
 		GL_TexEnv( GlAdapter.GL_REPLACE );
-		gl.glColor4f (1,1,1,1);
-		gl.glDisable (GlAdapter.GL_BLEND);
+		GlState.gl.glColor4f (1,1,1,1);
+		GlState.gl.glDisable (GlAdapter.GL_BLEND);
 
 		r_alpha_surfaces = null;
 	}
 
 	private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf) {
 	  int pos = buf.position();
-	  gl.glTexCoordPointer(2, byteStride, buf);
-	  gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+	  GlState.gl.glTexCoordPointer(2, byteStride, buf);
+	  GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 	        
 	  buf.position(pos + 2);
-	  gl.glVertexPointer(3, byteStride, buf);
-	  gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
+	  GlState.gl.glVertexPointer(3, byteStride, buf);
+	  GlState.gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
 	        
 	  buf.position(pos);
 	}
 
 	private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf, int staticDrawIdV) {
-		gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
-		gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_0, 2, GlAdapter.GL_FLOAT, 
+		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+		GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_0, 2, GlAdapter.GL_FLOAT, 
 		    false, byteStride, 0, buf, staticDrawIdV);
 		
-		gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
+		GlState.gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
 //		 gl.glVertexPointer(3, byteStride, buf);
-		gl.glVertexAttribPointer(GlAdapter.ARRAY_POSITION, 3, GlAdapter.GL_FLOAT,
+		GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_POSITION, 3, GlAdapter.GL_FLOAT,
 		    false, byteStride, 8, buf, staticDrawIdV);
 	}
 	/**
@@ -447,7 +443,7 @@ public abstract class Surfaces extends Drawing {
 		int map;
 		for ( map = 0; map < Constants.MAXLIGHTMAPS && (surf.styles[map] != (byte)255); map++ )
 		{
-			if ( r_newrefdef.lightstyles[surf.styles[map] & 0xFF].white != surf.cached_light[map] ) {
+			if ( GlState.r_newrefdef.lightstyles[surf.styles[map] & 0xFF].white != surf.cached_light[map] ) {
 				gotoDynamic = true;
 				break;
 			}
@@ -458,10 +454,10 @@ public abstract class Surfaces extends Drawing {
 
 		// dynamic this frame or dynamic previously
 		boolean is_dynamic = false;
-		if ( gotoDynamic || ( surf.dlightframe == r_framecount ) )
+		if ( gotoDynamic || ( surf.dlightframe == GlState.r_framecount ) )
 		{
 			//	label dynamic:
-			if ( gl_dynamic.value != 0 )
+			if ( GlState.gl_dynamic.value != 0 )
 			{
 				if ( (surf.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33 | Constants.SURF_TRANS66 | Constants.SURF_WARP )) == 0 )
 				{
@@ -481,7 +477,7 @@ public abstract class Surfaces extends Drawing {
 			int tmax = (surf.extents[1]>>4)+1;
 
 			R_BuildLightMap( surf, temp, smax);
-			if (( (surf.styles[map] & 0xFF) >= 32 || surf.styles[map] == 0 ) && ( surf.dlightframe != r_framecount ) )
+			if (( (surf.styles[map] & 0xFF) >= 32 || surf.styles[map] == 0 ) && ( surf.dlightframe != GlState.r_framecount ) )
 			{
 				R_SetCacheState( surf );
 				lmtex = surf.lightmaptexturenum;
@@ -490,18 +486,18 @@ public abstract class Surfaces extends Drawing {
 			{
 				lmtex = 0;
 			}
-			GL_MBind( GL_TEXTURE1, gl_state.lightmap_textures + lmtex );
-			gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 0,
+			GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
+			GlState.gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 0,
 					  surf.light_s, surf.light_t, 
 					  smax, tmax, 
 					  GL_LIGHTMAP_FORMAT, 
 					  GlAdapter.GL_UNSIGNED_BYTE, temp );
 
 		}
-			c_brush_polys++;
+			GlState.c_brush_polys++;
 
-			GL_MBind( GL_TEXTURE0, image.texnum );
-			GL_MBind( GL_TEXTURE1, gl_state.lightmap_textures + lmtex );
+			GL_MBind( GlState.GL_TEXTURE0, image.texnum );
+			GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
 
 			// ==========
 			//	  PGM
@@ -509,14 +505,14 @@ public abstract class Surfaces extends Drawing {
 			{
 				float scroll;
 		
-				scroll = -64 * ( (r_newrefdef.time / 40.0f) - (int)(r_newrefdef.time / 40.0f) );
+				scroll = -64 * ( (GlState.r_newrefdef.time / 40.0f) - (int)(GlState.r_newrefdef.time / 40.0f) );
 				if(scroll == 0.0f)
 					scroll = -64.0f;
 
 				for ( p = surf.polys; p != null; p = p.chain )
 				{
 				    p.beginScrolling(scroll);
-				    gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
+				    GlState.gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
 				    p.endScrolling();
 				}
 			}
@@ -524,7 +520,7 @@ public abstract class Surfaces extends Drawing {
 			{
 				for ( p = surf.polys; p != null; p = p.chain )
 				{
-				  gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
+				  GlState.gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
 				}
 			}
 			// PGM
@@ -577,25 +573,25 @@ public abstract class Surfaces extends Drawing {
 	void R_DrawInlineBModel()
 	{
 		// calculate dynamic lighting for bmodel
-		if ( gl_flashblend.value == 0 )
+		if ( GlState.gl_flashblend.value == 0 )
 		{
 			DynamicLightData	lt;
-			for (int k=0 ; k<r_newrefdef.num_dlights ; k++)
+			for (int k=0 ; k<GlState.r_newrefdef.num_dlights ; k++)
 			{
-				lt = r_newrefdef.dlights[k];
-				R_MarkLights(lt, 1<<k, currentmodel.nodes[currentmodel.firstnode]);
+				lt = GlState.r_newrefdef.dlights[k];
+				R_MarkLights(lt, 1<<k, GlState.currentmodel.nodes[GlState.currentmodel.firstnode]);
 			}
 		}
 
 		// psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
-		int psurfp = currentmodel.firstmodelsurface;
-		ModelSurface[] surfaces = currentmodel.surfaces;
+		int psurfp = GlState.currentmodel.firstmodelsurface;
+		ModelSurface[] surfaces = GlState.currentmodel.surfaces;
 		//psurf = surfaces[psurfp];
 
-		if ( (currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
+		if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
 		{
-		  gl.glEnable (GlAdapter.GL_BLEND);
-		  gl.glColor4f (1,1,1,0.25f);
+		  GlState.gl.glEnable (GlAdapter.GL_BLEND);
+		  GlState.gl.glColor4f (1,1,1,0.25f);
 			GL_TexEnv( GlAdapter.GL_MODULATE );
 		}
 
@@ -605,7 +601,7 @@ public abstract class Surfaces extends Drawing {
 		ModelSurface psurf;
 		Plane pplane;
 		float dot;
-		for (int i=0 ; i<currentmodel.nummodelsurfaces ; i++)
+		for (int i=0 ; i<GlState.currentmodel.nummodelsurfaces ; i++)
 		{
 			psurf = surfaces[psurfp++];
 			// find which side of the node we are on
@@ -635,9 +631,9 @@ public abstract class Surfaces extends Drawing {
 			}
 		}
 		
-		if ( (currententity.flags & Constants.RF_TRANSLUCENT) != 0 ) {
-		  gl.glDisable (GlAdapter.GL_BLEND);
-		  gl.glColor4f (1,1,1,1);
+		if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 ) {
+		  GlState.gl.glDisable (GlAdapter.GL_BLEND);
+		  GlState.gl.glColor4f (1,1,1,1);
 			GL_TexEnv( GlAdapter.GL_REPLACE );
 		}
 	}
@@ -654,11 +650,11 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void R_DrawBrushModel(EntityType e)
 	{
-		if (currentmodel.nummodelsurfaces == 0)
+		if (GlState.currentmodel.nummodelsurfaces == 0)
 			return;
 
-		currententity = e;
-		gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
+		GlState.currententity = e;
+		GlState.gl_state.currenttextures[0] = GlState.gl_state.currenttextures[1] = -1;
 
 		boolean rotated;
 		if (e.angles[0] != 0 || e.angles[1] != 0 || e.angles[2] != 0)
@@ -666,27 +662,27 @@ public abstract class Surfaces extends Drawing {
 			rotated = true;
 			for (int i=0 ; i<3 ; i++)
 			{
-				mins[i] = e.origin[i] - currentmodel.radius;
-				maxs[i] = e.origin[i] + currentmodel.radius;
+				mins[i] = e.origin[i] - GlState.currentmodel.radius;
+				maxs[i] = e.origin[i] + GlState.currentmodel.radius;
 			}
 		}
 		else
 		{
 			rotated = false;
-			Math3D.VectorAdd(e.origin, currentmodel.mins, mins);
-			Math3D.VectorAdd(e.origin, currentmodel.maxs, maxs);
+			Math3D.VectorAdd(e.origin, GlState.currentmodel.mins, mins);
+			Math3D.VectorAdd(e.origin, GlState.currentmodel.maxs, maxs);
 		}
 
 		if (R_CullBox(mins, maxs)) return;
 
-		gl.glColor3f (1,1,1);
+		GlState.gl.glColor3f (1,1,1);
 		
 		// memset (gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 		
 		// TODO wird beim multitexturing nicht gebraucht
 		//gl_lms.clearLightmapSurfaces();
 		
-		Math3D.VectorSubtract (r_newrefdef.vieworg, e.origin, modelorg);
+		Math3D.VectorSubtract (GlState.r_newrefdef.vieworg, e.origin, modelorg);
 		if (rotated)
 		{
 			Math3D.VectorCopy (modelorg, org);
@@ -696,7 +692,7 @@ public abstract class Surfaces extends Drawing {
 			modelorg[2] = Math3D.DotProduct (org, up);
 		}
 
-		gl.glPushMatrix();
+		GlState.gl.glPushMatrix();
 		
 		e.angles[0] = -e.angles[0];	// stupid quake bug
 		e.angles[2] = -e.angles[2];	// stupid quake bug
@@ -705,24 +701,24 @@ public abstract class Surfaces extends Drawing {
 		e.angles[2] = -e.angles[2];	// stupid quake bug
 
 		GL_EnableMultitexture( true );
-		GL_SelectTexture(GL_TEXTURE0);
+		GL_SelectTexture(GlState.GL_TEXTURE0);
 		GL_TexEnv( GlAdapter.GL_REPLACE );
 		glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
-		GL_SelectTexture(GL_TEXTURE1);
+		GL_SelectTexture(GlState.GL_TEXTURE1);
 		GL_TexEnv( GlAdapter.GL_MODULATE );
 //		gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE, globalPolygonTexCoord1Buf);
-		gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
-		gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, false, 
+		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+		GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, false, 
 				GlPolygon.BYTE_STRIDE, 20, globalPolygonInterleavedBuf, staticBufferId);
 
 		R_DrawInlineBModel();
 
-		gl.glClientActiveTexture(GL_TEXTURE1);
-		gl.glDisableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+		GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE1);
+		GlState.gl.glDisableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 
 		GL_EnableMultitexture( false );
 
-		gl.glPopMatrix();
+		GlState.gl.glPopMatrix();
 	}
 
 	/*
@@ -741,7 +737,7 @@ public abstract class Surfaces extends Drawing {
 		if (node.contents == Constants.CONTENTS_SOLID)
 			return;		// solid
 		
-		if (node.visframe != r_visframecount)
+		if (node.visframe != GlState.r_visframecount)
 			return;
 			
 		if (R_CullBox(node.mins, node.maxs))
@@ -755,9 +751,9 @@ public abstract class Surfaces extends Drawing {
 			ModelLeaf pleaf = (ModelLeaf)node;
 
 			// check for door connected areas
-			if (r_newrefdef.areabits != null)
+			if (GlState.r_newrefdef.areabits != null)
 			{
-				if ( ((r_newrefdef.areabits[pleaf.area >> 3] & 0xFF) & (1 << (pleaf.area & 7)) ) == 0 )
+				if ( ((GlState.r_newrefdef.areabits[pleaf.area >> 3] & 0xFF) & (1 << (pleaf.area & 7)) ) == 0 )
 					return;		// not visible
 			}
 
@@ -770,7 +766,7 @@ public abstract class Surfaces extends Drawing {
 			{
 				do
 				{
-					mark.visframe = r_framecount;
+					mark.visframe = GlState.r_framecount;
 					mark = pleaf.getMarkSurface(++markp); // next surface
 				} while (--c != 0);
 			}
@@ -820,8 +816,8 @@ public abstract class Surfaces extends Drawing {
 		//for ( c = node.numsurfaces, surf = r_worldmodel.surfaces[node.firstsurface]; c != 0 ; c--, surf++)
 		for ( c = 0; c < node.numsurfaces; c++)
 		{
-			surf = r_worldmodel.surfaces[node.firstsurface + c];
-			if (surf.visframe != r_framecount)
+			surf = GlState.r_worldmodel.surfaces[node.firstsurface + c];
+			if (surf.visframe != GlState.r_framecount)
 				continue;
 
 			if ( (surf.flags & Constants.SURF_PLANEBACK) != sidebit )
@@ -829,7 +825,7 @@ public abstract class Surfaces extends Drawing {
 
 			if ((surf.texinfo.flags & Constants.SURF_SKY) != 0)
 			{	// just adds to visible sky bounds
-				R_AddSkySurface(surf);
+				Warp.R_AddSkySurface(surf);
 			}
 			else if ((surf.texinfo.flags & (Constants.SURF_TRANS33 | Constants.SURF_TRANS66)) != 0)
 			{	// add to the translucent chain
@@ -864,60 +860,60 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void R_DrawWorld()
 	{
-		if (r_drawworld.value == 0)
+		if (GlState.r_drawworld.value == 0)
 			return;
 
-		if ( (r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0 )
+		if ( (GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0 )
 			return;
 
-		currentmodel = r_worldmodel;
+		GlState.currentmodel = GlState.r_worldmodel;
 
-		Math3D.VectorCopy(r_newrefdef.vieworg, modelorg);
+		Math3D.VectorCopy(GlState.r_newrefdef.vieworg, modelorg);
 
 		EntityType ent = worldEntity;
 		// auto cycle the world frame for texture animation
 		ent.clear();
-		ent.frame = (int)(r_newrefdef.time*2);
-		currententity = ent;
+		ent.frame = (int)(GlState.r_newrefdef.time*2);
+		GlState.currententity = ent;
 
-		gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
+		GlState.gl_state.currenttextures[0] = GlState.gl_state.currenttextures[1] = -1;
 
-		gl.glColor3f (1,1,1);
+		GlState.gl.glColor3f (1,1,1);
 		// memset (gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 		// TODO wird bei multitexture nicht gebraucht
 		//gl_lms.clearLightmapSurfaces();
 		
-		R_ClearSkyBox();
+		Warp.R_ClearSkyBox();
 
 		GL_EnableMultitexture( true );
 
-		GL_SelectTexture( GL_TEXTURE0);
+		GL_SelectTexture( GlState.GL_TEXTURE0);
 		GL_TexEnv( GlAdapter.GL_REPLACE );
 		
 		
 //		glInterleavedArraysT2F_V3F(Polygon.BYTE_STRIDE, globalPolygonInterleavedBuf);
         glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
         
-		GL_SelectTexture( GL_TEXTURE1);
-		gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
-		gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, 
+		GL_SelectTexture( GlState.GL_TEXTURE1);
+		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+		GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, 
 		    false, GlPolygon.BYTE_STRIDE, 20, globalPolygonInterleavedBuf, staticBufferId);
 //		gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE, globalPolygonTexCoord1Buf);
 
-		if ( gl_lightmap.value != 0)
+		if ( GlState.gl_lightmap.value != 0)
 			GL_TexEnv( GlAdapter.GL_REPLACE );
 		else 
 			GL_TexEnv( GlAdapter.GL_MODULATE );
 				
-		R_RecursiveWorldNode(r_worldmodel.nodes[0]); // root node
+		R_RecursiveWorldNode(GlState.r_worldmodel.nodes[0]); // root node
 
-		gl.glClientActiveTexture(GL_TEXTURE1);
-		gl.glDisableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+		GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE1);
+		GlState.gl.glDisableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 
 		GL_EnableMultitexture( false );
 
 		DrawTextureChains();
-		R_DrawSkyBox();
+		Warp.R_DrawSkyBox();
 		R_DrawTriangleOutlines();
 	}
 
@@ -930,38 +926,38 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void R_MarkLeaves()
 	{
-		if (r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && r_novis.value == 0 && r_viewcluster != -1)
+		if (GlState.r_oldviewcluster == GlState.r_viewcluster && GlState.r_oldviewcluster2 == GlState.r_viewcluster2 && GlState.r_novis.value == 0 && GlState.r_viewcluster != -1)
 			return;
 
 		// development aid to let you run around and see exactly where
 		// the pvs ends
-		if (gl_lockpvs.value != 0)
+		if (GlState.gl_lockpvs.value != 0)
 			return;
 
-		r_visframecount++;
-		r_oldviewcluster = r_viewcluster;
-		r_oldviewcluster2 = r_viewcluster2;
+		GlState.r_visframecount++;
+		GlState.r_oldviewcluster = GlState.r_viewcluster;
+		GlState.r_oldviewcluster2 = GlState.r_viewcluster2;
 
 		int i;
-		if (r_novis.value != 0 || r_viewcluster == -1 || r_worldmodel.vis == null)
+		if (GlState.r_novis.value != 0 || GlState.r_viewcluster == -1 || GlState.r_worldmodel.vis == null)
 		{
 			// mark everything
-			for (i=0 ; i<r_worldmodel.numleafs ; i++)
-				r_worldmodel.leafs[i].visframe = r_visframecount;
-			for (i=0 ; i<r_worldmodel.numnodes ; i++)
-				r_worldmodel.nodes[i].visframe = r_visframecount;
+			for (i=0 ; i<GlState.r_worldmodel.numleafs ; i++)
+				GlState.r_worldmodel.leafs[i].visframe = GlState.r_visframecount;
+			for (i=0 ; i<GlState.r_worldmodel.numnodes ; i++)
+				GlState.r_worldmodel.nodes[i].visframe = GlState.r_visframecount;
 			return;
 		}
 
-		byte[] vis = Mod_ClusterPVS(r_viewcluster, r_worldmodel);
+		byte[] vis = Mod_ClusterPVS(GlState.r_viewcluster, GlState.r_worldmodel);
 		int c;
 		// may have to combine two clusters because of solid water boundaries
-		if (r_viewcluster2 != r_viewcluster)
+		if (GlState.r_viewcluster2 != GlState.r_viewcluster)
 		{
 			// memcpy (fatvis, vis, (r_worldmodel.numleafs+7)/8);
-			System.arraycopy(vis, 0, fatvis, 0, (r_worldmodel.numleafs+7) >> 3);
-			vis = Mod_ClusterPVS(r_viewcluster2, r_worldmodel);
-			c = (r_worldmodel.numleafs + 31) >> 5;
+			System.arraycopy(vis, 0, fatvis, 0, (GlState.r_worldmodel.numleafs+7) >> 3);
+			vis = Mod_ClusterPVS(GlState.r_viewcluster2, GlState.r_worldmodel);
+			c = (GlState.r_worldmodel.numleafs + 31) >> 5;
 			c <<= 2;
 			for (int k=0 ; k<c ; k+=4) {
 				fatvis[k] |= vis[k];
@@ -976,9 +972,9 @@ public abstract class Surfaces extends Drawing {
 		ModelNode node;
 		ModelLeaf leaf;
 		int cluster;
-		for ( i=0; i < r_worldmodel.numleafs; i++)
+		for ( i=0; i < GlState.r_worldmodel.numleafs; i++)
 		{
-			leaf = r_worldmodel.leafs[i];
+			leaf = GlState.r_worldmodel.leafs[i];
 			cluster = leaf.cluster;
 			if (cluster == -1)
 				continue;
@@ -987,9 +983,9 @@ public abstract class Surfaces extends Drawing {
 				node = (ModelNode)leaf;
 				do
 				{
-					if (node.visframe == r_visframecount)
+					if (node.visframe == GlState.r_visframecount)
 						break;
-					node.visframe = r_visframecount;
+					node.visframe = GlState.r_visframecount;
 					node = node.parent;
 				} while (node != null);
 			}
@@ -1020,9 +1016,9 @@ public abstract class Surfaces extends Drawing {
 	{
 		int texture = ( dynamic ) ? 0 : gl_lms.current_lightmap_texture;
 
-		GL_Bind( gl_state.lightmap_textures + texture );
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
+		GL_Bind( GlState.gl_state.lightmap_textures + texture );
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
 
 		gl_lms.lightmap_buffer.rewind();
 		if ( dynamic )
@@ -1034,7 +1030,7 @@ public abstract class Surfaces extends Drawing {
 					height = gl_lms.allocated[i];
 			}
 
-			gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 
+			GlState.gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 
 							  0,
 							  0, 0,
 							  BLOCK_WIDTH, height,
@@ -1044,7 +1040,7 @@ public abstract class Surfaces extends Drawing {
 		}
 		else
 		{
-		  gl.glTexImage2D( GlAdapter.GL_TEXTURE_2D, 
+		  GlState.gl.glTexImage2D( GlAdapter.GL_TEXTURE_2D, 
 						   0, 
 						   GL_LIGHTMAP_FORMAT/*gl_lms.internal_format*/,
 						   BLOCK_WIDTH, BLOCK_HEIGHT, 
@@ -1106,7 +1102,7 @@ public abstract class Surfaces extends Drawing {
 	void GL_BuildPolygonFromSurface(ModelSurface fa)
 	{
 		// reconstruct the polygon
-		ModelEdge[] pedges = currentmodel.edges;
+		ModelEdge[] pedges = GlState.currentmodel.edges;
 		int lnumverts = fa.numedges;
 		//
 		// draw texture
@@ -1124,17 +1120,17 @@ public abstract class Surfaces extends Drawing {
 		float s, t;
 		for (int i=0 ; i<lnumverts ; i++)
 		{
-			lindex = currentmodel.surfedges[fa.firstedge + i];
+			lindex = GlState.currentmodel.surfedges[fa.firstedge + i];
 
 			if (lindex > 0)
 			{
 				r_pedge = pedges[lindex];
-				vec = currentmodel.vertexes[r_pedge.v[0]].position;
+				vec = GlState.currentmodel.vertexes[r_pedge.v[0]].position;
 			}
 			else
 			{
 				r_pedge = pedges[-lindex];
-				vec = currentmodel.vertexes[r_pedge.v[1]].position;
+				vec = GlState.currentmodel.vertexes[r_pedge.v[1]].position;
 			}
 			
 //			if(!fa.texinfo.image.complete) {
@@ -1219,7 +1215,7 @@ public abstract class Surfaces extends Drawing {
 	 */
 	void GL_BeginBuildingLightmaps(RendererModel m)
 	{
-		gl.log("BeginBuildingLightmaps!");
+		GlState.gl.log("BeginBuildingLightmaps!");
 		
 		// static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
 
@@ -1235,10 +1231,10 @@ public abstract class Surfaces extends Drawing {
 		// memset( gl_lms.allocated, 0, sizeof(gl_lms.allocated) );
 		Arrays.fill(gl_lms.allocated, 0);
 
-		r_framecount = 1;		// no dlightcache
+		GlState.r_framecount = 1;		// no dlightcache
 
 		GL_EnableMultitexture( true );
-		GL_SelectTexture( GL_TEXTURE1);
+		GL_SelectTexture( GlState.GL_TEXTURE1);
 
 		/*
 		** setup the base lightstyles so the lightmaps won't have to be regenerated
@@ -1251,11 +1247,11 @@ public abstract class Surfaces extends Drawing {
 			lightstyles[i].rgb[2] = 1;
 			lightstyles[i].white = 3;
 		}
-		r_newrefdef.lightstyles = lightstyles;
+		GlState.r_newrefdef.lightstyles = lightstyles;
 
-		if (gl_state.lightmap_textures == 0)
+		if (GlState.lightmap_textures == 0)
 		{
-			gl_state.lightmap_textures = GlConstants.TEXNUM_LIGHTMAPS;
+			GlState.lightmap_textures = GlConstants.TEXNUM_LIGHTMAPS;
 		}
 
 		gl_lms.current_lightmap_texture = 1;
@@ -1274,7 +1270,7 @@ public abstract class Surfaces extends Drawing {
 		** format then we should change this code to use real alpha maps.
 		*/
 		
-		char format = gl_monolightmap.string.toUpperCase().charAt(0);
+		char format = GlState.gl_monolightmap.string.toUpperCase().charAt(0);
 		
 		if ( format == 'A' )
 		{
@@ -1289,12 +1285,12 @@ public abstract class Surfaces extends Drawing {
 		}
 		else if ( format == 'I' )
 		{
-			gl.log("INTENSITY");
+			GlState.gl.log("INTENSITY");
 			gl_lms.internal_format = 1;
 		}
 		else if ( format == 'L' ) 
 		{
-			gl.log("LUMINANCE");
+			GlState.gl.log("LUMINANCE");
 			gl_lms.internal_format = GlAdapter.GL_LUMINANCE;
 		}
 		else
@@ -1303,7 +1299,7 @@ public abstract class Surfaces extends Drawing {
 		}
 
 		if (dummy == null) {
-			dummy = gl.createIntBuffer(128*128);
+			dummy = GlState.gl.createIntBuffer(128*128);
 			for (int p = 0; p < 128 * 128; p++) {
 				dummy.put(p, 0x0ffffffff);
 			}
@@ -1312,10 +1308,10 @@ public abstract class Surfaces extends Drawing {
 		/*
 		** initialize the dynamic lightmap texture
 		*/
-		GL_Bind( gl_state.lightmap_textures + 0 );
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
-		gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
-		gl.glTexImage2D( GlAdapter.GL_TEXTURE_2D, 
+		GL_Bind( GlState.gl_state.lightmap_textures + 0 );
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
+		GlState.gl.glTexImage2D( GlAdapter.GL_TEXTURE_2D, 
 					   0, 
 					   GL_LIGHTMAP_FORMAT/*gl_lms.internal_format*/,
 					   BLOCK_WIDTH, BLOCK_HEIGHT, 
@@ -1369,7 +1365,7 @@ public abstract class Surfaces extends Drawing {
 //	}
 
 	protected void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {
-		gl.log("debuglightmap");
+		GlState.gl.log("debuglightmap");
 	 }
 	 
 }

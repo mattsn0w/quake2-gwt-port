@@ -20,20 +20,21 @@ package com.googlecode.gwtquake.client;
 
 
 import com.google.gwt.core.client.JsArrayInteger;
-import com.google.gwt.corp.compatibility.Numbers;
 import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.html5.client.CanvasRenderingContext2D;
 import com.googlecode.gwtquake.shared.client.Renderer;
 import com.googlecode.gwtquake.shared.render.ModelImage;
+import com.googlecode.gwtquake.shared.render.gl.GlRenderer;
+import com.googlecode.gwtquake.shared.render.gl.GlState;
 import com.googlecode.gwtquake.shared.render.gl.WireframeRenderer;
 import com.googlecode.gwtquake.shared.sys.KBD;
 
-public class GwtWireframeGLRenderer extends AbstractGwtGLRenderer implements Renderer {
+public class GwtWireframeGLRenderer extends GlRenderer implements Renderer {
 	KBD kbd = new GwtKBD();
 	private CanvasRenderingContext2D ctx;
 
 	public GwtWireframeGLRenderer(final CanvasElement canvas) {
-		this.gl = new WireframeRenderer(canvas, canvas.getWidth(), canvas.getHeight());
+		GlState.gl = new WireframeRenderer(canvas, canvas.getWidth(), canvas.getHeight());
 		init();
 	}
 
@@ -90,7 +91,7 @@ public class GwtWireframeGLRenderer extends AbstractGwtGLRenderer implements Ren
 
 		JsArrayInteger d = getImageSize(name);
 		if (d == null) {
-			gl.log("Size not found for " + name);
+			GlState.gl.log("Size not found for " + name);
 			image.width = 128;
 			image.height = 128;
 		} else {
@@ -103,9 +104,5 @@ public class GwtWireframeGLRenderer extends AbstractGwtGLRenderer implements Ren
   
 
 
-	@Override
-	protected float intBitsToFloat(int i) {
-		return Numbers.intBitsToFloat(i);
-	}
 
 }

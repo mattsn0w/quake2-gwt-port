@@ -45,8 +45,6 @@ import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.game.Plane;
 import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.GlState;
-import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.render.ModelLeaf;
 import com.googlecode.gwtquake.shared.render.RendererModel;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -59,16 +57,6 @@ import com.googlecode.gwtquake.shared.util.Vargs;
  * @author cwei
  */
 public abstract class Main extends GlBase {
-
-	int c_visible_lightmaps;
-	int c_visible_textures;
-
-	int registration_sequence;
-
-	// this a hack for function pointer test
-	// default disabled
-	boolean qglActiveTextureARB = false;
-	boolean qglPointParameterfEXT = false;
 
 	//	=================
 	//  abstract methods
@@ -101,7 +89,6 @@ public abstract class Main extends GlBase {
 	abstract void Mod_FreeAll();
 
 	abstract void GL_ShutdownImages();
-	abstract void GL_Bind(int texnum);
 	abstract void GL_TexEnv(int mode);
 	abstract void GL_TextureMode(String string);
 	abstract void GL_TextureAlphaMode(String string);
@@ -116,119 +103,12 @@ public abstract class Main extends GlBase {
 	====================================================================
 	*/
 
-	int GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
-	int GL_TEXTURE1 = GlAdapter.GL_TEXTURE1;
-
-	RendererModel r_worldmodel;
-
-	float gldepthmin, gldepthmax;
-
-	GlState gl_state = new GlState();
-
-	ModelImage r_notexture; // use for bad textures
-	ModelImage r_particletexture; // little dot for particles
-
-	EntityType currententity;
-	RendererModel currentmodel;
-
-	Plane frustum[] = { new Plane(), new Plane(), new Plane(), new Plane()};
-
-	int r_visframecount; // bumped when going to a new PVS
-	int r_framecount; // used for dlight push checking
-
-	int c_brush_polys, c_alias_polys;
-
-	float v_blend[] = { 0, 0, 0, 0 }; // final blending color
-
-	//
-	//	   view origin
-	//
-	float[] vup = { 0, 0, 0 };
-	float[] vpn = { 0, 0, 0 };
-	float[] vright = { 0, 0, 0 };
-	float[] r_origin = { 0, 0, 0 };
-
-	//float r_world_matrix[] = new float[16];
-	FloatBuffer r_world_matrix;
-	
 	protected void init() {
 		super.init();
-		r_world_matrix =gl.createFloatBuffer(16);
+		GlState.r_world_matrix =GlState.gl.createFloatBuffer(16);
 	}
 	
-	float r_base_world_matrix[] = new float[16];
-
-	//
-	//	   screen size info
-	//
-	RendererState r_newrefdef = new RendererState();
-
-	int r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
-
-	ConsoleVariable r_norefresh;
-	ConsoleVariable r_drawentities;
-	ConsoleVariable r_drawworld;
-	ConsoleVariable r_speeds;
-	ConsoleVariable r_fullbright;
-	ConsoleVariable r_novis;
-	ConsoleVariable r_nocull;
-	ConsoleVariable r_lerpmodels;
-	ConsoleVariable r_lefthand;
-
-	ConsoleVariable r_lightlevel;
-	// FIXME: This is a HACK to get the client's light level
-
-	ConsoleVariable gl_nosubimage;
-	ConsoleVariable gl_allow_software;
-
-	ConsoleVariable gl_vertex_arrays;
-
-	ConsoleVariable gl_particle_min_size;
-	ConsoleVariable gl_particle_max_size;
-	ConsoleVariable gl_particle_size;
-	ConsoleVariable gl_particle_att_a;
-	ConsoleVariable gl_particle_att_b;
-	ConsoleVariable gl_particle_att_c;
-
-	ConsoleVariable gl_ext_swapinterval;
-	ConsoleVariable gl_ext_palettedtexture;
-	ConsoleVariable gl_ext_multitexture;
-	ConsoleVariable gl_ext_pointparameters;
-	ConsoleVariable gl_ext_compiled_vertex_array;
-
-	ConsoleVariable gl_log;
-	ConsoleVariable gl_bitdepth;
-	ConsoleVariable gl_drawbuffer;
-	ConsoleVariable gl_driver;
-	ConsoleVariable gl_lightmap;
-	ConsoleVariable gl_shadows;
-	ConsoleVariable gl_mode;
-	ConsoleVariable gl_dynamic;
-	ConsoleVariable gl_monolightmap;
-	ConsoleVariable gl_modulate;
-	ConsoleVariable gl_nobind;
-	ConsoleVariable gl_round_down;
-	ConsoleVariable gl_picmip;
-	ConsoleVariable gl_skymip;
-	ConsoleVariable gl_showtris;
-	ConsoleVariable gl_ztrick;
-	ConsoleVariable gl_finish;
-	ConsoleVariable gl_clear;
-	ConsoleVariable gl_cull;
-	ConsoleVariable gl_polyblend;
-	ConsoleVariable gl_flashblend;
-	ConsoleVariable gl_playermip;
-	ConsoleVariable gl_saturatelighting;
-	ConsoleVariable gl_swapinterval;
-	ConsoleVariable gl_texturemode;
-	ConsoleVariable gl_texturealphamode;
-	ConsoleVariable gl_texturesolidmode;
-	ConsoleVariable gl_lockpvs;
-
-	ConsoleVariable gl_3dlabs_broken;
-
-	ConsoleVariable vid_gamma;
-	ConsoleVariable vid_ref;
+	
 
 	// ============================================================================
 	// to port from gl_rmain.c, ...
@@ -241,11 +121,11 @@ public abstract class Main extends GlBase {
 	final boolean R_CullBox(float[] mins, float[] maxs) {
 		assert(mins.length == 3 && maxs.length == 3) : "vec3_t bug";
 
-		if (r_nocull.value != 0)
+		if (GlState.r_nocull.value != 0)
 			return false;
 
 		for (int i = 0; i < 4; i++) {
-			if (Math3D.BoxOnPlaneSide(mins, maxs, frustum[i]) == 2)
+			if (Math3D.BoxOnPlaneSide(mins, maxs, GlState.frustum[i]) == 2)
 				return true;
 		}
 		return false;
@@ -255,11 +135,11 @@ public abstract class Main extends GlBase {
 	 * R_RotateForEntity
 	 */
 	final void R_RotateForEntity(EntityType e) {
-	  gl.glTranslatef(e.origin[0], e.origin[1], e.origin[2]);
+	  GlState.gl.glTranslatef(e.origin[0], e.origin[1], e.origin[2]);
 
-	  gl.glRotatef(e.angles[1], 0, 0, 1);
-	  gl.glRotatef(-e.angles[0], 0, 1, 0);
-	  gl.glRotatef(-e.angles[2], 1, 0, 0);
+	  GlState.gl.glRotatef(e.angles[1], 0, 0, 1);
+	  GlState.gl.glRotatef(-e.angles[0], 0, 1, 0);
+	  GlState.gl.glRotatef(-e.angles[2], 1, 0, 0);
 	}
 
 	/*
@@ -270,8 +150,6 @@ public abstract class Main extends GlBase {
 	=============================================================
 	*/
 
-	// stack variable
-	private final float[] point = { 0, 0, 0 };
 	/**
 	 * R_DrawSpriteModel
 	 */
@@ -284,7 +162,7 @@ public abstract class Main extends GlBase {
 		// don't even bother culling, because it's just a single
 		// polygon without a surface cache
 
-		psprite = (QuakeFiles.dsprite_t) currentmodel.extradata;
+		psprite = (QuakeFiles.dsprite_t) GlState.currentmodel.extradata;
 
 		e.frame %= psprite.numframes;
 
@@ -294,11 +172,11 @@ public abstract class Main extends GlBase {
 			alpha = e.alpha;
 
 		if (alpha != 1.0F)
-		  gl.glEnable(GlAdapter.GL_BLEND);
+		  GlState.gl.glEnable(GlAdapter.GL_BLEND);
 
-		gl.glColor4f(1, 1, 1, alpha);
+		GlState.gl.glColor4f(1, 1, 1, alpha);
 
-		GL_Bind(currentmodel.skins[e.frame].texnum);
+		Images.GL_Bind(GlState.currentmodel.skins[e.frame].texnum);
 
 		GL_TexEnv(GlAdapter.GL_MODULATE);
 
@@ -307,118 +185,116 @@ public abstract class Main extends GlBase {
 //		else
 //		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
-		gl.glBegin(GlAdapter._GL_QUADS);
+		GlState.gl.glBegin(GlAdapter._GL_QUADS);
 
-		gl.glTexCoord2f(0, 1);
-		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
-		Math3D.VectorMA(point, -frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		GlState.gl.glTexCoord2f(0, 1);
+		Math3D.VectorMA(e.origin, -frame.origin_y, GlState.vup, GlState.point);
+		Math3D.VectorMA(GlState.point, -frame.origin_x, GlState.vright, GlState.point);
+		GlState.gl.glVertex3f(GlState.point[0], GlState.point[1], GlState.point[2]);
 
-		gl.glTexCoord2f(0, 0);
-		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
-		Math3D.VectorMA(point, -frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		GlState.gl.glTexCoord2f(0, 0);
+		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, GlState.vup, GlState.point);
+		Math3D.VectorMA(GlState.point, -frame.origin_x, GlState.vright, GlState.point);
+		GlState.gl.glVertex3f(GlState.point[0], GlState.point[1], GlState.point[2]);
 
-		gl.glTexCoord2f(1, 0);
-		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, vup, point);
-		Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		GlState.gl.glTexCoord2f(1, 0);
+		Math3D.VectorMA(e.origin, frame.height - frame.origin_y, GlState.vup, GlState.point);
+		Math3D.VectorMA(GlState.point, frame.width - frame.origin_x, GlState.vright, GlState.point);
+		GlState.gl.glVertex3f(GlState.point[0], GlState.point[1], GlState.point[2]);
 
-		gl.glTexCoord2f(1, 1);
-		Math3D.VectorMA(e.origin, -frame.origin_y, vup, point);
-		Math3D.VectorMA(point, frame.width - frame.origin_x, vright, point);
-		gl.glVertex3f(point[0], point[1], point[2]);
+		GlState.gl.glTexCoord2f(1, 1);
+		Math3D.VectorMA(e.origin, -frame.origin_y, GlState.vup, GlState.point);
+		Math3D.VectorMA(GlState.point, frame.width - frame.origin_x, GlState.vright, GlState.point);
+		GlState.gl.glVertex3f(GlState.point[0], GlState.point[1], GlState.point[2]);
 
-		gl.glEnd();
+		GlState.gl.glEnd();
 
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 		GL_TexEnv(GlAdapter.GL_REPLACE);
 
 		if (alpha != 1.0F)
-		  gl.glDisable(GlAdapter.GL_BLEND);
+		  GlState.gl.glDisable(GlAdapter.GL_BLEND);
 
-		gl.glColor4f(1, 1, 1, 1);
+		GlState.gl.glColor4f(1, 1, 1, 1);
 	}
 
 	// ==================================================================================
 
-	// stack variable
-	private final float[] shadelight = { 0, 0, 0 };
 	/**
 	 * R_DrawNullModel
 	*/
 	void R_DrawNullModel() {
-		if ((currententity.flags & Constants.RF_FULLBRIGHT) != 0) {
+		if ((GlState.currententity.flags & Constants.RF_FULLBRIGHT) != 0) {
 			// cwei wollte blau: shadelight[0] = shadelight[1] = shadelight[2] = 1.0F;
-			shadelight[0] = shadelight[1] = shadelight[2] = 0.0F;
-			shadelight[2] = 0.8F;
+			GlState.shadelight[0] = GlState.shadelight[1] = GlState.shadelight[2] = 0.0F;
+			GlState.shadelight[2] = 0.8F;
 		}
 		else {
-			R_LightPoint(currententity.origin, shadelight);
+			R_LightPoint(GlState.currententity.origin, GlState.shadelight);
 		}
 
-		gl.glPushMatrix();
-		R_RotateForEntity(currententity);
+		GlState.gl.glPushMatrix();
+		R_RotateForEntity(GlState.currententity);
 
-		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-		gl.glColor3f(shadelight[0], shadelight[1], shadelight[2]);
+		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glColor3f(GlState.shadelight[0], GlState.shadelight[1], GlState.shadelight[2]);
 
 		// this replaces the TRIANGLE_FAN
 		//glut.glutWireCube(gl, 20);
 
-		gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
-		gl.glVertex3f(0, 0, -16);
+		GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
+		GlState.gl.glVertex3f(0, 0, -16);
 		int i;
 		for (i=0 ; i<=4 ; i++) {
-		  gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
+		  GlState.gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
 		}
-		gl.glEnd();
+		GlState.gl.glEnd();
 		
-		gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
-		gl.glVertex3f (0, 0, 16);
+		GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
+		GlState.gl.glVertex3f (0, 0, 16);
 		for (i=4 ; i>=0 ; i--) {
-		  gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
+		  GlState.gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
 		}
-		gl.glEnd();
+		GlState.gl.glEnd();
 
 		
-		gl.glColor3f(1, 1, 1);
-		gl.glPopMatrix();
-		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glColor3f(1, 1, 1);
+		GlState.gl.glPopMatrix();
+		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 	}
 
 	/**
 	 * R_DrawEntitiesOnList
 	 */
 	void R_DrawEntitiesOnList() {
-		if (r_drawentities.value == 0.0f)
+		if (GlState.r_drawentities.value == 0.0f)
 			return;
 
 		// draw non-transparent first
 		int i;
-		for (i = 0; i < r_newrefdef.num_entities; i++) {
-			currententity = r_newrefdef.entities[i];
-			if ((currententity.flags & Constants.RF_TRANSLUCENT) != 0)
+		for (i = 0; i < GlState.r_newrefdef.num_entities; i++) {
+			GlState.currententity = GlState.r_newrefdef.entities[i];
+			if ((GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0)
 				continue; // solid
 
-			if ((currententity.flags & Constants.RF_BEAM) != 0) {
-				R_DrawBeam(currententity);
+			if ((GlState.currententity.flags & Constants.RF_BEAM) != 0) {
+				R_DrawBeam(GlState.currententity);
 			}
 			else {
-				currentmodel = currententity.model;
-				if (currentmodel == null) {
+				GlState.currentmodel = GlState.currententity.model;
+				if (GlState.currentmodel == null) {
 					R_DrawNullModel();
 					continue;
 				}
-				switch (currentmodel.type) {
+				switch (GlState.currentmodel.type) {
 					case GlConstants.mod_alias :
-						R_DrawAliasModel(currententity);
+						R_DrawAliasModel(GlState.currententity);
 						break;
 					case GlConstants.mod_brush :
-						R_DrawBrushModel(currententity);
+						R_DrawBrushModel(GlState.currententity);
 						break;
 					case GlConstants.mod_sprite :
-						R_DrawSpriteModel(currententity);
+						R_DrawSpriteModel(GlState.currententity);
 						break;
 					default :
 						Com.Error(Constants.ERR_DROP, "Bad modeltype");
@@ -428,31 +304,31 @@ public abstract class Main extends GlBase {
 		}
 		// draw transparent entities
 		// we could sort these if it ever becomes a problem...
-		gl.glDepthMask(false); // no z writes
-		for (i = 0; i < r_newrefdef.num_entities; i++) {
-			currententity = r_newrefdef.entities[i];
-			if ((currententity.flags & Constants.RF_TRANSLUCENT) == 0)
+		GlState.gl.glDepthMask(false); // no z writes
+		for (i = 0; i < GlState.r_newrefdef.num_entities; i++) {
+			GlState.currententity = GlState.r_newrefdef.entities[i];
+			if ((GlState.currententity.flags & Constants.RF_TRANSLUCENT) == 0)
 				continue; // solid
 
-			if ((currententity.flags & Constants.RF_BEAM) != 0) {
-				R_DrawBeam(currententity);
+			if ((GlState.currententity.flags & Constants.RF_BEAM) != 0) {
+				R_DrawBeam(GlState.currententity);
 			}
 			else {
-				currentmodel = currententity.model;
+				GlState.currentmodel = GlState.currententity.model;
 
-				if (currentmodel == null) {
+				if (GlState.currentmodel == null) {
 					R_DrawNullModel();
 					continue;
 				}
-				switch (currentmodel.type) {
+				switch (GlState.currentmodel.type) {
 					case GlConstants.mod_alias :
-						R_DrawAliasModel(currententity);
+						R_DrawAliasModel(GlState.currententity);
 						break;
 					case GlConstants.mod_brush :
-						R_DrawBrushModel(currententity);
+						R_DrawBrushModel(GlState.currententity);
 						break;
 					case GlConstants.mod_sprite :
-						R_DrawSpriteModel(currententity);
+						R_DrawSpriteModel(GlState.currententity);
 						break;
 					default :
 						Com.Error(Constants.ERR_DROP, "Bad modeltype");
@@ -460,27 +336,24 @@ public abstract class Main extends GlBase {
 				}
 			}
 		}
-		gl.glDepthMask(true); // back to writing
+		GlState.gl.glDepthMask(true); // back to writing
 	}
 	
-	// stack variable 
-	private final float[] up = { 0, 0, 0 };
-	private final float[] right = { 0, 0, 0 };
 	/**
 	 * GL_DrawParticles
 	 */
 	void GL_DrawParticles(int num_particles) {
 		float origin_x, origin_y, origin_z;
 
-		Math3D.VectorScale(vup, 1.5f, up);
-		Math3D.VectorScale(vright, 1.5f, right);
+		Math3D.VectorScale(GlState.vup, 1.5f, GlState.up);
+		Math3D.VectorScale(GlState.vright, 1.5f, GlState.right);
 		
-		GL_Bind(r_particletexture.texnum);
-		gl.glDepthMask(false); // no z buffering
-		gl.glEnable(GlAdapter.GL_BLEND);
+		Images.GL_Bind(GlState.r_particletexture.texnum);
+		GlState.gl.glDepthMask(false); // no z buffering
+		GlState.gl.glEnable(GlAdapter.GL_BLEND);
 		GL_TexEnv(GlAdapter.GL_MODULATE);
 		
-		gl.glBegin(GlAdapter.GL_TRIANGLES);
+		GlState.gl.glBegin(GlAdapter.GL_TRIANGLES);
 
 		FloatBuffer sourceVertices = Particles.vertexArray;
 		IntBuffer sourceColors = Particles.colorArray;
@@ -493,35 +366,35 @@ public abstract class Main extends GlBase {
 
 			// hack a scale up to keep particles from disapearing
 			scale =
-				(origin_x - r_origin[0]) * vpn[0]
-					+ (origin_y - r_origin[1]) * vpn[1]
-					+ (origin_z - r_origin[2]) * vpn[2];
+				(origin_x - GlState.r_origin[0]) * GlState.vpn[0]
+					+ (origin_y - GlState.r_origin[1]) * GlState.vpn[1]
+					+ (origin_z - GlState.r_origin[2]) * GlState.vpn[2];
 
 			scale = (scale < 20) ? 1 :  1 + scale * 0.004f;
 
 			color = sourceColors.get(i);
 		
-			gl.glColor4ub(
+			GlState.gl.glColor4ub(
 				(byte)((color) & 0xFF),
 				(byte)((color >> 8) & 0xFF),
 				(byte)((color >> 16) & 0xFF),
 				(byte)((color >>> 24))
 			);
 			// first vertex
-			gl.glTexCoord2f(0.0625f, 0.0625f);
-			gl.glVertex3f(origin_x, origin_y, origin_z);
+			GlState.gl.glTexCoord2f(0.0625f, 0.0625f);
+			GlState.gl.glVertex3f(origin_x, origin_y, origin_z);
 			// second vertex
-			gl.glTexCoord2f(1.0625f, 0.0625f);
-			gl.glVertex3f(origin_x + up[0] * scale, origin_y + up[1] * scale, origin_z + up[2] * scale);
+			GlState.gl.glTexCoord2f(1.0625f, 0.0625f);
+			GlState.gl.glVertex3f(origin_x + GlState.up[0] * scale, origin_y + GlState.up[1] * scale, origin_z + GlState.up[2] * scale);
 			// third vertex
-			gl.glTexCoord2f(0.0625f, 1.0625f);
-			gl.glVertex3f(origin_x + right[0] * scale, origin_y + right[1] * scale, origin_z + right[2] * scale);
+			GlState.gl.glTexCoord2f(0.0625f, 1.0625f);
+			GlState.gl.glVertex3f(origin_x + GlState.right[0] * scale, origin_y + GlState.right[1] * scale, origin_z + GlState.right[2] * scale);
 		}
-		gl.glEnd();
+		GlState.gl.glEnd();
 		
-		gl.glDisable(GlAdapter.GL_BLEND);
-		gl.glColor4f(1, 1, 1, 1);
-		gl.glDepthMask(true); // back to normal Z buffering
+		GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glColor4f(1, 1, 1, 1);
+		GlState.gl.glDepthMask(true); // back to normal Z buffering
 		GL_TexEnv(GlAdapter.GL_REPLACE);
 	}
 
@@ -530,31 +403,31 @@ public abstract class Main extends GlBase {
 	 */
 	void R_DrawParticles() {
 
-		if (gl_ext_pointparameters.value != 0.0f && qglPointParameterfEXT) {
+		if (GlState.gl_ext_pointparameters.value != 0.0f && GlState.qglPointParameterfEXT) {
 
 			//gl.glEnableClientState(GLAdapter.GL_VERTEX_ARRAY);
-		  gl.glVertexPointer(3, 0, Particles.vertexArray);
-		  gl.glEnableClientState(GlAdapter.GL_COLOR_ARRAY);
-		  gl.glColorPointer(4, true, 0, Particles.getColorAsByteBuffer());
+		  GlState.gl.glVertexPointer(3, 0, Particles.vertexArray);
+		  GlState.gl.glEnableClientState(GlAdapter.GL_COLOR_ARRAY);
+		  GlState.gl.glColorPointer(4, true, 0, Particles.getColorAsByteBuffer());
 			
-		  gl.glDepthMask(false);
-		  gl.glEnable(GlAdapter.GL_BLEND);
-		  gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-		  gl.glPointSize(gl_particle_size.value);
+		  GlState.gl.glDepthMask(false);
+		  GlState.gl.glEnable(GlAdapter.GL_BLEND);
+		  GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		  GlState.gl.glPointSize(GlState.gl_particle_size.value);
 			
-		  gl.glDrawArrays(GlAdapter.GL_POINTS, 0, r_newrefdef.num_particles);
+		  GlState.gl.glDrawArrays(GlAdapter.GL_POINTS, 0, GlState.r_newrefdef.num_particles);
 			
-		  gl.glDisableClientState(GlAdapter.GL_COLOR_ARRAY);
+		  GlState.gl.glDisableClientState(GlAdapter.GL_COLOR_ARRAY);
 			//gl.glDisableClientState(GLAdapter.GL_VERTEX_ARRAY);
 
-		  gl.glDisable(GlAdapter.GL_BLEND);
-		  gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		  gl.glDepthMask(true);
-		  gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		  GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		  GlState.gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		  GlState.gl.glDepthMask(true);
+		  GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 
 		}
 		else {
-			GL_DrawParticles(r_newrefdef.num_particles);
+			GL_DrawParticles(GlState.r_newrefdef.num_particles);
 		}
 	}
 
@@ -562,38 +435,38 @@ public abstract class Main extends GlBase {
 	 * R_PolyBlend
 	 */
 	void R_PolyBlend() {
-		if (gl_polyblend.value == 0.0f)
+		if (GlState.gl_polyblend.value == 0.0f)
 			return;
 
-		if (v_blend[3] == 0.0f)
+		if (GlState.v_blend[3] == 0.0f)
 			return;
 
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		gl.glEnable(GlAdapter.GL_BLEND);
-		gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glEnable(GlAdapter.GL_BLEND);
+		GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
+		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
 
-		gl.glLoadIdentity();
+		GlState.gl.glLoadIdentity();
 
 		// FIXME: get rid of these
-		gl.glRotatef(-90, 1, 0, 0); // put Z going up
-		gl.glRotatef(90, 0, 0, 1); // put Z going up
+		GlState.gl.glRotatef(-90, 1, 0, 0); // put Z going up
+		GlState.gl.glRotatef(90, 0, 0, 1); // put Z going up
 
-		gl.glColor4f(v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
+		GlState.gl.glColor4f(GlState.v_blend[0], GlState.v_blend[1], GlState.v_blend[2], GlState.v_blend[3]);
 
-		gl.glBegin(GlAdapter._GL_QUADS);
+		GlState.gl.glBegin(GlAdapter._GL_QUADS);
 
-		gl.glVertex3f(10, 100, 100);
-		gl.glVertex3f(10, -100, 100);
-		gl.glVertex3f(10, -100, -100);
-		gl.glVertex3f(10, 100, -100);
-		gl.glEnd();
+		GlState.gl.glVertex3f(10, 100, 100);
+		GlState.gl.glVertex3f(10, -100, 100);
+		GlState.gl.glVertex3f(10, -100, -100);
+		GlState.gl.glVertex3f(10, 100, -100);
+		GlState.gl.glEnd();
 
-		gl.glDisable(GlAdapter.GL_BLEND);
-		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
 //		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 
-		gl.glColor4f(1, 1, 1, 1);
+		GlState.gl.glColor4f(1, 1, 1, 1);
 	}
 
 	// =======================================================================
@@ -616,79 +489,77 @@ public abstract class Main extends GlBase {
 	 */
 	void R_SetFrustum() {
 		// rotate VPN right by FOV_X/2 degrees
-		Math3D.RotatePointAroundVector(frustum[0].normal, vup, vpn, - (90f - r_newrefdef.fov_x / 2f));
+		Math3D.RotatePointAroundVector(GlState.frustum[0].normal, GlState.vup, GlState.vpn, - (90f - GlState.r_newrefdef.fov_x / 2f));
 		// rotate VPN left by FOV_X/2 degrees
-		Math3D.RotatePointAroundVector(frustum[1].normal, vup, vpn, 90f - r_newrefdef.fov_x / 2f);
+		Math3D.RotatePointAroundVector(GlState.frustum[1].normal, GlState.vup, GlState.vpn, 90f - GlState.r_newrefdef.fov_x / 2f);
 		// rotate VPN up by FOV_X/2 degrees
-		Math3D.RotatePointAroundVector(frustum[2].normal, vright, vpn, 90f - r_newrefdef.fov_y / 2f);
+		Math3D.RotatePointAroundVector(GlState.frustum[2].normal, GlState.vright, GlState.vpn, 90f - GlState.r_newrefdef.fov_y / 2f);
 		// rotate VPN down by FOV_X/2 degrees
-		Math3D.RotatePointAroundVector(frustum[3].normal, vright, vpn, - (90f - r_newrefdef.fov_y / 2f));
+		Math3D.RotatePointAroundVector(GlState.frustum[3].normal, GlState.vright, GlState.vpn, - (90f - GlState.r_newrefdef.fov_y / 2f));
 
 		for (int i = 0; i < 4; i++) {
-			frustum[i].type = Constants.PLANE_ANYZ;
-			frustum[i].dist = Math3D.DotProduct(r_origin, frustum[i].normal);
-			frustum[i].signbits = (byte) SignbitsForPlane(frustum[i]);
+			GlState.frustum[i].type = Constants.PLANE_ANYZ;
+			GlState.frustum[i].dist = Math3D.DotProduct(GlState.r_origin, GlState.frustum[i].normal);
+			GlState.frustum[i].signbits = (byte) SignbitsForPlane(GlState.frustum[i]);
 		}
 	}
 
 	// =======================================================================
 
-	// stack variable
-	private final float[] temp = {0, 0, 0};
 	/**
 	 * R_SetupFrame
 	 */
 	void R_SetupFrame() {
-		r_framecount++;
+		GlState.r_framecount++;
 
 		//	build the transformation matrix for the given view angles
-		Math3D.VectorCopy(r_newrefdef.vieworg, r_origin);
+		Math3D.VectorCopy(GlState.r_newrefdef.vieworg, GlState.r_origin);
 
-		Math3D.AngleVectors(r_newrefdef.viewangles, vpn, vright, vup);
+		Math3D.AngleVectors(GlState.r_newrefdef.viewangles, GlState.vpn, GlState.vright, GlState.vup);
 
 		//	current viewcluster
 		ModelLeaf leaf;
-		if ((r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0) {
-			r_oldviewcluster = r_viewcluster;
-			r_oldviewcluster2 = r_viewcluster2;
-			leaf = Mod_PointInLeaf(r_origin, r_worldmodel);
-			r_viewcluster = r_viewcluster2 = leaf.cluster;
+		if ((GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0) {
+			GlState.r_oldviewcluster = GlState.r_viewcluster;
+			GlState.r_oldviewcluster2 = GlState.r_viewcluster2;
+			leaf = Mod_PointInLeaf(GlState.r_origin, GlState.r_worldmodel);
+			GlState.r_viewcluster = GlState.r_viewcluster2 = leaf.cluster;
 
 			// check above and below so crossing solid water doesn't draw wrong
 			if (leaf.contents == 0) { // look down a bit
-				Math3D.VectorCopy(r_origin, temp);
-				temp[2] -= 16;
-				leaf = Mod_PointInLeaf(temp, r_worldmodel);
-				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
-					r_viewcluster2 = leaf.cluster;
+				Math3D.VectorCopy(GlState.r_origin, GlState.temp);
+				GlState.temp[2] -= 16;
+				leaf = Mod_PointInLeaf(GlState.temp, GlState.r_worldmodel);
+				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != GlState.r_viewcluster2))
+					GlState.r_viewcluster2 = leaf.cluster;
 			}
 			else { // look up a bit
-				Math3D.VectorCopy(r_origin, temp);
-				temp[2] += 16;
-				leaf = Mod_PointInLeaf(temp, r_worldmodel);
-				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != r_viewcluster2))
-					r_viewcluster2 = leaf.cluster;
+				Math3D.VectorCopy(GlState.r_origin, GlState.temp);
+				GlState.temp[2] += 16;
+				leaf = Mod_PointInLeaf(GlState.temp, GlState.r_worldmodel);
+				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != GlState.r_viewcluster2))
+					GlState.r_viewcluster2 = leaf.cluster;
 			}
 		}
 
 		for (int i = 0; i < 4; i++)
-			v_blend[i] = r_newrefdef.blend[i];
+			GlState.v_blend[i] = GlState.r_newrefdef.blend[i];
 
-		c_brush_polys = 0;
-		c_alias_polys = 0;
+		GlState.c_brush_polys = 0;
+		GlState.c_alias_polys = 0;
 
 		// clear out the portion of the screen that the NOWORLDMODEL defines
-		if ((r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0) {
-		  gl.glEnable(GlAdapter.GL_SCISSOR_TEST);
-		  gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-		  gl.glScissor(
-				r_newrefdef.x,
-				vid.height - r_newrefdef.height - r_newrefdef.y,
-				r_newrefdef.width,
-				r_newrefdef.height);
-		  gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
-		  gl.glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
-		  gl.glDisable(GlAdapter.GL_SCISSOR_TEST);
+		if ((GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0) {
+		  GlState.gl.glEnable(GlAdapter.GL_SCISSOR_TEST);
+		  GlState.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+		  GlState.gl.glScissor(
+				GlState.r_newrefdef.x,
+				GlState.vid.height - GlState.r_newrefdef.height - GlState.r_newrefdef.y,
+				GlState.r_newrefdef.width,
+				GlState.r_newrefdef.height);
+		  GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
+		  GlState.gl.glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
+		  GlState.gl.glDisable(GlAdapter.GL_SCISSOR_TEST);
 		}
 	}
 
@@ -707,10 +578,10 @@ public abstract class Main extends GlBase {
 		double xmin = ymin * aspect;
 		double xmax = ymax * aspect;
 
-		xmin += - (2 * gl_state.camera_separation) / zNear;
-		xmax += - (2 * gl_state.camera_separation) / zNear;
+		xmin += - (2 * GlState.gl_state.camera_separation) / zNear;
+		xmax += - (2 * GlState.gl_state.camera_separation) / zNear;
 
-		gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+		GlState.gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
 	}
 
 	/**
@@ -722,90 +593,88 @@ public abstract class Main extends GlBase {
 		// set up viewport
 		//
 		//int x = (int) Math.floor(r_newrefdef.x * vid.width / vid.width);
-		int x = r_newrefdef.x;
+		int x = GlState.r_newrefdef.x;
 		//int x2 = (int) Math.ceil((r_newrefdef.x + r_newrefdef.width) * vid.width / vid.width);
-		int x2 = r_newrefdef.x + r_newrefdef.width;
+		int x2 = GlState.r_newrefdef.x + GlState.r_newrefdef.width;
 		//int y = (int) Math.floor(vid.height - r_newrefdef.y * vid.height / vid.height);
-		int y = vid.height - r_newrefdef.y;
+		int y = GlState.vid.height - GlState.r_newrefdef.y;
 		//int y2 = (int) Math.ceil(vid.height - (r_newrefdef.y + r_newrefdef.height) * vid.height / vid.height);
-		int y2 = vid.height - (r_newrefdef.y + r_newrefdef.height);
+		int y2 = GlState.vid.height - (GlState.r_newrefdef.y + GlState.r_newrefdef.height);
 
 		int w = x2 - x;
 		int h = y - y2;
 
-		gl.glViewport(x, y2, w, h);
+		GlState.gl.glViewport(x, y2, w, h);
 
 		//
 		// set up projection matrix
 		//
-		float screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
-		gl.glMatrixMode(GlAdapter.GL_PROJECTION);
-		gl.glLoadIdentity();
-		MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
+		float screenaspect = (float) GlState.r_newrefdef.width / GlState.r_newrefdef.height;
+		GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
+		GlState.gl.glLoadIdentity();
+		MYgluPerspective(GlState.r_newrefdef.fov_y, screenaspect, 4, 4096);
 
-		gl.glCullFace(GlAdapter.GL_FRONT);
+		GlState.gl.glCullFace(GlAdapter.GL_FRONT);
 
-		gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
-		gl.glLoadIdentity();
+		GlState.gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
+		GlState.gl.glLoadIdentity();
 
-		gl.glRotatef(-90, 1, 0, 0); // put Z going up
-		gl.glRotatef(90, 0, 0, 1); // put Z going up
-		gl.glRotatef(-r_newrefdef.viewangles[2], 1, 0, 0);
-		gl.glRotatef(-r_newrefdef.viewangles[0], 0, 1, 0);
-		gl.glRotatef(-r_newrefdef.viewangles[1], 0, 0, 1);
-		gl.glTranslatef(-r_newrefdef.vieworg[0], -r_newrefdef.vieworg[1], -r_newrefdef.vieworg[2]);
+		GlState.gl.glRotatef(-90, 1, 0, 0); // put Z going up
+		GlState.gl.glRotatef(90, 0, 0, 1); // put Z going up
+		GlState.gl.glRotatef(-GlState.r_newrefdef.viewangles[2], 1, 0, 0);
+		GlState.gl.glRotatef(-GlState.r_newrefdef.viewangles[0], 0, 1, 0);
+		GlState.gl.glRotatef(-GlState.r_newrefdef.viewangles[1], 0, 0, 1);
+		GlState.gl.glTranslatef(-GlState.r_newrefdef.vieworg[0], -GlState.r_newrefdef.vieworg[1], -GlState.r_newrefdef.vieworg[2]);
 
-		gl.glGetFloat(GlAdapter._GL_MODELVIEW_MATRIX, r_world_matrix);
-		r_world_matrix.clear();
+		GlState.gl.glGetFloat(GlAdapter._GL_MODELVIEW_MATRIX, GlState.r_world_matrix);
+		GlState.r_world_matrix.clear();
 
 		//
 		// set drawing parms
 		//
-		if (gl_cull.value != 0.0f)
-		  gl.glEnable(GlAdapter.GL_CULL_FACE);
+		if (GlState.gl_cull.value != 0.0f)
+		  GlState.gl.glEnable(GlAdapter.GL_CULL_FACE);
 		else
-		  gl.glDisable(GlAdapter.GL_CULL_FACE);
+		  GlState.gl.glDisable(GlAdapter.GL_CULL_FACE);
 
-		gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glDisable(GlAdapter.GL_BLEND);
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		gl.glEnable(GlAdapter.GL_DEPTH_TEST);
+		GlState.gl.glEnable(GlAdapter.GL_DEPTH_TEST);
 	}
-
-	int trickframe = 0;
 
 	/**
 	 * R_Clear
 	 */
 	void R_Clear() {
-		if (gl_ztrick.value != 0.0f) {
+		if (GlState.gl_ztrick.value != 0.0f) {
 
-			if (gl_clear.value != 0.0f) {
-			  gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
+			if (GlState.gl_clear.value != 0.0f) {
+			  GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
 			}
 
-			trickframe++;
-			if ((trickframe & 1) != 0) {
-				gldepthmin = 0;
-				gldepthmax = 0.49999f;
-				gl.glDepthFunc(GlAdapter.GL_LEQUAL);
+			GlState.trickframe++;
+			if ((GlState.trickframe & 1) != 0) {
+				GlState.gldepthmin = 0;
+				GlState.gldepthmax = 0.49999f;
+				GlState.gl.glDepthFunc(GlAdapter.GL_LEQUAL);
 			}
 			else {
-				gldepthmin = 1;
-				gldepthmax = 0.5f;
-				gl.glDepthFunc(GlAdapter.GL_GEQUAL);
+				GlState.gldepthmin = 1;
+				GlState.gldepthmax = 0.5f;
+				GlState.gl.glDepthFunc(GlAdapter.GL_GEQUAL);
 			}
 		}
 		else {
-			if (gl_clear.value != 0.0f)
-			  gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
+			if (GlState.gl_clear.value != 0.0f)
+			  GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
 			else
-			  gl.glClear(GlAdapter.GL_DEPTH_BUFFER_BIT);
+			  GlState.gl.glClear(GlAdapter.GL_DEPTH_BUFFER_BIT);
 
-			gldepthmin = 0;
-			gldepthmax = 1;
-			gl.glDepthFunc(GlAdapter.GL_LEQUAL);
+			GlState.gldepthmin = 0;
+			GlState.gldepthmax = 1;
+			GlState.gl.glDepthFunc(GlAdapter.GL_LEQUAL);
 		}
-		gl.glDepthRange(gldepthmin, gldepthmax);
+		GlState.gl.glDepthRange(GlState.gldepthmin, GlState.gldepthmax);
 	}
 
 	/**
@@ -821,28 +690,28 @@ public abstract class Main extends GlBase {
 	 */
 	void R_RenderView(RendererState fd) {
 
-		if (r_norefresh.value != 0.0f)
+		if (GlState.r_norefresh.value != 0.0f)
 			return;
 
-		r_newrefdef = fd;
+		GlState.r_newrefdef = fd;
 
 		// included by cwei
-		if (r_newrefdef == null) {
+		if (GlState.r_newrefdef == null) {
 			Com.Error(Constants.ERR_DROP, "R_RenderView: refdef_t fd is null");
 		}
 
-		if (r_worldmodel == null && (r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0)
+		if (GlState.r_worldmodel == null && (GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0)
 			Com.Error(Constants.ERR_DROP, "R_RenderView: NULL worldmodel");
 
-		if (r_speeds.value != 0.0f) {
-			c_brush_polys = 0;
-			c_alias_polys = 0;
+		if (GlState.r_speeds.value != 0.0f) {
+			GlState.c_brush_polys = 0;
+			GlState.c_alias_polys = 0;
 		}
 
 		R_PushDlights();
 
-		if (gl_finish.value != 0.0f)
-		  gl.glFinish();
+		if (GlState.gl_finish.value != 0.0f)
+		  GlState.gl.glFinish();
 
 		R_SetupFrame();
 
@@ -864,11 +733,11 @@ public abstract class Main extends GlBase {
 
 		R_Flash();
 
-		if (r_speeds.value != 0.0f) {
+		if (GlState.r_speeds.value != 0.0f) {
 			Window.Printf(
 				Constants.PRINT_ALL,
 				"%4i wpoly %4i epoly %i tex %i lmaps\n",
-				new Vargs(4).add(c_brush_polys).add(c_alias_polys).add(c_visible_textures).add(c_visible_lightmaps));
+				new Vargs(4).add(GlState.c_brush_polys).add(GlState.c_alias_polys).add(GlState.c_visible_textures).add(GlState.c_visible_lightmaps));
 		}
 	}
 
@@ -877,45 +746,43 @@ public abstract class Main extends GlBase {
 	 */
 	void R_SetGL2D() {
 		// set 2D virtual screen size
-	  gl.glViewport(0, 0, vid.width, vid.height);
-	  gl.glMatrixMode(GlAdapter.GL_PROJECTION);
-	  gl.glLoadIdentity();
-	  gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-	  gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
-	  gl.glLoadIdentity();
-	  gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-	  gl.glDisable(GlAdapter.GL_CULL_FACE);
-	  gl.glDisable(GlAdapter.GL_BLEND);
+	  GlState.gl.glViewport(0, 0, GlState.vid.width, GlState.vid.height);
+	  GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
+	  GlState.gl.glLoadIdentity();
+	  GlState.gl.glOrtho(0, GlState.vid.width, GlState.vid.height, 0, -99999, 99999);
+	  GlState.gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
+	  GlState.gl.glLoadIdentity();
+	  GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
+	  GlState.gl.glDisable(GlAdapter.GL_CULL_FACE);
+	  GlState.gl.glDisable(GlAdapter.GL_BLEND);
 //	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
-	  gl.glColor4f(1, 1, 1, 1);
+	  GlState.gl.glColor4f(1, 1, 1, 1);
 	}
 
-	// stack variable
-	private final float[] light = { 0, 0, 0 };
 	/**
 	 *	R_SetLightLevel
 	 */
 	void R_SetLightLevel() {
-		if ((r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0)
+		if ((GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0)
 			return;
 
 		// save off light value for server to look at (BIG HACK!)
 
-		R_LightPoint(r_newrefdef.vieworg, light);
+		R_LightPoint(GlState.r_newrefdef.vieworg, GlState.light);
 
 		// pick the greatest component, which should be the same
 		// as the mono value returned by software
-		if (light[0] > light[1]) {
-			if (light[0] > light[2])
-				r_lightlevel.value = 150 * light[0];
+		if (GlState.light[0] > GlState.light[1]) {
+			if (GlState.light[0] > GlState.light[2])
+				GlState.r_lightlevel.value = 150 * GlState.light[0];
 			else
-				r_lightlevel.value = 150 * light[2];
+				GlState.r_lightlevel.value = 150 * GlState.light[2];
 		}
 		else {
-			if (light[1] > light[2])
-				r_lightlevel.value = 150 * light[1];
+			if (GlState.light[1] > GlState.light[2])
+				GlState.r_lightlevel.value = 150 * GlState.light[1];
 			else
-				r_lightlevel.value = 150 * light[2];
+				GlState.r_lightlevel.value = 150 * GlState.light[2];
 		}
 	}
 
@@ -932,72 +799,72 @@ public abstract class Main extends GlBase {
 	 * R_Register
 	 */
 	protected void R_Register() {
-		r_lefthand = ConsoleVariables.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
-		r_norefresh = ConsoleVariables.Get("r_norefresh", "0", 0);
-		r_fullbright = ConsoleVariables.Get("r_fullbright", "0", 0);
-		r_drawentities = ConsoleVariables.Get("r_drawentities", "1", 0);
-		r_drawworld = ConsoleVariables.Get("r_drawworld", "1", 0);
-		r_novis = ConsoleVariables.Get("r_novis", "0", 0);
-		r_nocull = ConsoleVariables.Get("r_nocull", "0", 0);
-		r_lerpmodels = ConsoleVariables.Get("r_lerpmodels", "1", 0);
-		r_speeds = ConsoleVariables.Get("r_speeds", "0", 0);
+		GlState.r_lefthand = ConsoleVariables.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
+		GlState.r_norefresh = ConsoleVariables.Get("r_norefresh", "0", 0);
+		GlState.r_fullbright = ConsoleVariables.Get("r_fullbright", "0", 0);
+		GlState.r_drawentities = ConsoleVariables.Get("r_drawentities", "1", 0);
+		GlState.r_drawworld = ConsoleVariables.Get("r_drawworld", "1", 0);
+		GlState.r_novis = ConsoleVariables.Get("r_novis", "0", 0);
+		GlState.r_nocull = ConsoleVariables.Get("r_nocull", "0", 0);
+		GlState.r_lerpmodels = ConsoleVariables.Get("r_lerpmodels", "1", 0);
+		GlState.r_speeds = ConsoleVariables.Get("r_speeds", "0", 0);
 
-		r_lightlevel = ConsoleVariables.Get("r_lightlevel", "1", 0);
+		GlState.r_lightlevel = ConsoleVariables.Get("r_lightlevel", "1", 0);
 
-		gl_nosubimage = ConsoleVariables.Get("gl_nosubimage", "0", 0);
-		gl_allow_software = ConsoleVariables.Get("gl_allow_software", "0", 0);
+		GlState.gl_nosubimage = ConsoleVariables.Get("gl_nosubimage", "0", 0);
+		GlState.gl_allow_software = ConsoleVariables.Get("gl_allow_software", "0", 0);
 
-		gl_particle_min_size = ConsoleVariables.Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
-		gl_particle_max_size = ConsoleVariables.Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
-		gl_particle_size = ConsoleVariables.Get("gl_particle_size", "40", CVAR_ARCHIVE);
-		gl_particle_att_a = ConsoleVariables.Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
-		gl_particle_att_b = ConsoleVariables.Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
-		gl_particle_att_c = ConsoleVariables.Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
+		GlState.gl_particle_min_size = ConsoleVariables.Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
+		GlState.gl_particle_max_size = ConsoleVariables.Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
+		GlState.gl_particle_size = ConsoleVariables.Get("gl_particle_size", "40", CVAR_ARCHIVE);
+		GlState.gl_particle_att_a = ConsoleVariables.Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
+		GlState.gl_particle_att_b = ConsoleVariables.Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
+		GlState.gl_particle_att_c = ConsoleVariables.Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
 
-		gl_modulate = ConsoleVariables.Get("gl_modulate", "1.5", CVAR_ARCHIVE);
-		gl_log = ConsoleVariables.Get("gl_log", "0", 0);
-		gl_bitdepth = ConsoleVariables.Get("gl_bitdepth", "0", 0);
-		gl_mode = ConsoleVariables.Get("gl_mode", "3", CVAR_ARCHIVE); // 640x480
-		gl_lightmap = ConsoleVariables.Get("gl_lightmap", "0", 0);
-		gl_shadows = ConsoleVariables.Get("gl_shadows", "0", CVAR_ARCHIVE);
-		gl_dynamic = ConsoleVariables.Get("gl_dynamic", "1", 0);
-		gl_nobind = ConsoleVariables.Get("gl_nobind", "0", 0);
-		gl_round_down = ConsoleVariables.Get("gl_round_down", "1", 0);
-		gl_picmip = ConsoleVariables.Get("gl_picmip", "0", 0);
-		gl_skymip = ConsoleVariables.Get("gl_skymip", "0", 0);
-		gl_showtris = ConsoleVariables.Get("gl_showtris", "0", 0);
-		gl_ztrick = ConsoleVariables.Get("gl_ztrick", "0", 0);
-		gl_finish = ConsoleVariables.Get("gl_finish", "0", CVAR_ARCHIVE);
-		gl_clear = ConsoleVariables.Get("gl_clear", "0", 0);
-		gl_cull = ConsoleVariables.Get("gl_cull", "1", 0);
-		gl_polyblend = ConsoleVariables.Get("gl_polyblend", "1", 0);
-		gl_flashblend = ConsoleVariables.Get("gl_flashblend", "0", 0);
-		gl_playermip = ConsoleVariables.Get("gl_playermip", "0", 0);
-		gl_monolightmap = ConsoleVariables.Get("gl_monolightmap", "0", 0);
-		gl_driver = ConsoleVariables.Get("gl_driver", "opengl32", CVAR_ARCHIVE);
-		gl_texturemode = ConsoleVariables.Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
-		gl_texturealphamode = ConsoleVariables.Get("gl_texturealphamode", "default", CVAR_ARCHIVE);
-		gl_texturesolidmode = ConsoleVariables.Get("gl_texturesolidmode", "default", CVAR_ARCHIVE);
-		gl_lockpvs = ConsoleVariables.Get("gl_lockpvs", "0", 0);
+		GlState.gl_modulate = ConsoleVariables.Get("gl_modulate", "1.5", CVAR_ARCHIVE);
+		GlState.gl_log = ConsoleVariables.Get("gl_log", "0", 0);
+		GlState.gl_bitdepth = ConsoleVariables.Get("gl_bitdepth", "0", 0);
+		GlState.gl_mode = ConsoleVariables.Get("gl_mode", "3", CVAR_ARCHIVE); // 640x480
+		GlState.gl_lightmap = ConsoleVariables.Get("gl_lightmap", "0", 0);
+		GlState.gl_shadows = ConsoleVariables.Get("gl_shadows", "0", CVAR_ARCHIVE);
+		GlState.gl_dynamic = ConsoleVariables.Get("gl_dynamic", "1", 0);
+		GlState.gl_nobind = ConsoleVariables.Get("gl_nobind", "0", 0);
+		GlState.gl_round_down = ConsoleVariables.Get("gl_round_down", "1", 0);
+		GlState.gl_picmip = ConsoleVariables.Get("gl_picmip", "0", 0);
+		GlState.gl_skymip = ConsoleVariables.Get("gl_skymip", "0", 0);
+		GlState.gl_showtris = ConsoleVariables.Get("gl_showtris", "0", 0);
+		GlState.gl_ztrick = ConsoleVariables.Get("gl_ztrick", "0", 0);
+		GlState.gl_finish = ConsoleVariables.Get("gl_finish", "0", CVAR_ARCHIVE);
+		GlState.gl_clear = ConsoleVariables.Get("gl_clear", "0", 0);
+		GlState.gl_cull = ConsoleVariables.Get("gl_cull", "1", 0);
+		GlState.gl_polyblend = ConsoleVariables.Get("gl_polyblend", "1", 0);
+		GlState.gl_flashblend = ConsoleVariables.Get("gl_flashblend", "0", 0);
+		GlState.gl_playermip = ConsoleVariables.Get("gl_playermip", "0", 0);
+		GlState.gl_monolightmap = ConsoleVariables.Get("gl_monolightmap", "0", 0);
+		GlState.gl_driver = ConsoleVariables.Get("gl_driver", "opengl32", CVAR_ARCHIVE);
+		GlState.gl_texturemode = ConsoleVariables.Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
+		GlState.gl_texturealphamode = ConsoleVariables.Get("gl_texturealphamode", "default", CVAR_ARCHIVE);
+		GlState.gl_texturesolidmode = ConsoleVariables.Get("gl_texturesolidmode", "default", CVAR_ARCHIVE);
+		GlState.gl_lockpvs = ConsoleVariables.Get("gl_lockpvs", "0", 0);
 
-		gl_vertex_arrays = ConsoleVariables.Get("gl_vertex_arrays", "1", CVAR_ARCHIVE);
+		GlState.gl_vertex_arrays = ConsoleVariables.Get("gl_vertex_arrays", "1", CVAR_ARCHIVE);
 
-		gl_ext_swapinterval = ConsoleVariables.Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
-		gl_ext_palettedtexture = ConsoleVariables.Get("gl_ext_palettedtexture", "0", CVAR_ARCHIVE);
-		gl_ext_multitexture = ConsoleVariables.Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
-		gl_ext_pointparameters = ConsoleVariables.Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
-		gl_ext_compiled_vertex_array = ConsoleVariables.Get("gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE);
+		GlState.gl_ext_swapinterval = ConsoleVariables.Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
+		GlState.gl_ext_palettedtexture = ConsoleVariables.Get("gl_ext_palettedtexture", "0", CVAR_ARCHIVE);
+		GlState.gl_ext_multitexture = ConsoleVariables.Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
+		GlState.gl_ext_pointparameters = ConsoleVariables.Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
+		GlState.gl_ext_compiled_vertex_array = ConsoleVariables.Get("gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE);
 
-		gl_drawbuffer = ConsoleVariables.Get("gl_drawbuffer", "GL_BACK", 0);
-		gl_swapinterval = ConsoleVariables.Get("gl_swapinterval", "0", CVAR_ARCHIVE);
+		GlState.gl_drawbuffer = ConsoleVariables.Get("gl_drawbuffer", "GL_BACK", 0);
+		GlState.gl_swapinterval = ConsoleVariables.Get("gl_swapinterval", "0", CVAR_ARCHIVE);
 
-		gl_saturatelighting = ConsoleVariables.Get("gl_saturatelighting", "0", 0);
+		GlState.gl_saturatelighting = ConsoleVariables.Get("gl_saturatelighting", "0", 0);
 
-		gl_3dlabs_broken = ConsoleVariables.Get("gl_3dlabs_broken", "1", CVAR_ARCHIVE);
+		GlState.gl_3dlabs_broken = ConsoleVariables.Get("gl_3dlabs_broken", "1", CVAR_ARCHIVE);
 
-		vid_fullscreen = ConsoleVariables.Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-		vid_gamma = ConsoleVariables.Get("vid_gamma", "1.0", CVAR_ARCHIVE);
-		vid_ref = ConsoleVariables.Get("vid_ref", "lwjgl", CVAR_ARCHIVE);
+		GlState.vid_fullscreen = ConsoleVariables.Get("vid_fullscreen", "0", CVAR_ARCHIVE);
+		GlState.vid_gamma = ConsoleVariables.Get("vid_gamma", "1.0", CVAR_ARCHIVE);
+		GlState.vid_ref = ConsoleVariables.Get("vid_ref", "lwjgl", CVAR_ARCHIVE);
 
 		Commands.addCommand("imagelist", new ExecutableCommand() {
 			public void execute() {
@@ -1026,33 +893,33 @@ public abstract class Main extends GlBase {
 	 * R_SetMode
 	 */
 	protected boolean R_SetMode() {
-		boolean fullscreen = (vid_fullscreen.value > 0.0f);
+		boolean fullscreen = (GlState.vid_fullscreen.value > 0.0f);
 
-		vid_fullscreen.modified = false;
-		gl_mode.modified = false;
+		GlState.vid_fullscreen.modified = false;
+		GlState.gl_mode.modified = false;
 
-		Dimension dim = new Dimension(vid.width, vid.height);
+		Dimension dim = new Dimension(GlState.vid.width, GlState.vid.height);
 
 		int err; //  enum rserr_t
-		if ((err = GLimp_SetMode(dim, (int) gl_mode.value, fullscreen)) == rserr_ok) {
-			gl_state.prev_mode = (int) gl_mode.value;
+		if ((err = GLimp_SetMode(dim, (int) GlState.gl_mode.value, fullscreen)) == GlConstants.rserr_ok) {
+			GlState.gl_state.prev_mode = (int) GlState.gl_mode.value;
 		}
 		else {
-			if (err == rserr_invalid_fullscreen) {
+			if (err == GlConstants.rserr_invalid_fullscreen) {
 				ConsoleVariables.SetValue("vid_fullscreen", 0);
-				vid_fullscreen.modified = false;
+				GlState.vid_fullscreen.modified = false;
 				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
-				if ((err = GLimp_SetMode(dim, (int) gl_mode.value, false)) == rserr_ok)
+				if ((err = GLimp_SetMode(dim, (int) GlState.gl_mode.value, false)) == GlConstants.rserr_ok)
 					return true;
 			}
-			else if (err == rserr_invalid_mode) {
-				ConsoleVariables.SetValue("gl_mode", gl_state.prev_mode);
-				gl_mode.modified = false;
+			else if (err == GlConstants.rserr_invalid_mode) {
+				ConsoleVariables.SetValue("gl_mode", GlState.gl_state.prev_mode);
+				GlState.gl_mode.modified = false;
 				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
 			}
 
 			// try setting it back to something safe
-			if ((err = GLimp_SetMode(dim, gl_state.prev_mode, false)) != rserr_ok) {
+			if ((err = GLimp_SetMode(dim, GlState.gl_state.prev_mode, false)) != GlConstants.rserr_ok) {
 				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
 				return false;
 			}
@@ -1060,18 +927,16 @@ public abstract class Main extends GlBase {
 		return true;
 	}
 
-	float[] r_turbsin = new float[256];
-
 	/**
 	 * R_Init
 	 */
 	protected boolean R_Init(int vid_xpos, int vid_ypos) {
 
-		assert(Warp.SIN.length == 256) : "warpsin table bug";
+		assert(GlConstants.SIN.length == 256) : "warpsin table bug";
 
 		// fill r_turbsin
 		for (int j = 0; j < 256; j++) {
-			r_turbsin[j] = Warp.SIN[j] * 0.5f;
+			GlState.r_turbsin[j] = GlConstants.SIN[j] * 0.5f;
 		}
 
 		Window.Printf(Constants.PRINT_ALL, "ref_gl version: " + GlConstants.REF_VERSION + '\n');
@@ -1081,7 +946,7 @@ public abstract class Main extends GlBase {
 		R_Register();
 
 		// set our "safe" modes
-		gl_state.prev_mode = 3;
+		GlState.gl_state.prev_mode = 3;
 
 		// create the window and set up the context
 		if (!R_SetMode()) {
@@ -1095,12 +960,12 @@ public abstract class Main extends GlBase {
 	 * R_Init2
 	 */
 	protected boolean R_Init2() {
-		qglPointParameterfEXT = true;
-		qglActiveTextureARB = true;
-		GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
-		GL_TEXTURE1 = GlAdapter.GL_TEXTURE1;
+		GlState.qglPointParameterfEXT = true;
+		GlState.qglActiveTextureARB = true;
+		GlState.GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
+		GlState.GL_TEXTURE1 = GlAdapter.GL_TEXTURE1;
 
-		if (!(qglActiveTextureARB))
+		if (!(GlState.qglActiveTextureARB))
 			return false;
 
 		GL_SetDefaultState();
@@ -1110,12 +975,12 @@ public abstract class Main extends GlBase {
 		R_InitParticleTexture();
 		Draw_InitLocal();
 
-		int err = gl.glGetError();
+		int err = GlState.gl.glGetError();
 		if (err != GlAdapter.GL_NO_ERROR)
 			Window.Printf(
 				Constants.PRINT_ALL,
 				"glGetError() = 0x%x\n\t%s\n",
-				new Vargs(2).add(err).add("" + gl.glGetString(err)));
+				new Vargs(2).add(err).add("" + GlState.gl.glGetString(err)));
 
 		return true;
 	}
@@ -1144,12 +1009,12 @@ public abstract class Main extends GlBase {
 	 */
 	public final void BeginFrame(float camera_separation) {
 
-		gl_state.camera_separation = camera_separation;
+		GlState.gl_state.camera_separation = camera_separation;
 
 		/*
 		** change modes if necessary
 		*/
-		if (gl_mode.modified || vid_fullscreen.modified) {
+		if (GlState.gl_mode.modified || GlState.vid_fullscreen.modified) {
 			// FIXME: only restart if CDS is required
 			ConsoleVariable ref;
 
@@ -1157,12 +1022,12 @@ public abstract class Main extends GlBase {
 			ref.modified = true;
 		}
 
-		if (gl_log.modified) {
-			GLimp_EnableLogging((gl_log.value != 0.0f));
-			gl_log.modified = false;
+		if (GlState.gl_log.modified) {
+			GLimp_EnableLogging((GlState.gl_log.value != 0.0f));
+			GlState.gl_log.modified = false;
 		}
 
-		if (gl_log.value != 0.0f) {
+		if (GlState.gl_log.value != 0.0f) {
 			GLimp_LogNewFrame();
 		}
 
@@ -1170,8 +1035,8 @@ public abstract class Main extends GlBase {
 		** update 3Dfx gamma -- it is expected that a user will do a vid_restart
 		** after tweaking this value
 		*/
-		if (vid_gamma.modified) {
-			vid_gamma.modified = false;
+		if (GlState.vid_gamma.modified) {
+			GlState.vid_gamma.modified = false;
 		}
 
 		GLimp_BeginFrame(camera_separation);
@@ -1179,48 +1044,48 @@ public abstract class Main extends GlBase {
 		/*
 		** go into 2D mode
 		*/
-		gl.glViewport(0, 0, vid.width, vid.height);
-		gl.glMatrixMode(GlAdapter.GL_PROJECTION);
-		gl.glLoadIdentity();
-		gl.glOrtho(0, vid.width, vid.height, 0, -99999, 99999);
-		gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-		gl.glDisable(GlAdapter.GL_CULL_FACE);
-		gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glViewport(0, 0, GlState.vid.width, GlState.vid.height);
+		GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
+		GlState.gl.glLoadIdentity();
+		GlState.gl.glOrtho(0, GlState.vid.width, GlState.vid.height, 0, -99999, 99999);
+		GlState.gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
+		GlState.gl.glLoadIdentity();
+		GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
+		GlState.gl.glDisable(GlAdapter.GL_CULL_FACE);
+		GlState.gl.glDisable(GlAdapter.GL_BLEND);
 //		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
-		gl.glColor4f(1, 1, 1, 1);
+		GlState.gl.glColor4f(1, 1, 1, 1);
 
 		/*
 		** draw buffer stuff
 		*/
-		if (gl_drawbuffer.modified) {
-			gl_drawbuffer.modified = false;
+		if (GlState.gl_drawbuffer.modified) {
+			GlState.gl_drawbuffer.modified = false;
 
-			if (gl_state.camera_separation == 0 || !gl_state.stereo_enabled) {
-				if (gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
-				  gl.glDrawBuffer(GlAdapter.GL_FRONT);
+			if (GlState.camera_separation == 0 || !GlState.stereo_enabled) {
+				if (GlState.gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
+				  GlState.gl.glDrawBuffer(GlAdapter.GL_FRONT);
 				else
-				  gl.glDrawBuffer(GlAdapter.GL_BACK);
+				  GlState.gl.glDrawBuffer(GlAdapter.GL_BACK);
 			}
 		}
 
 		/*
 		** texturemode stuff
 		*/
-		if (gl_texturemode.modified) {
-			GL_TextureMode(gl_texturemode.string);
-			gl_texturemode.modified = false;
+		if (GlState.gl_texturemode.modified) {
+			GL_TextureMode(GlState.gl_texturemode.string);
+			GlState.gl_texturemode.modified = false;
 		}
 
-		if (gl_texturealphamode.modified) {
-			GL_TextureAlphaMode(gl_texturealphamode.string);
-			gl_texturealphamode.modified = false;
+		if (GlState.gl_texturealphamode.modified) {
+			GL_TextureAlphaMode(GlState.gl_texturealphamode.string);
+			GlState.gl_texturealphamode.modified = false;
 		}
 
-		if (gl_texturesolidmode.modified) {
-			GL_TextureSolidMode(gl_texturesolidmode.string);
-			gl_texturesolidmode.modified = false;
+		if (GlState.gl_texturesolidmode.modified) {
+			GL_TextureSolidMode(GlState.gl_texturesolidmode.string);
+			GlState.gl_texturesolidmode.modified = false;
 		}
 
 		/*
@@ -1233,8 +1098,6 @@ public abstract class Main extends GlBase {
 		//
 		R_Clear();
 	}
-
-	int[] r_rawpalette = new int[256];
 
 	/**
 	 * R_SetPalette
@@ -1252,68 +1115,57 @@ public abstract class Main extends GlBase {
 				color |= (palette[j++] & 0xFF) << 8;
 				color |= (palette[j++] & 0xFF) << 16;
 				color |= 0xFF000000;
-				r_rawpalette[i] = color;
+				GlState.r_rawpalette[i] = color;
 			}
 		}
 		else {
 			for (i = 0; i < 256; i++) {
-				r_rawpalette[i] = QuakeImage.PALETTE_ABGR[i] | 0xff000000;
+				GlState.r_rawpalette[i] = QuakeImage.PALETTE_ABGR[i] | 0xff000000;
 			}
 		}
-		GL_SetTexturePalette(r_rawpalette);
+		GL_SetTexturePalette(GlState.r_rawpalette);
 
-		gl.glClearColor(0, 0, 0, 0);
-		gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
-		gl.glClearColor(1f, 0f, 0.5f, 0.5f);
+		GlState.gl.glClearColor(0, 0, 0, 0);
+		GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
+		GlState.gl.glClearColor(1f, 0f, 0.5f, 0.5f);
 	}
 
-	static final int NUM_BEAM_SEGS = 6;
-	float[][] start_points = new float[NUM_BEAM_SEGS][3];
-	// array of vec3_t
-	float[][] end_points = new float[NUM_BEAM_SEGS][3]; // array of vec3_t
-
-	// stack variable
-	private final float[] perpvec = { 0, 0, 0 }; // vec3_t
-	private final float[] direction = { 0, 0, 0 }; // vec3_t
-	private final float[] normalized_direction = { 0, 0, 0 }; // vec3_t
-	private final float[] oldorigin = { 0, 0, 0 }; // vec3_t
-	private final float[] origin = { 0, 0, 0 }; // vec3_t
 	/**
 	 * R_DrawBeam
 	 */
 	void R_DrawBeam(EntityType e) {
-		oldorigin[0] = e.oldorigin[0];
-		oldorigin[1] = e.oldorigin[1];
-		oldorigin[2] = e.oldorigin[2];
+		GlState.oldorigin[0] = e.oldorigin[0];
+		GlState.oldorigin[1] = e.oldorigin[1];
+		GlState.oldorigin[2] = e.oldorigin[2];
 
-		origin[0] = e.origin[0];
-		origin[1] = e.origin[1];
-		origin[2] = e.origin[2];
+		GlState.origin[0] = e.origin[0];
+		GlState.origin[1] = e.origin[1];
+		GlState.origin[2] = e.origin[2];
 
-		normalized_direction[0] = direction[0] = oldorigin[0] - origin[0];
-		normalized_direction[1] = direction[1] = oldorigin[1] - origin[1];
-		normalized_direction[2] = direction[2] = oldorigin[2] - origin[2];
+		GlState.normalized_direction[0] = GlState.direction[0] = GlState.oldorigin[0] - GlState.origin[0];
+		GlState.normalized_direction[1] = GlState.direction[1] = GlState.oldorigin[1] - GlState.origin[1];
+		GlState.normalized_direction[2] = GlState.direction[2] = GlState.oldorigin[2] - GlState.origin[2];
 
-		if (Math3D.VectorNormalize(normalized_direction) == 0.0f)
+		if (Math3D.VectorNormalize(GlState.normalized_direction) == 0.0f)
 			return;
 
-		Math3D.PerpendicularVector(perpvec, normalized_direction);
-		Math3D.VectorScale(perpvec, e.frame / 2, perpvec);
+		Math3D.PerpendicularVector(GlState.perpvec, GlState.normalized_direction);
+		Math3D.VectorScale(GlState.perpvec, e.frame / 2, GlState.perpvec);
 
 		for (int i = 0; i < 6; i++) {
 			Math3D.RotatePointAroundVector(
-				start_points[i],
-				normalized_direction,
-				perpvec,
-				(360.0f / NUM_BEAM_SEGS) * i);
+				GlState.start_points[i],
+				GlState.normalized_direction,
+				GlState.perpvec,
+				(360.0f / GlConstants.NUM_BEAM_SEGS) * i);
 
-			Math3D.VectorAdd(start_points[i], origin, start_points[i]);
-			Math3D.VectorAdd(start_points[i], direction, end_points[i]);
+			Math3D.VectorAdd(GlState.start_points[i], GlState.origin, GlState.start_points[i]);
+			Math3D.VectorAdd(GlState.start_points[i], GlState.direction, GlState.end_points[i]);
 		}
 
-		gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-		gl.glEnable(GlAdapter.GL_BLEND);
-		gl.glDepthMask(false);
+		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glEnable(GlAdapter.GL_BLEND);
+		GlState.gl.glDepthMask(false);
 
 		float r = (QuakeImage.PALETTE_ABGR[e.skinnum & 0xFF]) & 0xFF;
 		float g = (QuakeImage.PALETTE_ABGR[e.skinnum & 0xFF] >> 8) & 0xFF;
@@ -1323,26 +1175,26 @@ public abstract class Main extends GlBase {
 		g *= 1 / 255.0f;
 		b *= 1 / 255.0f;
 
-		gl.glColor4f(r, g, b, e.alpha);
+		GlState.gl.glColor4f(r, g, b, e.alpha);
 
-		gl.glBegin(GlAdapter.GL_TRIANGLE_STRIP);
+		GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_STRIP);
 		
 		float[] v;
 		
-		for (int i = 0; i < NUM_BEAM_SEGS; i++) {
-			v = start_points[i];
-			gl.glVertex3f(v[0], v[1], v[2]);
-			v = end_points[i];
-			gl.glVertex3f(v[0], v[1], v[2]);
-			v = start_points[(i + 1) % NUM_BEAM_SEGS];
-			gl.glVertex3f(v[0], v[1], v[2]);
-			v = end_points[(i + 1) % NUM_BEAM_SEGS];
-			gl.glVertex3f(v[0], v[1], v[2]);
+		for (int i = 0; i < GlConstants.NUM_BEAM_SEGS; i++) {
+			v = GlState.start_points[i];
+			GlState.gl.glVertex3f(v[0], v[1], v[2]);
+			v = GlState.end_points[i];
+			GlState.gl.glVertex3f(v[0], v[1], v[2]);
+			v = GlState.start_points[(i + 1) % GlConstants.NUM_BEAM_SEGS];
+			GlState.gl.glVertex3f(v[0], v[1], v[2]);
+			v = GlState.end_points[(i + 1) % GlConstants.NUM_BEAM_SEGS];
+			GlState.gl.glVertex3f(v[0], v[1], v[2]);
 		}
-		gl.glEnd();
+		GlState.gl.glEnd();
 
-		gl.glEnable(GlAdapter.GL_TEXTURE_2D);
-		gl.glDisable(GlAdapter.GL_BLEND);
-		gl.glDepthMask(true);
+		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glDepthMask(true);
 	}
 }
