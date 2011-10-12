@@ -46,7 +46,7 @@ import com.googlecode.gwtquake.shared.util.Vec3Cache;
  *  
  * @author cwei
  */
-public abstract class Light extends Warp {
+public abstract class Light extends Models {
 	// r_light.c
 
 	

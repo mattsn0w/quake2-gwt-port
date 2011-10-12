@@ -40,7 +40,7 @@ import com.googlecode.gwtquake.shared.util.Vec3Cache;
  *  
  * @author cwei
  */
-public abstract class Warp extends Models {
+public class Warp  {
 	/**
 	 * BoundPoly
 	 * @param numverts
@@ -212,12 +212,12 @@ public abstract class Warp extends Models {
         //
         int numverts = 0;
         for (int i = 0; i < fa.numedges; i++) {
-            int lindex = loadmodel.surfedges[fa.firstedge + i];
+            int lindex = Models.loadmodel.surfedges[fa.firstedge + i];
 
             if (lindex > 0)
-                vec = loadmodel.vertexes[loadmodel.edges[lindex].v[0]].position;
+                vec = Models.loadmodel.vertexes[Models.loadmodel.edges[lindex].v[0]].position;
             else
-                vec = loadmodel.vertexes[loadmodel.edges[-lindex].v[1]].position;
+                vec = Models.loadmodel.vertexes[Models.loadmodel.edges[-lindex].v[1]].position;
             Math3D.VectorCopy(vec, verts[numverts]);
             numverts++;
         }
@@ -605,7 +605,7 @@ public abstract class Warp extends Models {
 			|| skymins[1][i] >= skymaxs[1][i])
 				continue;
 
-			GL_Bind(GlState.sky_images[skytexorder[i]].texnum);
+			Images.GL_Bind(GlState.sky_images[skytexorder[i]].texnum);
 			
 			GlState.gl.glBegin(GlAdapter._GL_QUADS);
 			MakeSkyVec(skymins[0][i], skymins[1][i], i);
@@ -646,7 +646,7 @@ public abstract class Warp extends Models {
 
 //			gl.log("loadSky:" + pathname);
 			
-			GlState.sky_images[i] = GL_FindImage(pathname, QuakeImage.it_sky);
+			GlState.sky_images[i] = Images.GL_FindImage(pathname, QuakeImage.it_sky);
 
 			if (GlState.sky_images[i] == null)
 				GlState.sky_images[i] = GlState.r_notexture;

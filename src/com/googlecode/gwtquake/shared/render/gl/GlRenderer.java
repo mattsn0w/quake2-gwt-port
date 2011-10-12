@@ -97,7 +97,7 @@ public abstract class GlRenderer extends Misc {
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#SetSky(java.lang.String, float, float[])
 	 */
 	public final void SetSky(String name, float rotate, float[] axis) {
-		R_SetSky(name, rotate, axis);
+		Warp.R_SetSky(name, rotate, axis);
 	}
 
 	/** 
