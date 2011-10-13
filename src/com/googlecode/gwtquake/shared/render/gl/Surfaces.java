@@ -54,7 +54,7 @@ import com.googlecode.gwtquake.shared.util.Math3D;
  *  
  * @author cwei
  */
-public abstract class Surfaces extends Drawing {
+public abstract class Surfaces  {
 
 	// GL_RSURF.C: surface-related refresh code
 	static float[] modelorg = {0, 0, 0};		// relative to viewpoint
@@ -106,8 +106,6 @@ public abstract class Surfaces extends Drawing {
 
 	static gllightmapstate_t gl_lms = new gllightmapstate_t();
 
-	// Model.java
-	abstract byte[] Mod_ClusterPVS(int cluster, RendererModel model);
 		
 	/*
 	=============================================================
@@ -121,7 +119,7 @@ public abstract class Surfaces extends Drawing {
 	 * R_TextureAnimation
 	 * Returns the proper texture for a given time and base texture
 	 */
-	ModelImage R_TextureAnimation(ModelTextureInfo tex)
+	static ModelImage R_TextureAnimation(ModelTextureInfo tex)
 	{
 		if (tex.next == null)
 			return tex.image;
@@ -139,7 +137,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * DrawGLPoly
 	 */
-	void DrawGLPoly(GlPolygon p)
+	static void DrawGLPoly(GlPolygon p)
 	{
 	  GlState.gl.glDrawArrays(GlAdapter._GL_POLYGON, p.pos, p.numverts);
 	}
@@ -148,7 +146,7 @@ public abstract class Surfaces extends Drawing {
 	 * DrawGLFlowingPoly
 	 * version that handles scrolling texture
 	 */
-	void DrawGLFlowingPoly(GlPolygon p)
+	static void DrawGLFlowingPoly(GlPolygon p)
 	{
 		float scroll = -64 * ( (GlState.r_newrefdef.time / 40.0f) - (int)(GlState.r_newrefdef.time / 40.0f) );
 		if(scroll == 0.0f)
@@ -161,7 +159,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * R_DrawTriangleOutlines
 	*/
-	void R_DrawTriangleOutlines()
+	static void R_DrawTriangleOutlines()
 	{
         if (GlState.gl_showtris.value == 0)
             return;
@@ -197,7 +195,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * R_RenderBrushPoly
 	 */
-	void R_RenderBrushPoly(ModelSurface fa)
+	static void R_RenderBrushPoly(ModelSurface fa)
 	{
 		GlState.c_brush_polys++;
 
@@ -205,23 +203,23 @@ public abstract class Surfaces extends Drawing {
 
 		if ((fa.flags & Constants.SURF_DRAWTURB) != 0)
 		{	
-			GL_Bind( image.texnum );
+			Images.GL_Bind( image.texnum );
 
 			// warp texture, no lightmaps
-			GL_TexEnv( GlAdapter.GL_MODULATE );
+			Images.GL_TexEnv( GlAdapter.GL_MODULATE );
 			GlState.gl.glColor4f( GlState.gl_state.inverse_intensity, 
 						GlState.gl_state.inverse_intensity,
 						GlState.gl_state.inverse_intensity,
 						1.0F );
 			Warp.EmitWaterPolys (fa);
-			GL_TexEnv( GlAdapter.GL_REPLACE );
+			Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 
 			return;
 		}
 		else
 		{
-			GL_Bind( image.texnum );
-			GL_TexEnv( GlAdapter.GL_REPLACE );
+		  Images.GL_Bind( image.texnum );
+		  Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 		}
 
 		//	  ======
@@ -277,7 +275,7 @@ public abstract class Surfaces extends Drawing {
 				Light.R_BuildLightMap( fa, temp2, smax);
 				Light.R_SetCacheState( fa );
 
-				GL_Bind( GlState.gl_state.lightmap_textures + fa.lightmaptexturenum );
+				Images.GL_Bind( GlState.gl_state.lightmap_textures + fa.lightmaptexturenum );
 
 				GlState.gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 0,
 								  fa.light_s, fa.light_t, 
@@ -308,7 +306,7 @@ public abstract class Surfaces extends Drawing {
 	 * The BSP tree is waled front to back, so unwinding the chain
 	 * of alpha_surfaces will draw back to front, giving proper ordering.
 	 */
-	void R_DrawAlphaSurfaces()
+	static void R_DrawAlphaSurfaces()
 	{
 		GlState.r_world_matrix.clear();
 		//
@@ -317,7 +315,7 @@ public abstract class Surfaces extends Drawing {
 		GlState.gl.glLoadMatrix(GlState.r_world_matrix);
 
 		GlState.gl.glEnable (GlAdapter.GL_BLEND);
-		GL_TexEnv(GlAdapter.GL_MODULATE );
+		Images.GL_TexEnv(GlAdapter.GL_MODULATE );
 		
 
 		// the textures are prescaled up for a better lighting range,
@@ -328,7 +326,7 @@ public abstract class Surfaces extends Drawing {
 
 		for (ModelSurface s = r_alpha_surfaces ; s != null ; s=s.texturechain)
 		{
-			GL_Bind(s.texinfo.image.texnum);
+		  Images.GL_Bind(s.texinfo.image.texnum);
 			GlState.c_brush_polys++;
 			if ((s.texinfo.flags & Constants.SURF_TRANS33) != 0)
 			  GlState.gl.glColor4f (intens, intens, intens, 0.33f);
@@ -344,14 +342,14 @@ public abstract class Surfaces extends Drawing {
 				DrawGLPoly(s.polys);
 		}
 
-		GL_TexEnv( GlAdapter.GL_REPLACE );
+		Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 		GlState.gl.glColor4f (1,1,1,1);
 		GlState.gl.glDisable (GlAdapter.GL_BLEND);
 
 		r_alpha_surfaces = null;
 	}
 
-	private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf) {
+	private static void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf) {
 	  int pos = buf.position();
 	  GlState.gl.glTexCoordPointer(2, byteStride, buf);
 	  GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
@@ -363,7 +361,7 @@ public abstract class Surfaces extends Drawing {
 	  buf.position(pos);
 	}
 
-	private void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf, int staticDrawIdV) {
+	private static void glInterleavedArraysT2F_V3F(int byteStride, FloatBuffer buf, int staticDrawIdV) {
 		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 		GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_0, 2, GlAdapter.GL_FLOAT, 
 		    false, byteStride, 0, buf, staticDrawIdV);
@@ -376,16 +374,16 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * DrawTextureChains
 	 */
-	void DrawTextureChains()
+	static void DrawTextureChains()
 	{
 		c_visible_textures = 0;
 
 		ModelSurface	s;
 		ModelImage image;
 		int i;
-		for (i = 0; i < numgltextures ; i++)
+		for (i = 0; i < Images.numgltextures ; i++)
 		{
-			image = gltextures[i];
+			image = Images.gltextures[i];
 
 			if (image.registration_sequence == 0)
 				continue;
@@ -400,10 +398,10 @@ public abstract class Surfaces extends Drawing {
 			}
 		}
 
-		GL_EnableMultitexture( false );
-		for (i = 0; i < numgltextures ; i++)
+		Images.GL_EnableMultitexture( false );
+		for (i = 0; i < Images.numgltextures ; i++)
 		{
-			image = gltextures[i];
+			image = Images.gltextures[i];
 
 			if (image.registration_sequence == 0)
 				continue;
@@ -420,17 +418,17 @@ public abstract class Surfaces extends Drawing {
 			image.texturechain = null;
 		}
 
-		GL_TexEnv( GlAdapter.GL_REPLACE );
+		Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 	}
 
 	// direct buffer
-	private final IntBuffer temp = Lib.newIntBuffer(128 * 128, ByteOrder.LITTLE_ENDIAN);
+	private static final IntBuffer temp = Lib.newIntBuffer(128 * 128, ByteOrder.LITTLE_ENDIAN);
 	
 	/**
 	 * GL_RenderLightmappedPoly
 	 * @param surf
 	 */
-	void GL_RenderLightmappedPoly( ModelSurface surf )
+	static void GL_RenderLightmappedPoly( ModelSurface surf )
 	{
 
 		// ersetzt goto
@@ -481,7 +479,7 @@ public abstract class Surfaces extends Drawing {
 			{
 				lmtex = 0;
 			}
-			GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
+			Images.GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
 			GlState.gl.glTexSubImage2D( GlAdapter.GL_TEXTURE_2D, 0,
 					  surf.light_s, surf.light_t, 
 					  smax, tmax, 
@@ -491,8 +489,8 @@ public abstract class Surfaces extends Drawing {
 		}
 			GlState.c_brush_polys++;
 
-			GL_MBind( GlState.GL_TEXTURE0, image.texnum );
-			GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
+			Images.GL_MBind( GlState.GL_TEXTURE0, image.texnum );
+			Images.GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
 
 			// ==========
 			//	  PGM
@@ -565,7 +563,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * R_DrawInlineBModel
 	 */
-	void R_DrawInlineBModel()
+	static void R_DrawInlineBModel()
 	{
 		// calculate dynamic lighting for bmodel
 		if ( GlState.gl_flashblend.value == 0 )
@@ -587,7 +585,7 @@ public abstract class Surfaces extends Drawing {
 		{
 		  GlState.gl.glEnable (GlAdapter.GL_BLEND);
 		  GlState.gl.glColor4f (1,1,1,0.25f);
-			GL_TexEnv( GlAdapter.GL_MODULATE );
+			Images.GL_TexEnv( GlAdapter.GL_MODULATE );
 		}
 
 		//
@@ -619,9 +617,9 @@ public abstract class Surfaces extends Drawing {
 				}
 				else
 				{
-					GL_EnableMultitexture( false );
+					Images.GL_EnableMultitexture( false );
 					R_RenderBrushPoly( psurf );
-					GL_EnableMultitexture( true );
+					Images.GL_EnableMultitexture( true );
 				}
 			}
 		}
@@ -629,21 +627,21 @@ public abstract class Surfaces extends Drawing {
 		if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 ) {
 		  GlState.gl.glDisable (GlAdapter.GL_BLEND);
 		  GlState.gl.glColor4f (1,1,1,1);
-			GL_TexEnv( GlAdapter.GL_REPLACE );
+			Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 		}
 	}
 
 	// stack variable
-	private final float[] mins = {0, 0, 0};
-	private final float[] maxs = {0, 0, 0};
-	private final float[] org = {0, 0, 0};
-	private final float[] forward = {0, 0, 0};
-	private final float[] right = {0, 0, 0};
-	private final float[] up = {0, 0, 0};
+	private static final float[] mins = {0, 0, 0};
+	private static final float[] maxs = {0, 0, 0};
+	private static final float[] org = {0, 0, 0};
+	private static final float[] forward = {0, 0, 0};
+	private static final float[] right = {0, 0, 0};
+	private static final float[] up = {0, 0, 0};
 	/**
 	 * R_DrawBrushModel
 	 */
-	void R_DrawBrushModel(EntityType e)
+	static void R_DrawBrushModel(EntityType e)
 	{
 		if (GlState.currentmodel.nummodelsurfaces == 0)
 			return;
@@ -668,7 +666,7 @@ public abstract class Surfaces extends Drawing {
 			Math3D.VectorAdd(e.origin, GlState.currentmodel.maxs, maxs);
 		}
 
-		if (R_CullBox(mins, maxs)) return;
+		if (Main.R_CullBox(mins, maxs)) return;
 
 		GlState.gl.glColor3f (1,1,1);
 		
@@ -691,16 +689,16 @@ public abstract class Surfaces extends Drawing {
 		
 		e.angles[0] = -e.angles[0];	// stupid quake bug
 		e.angles[2] = -e.angles[2];	// stupid quake bug
-		R_RotateForEntity(e);
+		Main.R_RotateForEntity(e);
 		e.angles[0] = -e.angles[0];	// stupid quake bug
 		e.angles[2] = -e.angles[2];	// stupid quake bug
 
-		GL_EnableMultitexture( true );
-		GL_SelectTexture(GlState.GL_TEXTURE0);
-		GL_TexEnv( GlAdapter.GL_REPLACE );
+		Images.GL_EnableMultitexture( true );
+		Images.GL_SelectTexture(GlState.GL_TEXTURE0);
+		Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 		glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
-		GL_SelectTexture(GlState.GL_TEXTURE1);
-		GL_TexEnv( GlAdapter.GL_MODULATE );
+		Images.GL_SelectTexture(GlState.GL_TEXTURE1);
+		Images.GL_TexEnv( GlAdapter.GL_MODULATE );
 //		gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE, globalPolygonTexCoord1Buf);
 		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 		GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, false, 
@@ -711,7 +709,7 @@ public abstract class Surfaces extends Drawing {
 		GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE1);
 		GlState.gl.glDisableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 
-		GL_EnableMultitexture( false );
+		Images.GL_EnableMultitexture( false );
 
 		GlState.gl.glPopMatrix();
 	}
@@ -727,7 +725,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * R_RecursiveWorldNode
 	 */
-	void R_RecursiveWorldNode (ModelNode node)
+	static void R_RecursiveWorldNode (ModelNode node)
 	{
 		if (node.contents == Constants.CONTENTS_SOLID)
 			return;		// solid
@@ -735,7 +733,7 @@ public abstract class Surfaces extends Drawing {
 		if (node.visframe != GlState.r_visframecount)
 			return;
 			
-		if (R_CullBox(node.mins, node.maxs))
+		if (Main.R_CullBox(node.mins, node.maxs))
 			return;
 	
 		int c;
@@ -831,7 +829,7 @@ public abstract class Surfaces extends Drawing {
 			{
 				if (  ( surf.flags & Constants.SURF_DRAWTURB) == 0 )
 				{
-					GL_RenderLightmappedPoly( surf );
+					Surfaces.GL_RenderLightmappedPoly( surf );
 				}
 				else
 				{
@@ -848,12 +846,12 @@ public abstract class Surfaces extends Drawing {
 		R_RecursiveWorldNode(node.children[1 - side]);
 	}
 
-	private final EntityType worldEntity = new EntityType();
+	private static final EntityType worldEntity = new EntityType();
 	
 	/**
 	 * R_DrawWorld
 	 */
-	void R_DrawWorld()
+	static void R_DrawWorld()
 	{
 		if (GlState.r_drawworld.value == 0)
 			return;
@@ -880,46 +878,46 @@ public abstract class Surfaces extends Drawing {
 		
 		Warp.R_ClearSkyBox();
 
-		GL_EnableMultitexture( true );
+		Images.GL_EnableMultitexture( true );
 
-		GL_SelectTexture( GlState.GL_TEXTURE0);
-		GL_TexEnv( GlAdapter.GL_REPLACE );
+		Images.GL_SelectTexture( GlState.GL_TEXTURE0);
+		Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 		
 		
 //		glInterleavedArraysT2F_V3F(Polygon.BYTE_STRIDE, globalPolygonInterleavedBuf);
         glInterleavedArraysT2F_V3F(GlPolygon.BYTE_STRIDE, globalPolygonInterleavedBuf, staticBufferId);
         
-		GL_SelectTexture( GlState.GL_TEXTURE1);
+		Images.GL_SelectTexture( GlState.GL_TEXTURE1);
 		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 		GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_1, 2, GlAdapter.GL_FLOAT, 
 		    false, GlPolygon.BYTE_STRIDE, 20, globalPolygonInterleavedBuf, staticBufferId);
 //		gl.glTexCoordPointer(2, Polygon.BYTE_STRIDE, globalPolygonTexCoord1Buf);
 
 		if ( GlState.gl_lightmap.value != 0)
-			GL_TexEnv( GlAdapter.GL_REPLACE );
+			Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 		else 
-			GL_TexEnv( GlAdapter.GL_MODULATE );
+			Images.GL_TexEnv( GlAdapter.GL_MODULATE );
 				
 		R_RecursiveWorldNode(GlState.r_worldmodel.nodes[0]); // root node
 
 		GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE1);
 		GlState.gl.glDisableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 
-		GL_EnableMultitexture( false );
+		Images.GL_EnableMultitexture( false );
 
 		DrawTextureChains();
 		Warp.R_DrawSkyBox();
 		R_DrawTriangleOutlines();
 	}
 
-	final byte[] fatvis = new byte[Constants.MAX_MAP_LEAFS / 8];
+	final static byte[] fatvis = new byte[Constants.MAX_MAP_LEAFS / 8];
 
 	/**
 	 * R_MarkLeaves
 	 * Mark the leaves and nodes that are in the PVS for the current
 	 * cluster
 	 */
-	void R_MarkLeaves()
+	static void R_MarkLeaves()
 	{
 		if (GlState.r_oldviewcluster == GlState.r_viewcluster && GlState.r_oldviewcluster2 == GlState.r_viewcluster2 && GlState.r_novis.value == 0 && GlState.r_viewcluster != -1)
 			return;
@@ -944,14 +942,14 @@ public abstract class Surfaces extends Drawing {
 			return;
 		}
 
-		byte[] vis = Mod_ClusterPVS(GlState.r_viewcluster, GlState.r_worldmodel);
+		byte[] vis = Models.Mod_ClusterPVS(GlState.r_viewcluster, GlState.r_worldmodel);
 		int c;
 		// may have to combine two clusters because of solid water boundaries
 		if (GlState.r_viewcluster2 != GlState.r_viewcluster)
 		{
 			// memcpy (fatvis, vis, (r_worldmodel.numleafs+7)/8);
 			System.arraycopy(vis, 0, fatvis, 0, (GlState.r_worldmodel.numleafs+7) >> 3);
-			vis = Mod_ClusterPVS(GlState.r_viewcluster2, GlState.r_worldmodel);
+			vis = Models.Mod_ClusterPVS(GlState.r_viewcluster2, GlState.r_worldmodel);
 			c = (GlState.r_worldmodel.numleafs + 31) >> 5;
 			c <<= 2;
 			for (int k=0 ; k<c ; k+=4) {
@@ -998,7 +996,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * LM_InitBlock
 	 */
-	void LM_InitBlock()
+	static void LM_InitBlock()
 	{
 		Arrays.fill(gl_lms.allocated, 0);
 	}
@@ -1007,11 +1005,11 @@ public abstract class Surfaces extends Drawing {
 	 * LM_UploadBlock
 	 * @param dynamic
 	 */
-	void LM_UploadBlock( boolean dynamic )
+	static void LM_UploadBlock( boolean dynamic )
 	{
 		int texture = ( dynamic ) ? 0 : gl_lms.current_lightmap_texture;
 
-		GL_Bind( GlState.gl_state.lightmap_textures + texture );
+		Images.GL_Bind( GlState.gl_state.lightmap_textures + texture );
 		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
 		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
 
@@ -1057,7 +1055,7 @@ public abstract class Surfaces extends Drawing {
 	 * @param pos
 	 * @return a texture number and the position inside it
 	 */
-	boolean LM_AllocBlock (int w, int h, pos_t pos)
+	static boolean LM_AllocBlock (int w, int h, Images.pos_t pos)
 	{
 		int best = BLOCK_HEIGHT;
 		int x = pos.x; 
@@ -1094,7 +1092,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * GL_BuildPolygonFromSurface
 	 */
-	void GL_BuildPolygonFromSurface(ModelSurface fa)
+	static void GL_BuildPolygonFromSurface(ModelSurface fa)
 	{
 		// reconstruct the polygon
 		ModelEdge[] pedges = GlState.currentmodel.edges;
@@ -1168,7 +1166,7 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * GL_CreateSurfaceLightmap
 	 */
-	void GL_CreateSurfaceLightmap(ModelSurface surf)
+	static void GL_CreateSurfaceLightmap(ModelSurface surf)
 	{
 		if ( (surf.flags & (Constants.SURF_DRAWSKY | Constants.SURF_DRAWTURB)) != 0)
 			return;
@@ -1176,13 +1174,13 @@ public abstract class Surfaces extends Drawing {
 		int smax = (surf.extents[0]>>4)+1;
 		int tmax = (surf.extents[1]>>4)+1;
 		
-		pos_t lightPos = new pos_t(surf.light_s, surf.light_t);
+		Images.pos_t lightPos = new Images.pos_t(surf.light_s, surf.light_t);
 
 		if ( !LM_AllocBlock( smax, tmax, lightPos ) )
 		{
 			LM_UploadBlock( false );
 			LM_InitBlock();
-			lightPos = new pos_t(surf.light_s, surf.light_t);
+			lightPos = new Images.pos_t(surf.light_s, surf.light_t);
 			if ( !LM_AllocBlock( smax, tmax, lightPos ) )
 			{
 				Com.Error( Constants.ERR_FATAL, "Consecutive calls to LM_AllocBlock(" + smax +"," + tmax +") failed\n");
@@ -1202,13 +1200,13 @@ public abstract class Surfaces extends Drawing {
 		Light.R_BuildLightMap(surf, base.slice(), BLOCK_WIDTH);
 	}
 
-	Lightstyle[] lightstyles;
-	private IntBuffer dummy;
+	static Lightstyle[] lightstyles;
+	static private IntBuffer dummy;
 
 	/**
 	 * GL_BeginBuildingLightmaps
 	 */
-	void GL_BeginBuildingLightmaps(RendererModel m)
+	static void GL_BeginBuildingLightmaps(RendererModel m)
 	{
 		GlState.gl.log("BeginBuildingLightmaps!");
 		
@@ -1228,8 +1226,8 @@ public abstract class Surfaces extends Drawing {
 
 		GlState.r_framecount = 1;		// no dlightcache
 
-		GL_EnableMultitexture( true );
-		GL_SelectTexture( GlState.GL_TEXTURE1);
+		Images.GL_EnableMultitexture( true );
+		Images.GL_SelectTexture( GlState.GL_TEXTURE1);
 
 		/*
 		** setup the base lightstyles so the lightmaps won't have to be regenerated
@@ -1269,14 +1267,14 @@ public abstract class Surfaces extends Drawing {
 		
 		if ( format == 'A' )
 		{
-			gl_lms.internal_format = gl_tex_alpha_format;
+			gl_lms.internal_format = Images.gl_tex_alpha_format;
 		}
 		/*
 		** try to do hacked colored lighting with a blended texture
 		*/
 		else if ( format == 'C' )
 		{
-			gl_lms.internal_format = gl_tex_alpha_format;
+			gl_lms.internal_format = Images.gl_tex_alpha_format;
 		}
 		else if ( format == 'I' )
 		{
@@ -1290,7 +1288,7 @@ public abstract class Surfaces extends Drawing {
 		}
 		else
 		{
-			gl_lms.internal_format = gl_tex_solid_format;
+			gl_lms.internal_format = Images.gl_tex_solid_format;
 		}
 
 		if (dummy == null) {
@@ -1303,7 +1301,7 @@ public abstract class Surfaces extends Drawing {
 		/*
 		** initialize the dynamic lightmap texture
 		*/
-		GL_Bind( GlState.gl_state.lightmap_textures + 0 );
+		Images.GL_Bind( GlState.gl_state.lightmap_textures + 0 );
 		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
 		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
 		GlState.gl.glTexImage2D( GlAdapter.GL_TEXTURE_2D, 
@@ -1319,10 +1317,10 @@ public abstract class Surfaces extends Drawing {
 	/**
 	 * GL_EndBuildingLightmaps
 	 */
-	void GL_EndBuildingLightmaps()
+	static void GL_EndBuildingLightmaps()
 	{
 		LM_UploadBlock( false );
-		GL_EnableMultitexture( false );
+		Images.GL_EnableMultitexture( false );
 	}
 	
 	/*
@@ -1359,7 +1357,7 @@ public abstract class Surfaces extends Drawing {
 //		
 //	}
 
-	protected void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {
+	protected static void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {
 		GlState.gl.log("debuglightmap");
 	 }
 	 

@@ -112,7 +112,7 @@ public abstract class Images extends Main {
 //      }
     }
 
-    void GL_EnableMultitexture(boolean enable) {
+    static void GL_EnableMultitexture(boolean enable) {
         if (enable) {
             GL_SelectTexture(GlState.GL_TEXTURE1);
             GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
@@ -127,7 +127,7 @@ public abstract class Images extends Main {
         GL_TexEnv(GlAdapter.GL_REPLACE);
     }
 
-    void GL_SelectTexture(int texture /* GLenum */) {
+    static void GL_SelectTexture(int texture /* GLenum */) {
         int tmu;
 
         tmu = (texture == GlState.GL_TEXTURE0) ? 0 : 1;
@@ -166,7 +166,7 @@ public abstract class Images extends Main {
         GlState.gl.glBindTexture(GlAdapter.GL_TEXTURE_2D, texnum);
     }
 
-    void GL_MBind(int target /* GLenum */, int texnum) {
+    static void GL_MBind(int target /* GLenum */, int texnum) {
         GL_SelectTexture(target);
         if (target == GlState.GL_TEXTURE0) {
             if (GlState.gl_state.currenttextures[0] == texnum)
@@ -975,7 +975,7 @@ public abstract class Images extends Main {
     }
 
     
-    IntBuffer texnumBuffer;
+    static IntBuffer texnumBuffer;
     
     protected void init() {
         super.init();
@@ -991,7 +991,7 @@ public abstract class Images extends Main {
     will be freed.
     ================
     */
-    void GL_FreeUnusedImages() {
+    static void GL_FreeUnusedImages() {
 
         // never free r_notexture or particle texture
         GlState.r_notexture.registration_sequence = GlState.registration_sequence;
