@@ -56,25 +56,7 @@ import com.googlecode.gwtquake.shared.util.Vargs;
  * 
  * @author cwei
  */
-public abstract class Main extends GlBase {
-
-	//	=================
-	//  abstract methods
-	//	=================
-	protected abstract void Draw_GetPalette();
-
-
-	
-	abstract void GL_SetTexturePalette(int[] palette);
-	abstract void GL_InitImages();
-	
-	
-	abstract void Draw_InitLocal();
-	
-
-
-
-	abstract void GL_ShutdownImages();
+public class Main {
 
 
 	/*
@@ -85,12 +67,7 @@ public abstract class Main extends GlBase {
 	====================================================================
 	*/
 
-	protected void init() {
-		super.init();
-		GlState.r_world_matrix =GlState.gl.createFloatBuffer(16);
-		Mesh.init();
-		Models.init();
-	}
+	
 	
 	
 
@@ -137,7 +114,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_DrawSpriteModel
 	 */
-	void R_DrawSpriteModel(EntityType e) {
+	static void R_DrawSpriteModel(EntityType e) {
 		float alpha = 1.0F;
 
 		QuakeFiles.dsprframe_t frame;
@@ -207,7 +184,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_DrawNullModel
 	*/
-	void R_DrawNullModel() {
+	static void R_DrawNullModel() {
 		if ((GlState.currententity.flags & Constants.RF_FULLBRIGHT) != 0) {
 			// cwei wollte blau: shadelight[0] = shadelight[1] = shadelight[2] = 1.0F;
 			GlState.shadelight[0] = GlState.shadelight[1] = GlState.shadelight[2] = 0.0F;
@@ -250,7 +227,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_DrawEntitiesOnList
 	 */
-	void R_DrawEntitiesOnList() {
+	static void R_DrawEntitiesOnList() {
 		if (GlState.r_drawentities.value == 0.0f)
 			return;
 
@@ -326,7 +303,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * GL_DrawParticles
 	 */
-	void GL_DrawParticles(int num_particles) {
+	static void GL_DrawParticles(int num_particles) {
 		float origin_x, origin_y, origin_z;
 
 		Math3D.VectorScale(GlState.vup, 1.5f, GlState.up);
@@ -385,7 +362,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_DrawParticles
 	 */
-	void R_DrawParticles() {
+	static void R_DrawParticles() {
 
 		if (GlState.gl_ext_pointparameters.value != 0.0f && GlState.qglPointParameterfEXT) {
 
@@ -418,7 +395,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_PolyBlend
 	 */
-	void R_PolyBlend() {
+	static void R_PolyBlend() {
 		if (GlState.gl_polyblend.value == 0.0f)
 			return;
 
@@ -458,7 +435,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * SignbitsForPlane
 	 */
-	int SignbitsForPlane(Plane out) {
+	static int SignbitsForPlane(Plane out) {
 		// for fast box on planeside test
 		int bits = 0;
 		for (int j = 0; j < 3; j++) {
@@ -471,7 +448,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_SetFrustum
 	 */
-	void R_SetFrustum() {
+	static void R_SetFrustum() {
 		// rotate VPN right by FOV_X/2 degrees
 		Math3D.RotatePointAroundVector(GlState.frustum[0].normal, GlState.vup, GlState.vpn, - (90f - GlState.r_newrefdef.fov_x / 2f));
 		// rotate VPN left by FOV_X/2 degrees
@@ -493,7 +470,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_SetupFrame
 	 */
-	void R_SetupFrame() {
+	static void R_SetupFrame() {
 		GlState.r_framecount++;
 
 		//	build the transformation matrix for the given view angles
@@ -571,7 +548,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_SetupGL
 	 */
-	void R_SetupGL() {
+	static void R_SetupGL() {
 
 		//
 		// set up viewport
@@ -629,7 +606,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_Clear
 	 */
-	void R_Clear() {
+	static void R_Clear() {
 		if (GlState.gl_ztrick.value != 0.0f) {
 
 			if (GlState.gl_clear.value != 0.0f) {
@@ -664,7 +641,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_Flash
 	 */
-	void R_Flash() {
+	static void R_Flash() {
 		R_PolyBlend();
 	}
 
@@ -672,7 +649,7 @@ public abstract class Main extends GlBase {
 	 * R_RenderView
 	 * r_newrefdef must be set before the first call
 	 */
-	void R_RenderView(RendererState fd) {
+	static void R_RenderView(RendererState fd) {
 
 		if (GlState.r_norefresh.value != 0.0f)
 			return;
@@ -728,7 +705,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_SetGL2D
 	 */
-	void R_SetGL2D() {
+	static void R_SetGL2D() {
 		// set 2D virtual screen size
 	  GlState.gl.glViewport(0, 0, GlState.vid.width, GlState.vid.height);
 	  GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
@@ -746,7 +723,7 @@ public abstract class Main extends GlBase {
 	/**
 	 *	R_SetLightLevel
 	 */
-	void R_SetLightLevel() {
+	static void R_SetLightLevel() {
 		if ((GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0)
 			return;
 
@@ -773,7 +750,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_RenderFrame
 	 */
-	protected void R_RenderFrame(RendererState fd) {
+	protected static void R_RenderFrame(RendererState fd) {
 		R_RenderView(fd);
 		R_SetLightLevel();
 		R_SetGL2D();
@@ -782,7 +759,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_Register
 	 */
-	protected void R_Register() {
+	protected static void R_Register() {
 		GlState.r_lefthand = ConsoleVariables.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
 		GlState.r_norefresh = ConsoleVariables.Get("r_norefresh", "0", 0);
 		GlState.r_fullbright = ConsoleVariables.Get("r_fullbright", "0", 0);
@@ -873,77 +850,12 @@ public abstract class Main extends GlBase {
 		});
 	}
 
-	/**
-	 * R_SetMode
-	 */
-	protected boolean R_SetMode() {
-		boolean fullscreen = (GlState.vid_fullscreen.value > 0.0f);
 
-		GlState.vid_fullscreen.modified = false;
-		GlState.gl_mode.modified = false;
-
-		Dimension dim = new Dimension(GlState.vid.width, GlState.vid.height);
-
-		int err; //  enum rserr_t
-		if ((err = GLimp_SetMode(dim, (int) GlState.gl_mode.value, fullscreen)) == GlConstants.rserr_ok) {
-			GlState.gl_state.prev_mode = (int) GlState.gl_mode.value;
-		}
-		else {
-			if (err == GlConstants.rserr_invalid_fullscreen) {
-				ConsoleVariables.SetValue("vid_fullscreen", 0);
-				GlState.vid_fullscreen.modified = false;
-				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n");
-				if ((err = GLimp_SetMode(dim, (int) GlState.gl_mode.value, false)) == GlConstants.rserr_ok)
-					return true;
-			}
-			else if (err == GlConstants.rserr_invalid_mode) {
-				ConsoleVariables.SetValue("gl_mode", GlState.gl_state.prev_mode);
-				GlState.gl_mode.modified = false;
-				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n");
-			}
-
-			// try setting it back to something safe
-			if ((err = GLimp_SetMode(dim, GlState.gl_state.prev_mode, false)) != GlConstants.rserr_ok) {
-				Window.Printf(Constants.PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n");
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * R_Init
-	 */
-	protected boolean R_Init(int vid_xpos, int vid_ypos) {
-
-		assert(GlConstants.SIN.length == 256) : "warpsin table bug";
-
-		// fill r_turbsin
-		for (int j = 0; j < 256; j++) {
-			GlState.r_turbsin[j] = GlConstants.SIN[j] * 0.5f;
-		}
-
-		Window.Printf(Constants.PRINT_ALL, "ref_gl version: " + GlConstants.REF_VERSION + '\n');
-
-		Draw_GetPalette();
-
-		R_Register();
-
-		// set our "safe" modes
-		GlState.gl_state.prev_mode = 3;
-
-		// create the window and set up the context
-		if (!R_SetMode()) {
-			Window.Printf(Constants.PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n");
-			return false;
-		}
-		return true;
-	}
-
+	
 	/**
 	 * R_Init2
 	 */
-	protected boolean R_Init2() {
+	static boolean R_Init2() {
 		GlState.qglPointParameterfEXT = true;
 		GlState.qglActiveTextureARB = true;
 		GlState.GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
@@ -954,10 +866,10 @@ public abstract class Main extends GlBase {
 
 		Misc.GL_SetDefaultState();
 
-		GL_InitImages();
+		Images.GL_InitImages();
 		Models.Mod_Init();
 		Misc.R_InitParticleTexture();
-		Draw_InitLocal();
+		Drawing.Draw_InitLocal();
 
 		int err = GlState.gl.glGetError();
 		if (err != GlAdapter.GL_NO_ERROR)
@@ -972,7 +884,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_Shutdown
 	 */
-	protected void R_Shutdown() {
+	protected static void R_Shutdown() {
 		Commands.RemoveCommand("modellist");
 		Commands.RemoveCommand("screenshot");
 		Commands.RemoveCommand("imagelist");
@@ -980,113 +892,19 @@ public abstract class Main extends GlBase {
 
 		Models.Mod_FreeAll();
 
-		GL_ShutdownImages();
+		Images.GL_ShutdownImages();
 
 		/*
 		 * shut down OS specific OpenGL stuff like contexts, etc.
 		 */
-		GLimp_Shutdown();
+		GlBase.GLimp_Shutdown();
 	}
 
-	/**
-	 * R_BeginFrame
-	 */
-	public final void BeginFrame(float camera_separation) {
-
-		GlState.gl_state.camera_separation = camera_separation;
-
-		/*
-		** change modes if necessary
-		*/
-		if (GlState.gl_mode.modified || GlState.vid_fullscreen.modified) {
-			// FIXME: only restart if CDS is required
-			ConsoleVariable ref;
-
-			ref = ConsoleVariables.Get("vid_ref", "lwjgl", 0);
-			ref.modified = true;
-		}
-
-		if (GlState.gl_log.modified) {
-			GLimp_EnableLogging((GlState.gl_log.value != 0.0f));
-			GlState.gl_log.modified = false;
-		}
-
-		if (GlState.gl_log.value != 0.0f) {
-			GLimp_LogNewFrame();
-		}
-
-		/*
-		** update 3Dfx gamma -- it is expected that a user will do a vid_restart
-		** after tweaking this value
-		*/
-		if (GlState.vid_gamma.modified) {
-			GlState.vid_gamma.modified = false;
-		}
-
-		GLimp_BeginFrame(camera_separation);
-
-		/*
-		** go into 2D mode
-		*/
-		GlState.gl.glViewport(0, 0, GlState.vid.width, GlState.vid.height);
-		GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
-		GlState.gl.glLoadIdentity();
-		GlState.gl.glOrtho(0, GlState.vid.width, GlState.vid.height, 0, -99999, 99999);
-		GlState.gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
-		GlState.gl.glLoadIdentity();
-		GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-		GlState.gl.glDisable(GlAdapter.GL_CULL_FACE);
-		GlState.gl.glDisable(GlAdapter.GL_BLEND);
-//		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
-		GlState.gl.glColor4f(1, 1, 1, 1);
-
-		/*
-		** draw buffer stuff
-		*/
-		if (GlState.gl_drawbuffer.modified) {
-			GlState.gl_drawbuffer.modified = false;
-
-			if (GlState.camera_separation == 0 || !GlState.stereo_enabled) {
-				if (GlState.gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
-				  GlState.gl.glDrawBuffer(GlAdapter.GL_FRONT);
-				else
-				  GlState.gl.glDrawBuffer(GlAdapter.GL_BACK);
-			}
-		}
-
-		/*
-		** texturemode stuff
-		*/
-		if (GlState.gl_texturemode.modified) {
-			Images.GL_TextureMode(GlState.gl_texturemode.string);
-			GlState.gl_texturemode.modified = false;
-		}
-
-		if (GlState.gl_texturealphamode.modified) {
-			Images.GL_TextureAlphaMode(GlState.gl_texturealphamode.string);
-			GlState.gl_texturealphamode.modified = false;
-		}
-
-		if (GlState.gl_texturesolidmode.modified) {
-			Images.GL_TextureSolidMode(GlState.gl_texturesolidmode.string);
-			GlState.gl_texturesolidmode.modified = false;
-		}
-
-		/*
-		** swapinterval stuff
-		*/
-		Misc.GL_UpdateSwapInterval();
-
-		//
-		// clear screen if desired
-		//
-		R_Clear();
-	}
-
+	
 	/**
 	 * R_SetPalette
 	 */
-	protected void R_SetPalette(byte[] palette) {
+	static void R_SetPalette(byte[] palette) {
 		// 256 RGB values (768 bytes)
 		// or null
 		int i;
@@ -1107,7 +925,7 @@ public abstract class Main extends GlBase {
 				GlState.r_rawpalette[i] = QuakeImage.PALETTE_ABGR[i] | 0xff000000;
 			}
 		}
-		GL_SetTexturePalette(GlState.r_rawpalette);
+		Images.GL_SetTexturePalette(GlState.r_rawpalette);
 
 		GlState.gl.glClearColor(0, 0, 0, 0);
 		GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
@@ -1117,7 +935,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_DrawBeam
 	 */
-	void R_DrawBeam(EntityType e) {
+	static void R_DrawBeam(EntityType e) {
 		GlState.oldorigin[0] = e.oldorigin[0];
 		GlState.oldorigin[1] = e.oldorigin[1];
 		GlState.oldorigin[2] = e.oldorigin[2];
