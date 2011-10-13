@@ -142,9 +142,9 @@ public abstract class Images extends Main {
         GlState.gl.glClientActiveTexture(texture);
     }
 
-    int[] lastmodes = { -1, -1 };
+    static int[] lastmodes = { -1, -1 };
 
-    void GL_TexEnv(int mode /* GLenum */
+    static void GL_TexEnv(int mode /* GLenum */
     ) {
 
         if (mode != lastmodes[GlState.gl_state.currenttmu]) {
@@ -245,7 +245,7 @@ public abstract class Images extends Main {
     GL_TextureMode
     ===============
     */
-    void GL_TextureMode(String string) {
+    static void GL_TextureMode(String string) {
 
         int i;
         for (i = 0; i < NUM_GL_MODES; i++) {
@@ -279,7 +279,7 @@ public abstract class Images extends Main {
     GL_TextureAlphaMode
     ===============
     */
-    void GL_TextureAlphaMode(String string) {
+    static void GL_TextureAlphaMode(String string) {
 
         int i;
         for (i = 0; i < NUM_GL_ALPHA_MODES; i++) {

@@ -64,18 +64,16 @@ public abstract class Main extends GlBase {
 	protected abstract void Draw_GetPalette();
 
 
-	abstract void GL_ScreenShot_f();
+	
 	abstract void GL_SetTexturePalette(int[] palette);
-	abstract void GL_Strings_f();
+
 
 	abstract void Mod_Modellist_f();
 	abstract ModelLeaf Mod_PointInLeaf(float[] point, RendererModel model);
 
-	abstract void GL_SetDefaultState();
 
 	abstract void GL_InitImages();
 	abstract void Mod_Init(); // Model.java
-	abstract void R_InitParticleTexture(); // MIsc.java
 	abstract void R_DrawAliasModel(EntityType e); // Mesh.java
 	abstract void R_DrawBrushModel(EntityType e); // Surf.java
 	abstract void Draw_InitLocal();
@@ -89,10 +87,7 @@ public abstract class Main extends GlBase {
 	abstract void Mod_FreeAll();
 
 	abstract void GL_ShutdownImages();
-	abstract void GL_TexEnv(int mode);
-	abstract void GL_TextureMode(String string);
-	abstract void GL_TextureAlphaMode(String string);
-	abstract void GL_UpdateSwapInterval();
+
 
 	/*
 	====================================================================
@@ -177,7 +172,7 @@ public abstract class Main extends GlBase {
 
 		Images.GL_Bind(GlState.currentmodel.skins[e.frame].texnum);
 
-		GL_TexEnv(GlAdapter.GL_MODULATE);
+		Images.GL_TexEnv(GlAdapter.GL_MODULATE);
 
 //		if (alpha == 1.0)
 //		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
@@ -209,7 +204,7 @@ public abstract class Main extends GlBase {
 		GlState.gl.glEnd();
 
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		GL_TexEnv(GlAdapter.GL_REPLACE);
+		Images.GL_TexEnv(GlAdapter.GL_REPLACE);
 
 		if (alpha != 1.0F)
 		  GlState.gl.glDisable(GlAdapter.GL_BLEND);
@@ -350,7 +345,7 @@ public abstract class Main extends GlBase {
 		Images.GL_Bind(GlState.r_particletexture.texnum);
 		GlState.gl.glDepthMask(false); // no z buffering
 		GlState.gl.glEnable(GlAdapter.GL_BLEND);
-		GL_TexEnv(GlAdapter.GL_MODULATE);
+		Images.GL_TexEnv(GlAdapter.GL_MODULATE);
 		
 		GlState.gl.glBegin(GlAdapter.GL_TRIANGLES);
 
@@ -394,7 +389,7 @@ public abstract class Main extends GlBase {
 		GlState.gl.glDisable(GlAdapter.GL_BLEND);
 		GlState.gl.glColor4f(1, 1, 1, 1);
 		GlState.gl.glDepthMask(true); // back to normal Z buffering
-		GL_TexEnv(GlAdapter.GL_REPLACE);
+		Images.GL_TexEnv(GlAdapter.GL_REPLACE);
 	}
 
 	/**
@@ -873,7 +868,7 @@ public abstract class Main extends GlBase {
 
 		Commands.addCommand("screenshot", new ExecutableCommand() {
 			public void execute() {
-				GL_ScreenShot_f();
+				Misc.GL_ScreenShot_f();
 			}
 		});
 		Commands.addCommand("modellist", new ExecutableCommand() {
@@ -883,7 +878,7 @@ public abstract class Main extends GlBase {
 		});
 		Commands.addCommand("gl_strings", new ExecutableCommand() {
 			public void execute() {
-				GL_Strings_f();
+				Misc.GL_Strings_f();
 			}
 		});
 	}
@@ -967,11 +962,11 @@ public abstract class Main extends GlBase {
 		if (!(GlState.qglActiveTextureARB))
 			return false;
 
-		GL_SetDefaultState();
+		Misc.GL_SetDefaultState();
 
 		GL_InitImages();
 		Mod_Init();
-		R_InitParticleTexture();
+		Misc.R_InitParticleTexture();
 		Draw_InitLocal();
 
 		int err = GlState.gl.glGetError();
@@ -1073,12 +1068,12 @@ public abstract class Main extends GlBase {
 		** texturemode stuff
 		*/
 		if (GlState.gl_texturemode.modified) {
-			GL_TextureMode(GlState.gl_texturemode.string);
+			Images.GL_TextureMode(GlState.gl_texturemode.string);
 			GlState.gl_texturemode.modified = false;
 		}
 
 		if (GlState.gl_texturealphamode.modified) {
-			GL_TextureAlphaMode(GlState.gl_texturealphamode.string);
+			Images.GL_TextureAlphaMode(GlState.gl_texturealphamode.string);
 			GlState.gl_texturealphamode.modified = false;
 		}
 
@@ -1090,7 +1085,7 @@ public abstract class Main extends GlBase {
 		/*
 		** swapinterval stuff
 		*/
-		GL_UpdateSwapInterval();
+		Misc.GL_UpdateSwapInterval();
 
 		//
 		// clear screen if desired

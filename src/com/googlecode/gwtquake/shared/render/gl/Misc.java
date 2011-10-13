@@ -38,9 +38,9 @@ import com.googlecode.gwtquake.shared.render.GlAdapter;
  *  
  * @author cwei
  */
-public abstract class Misc extends Mesh {
+public abstract class Misc {
 
-	void R_InitParticleTexture()
+	static void R_InitParticleTexture()
 	{
 		int		x,y;
 		byte[] data = new byte[8 * 8 * 4];
@@ -59,7 +59,7 @@ public abstract class Misc extends Mesh {
 
 			}
 		}
-		GlState.r_particletexture = GL_LoadPic("***particle***", data, 8, 8, QuakeImage.it_sprite, 32);
+		GlState.r_particletexture = Images.GL_LoadPic("***particle***", data, 8, 8, QuakeImage.it_sprite, 32);
 
 		//
 		// also use this for bad textures, but without alpha
@@ -74,7 +74,7 @@ public abstract class Misc extends Mesh {
 				data[y * 32 + x * 4 + 3] = (byte)255;
 			}
 		}
-		GlState.r_notexture = GL_LoadPic("***r_notexture***", data, 8, 8, QuakeImage.it_wall, 32);
+		GlState.r_notexture = Images.GL_LoadPic("***r_notexture***", data, 8, 8, QuakeImage.it_wall, 32);
 	}
 
 //	/* 
@@ -98,7 +98,7 @@ public abstract class Misc extends Mesh {
 	GL_ScreenShot_f
 	================== 
 	*/  
-	void GL_ScreenShot_f() {
+	static void GL_ScreenShot_f() {
 		throw new RuntimeException("ScreenShot currently unsupported");
 //	    StringBuffer sb = new StringBuffer(FileSystem.Gamedir() + "/scrshot/jake00.tga");
 //	    FileSystem.CreatePath(sb.toString());
@@ -172,7 +172,7 @@ public abstract class Misc extends Mesh {
 	/*
 	** GL_Strings_f
 	*/
-	void GL_Strings_f()	{
+	static void GL_Strings_f()	{
 	  /*
 		VID.Printf(Defines.PRINT_ALL, "GL_VENDOR: " + gl_config.vendor_string + '\n');
 		VID.Printf(Defines.PRINT_ALL, "GL_RENDERER: " + gl_config.renderer_string + '\n');
@@ -184,7 +184,7 @@ public abstract class Misc extends Mesh {
 	/*
 	** GL_SetDefaultState
 	*/
-	void GL_SetDefaultState()
+	static void GL_SetDefaultState()
 	{
 	  GlState.gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
 		//gl.glClearColor(0, 0, 0, 0); // replaced with black
@@ -203,19 +203,19 @@ public abstract class Misc extends Mesh {
 	  System.out.println("   gl.glPolygonMode (GLAdapter.GL_FRONT_AND_BACK, GLAdapter.GL_FILL);");
 	  GlState.gl.glShadeModel (GlAdapter.GL_FLAT);
 
-		GL_TextureMode( GlState.gl_texturemode.string );
-		GL_TextureAlphaMode( GlState.gl_texturealphamode.string );
-		GL_TextureSolidMode( GlState.gl_texturesolidmode.string );
+		Images.GL_TextureMode( GlState.gl_texturemode.string );
+		Images.GL_TextureAlphaMode( GlState.gl_texturealphamode.string );
+		Images.GL_TextureSolidMode( GlState.gl_texturesolidmode.string );
 
-		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, Images.gl_filter_min);
+		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, Images.gl_filter_max);
 
 		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_S, GlAdapter.GL_REPEAT);
 		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_T, GlAdapter.GL_REPEAT);
 
 		GlState.gl.glBlendFunc (GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
 
-		GL_TexEnv( GlAdapter.GL_REPLACE );
+		Images.GL_TexEnv( GlAdapter.GL_REPLACE );
 
 		if ( GlState.qglPointParameterfEXT )
 		{
@@ -248,7 +248,7 @@ public abstract class Misc extends Mesh {
 		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
 	}
 
-	void GL_UpdateSwapInterval()
+	static void GL_UpdateSwapInterval()
 	{
 		if ( GlState.gl_swapinterval.modified )
 		{
