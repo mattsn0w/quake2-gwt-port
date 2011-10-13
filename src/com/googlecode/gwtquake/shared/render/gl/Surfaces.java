@@ -108,12 +108,7 @@ public abstract class Surfaces extends Drawing {
 
 	// Model.java
 	abstract byte[] Mod_ClusterPVS(int cluster, RendererModel model);
-	// Warp.java
-	// Light.java
-	abstract void R_MarkLights (DynamicLightData light, int bit, ModelNode node);
-	abstract void R_SetCacheState( ModelSurface surf );
-	abstract void R_BuildLightMap(ModelSurface surf, IntBuffer dest, int stride);
-
+		
 	/*
 	=============================================================
 
@@ -279,8 +274,8 @@ public abstract class Surfaces extends Drawing {
 				smax = (fa.extents[0]>>4)+1;
 				tmax = (fa.extents[1]>>4)+1;
 
-				R_BuildLightMap( fa, temp2, smax);
-				R_SetCacheState( fa );
+				Light.R_BuildLightMap( fa, temp2, smax);
+				Light.R_SetCacheState( fa );
 
 				GL_Bind( GlState.gl_state.lightmap_textures + fa.lightmaptexturenum );
 
@@ -476,10 +471,10 @@ public abstract class Surfaces extends Drawing {
 			int smax = (surf.extents[0]>>4)+1;
 			int tmax = (surf.extents[1]>>4)+1;
 
-			R_BuildLightMap( surf, temp, smax);
+			Light.R_BuildLightMap( surf, temp, smax);
 			if (( (surf.styles[map] & 0xFF) >= 32 || surf.styles[map] == 0 ) && ( surf.dlightframe != GlState.r_framecount ) )
 			{
-				R_SetCacheState( surf );
+				Light.R_SetCacheState( surf );
 				lmtex = surf.lightmaptexturenum;
 			}
 			else
@@ -579,7 +574,7 @@ public abstract class Surfaces extends Drawing {
 			for (int k=0 ; k<GlState.r_newrefdef.num_dlights ; k++)
 			{
 				lt = GlState.r_newrefdef.dlights[k];
-				R_MarkLights(lt, 1<<k, GlState.currentmodel.nodes[GlState.currentmodel.firstnode]);
+				Light.R_MarkLights(lt, 1<<k, GlState.currentmodel.nodes[GlState.currentmodel.firstnode]);
 			}
 		}
 
@@ -1203,8 +1198,8 @@ public abstract class Surfaces extends Drawing {
 		IntBuffer base = gl_lms.lightmap_buffer;
 		base.position(surf.light_t * BLOCK_WIDTH + surf.light_s);
 
-		R_SetCacheState( surf );
-		R_BuildLightMap(surf, base.slice(), BLOCK_WIDTH);
+		Light.R_SetCacheState( surf );
+		Light.R_BuildLightMap(surf, base.slice(), BLOCK_WIDTH);
 	}
 
 	Lightstyle[] lightstyles;

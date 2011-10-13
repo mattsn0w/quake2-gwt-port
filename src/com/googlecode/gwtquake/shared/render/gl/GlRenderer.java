@@ -38,7 +38,7 @@ import com.googlecode.gwtquake.shared.render.RendererModel;
  * 
  * @author dsanders/cwei
  */
-public abstract class GlRenderer extends Mesh {
+public abstract class GlRenderer extends Models {
 
 	// ============================================================================
 	// public interface for Renderer implementations

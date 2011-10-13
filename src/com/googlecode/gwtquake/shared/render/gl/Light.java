@@ -46,7 +46,7 @@ import com.googlecode.gwtquake.shared.util.Vec3Cache;
  *  
  * @author cwei
  */
-public abstract class Light extends Models {
+public class Light  {
 	// r_light.c
 
 	
@@ -62,11 +62,11 @@ public abstract class Light extends Models {
 	*/
 
 	// stack variable
-	private final float[] v = {0, 0, 0};
+	static private final float[] v = {0, 0, 0};
 	/**
 	 * R_RenderDlight
 	 */
-	void R_RenderDlight(DynamicLightData light)
+	static void R_RenderDlight(DynamicLightData light)
 	{
 		float rad = light.intensity * 0.35f;
 
@@ -97,7 +97,7 @@ public abstract class Light extends Models {
 	/**
 	 * R_RenderDlights
 	 */
-	void R_RenderDlights()
+	static void R_RenderDlights()
 	{
 		if (GlState.gl_flashblend.value == 0)
 			return;
@@ -134,7 +134,7 @@ public abstract class Light extends Models {
 	/**
 	 * R_MarkLights
 	 */
-	void R_MarkLights (DynamicLightData light, int bit, ModelNode node)
+	static void R_MarkLights (DynamicLightData light, int bit, ModelNode node)
 	{
 		if (node.contents != -1)
 			return;
@@ -189,7 +189,7 @@ public abstract class Light extends Models {
 	/**
 	 * R_PushDlights
 	 */
-	void R_PushDlights()
+	static void R_PushDlights()
 	{
 		if (GlState.gl_flashblend.value != 0)
 			return;
@@ -211,9 +211,9 @@ public abstract class Light extends Models {
 	=============================================================================
 	*/
 
-	float[] pointcolor = {0, 0, 0}; // vec3_t
-	Plane lightplane; // used as shadow plane
-	float[] lightspot = {0, 0, 0}; // vec3_t
+	static float[] pointcolor = {0, 0, 0}; // vec3_t
+	static Plane lightplane; // used as shadow plane
+	static float[] lightspot = {0, 0, 0}; // vec3_t
 
 	/**
 	 * RecursiveLightPoint
@@ -222,7 +222,7 @@ public abstract class Light extends Models {
 	 * @param end
 	 * @return
 	 */
-	int RecursiveLightPoint (ModelNode node, float[] start, float[] end)
+	static int RecursiveLightPoint (ModelNode node, float[] start, float[] end)
 	{
 		if (node.contents != -1)
 			return -1;		// didn't hit anything
@@ -328,11 +328,11 @@ public abstract class Light extends Models {
 	}
 
 	// stack variable
-	private final float[] end = {0, 0, 0};
+	static private final float[] end = {0, 0, 0};
 	/**
 	 * R_LightPoint
 	 */
-	void R_LightPoint (float[] p, float[] color)
+	static void R_LightPoint (float[] p, float[] color)
 	{
 		assert (p.length == 3) : "vec3_t bug";
 		assert (color.length == 3) : "rgb bug";
@@ -380,14 +380,14 @@ public abstract class Light extends Models {
 
 //	  ===================================================================
 
-	float[] s_blocklights = new float[34 * 34 * 3];
+	static float[] s_blocklights = new float[34 * 34 * 3];
 	
 // TODO sync with jogl renderer. hoz
-	private final float[] impact = {0, 0, 0};
+	static private final float[] impact = {0, 0, 0};
 	/**
 	 * R_AddDynamicLights
 	 */
-	void R_AddDynamicLights(ModelSurface surf)
+	static void R_AddDynamicLights(ModelSurface surf)
 	{
 		int sd, td;
 		float fdist, frad, fminlight;
@@ -461,7 +461,7 @@ public abstract class Light extends Models {
 	/**
 	 * R_SetCacheState
 	 */
-	void R_SetCacheState( ModelSurface surf )
+	static void R_SetCacheState( ModelSurface surf )
 	{
 		for (int maps = 0 ; maps < Constants.MAXLIGHTMAPS && surf.styles[maps] != (byte)255 ; maps++)
 		{
@@ -477,7 +477,7 @@ public abstract class Light extends Models {
 	 * 
 	 * Combine and scale multiple lightmaps into the floating format in blocklights
 	 */
-	void R_BuildLightMap(ModelSurface surf, IntBuffer dest, int stride)
+	static void R_BuildLightMap(ModelSurface surf, IntBuffer dest, int stride)
 	{
         int r, g, b, a, max;
         int i, j;

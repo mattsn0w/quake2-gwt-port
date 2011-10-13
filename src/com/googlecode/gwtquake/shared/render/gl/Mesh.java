@@ -42,7 +42,7 @@ import com.googlecode.gwtquake.shared.util.Math3D;
  *  
  * @author cwei
  */
-public abstract class Mesh extends Light {
+public class Mesh {
 
   static float[][] r_avertexnormals = Anorms.VERTEXNORMALS;
   static float[] shadevector = {0, 0, 0};
@@ -62,7 +62,7 @@ public abstract class Mesh extends Light {
    * @param frontv
    * @param backv
    */
-  void GL_LerpVerts(int nverts, int[] ov, int[] v, float[] move, float[] frontv, float[] backv )
+  static void GL_LerpVerts(int nverts, int[] ov, int[] v, float[] move, float[] frontv, float[] backv )
   {
     FloatBuffer lerp = vertexArrayBuf;
     lerp.limit((nverts << 2) - nverts); // nverts * 3
@@ -101,18 +101,16 @@ public abstract class Mesh extends Light {
   }
 
 
-  FloatBuffer colorArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 4);
-  FloatBuffer vertexArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 3);
-  FloatBuffer textureArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 2);
+  static FloatBuffer colorArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 4);
+  static FloatBuffer vertexArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 3);
+  static FloatBuffer textureArrayBuf;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 2);
 
-  FloatBuffer colorArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 4);
-  FloatBuffer vertexArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 3);
-  FloatBuffer textureArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 2);
+  static FloatBuffer colorArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 4);
+  static FloatBuffer vertexArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 3);
+  static FloatBuffer textureArrayBuf2;// = gl.createFloatBuffer(qfiles.MAX_VERTS * 2);
 
 
-  @Override
-  public void init() {
-    super.init();
+  static public void init() {
     colorArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 4);
     vertexArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 3);
     textureArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 2);
@@ -126,23 +124,23 @@ public abstract class Mesh extends Light {
 
   }
 
-  boolean isFilled = false;
-  float[] tmpVec = {0, 0, 0};
-  float[][] vectors = {
+  static boolean isFilled = false;
+  static float[] tmpVec = {0, 0, 0};
+  static float[][] vectors = {
       {0, 0, 0}, {0, 0, 0}, {0, 0, 0} // 3 mal vec3_t
   };
 
   // stack variable
-  private final float[] move = {0, 0, 0}; // vec3_t		
-  private final float[] frontv = {0, 0, 0}; // vec3_t
-  private final float[] backv = {0, 0, 0}; // vec3_t
+  static float[] move = {0, 0, 0}; // vec3_t		
+  static float[] frontv = {0, 0, 0}; // vec3_t
+  static float[] backv = {0, 0, 0}; // vec3_t
   /**
    * GL_DrawAliasFrameLerp
    * 
    * interpolates between two frames and origins
    * FIXME: batch lerp all vertexes
    */
-  void GL_DrawAliasFrameLerp(QuakeFiles.dmdl_t paliashdr, float backlerp)
+  static void GL_DrawAliasFrameLerp(QuakeFiles.dmdl_t paliashdr, float backlerp)
   {
     QuakeFiles.daliasframe_t frame = paliashdr.aliasFrames[GlState.currententity.frame];
 
@@ -292,7 +290,7 @@ public abstract class Mesh extends Light {
   /**
    * GL_DrawAliasFrameLerp with drawArrays
    */
-  void GL_DrawAliasFrameLerpDA(QuakeFiles.dmdl_t paliashdr, float backlerp)
+  static void GL_DrawAliasFrameLerpDA(QuakeFiles.dmdl_t paliashdr, float backlerp)
   {
     QuakeFiles.daliasframe_t frame = paliashdr.aliasFrames[GlState.currententity.frame];
 
@@ -448,13 +446,13 @@ public abstract class Mesh extends Light {
   }
 
 
-  private final float[] point = {0, 0, 0};
+  static private final float[] point = {0, 0, 0};
   /**
    * GL_DrawAliasShadow
    */
-  void GL_DrawAliasShadow(QuakeFiles.dmdl_t paliashdr, int posenum)
+  static void GL_DrawAliasShadow(QuakeFiles.dmdl_t paliashdr, int posenum)
   {
-    float lheight = GlState.currententity.origin[2] - lightspot[2];
+    float lheight = GlState.currententity.origin[2] - Light.lightspot[2];
     //		qfiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
     int[] order = paliashdr.glCmds;
     float height = -lheight + 1.0f;
@@ -501,12 +499,12 @@ public abstract class Mesh extends Light {
 
   //	TODO sync with jogl renderer. hoz
   // stack variable
-  private final float[] mins = { 0, 0, 0 };
-  private final float[] maxs = { 0, 0, 0 };
+  private static final float[] mins = { 0, 0, 0 };
+  private static final float[] maxs = { 0, 0, 0 };
   /**
    * R_CullAliasModel
    */
-  boolean R_CullAliasModel(EntityType e) {
+  static boolean R_CullAliasModel(EntityType e) {
     QuakeFiles.dmdl_t paliashdr = (QuakeFiles.dmdl_t) GlState.currentmodel.extradata;
 
     if ((e.frame >= paliashdr.num_frames) || (e.frame < 0)) {
@@ -614,7 +612,7 @@ public abstract class Mesh extends Light {
 
 
   // bounding box
-  float[][] bbox = {
+  static float[][] bbox = {
       {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0},
       {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}
   };
@@ -623,7 +621,7 @@ public abstract class Mesh extends Light {
   /**
    * R_DrawAliasModel
    */
-  void R_DrawAliasModel(EntityType e)
+  static void R_DrawAliasModel(EntityType e)
   {
     if ( ( e.flags & Constants.RF_WEAPONMODEL ) == 0)
     {
@@ -675,7 +673,7 @@ public abstract class Mesh extends Light {
     }
     else
     {
-      R_LightPoint (GlState.currententity.origin, shadelight);
+      Light.R_LightPoint (GlState.currententity.origin, shadelight);
 
       // player lighting hack for communication back to server
       // big hack!
@@ -779,7 +777,7 @@ public abstract class Mesh extends Light {
       GlState.gl.glPushMatrix();
       GlState.gl.glLoadIdentity();
       GlState.gl.glScalef( -1, 1, 1 );
-      MYgluPerspective( GlState.r_newrefdef.fov_y, ( float ) GlState.r_newrefdef.width / GlState.r_newrefdef.height,  4,  4096);
+      Main.MYgluPerspective( GlState.r_newrefdef.fov_y, ( float ) GlState.r_newrefdef.width / GlState.r_newrefdef.height,  4,  4096);
       GlState.gl.glMatrixMode( GlAdapter.GL_MODELVIEW );
 
       GlState.gl.glCullFace( GlAdapter.GL_BACK );
@@ -787,7 +785,7 @@ public abstract class Mesh extends Light {
 
     GlState.gl.glPushMatrix ();
     e.angles[GlConstants.PITCH] = -e.angles[GlConstants.PITCH];	// sigh.
-    R_RotateForEntity (e);
+    Main.R_RotateForEntity (e);
     e.angles[GlConstants.PITCH] = -e.angles[GlConstants.PITCH];	// sigh.
 
 
@@ -809,13 +807,13 @@ public abstract class Mesh extends Light {
     }
     if (skin == null)
       skin = GlState.r_notexture;	// fallback...
-    GL_Bind(skin.texnum);
+    Images.GL_Bind(skin.texnum);
 
     // draw it
 
     GlState.gl.glShadeModel (GlAdapter.GL_SMOOTH);
 
-    GL_TexEnv( GlAdapter.GL_MODULATE );
+    Images.GL_TexEnv( GlAdapter.GL_MODULATE );
     if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
     {
       GlState.gl.glEnable (GlAdapter.GL_BLEND);
@@ -843,7 +841,7 @@ public abstract class Mesh extends Light {
 
     GL_DrawAliasFrameLerpDA(paliashdr, GlState.currententity.backlerp);
 
-    GL_TexEnv( GlAdapter.GL_REPLACE );
+    Images.GL_TexEnv( GlAdapter.GL_REPLACE );
     GlState.gl.glShadeModel (GlAdapter.GL_FLAT);
 
     GlState.gl.glPopMatrix ();
@@ -867,7 +865,7 @@ public abstract class Mesh extends Light {
     if ( GlState.gl_shadows.value != 0.0f && (GlState.currententity.flags & (Constants.RF_TRANSLUCENT | Constants.RF_WEAPONMODEL)) == 0)
     {
       GlState.gl.glPushMatrix ();
-      R_RotateForEntity (e);
+      Main.R_RotateForEntity (e);
       GlState.gl.glDisable (GlAdapter.GL_TEXTURE_2D);
       GlState.gl.glEnable (GlAdapter.GL_BLEND);
       GlState.gl.glColor4f (0,0,0,0.5f);
