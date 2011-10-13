@@ -26,6 +26,7 @@ import com.googlecode.gwtquake.shared.client.Renderer;
 import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.render.gl.GlRenderer;
 import com.googlecode.gwtquake.shared.render.gl.GlState;
+import com.googlecode.gwtquake.shared.render.gl.Images;
 import com.googlecode.gwtquake.shared.render.gl.WireframeRenderer;
 import com.googlecode.gwtquake.shared.sys.KBD;
 
@@ -87,7 +88,7 @@ public class GwtWireframeGLRenderer extends GlRenderer implements Renderer {
   }-*/;
   
   public ModelImage GL_LoadNewImage(final String name, int type) {
-		final ModelImage image = GL_Find_free_image_t(name, type);
+		final ModelImage image = Images.GL_Find_free_image_t(name, type);
 
 		JsArrayInteger d = getImageSize(name);
 		if (d == null) {

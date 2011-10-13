@@ -38,7 +38,7 @@ import com.googlecode.gwtquake.shared.render.GlAdapter;
  *  
  * @author cwei
  */
-public abstract class Misc {
+public class Misc {
 
 	static void R_InitParticleTexture()
 	{

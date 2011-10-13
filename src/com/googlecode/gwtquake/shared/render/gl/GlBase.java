@@ -38,12 +38,7 @@ import com.googlecode.gwtquake.shared.render.DisplayMode;
  * 
  * @author dsanders/cwei
  */
-public abstract class GlBase {
-  // handles the post initialization with LWJGLRenderer
-	protected abstract boolean R_Init2();
-	
-	protected void init() {
-	}
+public  class GlBase {
 	
 	public static DisplayMode[] getModeList() {
 		DisplayMode[] modes = GlState.gl.getAvailableDisplayModes();
@@ -68,7 +63,7 @@ public abstract class GlBase {
 		return ma;
 	}
 	
-	private static DisplayMode findDisplayMode(Dimension dim) {
+	protected static DisplayMode findDisplayMode(Dimension dim) {
 		DisplayMode mode = null;
 		DisplayMode m = null;
 		DisplayMode[] modes = getModeList();
@@ -99,56 +94,7 @@ public abstract class GlBase {
 		return sb.toString();
 	}
 
-	/**
-	 * @param dim
-	 * @param mode
-	 * @param fullscreen
-	 * @return enum rserr_t
-	 */
-	public int GLimp_SetMode(Dimension dim, int mode, boolean fullscreen) {
-
-		
-		
-	  // TODO: jgw
-	  fullscreen = false;
-	  
-	  GlState.gl.log("GLimp_SetMode");
-
-	  Dimension newDim = new Dimension(dim.width, dim.height);
-
-		
-		/*
-		 * fullscreen handling
-		 */
-	  
-	  GlState.gl.log("determining old display mode");
-		if (GlState.oldDisplayMode == null) {
-			GlState.oldDisplayMode = GlState.gl.getDisplayMode();
-		}
-
-		// destroy the existing window
-		GLimp_Shutdown();
-
-
-		  GlState.gl.log("searching new display mode");
-		DisplayMode displayMode = findDisplayMode(newDim);
-		  GlState.gl.log("copying w/h");
-		newDim.width = displayMode.getWidth();
-		newDim.height = displayMode.getHeight();
-		
-		  GlState.gl.log("setting mode: " + displayMode);
-
-		GlState.gl.setDisplayMode(displayMode);
-
-		  GlState.gl.log("storing mode");
-		GlState.vid.width = newDim.width;
-		GlState.vid.height = newDim.height;
-		
-		// let the sound and input subsystems know about the new window
-		  GlState.gl.log("newWindow notification");
-		Window.NewWindow(GlState.vid.width, GlState.vid.height);
-		return GlConstants.rserr_ok;
-	}
+	
 
 	protected static void GLimp_Shutdown() {
 		GlState.gl.shutdow();
@@ -164,33 +110,27 @@ public abstract class GlBase {
 		return true;
 	}
 
-	protected static void GLimp_EndFrame() {
-		GlState.gl.swapBuffers();
-		// swap buffers
+	
 
-	}
-
-	protected void GLimp_BeginFrame(float camera_separation) {
+	static void GLimp_BeginFrame(float camera_separation) {
 		// do nothing
 	}
 
-	protected void GLimp_AppActivate(boolean activate) {
+	static void GLimp_AppActivate(boolean activate) {
 		// do nothing
 	}
 
-	protected void GLimp_EnableLogging(boolean enable) {
+	static void GLimp_EnableLogging(boolean enable) {
 		// do nothing
 	}
 
-	protected void GLimp_LogNewFrame() {
+	static void GLimp_LogNewFrame() {
 		// do nothing
 	}
 
-	/**
-	 * this is a hack for jogl renderers.
-	 * @param callback
-	 */
-	public final void updateScreen(ExecutableCommand callback) {
-		callback.execute();
-	}	
+	
+	
+	
+	
+
 }

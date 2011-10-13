@@ -45,6 +45,7 @@ import com.googlecode.gwtquake.shared.common.ResourceLoader;
 import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.render.gl.GlRenderer;
 import com.googlecode.gwtquake.shared.render.gl.GlState;
+import com.googlecode.gwtquake.shared.render.gl.Images;
 import com.googlecode.gwtquake.shared.sys.KBD;
 
 import static com.google.gwt.webgl.client.WebGLRenderingContext.*;
@@ -202,7 +203,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
   }-*/;
 	
 	public ModelImage GL_LoadNewImage(final String name, int type) {
-		final ModelImage image = GL_Find_free_image_t(name, type);
+		final ModelImage image = Images.GL_Find_free_image_t(name, type);
 
 		int cut = name.lastIndexOf('.');
 		String normalizedName = cut == -1 ? name : name.substring(0, cut);
@@ -308,7 +309,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 		boolean mipMap = image.type != com.googlecode.gwtquake.shared.common.QuakeImage.it_pic && 
 			image.type != com.googlecode.gwtquake.shared.common.QuakeImage.it_sky;
 		
-		GL_Bind(image.texnum);
+		Images.GL_Bind(image.texnum);
 
 		int p2w = 1 << ((int) Math.ceil(Math.log(image.width) / Math.log(2))); 
 		int p2h = 1 << ((int) Math.ceil(Math.log(image.height) / Math.log(2))); 
@@ -347,7 +348,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
     image.width = img.getWidth();
     image.upload_height = image.height;
     image.upload_width = image.width;
-    GL_Bind(image.texnum);
+    Images.GL_Bind(image.texnum);
     webGL.glTexImage2d(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, img);
     GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR);
     GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
@@ -376,7 +377,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 			pic[i] = (byte) pixels.get(i);
 		}
 		
-		GL_SetPicData(image, pic, w, h, 32);
+		Images.GL_SetPicData(image, pic, w, h, 32);
 	}
 	
 	 protected void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {

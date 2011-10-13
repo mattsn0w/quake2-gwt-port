@@ -51,7 +51,7 @@ import com.googlecode.gwtquake.shared.util.Vargs;
  * 
  * @author cwei
  */
-public abstract class Images extends Main {
+public abstract class Images {
 
     static int waitingForImages = 0;
     
@@ -91,7 +91,7 @@ public abstract class Images extends Main {
     }
     
 
-    void GL_SetTexturePalette(int[] palette) {
+    static void GL_SetTexturePalette(int[] palette) {
 
         assert(palette != null && palette.length == 256) : "int palette[256] bug";
 
@@ -153,7 +153,7 @@ public abstract class Images extends Main {
         }
     }
 
-    protected static void GL_Bind(int texnum) {
+    public static void GL_Bind(int texnum) {
 
         if ((GlState.gl_nobind.value != 0) && (draw_chars != null)) {
             // performance evaluation option
@@ -825,7 +825,7 @@ public abstract class Images extends Main {
                 width, height, mipmap);
     }
 
-    protected final static ModelImage GL_Find_free_image_t(String name, int type) {
+    public final static ModelImage GL_Find_free_image_t(String name, int type) {
         ModelImage image;
         int i;
 
@@ -866,7 +866,7 @@ public abstract class Images extends Main {
         return image;
     }
         
-    protected static void GL_SetPicData(ModelImage image, byte[] pic, int width, int height, int bits) {   
+    public static void GL_SetPicData(ModelImage image, byte[] pic, int width, int height, int bits) {   
         image.width = width;
         image.height = height;
         image.complete = true;
@@ -970,15 +970,14 @@ public abstract class Images extends Main {
     R_RegisterSkin
     ===============
     */
-    protected ModelImage R_RegisterSkin(String name) {
+    protected static ModelImage R_RegisterSkin(String name) {
         return GL_FindImage(name, QuakeImage.it_skin);
     }
 
     
     static IntBuffer texnumBuffer;
     
-    protected void init() {
-        super.init();
+    static void init() {
 //      paletted_texture = gl.createByteBuffer(256*256);
         texnumBuffer=GlState.gl.createIntBuffer(1);
     }
@@ -1025,7 +1024,7 @@ public abstract class Images extends Main {
     Draw_GetPalette
     ===============
     */
-    protected void Draw_GetPalette() {
+    protected static void Draw_GetPalette() {
       // HACK(jgw): This used to load from pics/colormap.pcx, but it was a pain to
       // do this correctly without a sync load, and I see no evidence that this
       // colormap ever changes.
@@ -1038,7 +1037,7 @@ public abstract class Images extends Main {
     GL_InitImages
     ===============
     */
-    void GL_InitImages() {
+    static void GL_InitImages() {
         int i, j;
         float g = GlState.vid_gamma.value;
 
@@ -1082,7 +1081,7 @@ public abstract class Images extends Main {
     GL_ShutdownImages
     ===============
     */
-    void GL_ShutdownImages() {
+    static void GL_ShutdownImages() {
         ModelImage image;
         
         for (int i=0; i < numgltextures ; i++)
