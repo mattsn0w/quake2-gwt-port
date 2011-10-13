@@ -74,14 +74,13 @@ public abstract class Main extends GlBase {
 
 	abstract void GL_InitImages();
 	abstract void Mod_Init(); // Model.java
-	abstract void R_DrawAliasModel(EntityType e); // Mesh.java
+	
 	abstract void R_DrawBrushModel(EntityType e); // Surf.java
 	abstract void Draw_InitLocal();
-	abstract void R_LightPoint(float[] p, float[] color);
-	abstract void R_PushDlights();
+	
+
 	abstract void R_MarkLeaves();
 	abstract void R_DrawWorld();
-	abstract void R_RenderDlights();
 	abstract void R_DrawAlphaSurfaces();
 
 	abstract void Mod_FreeAll();
@@ -100,6 +99,7 @@ public abstract class Main extends GlBase {
 	protected void init() {
 		super.init();
 		GlState.r_world_matrix =GlState.gl.createFloatBuffer(16);
+		Mesh.init();
 	}
 	
 	
@@ -128,7 +128,7 @@ public abstract class Main extends GlBase {
 	/**
 	 * R_RotateForEntity
 	 */
-	final void R_RotateForEntity(EntityType e) {
+	static final void R_RotateForEntity(EntityType e) {
 	  GlState.gl.glTranslatef(e.origin[0], e.origin[1], e.origin[2]);
 
 	  GlState.gl.glRotatef(e.angles[1], 0, 0, 1);
@@ -224,7 +224,7 @@ public abstract class Main extends GlBase {
 			GlState.shadelight[2] = 0.8F;
 		}
 		else {
-			R_LightPoint(GlState.currententity.origin, GlState.shadelight);
+			Light.R_LightPoint(GlState.currententity.origin, GlState.shadelight);
 		}
 
 		GlState.gl.glPushMatrix();
@@ -282,7 +282,7 @@ public abstract class Main extends GlBase {
 				}
 				switch (GlState.currentmodel.type) {
 					case GlConstants.mod_alias :
-						R_DrawAliasModel(GlState.currententity);
+						Mesh.R_DrawAliasModel(GlState.currententity);
 						break;
 					case GlConstants.mod_brush :
 						R_DrawBrushModel(GlState.currententity);
@@ -316,7 +316,7 @@ public abstract class Main extends GlBase {
 				}
 				switch (GlState.currentmodel.type) {
 					case GlConstants.mod_alias :
-						R_DrawAliasModel(GlState.currententity);
+						Mesh.R_DrawAliasModel(GlState.currententity);
 						break;
 					case GlConstants.mod_brush :
 						R_DrawBrushModel(GlState.currententity);
@@ -565,7 +565,7 @@ public abstract class Main extends GlBase {
 	 * @param zNear
 	 * @param zFar
 	 */
-	void MYgluPerspective(double fovy, double aspect, double zNear, double zFar) {
+	static void MYgluPerspective(double fovy, double aspect, double zNear, double zFar) {
 		double ymax = zNear * Math.tan(fovy * Math.PI / 360.0);
 		double ymin = -ymax;
 
@@ -702,7 +702,7 @@ public abstract class Main extends GlBase {
 			GlState.c_alias_polys = 0;
 		}
 
-		R_PushDlights();
+		Light.R_PushDlights();
 
 		if (GlState.gl_finish.value != 0.0f)
 		  GlState.gl.glFinish();
@@ -719,7 +719,7 @@ public abstract class Main extends GlBase {
 
 		R_DrawEntitiesOnList();
 
-		R_RenderDlights();
+		Light.R_RenderDlights();
 
 		R_DrawParticles();
 
@@ -762,7 +762,7 @@ public abstract class Main extends GlBase {
 
 		// save off light value for server to look at (BIG HACK!)
 
-		R_LightPoint(GlState.r_newrefdef.vieworg, GlState.light);
+		Light.R_LightPoint(GlState.r_newrefdef.vieworg, GlState.light);
 
 		// pick the greatest component, which should be the same
 		// as the mono value returned by software
