@@ -66,24 +66,13 @@ public abstract class Main extends GlBase {
 
 	
 	abstract void GL_SetTexturePalette(int[] palette);
-
-
-	abstract void Mod_Modellist_f();
-	abstract ModelLeaf Mod_PointInLeaf(float[] point, RendererModel model);
-
-
 	abstract void GL_InitImages();
-	abstract void Mod_Init(); // Model.java
 	
-	abstract void R_DrawBrushModel(EntityType e); // Surf.java
+	
 	abstract void Draw_InitLocal();
 	
 
-	abstract void R_MarkLeaves();
-	abstract void R_DrawWorld();
-	abstract void R_DrawAlphaSurfaces();
 
-	abstract void Mod_FreeAll();
 
 	abstract void GL_ShutdownImages();
 
@@ -100,6 +89,7 @@ public abstract class Main extends GlBase {
 		super.init();
 		GlState.r_world_matrix =GlState.gl.createFloatBuffer(16);
 		Mesh.init();
+		Models.init();
 	}
 	
 	
@@ -112,7 +102,7 @@ public abstract class Main extends GlBase {
 	 * R_CullBox
 	 * Returns true if the box is completely outside the frustum
 	 */
-	final boolean R_CullBox(float[] mins, float[] maxs) {
+	static final boolean R_CullBox(float[] mins, float[] maxs) {
 		assert(mins.length == 3 && maxs.length == 3) : "vec3_t bug";
 
 		if (GlState.r_nocull.value != 0)
@@ -285,7 +275,7 @@ public abstract class Main extends GlBase {
 						Mesh.R_DrawAliasModel(GlState.currententity);
 						break;
 					case GlConstants.mod_brush :
-						R_DrawBrushModel(GlState.currententity);
+						Surfaces.R_DrawBrushModel(GlState.currententity);
 						break;
 					case GlConstants.mod_sprite :
 						R_DrawSpriteModel(GlState.currententity);
@@ -319,7 +309,7 @@ public abstract class Main extends GlBase {
 						Mesh.R_DrawAliasModel(GlState.currententity);
 						break;
 					case GlConstants.mod_brush :
-						R_DrawBrushModel(GlState.currententity);
+						Surfaces.R_DrawBrushModel(GlState.currententity);
 						break;
 					case GlConstants.mod_sprite :
 						R_DrawSpriteModel(GlState.currententity);
@@ -516,21 +506,21 @@ public abstract class Main extends GlBase {
 		if ((GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0) {
 			GlState.r_oldviewcluster = GlState.r_viewcluster;
 			GlState.r_oldviewcluster2 = GlState.r_viewcluster2;
-			leaf = Mod_PointInLeaf(GlState.r_origin, GlState.r_worldmodel);
+			leaf = Models.Mod_PointInLeaf(GlState.r_origin, GlState.r_worldmodel);
 			GlState.r_viewcluster = GlState.r_viewcluster2 = leaf.cluster;
 
 			// check above and below so crossing solid water doesn't draw wrong
 			if (leaf.contents == 0) { // look down a bit
 				Math3D.VectorCopy(GlState.r_origin, GlState.temp);
 				GlState.temp[2] -= 16;
-				leaf = Mod_PointInLeaf(GlState.temp, GlState.r_worldmodel);
+				leaf = Models.Mod_PointInLeaf(GlState.temp, GlState.r_worldmodel);
 				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != GlState.r_viewcluster2))
 					GlState.r_viewcluster2 = leaf.cluster;
 			}
 			else { // look up a bit
 				Math3D.VectorCopy(GlState.r_origin, GlState.temp);
 				GlState.temp[2] += 16;
-				leaf = Mod_PointInLeaf(GlState.temp, GlState.r_worldmodel);
+				leaf = Models.Mod_PointInLeaf(GlState.temp, GlState.r_worldmodel);
 				if ((leaf.contents & Constants.CONTENTS_SOLID) == 0 && (leaf.cluster != GlState.r_viewcluster2))
 					GlState.r_viewcluster2 = leaf.cluster;
 			}
@@ -713,9 +703,9 @@ public abstract class Main extends GlBase {
 
 		R_SetupGL();
 
-		R_MarkLeaves(); // done here so we know if we're in water
+		Surfaces.R_MarkLeaves(); // done here so we know if we're in water
 
-		R_DrawWorld();
+		Surfaces.R_DrawWorld();
 
 		R_DrawEntitiesOnList();
 
@@ -723,7 +713,7 @@ public abstract class Main extends GlBase {
 
 		R_DrawParticles();
 
-		R_DrawAlphaSurfaces();
+		Surfaces.R_DrawAlphaSurfaces();
 
 		R_Flash();
 
@@ -873,7 +863,7 @@ public abstract class Main extends GlBase {
 		});
 		Commands.addCommand("modellist", new ExecutableCommand() {
 			public void execute() {
-				Mod_Modellist_f();
+				Models.Mod_Modellist_f();
 			}
 		});
 		Commands.addCommand("gl_strings", new ExecutableCommand() {
@@ -965,7 +955,7 @@ public abstract class Main extends GlBase {
 		Misc.GL_SetDefaultState();
 
 		GL_InitImages();
-		Mod_Init();
+		Models.Mod_Init();
 		Misc.R_InitParticleTexture();
 		Draw_InitLocal();
 
@@ -988,7 +978,7 @@ public abstract class Main extends GlBase {
 		Commands.RemoveCommand("imagelist");
 		Commands.RemoveCommand("gl_strings");
 
-		Mod_FreeAll();
+		Models.Mod_FreeAll();
 
 		GL_ShutdownImages();
 

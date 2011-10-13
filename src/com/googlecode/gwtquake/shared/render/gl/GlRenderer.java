@@ -38,7 +38,7 @@ import com.googlecode.gwtquake.shared.render.RendererModel;
  * 
  * @author dsanders/cwei
  */
-public abstract class GlRenderer extends Models {
+public abstract class GlRenderer extends Drawing {
 
 	// ============================================================================
 	// public interface for Renderer implementations
@@ -70,14 +70,14 @@ public abstract class GlRenderer extends Models {
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#BeginRegistration(java.lang.String)
 	 */
 	public final void BeginRegistration(String map, Command callback) {
-		R_BeginRegistration(map, callback);
+		Models.R_BeginRegistration(map, callback);
 	}
 
 	/** 
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#RegisterModel(java.lang.String)
 	 */
 	public final void RegisterModel(String name, AsyncCallback<RendererModel> callback) {
-		R_RegisterModel(name, callback);
+		Models.R_RegisterModel(name, callback);
 	}
 
 	/** 
@@ -104,7 +104,7 @@ public abstract class GlRenderer extends Models {
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#EndRegistration()
 	 */
 	public final void EndRegistration() {
-		R_EndRegistration();
+		Models.R_EndRegistration();
 	}
 
 	/** 

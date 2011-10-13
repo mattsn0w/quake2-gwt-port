@@ -69,7 +69,7 @@ import java.util.Vector;
  *  
  * @author cwei
  */
-public abstract class Models extends Surfaces {
+public class Models  {
 	
 	// models.c -- model loading and caching
 	static RendererModel	loadmodel;
@@ -90,7 +90,7 @@ public abstract class Models extends Surfaces {
 	Mod_PointInLeaf
 	===============
 	*/
-	ModelLeaf Mod_PointInLeaf(float[] p, RendererModel model)
+	static ModelLeaf Mod_PointInLeaf(float[] p, RendererModel model)
 	{
 		ModelNode node;
 		float	d;
@@ -116,15 +116,15 @@ public abstract class Models extends Surfaces {
 	}
 
 
-	byte[] decompressed = new byte[Constants.MAX_MAP_LEAFS / 8];
-	byte[] model_visibility = new byte[Constants.MAX_MAP_VISIBILITY]; 
+	static byte[] decompressed = new byte[Constants.MAX_MAP_LEAFS / 8];
+	static byte[] model_visibility = new byte[Constants.MAX_MAP_VISIBILITY]; 
 
 	/*
 	===================
 	Mod_DecompressVis
 	===================
 	*/
-	byte[] Mod_DecompressVis(byte[] in, int offset, RendererModel model)
+	static byte[] Mod_DecompressVis(byte[] in, int offset, RendererModel model)
 	{
 		int c;
 		byte[] out;
@@ -171,7 +171,7 @@ public abstract class Models extends Surfaces {
 	Mod_ClusterPVS
 	==============
 	*/
-	byte[] Mod_ClusterPVS(int cluster, RendererModel model)
+	static byte[] Mod_ClusterPVS(int cluster, RendererModel model)
 	{
 		if (cluster == -1 || model.vis == null)
 			return mod_novis;
@@ -198,7 +198,7 @@ public abstract class Models extends Surfaces {
 	Mod_Modellist_f
 	================
 	*/
-	void Mod_Modellist_f()
+	static void Mod_Modellist_f()
 	{
 		int i;
 		RendererModel	mod;
@@ -229,7 +229,7 @@ public abstract class Models extends Surfaces {
 	Mod_Init
 	===============
 	*/
-	void Mod_Init()
+	static void Mod_Init()
 	{
 		// init mod_known
 //		for (int i=0; i < MAX_MOD_KNOWN; i++) {
@@ -238,7 +238,7 @@ public abstract class Models extends Surfaces {
 		Arrays.fill(mod_novis, (byte)0xff);
 	}
 
-	ByteBuffer fileBuffer;
+	static ByteBuffer fileBuffer;
 
 	/*
 	==================
@@ -247,7 +247,7 @@ public abstract class Models extends Surfaces {
 	Loads in a model for the given name
 	==================
 	*/
-	void Mod_ForName(final String name, AsyncCallback<RendererModel> callback)
+	static void Mod_ForName(final String name, AsyncCallback<RendererModel> callback)
 	{
     int i;
 	
@@ -335,7 +335,7 @@ public abstract class Models extends Surfaces {
           break;
         }
 
-        Models.this.fileBuffer = null; // free it for garbage collection
+        Models.fileBuffer = null; // free it for garbage collection
         for (AsyncCallback<RendererModel> callback : modelReq.callbacks) {
           callback.onSuccess(model);
         }
@@ -354,7 +354,7 @@ public abstract class Models extends Surfaces {
 	===============================================================================
 	*/
 
-	ByteBuffer mod_base;
+	static ByteBuffer mod_base;
 
 
 	/*
@@ -362,7 +362,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadLighting
 	=================
 	*/
-	void Mod_LoadLighting(Lump l)
+	static void Mod_LoadLighting(Lump l)
 	{
 		if (l.filelen == 0)
 		{
@@ -382,7 +382,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadVisibility
 	=================
 	*/
-	void Mod_LoadVisibility(Lump l)
+	static void Mod_LoadVisibility(Lump l)
 	{
 		//int		i;
 
@@ -418,7 +418,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadVertexes
 	=================
 	*/
-	void Mod_LoadVertexes(Lump l)
+	static void Mod_LoadVertexes(Lump l)
 	{
 		ModelVertex[] vertexes;
 		int i, count;
@@ -433,7 +433,8 @@ public abstract class Models extends Surfaces {
 		loadmodel.vertexes = vertexes;
 		loadmodel.numvertexes = count;
 
-		ByteBuffer bb = mod_base;mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
+		ByteBuffer bb = mod_base;
+		mod_base.position(l.fileofs);//ByteBuffer.wrap(mod_base, l.fileofs, l.filelen);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 
 		for ( i=0 ; i<count ; i++)
@@ -447,7 +448,7 @@ public abstract class Models extends Surfaces {
 	RadiusFromBounds
 	=================
 	*/
-	float RadiusFromBounds(float[] mins, float[] maxs)
+	static float RadiusFromBounds(float[] mins, float[] maxs)
 	{
 		float[] corner = {0, 0, 0};
 
@@ -464,7 +465,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadSubmodels
 	=================
 	*/
-	void Mod_LoadSubmodels(Lump l) {
+	static void Mod_LoadSubmodels(Lump l) {
 	    
 	    if ((l.filelen % QuakeFiles.dmodel_t.SIZE) != 0)
 	        Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in "
@@ -509,7 +510,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadEdges
 	=================
 	*/
-	void Mod_LoadEdges (Lump l)
+	static void Mod_LoadEdges (Lump l)
 	{
 		ModelEdge[] edges;
 		int i, count;
@@ -538,7 +539,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadTexinfo
 	=================
 	*/
-	void Mod_LoadTexinfo(Lump l)
+	static void Mod_LoadTexinfo(Lump l)
 	{
 		TextureInfo in;
 		ModelTextureInfo[] out;
@@ -576,7 +577,7 @@ public abstract class Models extends Surfaces {
 
 			name = "textures/" +  in.texture + ".wal";
 
-			out[i].image = GL_FindImage(name, QuakeImage.it_wall);
+			out[i].image = Images.GL_FindImage(name, QuakeImage.it_wall);
 			if (out[i].image == null) {
 				Window.Printf(Constants.PRINT_ALL, "Couldn't load " + name + '\n');
 				out[i].image = GlState.r_notexture;
@@ -598,7 +599,7 @@ public abstract class Models extends Surfaces {
 	Fills in s.texturemins[] and s.extents[]
 	================
 	*/
-	void CalcSurfaceExtents(ModelSurface s)
+	static void CalcSurfaceExtents(ModelSurface s)
 	{
 		float[] mins = {0, 0};
 		float[] maxs = {0, 0};
@@ -651,7 +652,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadFaces
 	=================
 	*/
-	void Mod_LoadFaces(Lump l) {
+	static void Mod_LoadFaces(Lump l) {
 	    
 	    int i, surfnum;
 	    int planenum, side;
@@ -676,7 +677,7 @@ public abstract class Models extends Surfaces {
 	    
 	    GlState.currentmodel = loadmodel;
 	    
-	    GL_BeginBuildingLightmaps(loadmodel);
+	    Surfaces.GL_BeginBuildingLightmaps(loadmodel);
 	    
 	    QuakeFiles.dface_t in;
 	    ModelSurface out;
@@ -735,13 +736,13 @@ public abstract class Models extends Surfaces {
 	        // create lightmaps and polygons
 	        if ((out.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33
 	                | Constants.SURF_TRANS66 | Constants.SURF_WARP)) == 0)
-	            GL_CreateSurfaceLightmap(out);
+	            Surfaces.GL_CreateSurfaceLightmap(out);
 	        
 	        if ((out.texinfo.flags & Constants.SURF_WARP) == 0)
-	            GL_BuildPolygonFromSurface(out);
+	            Surfaces.GL_BuildPolygonFromSurface(out);
 	        
 	    }
-	    GL_EndBuildingLightmaps();
+	    Surfaces.GL_EndBuildingLightmaps();
 	}
 
 
@@ -750,7 +751,7 @@ public abstract class Models extends Surfaces {
 	Mod_SetParent
 	=================
 	*/
-	void Mod_SetParent(ModelNode node, ModelNode parent)
+	static void Mod_SetParent(ModelNode node, ModelNode parent)
 	{
 		node.parent = parent;
 		if (node.contents != -1) return;
@@ -763,7 +764,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadNodes
 	=================
 	*/
-	void Mod_LoadNodes(Lump l)
+	static void Mod_LoadNodes(Lump l)
 	{
 		int i, j, count, p;
 		QuakeFiles.dnode_t in;
@@ -820,7 +821,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadLeafs
 	=================
 	*/
-	void Mod_LoadLeafs(Lump l)
+	static void Mod_LoadLeafs(Lump l)
 	{
 		QuakeFiles.dleaf_t in;
 		ModelLeaf[] out;
@@ -865,7 +866,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadMarksurfaces
 	=================
 	*/
-	void Mod_LoadMarksurfaces(Lump l)
+	static void Mod_LoadMarksurfaces(Lump l)
 	{	
 		int i, j, count;
 
@@ -899,7 +900,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadSurfedges
 	=================
 	*/
-	void Mod_LoadSurfedges(Lump l)
+	static void Mod_LoadSurfedges(Lump l)
 	{	
 		int i, count;
 		int[] offsets;
@@ -928,7 +929,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadPlanes
 	=================
 	*/
-	void Mod_LoadPlanes(Lump l)
+	static void Mod_LoadPlanes(Lump l)
 	{
 		int i, j;
 		Plane[] out;
@@ -974,7 +975,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadBrushModel
 	=================
 	*/
-	void Mod_LoadBrushModel(RendererModel mod, ByteBuffer buffer)
+	static void Mod_LoadBrushModel(RendererModel mod, ByteBuffer buffer)
 	{
 		int i;
 		QuakeFiles.dheader_t	header;
@@ -1034,7 +1035,7 @@ public abstract class Models extends Surfaces {
 			starmod.numleafs = bm.visleafs;
 		}
 		
-        staticBufferId = GlState.gl.generateStaticBufferId();
+        Surfaces.staticBufferId = GlState.gl.generateStaticBufferId();
 	}
 
 	/*
@@ -1050,7 +1051,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadAliasModel
 	=================
 	*/
-	void Mod_LoadAliasModel (RendererModel mod, ByteBuffer buffer)
+	static void Mod_LoadAliasModel (RendererModel mod, ByteBuffer buffer)
 	{
 		QuakeFiles.dmdl_t pheader;
 		QuakeFiles.dstvert_t[] poutst;
@@ -1139,7 +1140,7 @@ public abstract class Models extends Surfaces {
 			if (n > -1) {
 				skinNames[i] = skinNames[i].substring(0, n);
 			}	
-			mod.skins[i] = GL_FindImage(skinNames[i], QuakeImage.it_skin);
+			mod.skins[i] = Images.GL_FindImage(skinNames[i], QuakeImage.it_skin);
 		}
 		
 		// set the model arrays
@@ -1174,7 +1175,7 @@ public abstract class Models extends Surfaces {
 	Mod_LoadSpriteModel
 	=================
 	*/
-	void Mod_LoadSpriteModel(RendererModel mod, ByteBuffer buffer)
+	static void Mod_LoadSpriteModel(RendererModel mod, ByteBuffer buffer)
 	{
 		QuakeFiles.dsprite_t sprout = new QuakeFiles.dsprite_t(buffer);
 		
@@ -1188,7 +1189,7 @@ public abstract class Models extends Surfaces {
 
 		for (int i=0 ; i<sprout.numframes ; i++)
 		{
-			mod.skins[i] = GL_FindImage(sprout.frames[i].name,	QuakeImage.it_sprite);
+			mod.skins[i] = Images.GL_FindImage(sprout.frames[i].name,	QuakeImage.it_sprite);
 		}
 
 		mod.type = GlConstants.mod_sprite;
@@ -1204,7 +1205,7 @@ public abstract class Models extends Surfaces {
 	Specifies the model that will be used as the world
 	@@@@@@@@@@@@@@@@@@@@@
 	*/
-	protected void R_BeginRegistration(String model, final Command callback)
+	static void R_BeginRegistration(String model, final Command callback)
 	{
 		resetModelArrays();
 		GlPolygon.reset();
@@ -1248,7 +1249,7 @@ public abstract class Models extends Surfaces {
 	R_RegisterModel
 	@@@@@@@@@@@@@@@@@@@@@
 	*/
-	protected void R_RegisterModel(String name, final AsyncCallback<RendererModel> callback) {
+	static void R_RegisterModel(String name, final AsyncCallback<RendererModel> callback) {
 		Mod_ForName(name, new AsyncCallback<RendererModel>() {
       public void onSuccess(RendererModel mod) {
         int   i;
@@ -1262,13 +1263,13 @@ public abstract class Models extends Surfaces {
         {
           sprout = (QuakeFiles.dsprite_t)mod.extradata;
           for (i=0 ; i<sprout.numframes ; i++)
-            mod.skins[i] = GL_FindImage(sprout.frames[i].name, QuakeImage.it_sprite);
+            mod.skins[i] = Images.GL_FindImage(sprout.frames[i].name, QuakeImage.it_sprite);
         }
         else if (mod.type == GlConstants.mod_alias)
         {
           pheader = (QuakeFiles.dmdl_t)mod.extradata;
           for (i=0 ; i<pheader.num_skins ; i++)
-            mod.skins[i] = GL_FindImage(pheader.skinNames[i], QuakeImage.it_skin);
+            mod.skins[i] = Images.GL_FindImage(pheader.skinNames[i], QuakeImage.it_skin);
           // PGM
           mod.numframes = pheader.num_frames;
           // PGM
@@ -1297,7 +1298,7 @@ public abstract class Models extends Surfaces {
 	R_EndRegistration
 	@@@@@@@@@@@@@@@@@@@@@
 	*/
-	protected void R_EndRegistration()
+	static void R_EndRegistration()
 	{
 		RendererModel	mod;
 
@@ -1330,7 +1331,7 @@ public abstract class Models extends Surfaces {
           precompileGLCmds((QuakeFiles.dmdl_t)mod.extradata);
       }
 		}
-		GL_FreeUnusedImages();
+		Images.GL_FreeUnusedImages();
 		//modelMemoryUsage();
 	}
 
@@ -1343,7 +1344,7 @@ public abstract class Models extends Surfaces {
 	Mod_Free
 	================
 	*/
-	void Mod_Free (RendererModel mod)
+	static void Mod_Free (RendererModel mod)
 	{
 		mod.clear();
 	}
@@ -1353,7 +1354,7 @@ public abstract class Models extends Surfaces {
 	Mod_FreeAll
 	================
 	*/
-	void Mod_FreeAll() {
+	static void Mod_FreeAll() {
 //		for (int i=0 ; i<mod_numknown ; i++) {
 //			if (mod_known[i].extradata != null)
 //				Mod_Free(mod_known[i]);
@@ -1373,15 +1374,15 @@ public abstract class Models extends Surfaces {
 	static FloatBuffer globalModelTextureCoordBuf; 
 	static ShortBuffer globalModelVertexIndexBuf; 
 	
-	protected void init() {
-		super.init();
+	static  void init() {
+		
 		globalModelTextureCoordBuf = GlState.gl.createFloatBuffer(MODEL_BUFFER_SIZE * 2);
 		globalModelVertexIndexBuf = GlState.gl.createShortBuffer(MODEL_BUFFER_SIZE);
 	}
 	
 	
 	
-	void precompileGLCmds(QuakeFiles.dmdl_t model) {
+	static void precompileGLCmds(QuakeFiles.dmdl_t model) {
 		model.textureCoordBuf = globalModelTextureCoordBuf.slice();
 		model.vertexIndexBuf = globalModelVertexIndexBuf.slice();
 		Vector<Integer> tmp = new Vector<Integer>();
