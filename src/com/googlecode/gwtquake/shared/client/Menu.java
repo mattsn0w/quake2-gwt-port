@@ -56,7 +56,7 @@ import com.googlecode.gwtquake.shared.common.NetworkAddress;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.sound.Sound;
 import com.googlecode.gwtquake.shared.sys.Sys;
 import com.googlecode.gwtquake.shared.sys.Timer;
@@ -2789,8 +2789,8 @@ public final class Menu {
               entityModelLoading = true;
               scratch = "players/" + s_pmi[s_player_model_box.curvalue].directory
                   + "/tris.md2";
-              re.RegisterModel(scratch, new AsyncCallback<RendererModel>() {
-                public void onSuccess(RendererModel response) {
+              re.RegisterModel(scratch, new AsyncCallback<Model>() {
+                public void onSuccess(Model response) {
                   entity.model = response;
                   // TODO(jgw): Signal to someone that they need to redraw?
                 }

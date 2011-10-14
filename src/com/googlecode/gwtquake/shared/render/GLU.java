@@ -17,9 +17,8 @@
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
-import com.googlecode.gwtquake.shared.render.GlAdapter;
 
 /**
  * A set of GL utilities inspired by the OpenGL Utility Toolkit.
@@ -35,19 +34,19 @@ public class GLU {
      */
     public static String gluErrorString(int error) {
         switch (error) {
-        case GlAdapter.GL_NO_ERROR:
+        case Gl1Context.GL_NO_ERROR:
             return "no error";
-        case GlAdapter.GL_INVALID_ENUM:
+        case Gl1Context.GL_INVALID_ENUM:
             return "invalid enum";
-        case GlAdapter.GL_INVALID_VALUE:
+        case Gl1Context.GL_INVALID_VALUE:
             return "invalid value";
-        case GlAdapter.GL_INVALID_OPERATION:
+        case Gl1Context.GL_INVALID_OPERATION:
             return "invalid operation";
-        case GlAdapter.GL_STACK_OVERFLOW:
+        case Gl1Context.GL_STACK_OVERFLOW:
             return "stack overflow";
-        case GlAdapter.GL_STACK_UNDERFLOW:
+        case Gl1Context.GL_STACK_UNDERFLOW:
             return "stack underflow";
-        case GlAdapter.GL_OUT_OF_MEMORY:
+        case Gl1Context.GL_OUT_OF_MEMORY:
             return "out of memory";
         default:
             return null;
@@ -155,7 +154,7 @@ public class GLU {
      * @param zFar specifies the distance from the viewer to the far clipping
      *        plane (always positive).
      */
-    public static void gluPerspective(GlAdapter gl, float fovy, float aspect,
+    public static void gluPerspective(Gl1Context gl, float fovy, float aspect,
             float zNear, float zFar) {
         float top = zNear * (float) Math.tan(fovy * (Math.PI / 360.0));
         float bottom = -top;
@@ -210,7 +209,7 @@ public class GLU {
 
         float w = v2[3];
         if (w == 0.0f) {
-            return GlAdapter.GL_FALSE;
+            return Gl1Context.GL_FALSE;
         }
 
         float rw = 1.0f / w;
@@ -223,7 +222,7 @@ public class GLU {
                         * (v2[1] * rw + 1.0f) * 0.5f;
         win[winOffset + 2] = (v2[2] * rw + 1.0f) * 0.5f;
 
-        return GlAdapter.GL_TRUE;
+        return Gl1Context.GL_TRUE;
     }
 
     /**
@@ -261,7 +260,7 @@ public class GLU {
 
         float[] invPM = new float[16];
         if (!Matrix.invertM(invPM, 0, pm, 0)) {
-            return GlAdapter.GL_FALSE;
+            return Gl1Context.GL_FALSE;
         }
 
         float[] v = new float[4];
@@ -283,7 +282,7 @@ public class GLU {
         obj[objOffset + 1] = v2[1];
         obj[objOffset + 2] = v2[2];
 
-        return GlAdapter.GL_TRUE;
+        return Gl1Context.GL_TRUE;
     }
 
  }

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 
 
@@ -39,15 +39,6 @@ import com.googlecode.gwtquake.shared.common.ResourceLoader;
 import com.googlecode.gwtquake.shared.common.TextureInfo;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.game.Plane;
-import com.googlecode.gwtquake.shared.render.GlPolygon;
-import com.googlecode.gwtquake.shared.render.ModelEdge;
-import com.googlecode.gwtquake.shared.render.ModelLeaf;
-import com.googlecode.gwtquake.shared.render.ModelNode;
-import com.googlecode.gwtquake.shared.render.ModelSurface;
-import com.googlecode.gwtquake.shared.render.ModelTextureInfo;
-import com.googlecode.gwtquake.shared.render.ModelVertex;
-import com.googlecode.gwtquake.shared.render.RendererModel;
-import com.googlecode.gwtquake.shared.render.SubModel;
 import com.googlecode.gwtquake.shared.util.Math3D;
 import com.googlecode.gwtquake.shared.util.Vargs;
 
@@ -72,16 +63,16 @@ import java.util.Vector;
 public class Models  {
 	
 	// models.c -- model loading and caching
-	static RendererModel	loadmodel;
+	static Model	loadmodel;
 	static int modfilelen;
 
 	static byte[] mod_novis = new byte[Constants.MAX_MAP_LEAFS/8];
 
 	static final int MAX_MOD_KNOWN = 512;
-	static RendererModel world_model;
+	static Model world_model;
 
 	// the inline * models from the current map are kept seperate
-	static RendererModel[] mod_inline = new RendererModel[MAX_MOD_KNOWN];
+	static Model[] mod_inline = new Model[MAX_MOD_KNOWN];
 
 //	abstract void GL_SubdivideSurface(ModelSurface surface); // Warp.java
 
@@ -90,9 +81,9 @@ public class Models  {
 	Mod_PointInLeaf
 	===============
 	*/
-	static ModelLeaf Mod_PointInLeaf(float[] p, RendererModel model)
+	static Leaf Mod_PointInLeaf(float[] p, Model model)
 	{
-		ModelNode node;
+		Node node;
 		float	d;
 		Plane plane;
 	
@@ -103,7 +94,7 @@ public class Models  {
 		while (true)
 		{
 			if (node.contents != -1)
-				return (ModelLeaf)node;
+				return (Leaf)node;
 				
 			plane = node.plane;
 			d = Math3D.DotProduct(p, plane.normal) - plane.dist;
@@ -124,7 +115,7 @@ public class Models  {
 	Mod_DecompressVis
 	===================
 	*/
-	static byte[] Mod_DecompressVis(byte[] in, int offset, RendererModel model)
+	static byte[] Mod_DecompressVis(byte[] in, int offset, Model model)
 	{
 		int c;
 		byte[] out;
@@ -171,7 +162,7 @@ public class Models  {
 	Mod_ClusterPVS
 	==============
 	*/
-	static byte[] Mod_ClusterPVS(int cluster, RendererModel model)
+	static byte[] Mod_ClusterPVS(int cluster, Model model)
 	{
 		if (cluster == -1 || model.vis == null)
 			return mod_novis;
@@ -183,8 +174,8 @@ public class Models  {
 //	  ===============================================================================
   private static class ModelRequest {
     public boolean loaded;
-    public ArrayList<AsyncCallback<RendererModel>> callbacks = new ArrayList<AsyncCallback<RendererModel>>();
-    public RendererModel model = new RendererModel();
+    public ArrayList<AsyncCallback<Model>> callbacks = new ArrayList<AsyncCallback<Model>>();
+    public Model model = new Model();
   }
 
   private static HashMap<String, ModelRequest> modelReqs = new HashMap<String, ModelRequest>();
@@ -201,7 +192,7 @@ public class Models  {
 	static void Mod_Modellist_f()
 	{
 		int i;
-		RendererModel	mod;
+		Model	mod;
 		int total;
 
 		total = 0;
@@ -247,7 +238,7 @@ public class Models  {
 	Loads in a model for the given name
 	==================
 	*/
-	static void Mod_ForName(final String name, AsyncCallback<RendererModel> callback)
+	static void Mod_ForName(final String name, AsyncCallback<Model> callback)
 	{
     int i;
 	
@@ -279,14 +270,14 @@ public class Models  {
 		}
 
 		final ModelRequest modelReq = new ModelRequest();
-		modelReq.model = new RendererModel();
+		modelReq.model = new Model();
 		modelReq.callbacks.add(callback);
 		modelReqs.put(name, modelReq);
 
 		//
 		// load the file
 		//
-		final RendererModel model = modelReq.model;
+		final Model model = modelReq.model;
 		ResourceLoader.loadResourceAsync(name, new ResourceLoader.Callback() {
       public void onSuccess(final ByteBuffer bb) {
 //    	if (waitingForImages > 0) {
@@ -336,7 +327,7 @@ public class Models  {
         }
 
         Models.fileBuffer = null; // free it for garbage collection
-        for (AsyncCallback<RendererModel> callback : modelReq.callbacks) {
+        for (AsyncCallback<Model> callback : modelReq.callbacks) {
           callback.onSuccess(model);
         }
         modelReq.callbacks.clear();
@@ -512,15 +503,15 @@ public class Models  {
 	*/
 	static void Mod_LoadEdges (Lump l)
 	{
-		ModelEdge[] edges;
+		Edge[] edges;
 		int i, count;
 
-		if ( (l.filelen % ModelEdge.DISK_SIZE) != 0)
+		if ( (l.filelen % Edge.DISK_SIZE) != 0)
 			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-		count = l.filelen / ModelEdge.DISK_SIZE;
+		count = l.filelen / Edge.DISK_SIZE;
 		// out = Hunk_Alloc ( (count + 1) * sizeof(*out));	
-		edges = new ModelEdge[count + 1];
+		edges = new Edge[count + 1];
 
 		loadmodel.edges = edges;
 		loadmodel.numedges = count;
@@ -530,7 +521,7 @@ public class Models  {
 
 		for ( i=0 ; i<count ; i++)
 		{
-			edges[i] = new ModelEdge(bb);
+			edges[i] = new Edge(bb);
 		}
 	}
 
@@ -577,7 +568,7 @@ public class Models  {
 
 			name = "textures/" +  in.texture + ".wal";
 
-			out[i].image = Images.GL_FindImage(name, QuakeImage.it_wall);
+			out[i].image = Images.findTexture(name, QuakeImage.it_wall);
 			if (out[i].image == null) {
 				Window.Printf(Constants.PRINT_ALL, "Couldn't load " + name + '\n');
 				out[i].image = GlState.r_notexture;
@@ -599,7 +590,7 @@ public class Models  {
 	Fills in s.texturemins[] and s.extents[]
 	================
 	*/
-	static void CalcSurfaceExtents(ModelSurface s)
+	static void CalcSurfaceExtents(Surface s)
 	{
 		float[] mins = {0, 0};
 		float[] maxs = {0, 0};
@@ -664,9 +655,9 @@ public class Models  {
 	    
 	    int count = l.filelen / QuakeFiles.dface_t.SIZE;
 	    // out = Hunk_Alloc ( count*sizeof(*out));
-	    ModelSurface[] outs = new ModelSurface[count];
+	    Surface[] outs = new Surface[count];
 	    for (i = 0; i < count; i++) {
-	        outs[i] = new ModelSurface();
+	        outs[i] = new Surface();
 	    }
 	    
 	    loadmodel.surfaces = outs;
@@ -677,10 +668,10 @@ public class Models  {
 	    
 	    GlState.currentmodel = loadmodel;
 	    
-	    Surfaces.GL_BeginBuildingLightmaps(loadmodel);
+	    Model.GL_BeginBuildingLightmaps(loadmodel);
 	    
 	    QuakeFiles.dface_t in;
-	    ModelSurface out;
+	    Surface out;
 	    
 	    for (surfnum = 0; surfnum < count; surfnum++) {
 	        in = new QuakeFiles.dface_t(bb);
@@ -730,16 +721,16 @@ public class Models  {
 	                out.extents[i] = 16384;
 	                out.texturemins[i] = -8192;
 	            }
-	           Warp.GL_SubdivideSurface(out); // cut up polygon for warps
+	           SkyBox.GL_SubdivideSurface(out); // cut up polygon for warps
 	        }
 	        
 	        // create lightmaps and polygons
 	        if ((out.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33
 	                | Constants.SURF_TRANS66 | Constants.SURF_WARP)) == 0)
-	            Surfaces.GL_CreateSurfaceLightmap(out);
+	            Surface.GL_CreateSurfaceLightmap(out);
 	        
 	        if ((out.texinfo.flags & Constants.SURF_WARP) == 0)
-	            Surfaces.GL_BuildPolygonFromSurface(out);
+	            Surface.GL_BuildPolygonFromSurface(out);
 	        
 	    }
 	    Surfaces.GL_EndBuildingLightmaps();
@@ -751,7 +742,7 @@ public class Models  {
 	Mod_SetParent
 	=================
 	*/
-	static void Mod_SetParent(ModelNode node, ModelNode parent)
+	static void Mod_SetParent(Node node, Node parent)
 	{
 		node.parent = parent;
 		if (node.contents != -1) return;
@@ -768,14 +759,14 @@ public class Models  {
 	{
 		int i, j, count, p;
 		QuakeFiles.dnode_t in;
-		ModelNode[] out;
+		Node[] out;
 
 		if ((l.filelen % QuakeFiles.dnode_t.SIZE) != 0)
 			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 		
 		count = l.filelen / QuakeFiles.dnode_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));	
-		out = new ModelNode[count];
+		out = new Node[count];
 
 		loadmodel.nodes = out;
 		loadmodel.numnodes = count;
@@ -784,7 +775,7 @@ public class Models  {
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		
 		// initialize the tree array
-		for ( i=0 ; i<count ; i++) out[i] = new ModelNode(); // do first before linking 
+		for ( i=0 ; i<count ; i++) out[i] = new Node(); // do first before linking 
 
 		// fill and link the nodes
 		for ( i=0 ; i<count ; i++)
@@ -824,7 +815,7 @@ public class Models  {
 	static void Mod_LoadLeafs(Lump l)
 	{
 		QuakeFiles.dleaf_t in;
-		ModelLeaf[] out;
+		Leaf[] out;
 		int i, j, count;
 
 		if ((l.filelen % QuakeFiles.dleaf_t.SIZE) != 0)
@@ -832,7 +823,7 @@ public class Models  {
 
 		count = l.filelen / QuakeFiles.dleaf_t.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
-		out = new ModelLeaf[count];	
+		out = new Leaf[count];	
 
 		loadmodel.leafs = out;
 		loadmodel.numleafs = count;
@@ -843,7 +834,7 @@ public class Models  {
 		for ( i=0 ; i<count ; i++)
 		{
 			in = new QuakeFiles.dleaf_t(bb);
-			out[i] = new ModelLeaf();
+			out[i] = new Leaf();
 			for (j=0 ; j<3 ; j++)
 			{
 				out[i].mins[j] = in.mins[j];
@@ -870,13 +861,13 @@ public class Models  {
 	{	
 		int i, j, count;
 
-		ModelSurface[] out; 
+		Surface[] out; 
 
 		if ((l.filelen % Constants.SIZE_OF_SHORT) != 0)
 			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 		count = l.filelen / Constants.SIZE_OF_SHORT;
 		// out = Hunk_Alloc ( count*sizeof(*out));	
-		out = new ModelSurface[count];
+		out = new Surface[count];
 
 		loadmodel.marksurfaces = out;
 		loadmodel.nummarksurfaces = count;
@@ -975,7 +966,7 @@ public class Models  {
 	Mod_LoadBrushModel
 	=================
 	*/
-	static void Mod_LoadBrushModel(RendererModel mod, ByteBuffer buffer)
+	static void Mod_LoadBrushModel(Model mod, ByteBuffer buffer)
 	{
 		int i;
 		QuakeFiles.dheader_t	header;
@@ -1011,7 +1002,7 @@ public class Models  {
 		//
 		// set up the submodels
 		//
-		RendererModel	starmod;
+		Model	starmod;
 
 		for (i=0 ; i<mod.numsubmodels ; i++)
 		{
@@ -1051,7 +1042,7 @@ public class Models  {
 	Mod_LoadAliasModel
 	=================
 	*/
-	static void Mod_LoadAliasModel (RendererModel mod, ByteBuffer buffer)
+	static void Mod_LoadAliasModel (Model mod, ByteBuffer buffer)
 	{
 		QuakeFiles.dmdl_t pheader;
 		QuakeFiles.dstvert_t[] poutst;
@@ -1140,7 +1131,7 @@ public class Models  {
 			if (n > -1) {
 				skinNames[i] = skinNames[i].substring(0, n);
 			}	
-			mod.skins[i] = Images.GL_FindImage(skinNames[i], QuakeImage.it_skin);
+			mod.skins[i] = Images.findTexture(skinNames[i], QuakeImage.it_skin);
 		}
 		
 		// set the model arrays
@@ -1175,7 +1166,7 @@ public class Models  {
 	Mod_LoadSpriteModel
 	=================
 	*/
-	static void Mod_LoadSpriteModel(RendererModel mod, ByteBuffer buffer)
+	static void Mod_LoadSpriteModel(Model mod, ByteBuffer buffer)
 	{
 		QuakeFiles.dsprite_t sprout = new QuakeFiles.dsprite_t(buffer);
 		
@@ -1189,7 +1180,7 @@ public class Models  {
 
 		for (int i=0 ; i<sprout.numframes ; i++)
 		{
-			mod.skins[i] = Images.GL_FindImage(sprout.frames[i].name,	QuakeImage.it_sprite);
+			mod.skins[i] = Images.findTexture(sprout.frames[i].name,	QuakeImage.it_sprite);
 		}
 
 		mod.type = GlConstants.mod_sprite;
@@ -1208,7 +1199,7 @@ public class Models  {
 	static void R_BeginRegistration(String model, final Command callback)
 	{
 		resetModelArrays();
-		GlPolygon.reset();
+		Polygons.reset();
 
 		ConsoleVariable flushmap;
 
@@ -1227,8 +1218,8 @@ public class Models  {
 			world_model = null;
 		}
 
-		Mod_ForName(fullname, new AsyncCallback<RendererModel>() {
-      public void onSuccess(RendererModel response) {
+		Mod_ForName(fullname, new AsyncCallback<Model>() {
+      public void onSuccess(Model response) {
         // TODO(jgw): Not sure if this is creating a race condition.
         Com.Println("setting world_model to " + response);
         GlState.r_worldmodel = response;
@@ -1249,9 +1240,9 @@ public class Models  {
 	R_RegisterModel
 	@@@@@@@@@@@@@@@@@@@@@
 	*/
-	static void R_RegisterModel(String name, final AsyncCallback<RendererModel> callback) {
-		Mod_ForName(name, new AsyncCallback<RendererModel>() {
-      public void onSuccess(RendererModel mod) {
+	static void R_RegisterModel(String name, final AsyncCallback<Model> callback) {
+		Mod_ForName(name, new AsyncCallback<Model>() {
+      public void onSuccess(Model mod) {
         int   i;
         QuakeFiles.dmdl_t pheader;
         QuakeFiles.dsprite_t sprout;
@@ -1263,13 +1254,13 @@ public class Models  {
         {
           sprout = (QuakeFiles.dsprite_t)mod.extradata;
           for (i=0 ; i<sprout.numframes ; i++)
-            mod.skins[i] = Images.GL_FindImage(sprout.frames[i].name, QuakeImage.it_sprite);
+            mod.skins[i] = Images.findTexture(sprout.frames[i].name, QuakeImage.it_sprite);
         }
         else if (mod.type == GlConstants.mod_alias)
         {
           pheader = (QuakeFiles.dmdl_t)mod.extradata;
           for (i=0 ; i<pheader.num_skins ; i++)
-            mod.skins[i] = Images.GL_FindImage(pheader.skinNames[i], QuakeImage.it_skin);
+            mod.skins[i] = Images.findTexture(pheader.skinNames[i], QuakeImage.it_skin);
           // PGM
           mod.numframes = pheader.num_frames;
           // PGM
@@ -1300,7 +1291,7 @@ public class Models  {
 	*/
 	static void R_EndRegistration()
 	{
-		RendererModel	mod;
+		Model	mod;
 
 //		for (int i=0; i<mod_numknown ; i++) {
 //			mod = mod_known[i];
@@ -1344,7 +1335,7 @@ public class Models  {
 	Mod_Free
 	================
 	*/
-	static void Mod_Free (RendererModel mod)
+	static void Mod_Free (Model mod)
 	{
 		mod.clear();
 	}

@@ -31,7 +31,7 @@ import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.EntityState;
 import com.googlecode.gwtquake.shared.game.PlayerMove;
 import com.googlecode.gwtquake.shared.game.PlayerState;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
 
@@ -725,8 +725,8 @@ public class ClientEntities {
 						}
 
 						if (modelToLoad != null) {
-  						Globals.re.RegisterModel(modelToLoad, new AsyncCallback<RendererModel>() {
-                public void onSuccess(RendererModel response) {
+  						Globals.re.RegisterModel(modelToLoad, new AsyncCallback<Model>() {
+                public void onSuccess(Model response) {
                   ent.model = response;
                 }
 

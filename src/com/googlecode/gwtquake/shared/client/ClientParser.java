@@ -37,7 +37,7 @@ import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.EntityState;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.sound.Sound;
 import com.googlecode.gwtquake.shared.sys.Sys;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -479,8 +479,8 @@ public class ClientParser {
         }
 
         // Load player model and weapon models.
-        Globals.re.RegisterModel(model_filename, new AsyncCallback<RendererModel>() {
-          public void onSuccess(RendererModel response) {
+        Globals.re.RegisterModel(model_filename, new AsyncCallback<Model>() {
+          public void onSuccess(Model response) {
             ci.model = response;
           }
 
@@ -489,7 +489,7 @@ public class ClientParser {
           }
         });
 
-        ci.weaponmodel = new RendererModel[Constants.MAX_CLIENTWEAPONMODELS];
+        ci.weaponmodel = new Model[Constants.MAX_CLIENTWEAPONMODELS];
         for (i = 0; i < num_weapon_filenames; ++i) {
           loadWeaponModel(ci, i, weapon_filenames[i]);
         }
@@ -507,8 +507,8 @@ public class ClientParser {
     }
 
     private static void loadWeaponModel(final ClientInfo ci, final int i, String weapon_filename) {
-      Globals.re.RegisterModel(weapon_filename, new AsyncCallback<RendererModel>() {
-        public void onSuccess(RendererModel response) {
+      Globals.re.RegisterModel(weapon_filename, new AsyncCallback<Model>() {
+        public void onSuccess(Model response) {
           ci.weaponmodel[i] = response;
         }
         
@@ -559,8 +559,8 @@ public class ClientParser {
                 // always be loaded by this point. If not, we should see a failure in
                 // refexport_t.RegisterModel() or CM.InlineModel().
                 final int model_draw_index = i;
-                Globals.re.RegisterModel(Globals.cl.configstrings[i], new AsyncCallback<RendererModel>() {
-                  public void onSuccess(RendererModel response) {
+                Globals.re.RegisterModel(Globals.cl.configstrings[i], new AsyncCallback<Model>() {
+                  public void onSuccess(Model response) {
                     Globals.cl.model_draw[model_draw_index - Constants.CS_MODELS] = response;
                   }
 

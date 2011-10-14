@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 
 
@@ -41,8 +41,6 @@ import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Vargs;
 
@@ -55,9 +53,9 @@ public abstract class Images {
 
     static int waitingForImages = 0;
     
-    static ModelImage draw_chars;
+    static Image draw_chars;
  
-    static ModelImage[] gltextures = new ModelImage[GlConstants.MAX_GLTEXTURES];
+    static Image[] gltextures = new Image[GlConstants.MAX_GLTEXTURES];
     //Map gltextures = new Hashtable(MAX_GLTEXTURES); // image_t
     static int numgltextures;
     static int base_textureid; // gltextures[i] = base_textureid+i
@@ -78,14 +76,14 @@ public abstract class Images {
     static int gl_tex_solid_format = 3;
     static int gl_tex_alpha_format = 4;
 
-    static int gl_filter_min = GlAdapter.GL_LINEAR;//GLAdapter.GL_LINEAR_MIPMAP_NEAREST;
-    static int gl_filter_max = GlAdapter.GL_LINEAR;
+    static int gl_filter_min = Gl1Context.GL_LINEAR;//GLAdapter.GL_LINEAR_MIPMAP_NEAREST;
+    static int gl_filter_max = Gl1Context.GL_LINEAR;
     
     static {
         // init the texture cache
         for (int i = 0; i < gltextures.length; i++)
         {
-            gltextures[i] = new ModelImage(i);
+            gltextures[i] = new Image(i);
         }
         numgltextures = 0;
     }
@@ -115,16 +113,16 @@ public abstract class Images {
     static void GL_EnableMultitexture(boolean enable) {
         if (enable) {
             GL_SelectTexture(GlState.GL_TEXTURE1);
-            GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
-            GL_TexEnv(GlAdapter.GL_REPLACE);
+            GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
+            GL_TexEnv(Gl1Context.GL_REPLACE);
         }
         else {
             GL_SelectTexture(GlState.GL_TEXTURE1);
-            GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-            GL_TexEnv(GlAdapter.GL_REPLACE);
+            GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
+            GL_TexEnv(Gl1Context.GL_REPLACE);
         }
         GL_SelectTexture(GlState.GL_TEXTURE0);
-        GL_TexEnv(GlAdapter.GL_REPLACE);
+        GL_TexEnv(Gl1Context.GL_REPLACE);
     }
 
     static void GL_SelectTexture(int texture /* GLenum */) {
@@ -144,11 +142,11 @@ public abstract class Images {
 
     static int[] lastmodes = { -1, -1 };
 
-    static void GL_TexEnv(int mode /* GLenum */
+    public static void GL_TexEnv(int mode /* GLenum */
     ) {
 
         if (mode != lastmodes[GlState.gl_state.currenttmu]) {
-          GlState.gl.glTexEnvi(GlAdapter.GL_TEXTURE_ENV, GlAdapter.GL_TEXTURE_ENV_MODE, mode);
+          GlState.gl.glTexEnvi(Gl1Context.GL_TEXTURE_ENV, Gl1Context.GL_TEXTURE_ENV_MODE, mode);
             lastmodes[GlState.gl_state.currenttmu] = mode;
         }
     }
@@ -163,7 +161,7 @@ public abstract class Images {
             return;
 
         GlState.gl_state.currenttextures[GlState.gl_state.currenttmu] = texnum;
-        GlState.gl.glBindTexture(GlAdapter.GL_TEXTURE_2D, texnum);
+        GlState.gl.glBindTexture(Gl1Context.GL_TEXTURE_2D, texnum);
     }
 
     static void GL_MBind(int target /* GLenum */, int texnum) {
@@ -193,12 +191,12 @@ public abstract class Images {
 
     static final glmode_t modes[] =
         {
-            new glmode_t("GL_NEAREST", GlAdapter.GL_NEAREST, GlAdapter.GL_NEAREST),
-            new glmode_t("GL_LINEAR", GlAdapter.GL_LINEAR, GlAdapter.GL_LINEAR),
-            new glmode_t("GL_NEAREST_MIPMAP_NEAREST", GlAdapter.GL_NEAREST_MIPMAP_NEAREST, GlAdapter.GL_NEAREST),
-            new glmode_t("GL_LINEAR_MIPMAP_NEAREST", GlAdapter.GL_LINEAR_MIPMAP_NEAREST, GlAdapter.GL_LINEAR),
-            new glmode_t("GL_NEAREST_MIPMAP_LINEAR", GlAdapter.GL_NEAREST_MIPMAP_LINEAR, GlAdapter.GL_NEAREST),
-            new glmode_t("GL_LINEAR_MIPMAP_LINEAR", GlAdapter.GL_LINEAR_MIPMAP_LINEAR, GlAdapter.GL_LINEAR)};
+            new glmode_t("GL_NEAREST", Gl1Context.GL_NEAREST, Gl1Context.GL_NEAREST),
+            new glmode_t("GL_LINEAR", Gl1Context.GL_LINEAR, Gl1Context.GL_LINEAR),
+            new glmode_t("GL_NEAREST_MIPMAP_NEAREST", Gl1Context.GL_NEAREST_MIPMAP_NEAREST, Gl1Context.GL_NEAREST),
+            new glmode_t("GL_LINEAR_MIPMAP_NEAREST", Gl1Context.GL_LINEAR_MIPMAP_NEAREST, Gl1Context.GL_LINEAR),
+            new glmode_t("GL_NEAREST_MIPMAP_LINEAR", Gl1Context.GL_NEAREST_MIPMAP_LINEAR, Gl1Context.GL_NEAREST),
+            new glmode_t("GL_LINEAR_MIPMAP_LINEAR", Gl1Context.GL_LINEAR_MIPMAP_LINEAR, Gl1Context.GL_LINEAR)};
 
     static final int NUM_GL_MODES = modes.length;
 
@@ -216,7 +214,7 @@ public abstract class Images {
     static final gltmode_t[] gl_alpha_modes =
         {
             new gltmode_t("default", 4),
-            new gltmode_t("GL_RGBA", GlAdapter.GL_RGBA),
+            new gltmode_t("GL_RGBA", Gl1Context.GL_RGBA),
 //          new gltmode_t("GL_RGBA8", GL11.GL_RGBA8),
 //          new gltmode_t("GL_RGB5_A1", GL11.GL_RGB5_A1),
 //          new gltmode_t("GL_RGBA4", GL11.GL_RGBA4),
@@ -228,7 +226,7 @@ public abstract class Images {
     static final gltmode_t[] gl_solid_modes =
         {
             new gltmode_t("default", 3),
-            new gltmode_t("GL_RGB", GlAdapter.GL_RGB),
+            new gltmode_t("GL_RGB", Gl1Context.GL_RGB),
 //          new gltmode_t("GL_RGB8", GL11.GL_RGB8),
 //          new gltmode_t("GL_RGB5", GL11.GL_RGB5),
 //          new gltmode_t("GL_RGB4", GL11.GL_RGB4),
@@ -261,15 +259,15 @@ public abstract class Images {
         gl_filter_min = modes[i].minimize;
         gl_filter_max = modes[i].maximize;
 
-        ModelImage glt;
+        Image glt;
         // change all the existing mipmap texture objects
         for (i = 0; i < numgltextures; i++) {
             glt = gltextures[i];
 
             if (glt.type != QuakeImage.it_pic && glt.type != QuakeImage.it_sky) {
                 GL_Bind(glt.texnum);
-                GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
-                GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+                GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, gl_filter_min);
+                GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, gl_filter_max);
             }
         }
     }
@@ -322,7 +320,7 @@ public abstract class Images {
     */
     static void GL_ImageList_f() {
 
-        ModelImage image;
+        Image image;
         int texels;
         final String[] palstrings = { "RGB", "PAL" };
 
@@ -516,6 +514,8 @@ public abstract class Images {
         }
     }
 
+    public static final int MAX_NAME_SIZE = Constants.MAX_QPATH;
+
     //    =======================================================
 
     /*
@@ -575,6 +575,24 @@ public abstract class Images {
     }
 
     /*
+    =============
+    Draw_FindPic
+    =============
+    */
+    protected static Image findPicture(String name) {
+    	Image image = null;
+    	String fullname;
+    
+    	if (!name.startsWith("/") && !name.startsWith("\\")) {
+    		fullname = "pics/" + name + ".pcx";
+    	} else {
+    		fullname = name.substring(1);
+    	}
+    	image = findTexture(fullname, QuakeImage.it_pic);
+    	return image;
+    }
+
+    /*
     ================
     GL_MipMap
     
@@ -625,7 +643,7 @@ public abstract class Images {
     //byte[] paletted_texture = new byte[256 * 256];
 //  ByteBuffer paletted_texture;
     private static IntBuffer tex = Lib.newIntBuffer(512 * 256, ByteOrder.LITTLE_ENDIAN);
-    static HashMap<String,ModelImage> imageMap = new HashMap<String,ModelImage>();
+    static HashMap<String,Image> imageMap = new HashMap<String,Image>();
 
     
     
@@ -711,14 +729,14 @@ public abstract class Images {
 //                  else {
                         tex.rewind(); tex.put(data); tex.rewind();
                         GlState.gl.glTexImage2D(
-                            GlAdapter.GL_TEXTURE_2D,
+                            Gl1Context.GL_TEXTURE_2D,
                             0,
-                            GlAdapter.GL_RGBA/*comp*/,
+                            Gl1Context.GL_RGBA/*comp*/,
                             scaled_width,
                             scaled_height,
                             0,
-                            GlAdapter.GL_RGBA,
-                            GlAdapter.GL_UNSIGNED_BYTE,
+                            Gl1Context.GL_RGBA,
+                            Gl1Context.GL_UNSIGNED_BYTE,
                             tex);
 //                  }
                     //goto done;
@@ -748,7 +766,7 @@ public abstract class Images {
 //          }
 //          else {
                 tex.rewind(); tex.put(scaled); tex.rewind();
-                GlState.gl.glTexImage2D(GlAdapter.GL_TEXTURE_2D, 0, GlAdapter.GL_RGBA/*comp*/, scaled_width, scaled_height, 0, GlAdapter.GL_RGBA, GlAdapter.GL_UNSIGNED_BYTE, tex);
+                GlState.gl.glTexImage2D(Gl1Context.GL_TEXTURE_2D, 0, Gl1Context.GL_RGBA/*comp*/, scaled_width, scaled_height, 0, Gl1Context.GL_RGBA, Gl1Context.GL_UNSIGNED_BYTE, tex);
 //          }
 
             if (mipmap) {
@@ -781,14 +799,14 @@ public abstract class Images {
 //                  else {
                         tex.rewind(); tex.put(scaled); tex.rewind();
                         GlState.gl.glTexImage2D(
-                            GlAdapter.GL_TEXTURE_2D,
+                            Gl1Context.GL_TEXTURE_2D,
                             miplevel,
-                            GlAdapter.GL_RGBA/*comp*/,
+                            Gl1Context.GL_RGBA/*comp*/,
                             scaled_width,
                             scaled_height,
                             0,
-                            GlAdapter.GL_RGBA,
-                            GlAdapter.GL_UNSIGNED_BYTE,
+                            Gl1Context.GL_RGBA,
+                            Gl1Context.GL_UNSIGNED_BYTE,
                             tex);
 //                  }
                 }
@@ -800,12 +818,12 @@ public abstract class Images {
         }
 
         if (mipmap) {
-          GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_min);
-          GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+          GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, gl_filter_min);
+          GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, gl_filter_max);
         }
         else {
-          GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, gl_filter_max);
-          GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, gl_filter_max);
+          GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, gl_filter_max);
+          GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, gl_filter_max);
         }
 
         return (samples == gl_alpha_format);
@@ -825,8 +843,8 @@ public abstract class Images {
                 width, height, mipmap);
     }
 
-    public final static ModelImage GL_Find_free_image_t(String name, int type) {
-        ModelImage image;
+    public final static Image GL_Find_free_image_t(String name, int type) {
+        Image image;
         int i;
 
         // find a free image_t
@@ -860,38 +878,12 @@ public abstract class Images {
         
         return image;
     }
-    static ModelImage GL_LoadPic(String name, byte[] pic, int width, int height, int type, int bits) {
-        ModelImage image = GL_Find_free_image_t(name, type);
-        GL_SetPicData(image, pic, width, height, bits);
+    static Image GL_LoadPic(String name, byte[] pic, int width, int height, int type, int bits) {
+        Image image = GL_Find_free_image_t(name, type);
+        Image.GL_SetPicData(image, pic, width, height, bits);
         return image;
     }
         
-    public static void GL_SetPicData(ModelImage image, byte[] pic, int width, int height, int bits) {   
-        image.width = width;
-        image.height = height;
-        image.complete = true;
-        
-        int i;
-
-        if (image.type == QuakeImage.it_skin && bits == 8) {
-            R_FloodFillSkin(pic, width, height);
-        } 
-
-        //image.texnum = TEXNUM_IMAGES + image.getId(); //image pos in array
-        GL_Bind(image.texnum);
-
-        if (bits == 8) {
-            image.has_alpha = GL_Upload8(pic, width, height, (image.type != QuakeImage.it_pic && image.type != QuakeImage.it_sky), image.type == QuakeImage.it_sky);
-        }
-        else {
-            int[] tmp = QuakeImage.bytesToIntsAbgr(pic);
-            image.has_alpha = GL_Upload32(tmp, width, height, (image.type != QuakeImage.it_pic && image.type != QuakeImage.it_sky));
-        }
-        image.upload_width = upload_width; // after power of 2 and scales
-        image.upload_height = upload_height;
-    }
-
-    
     /*
     ===============
     GL_FindImage
@@ -899,7 +891,7 @@ public abstract class Images {
     Finds or loads the given image
     ===============
     */
-    static ModelImage GL_FindImage(String name, int type) {
+    static Image findTexture(String name, int type) {
 
 //      // TODO loest das grossschreibungs problem
 //      name = name.toLowerCase();
@@ -914,7 +906,7 @@ public abstract class Images {
 
         // look for it
         
-        ModelImage image = imageMap.get(name);
+        Image image = imageMap.get(name);
         
         if (image != null && name.equals(image.name)) {
             image.registration_sequence = GlState.registration_sequence;
@@ -970,8 +962,8 @@ public abstract class Images {
     R_RegisterSkin
     ===============
     */
-    protected static ModelImage R_RegisterSkin(String name) {
-        return GL_FindImage(name, QuakeImage.it_skin);
+    protected static Image R_RegisterSkin(String name) {
+        return findTexture(name, QuakeImage.it_skin);
     }
 
     
@@ -996,7 +988,7 @@ public abstract class Images {
         GlState.r_notexture.registration_sequence = GlState.registration_sequence;
         GlState.r_particletexture.registration_sequence = GlState.registration_sequence;
 
-        ModelImage image = null;
+        Image image = null;
 
         for (int i = 0; i < numgltextures; i++) {
             image = gltextures[i];
@@ -1082,7 +1074,7 @@ public abstract class Images {
     ===============
     */
     static void GL_ShutdownImages() {
-        ModelImage image;
+        Image image;
         
         for (int i=0; i < numgltextures ; i++)
         {

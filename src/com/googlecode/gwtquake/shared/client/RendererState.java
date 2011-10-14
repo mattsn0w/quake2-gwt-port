@@ -23,6 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.client;
 
+import com.googlecode.gwtquake.shared.render.DynamicLight;
+
+/**
+ * Referenced by Renderer
+ */
 public class RendererState {
 	public int		x, y, width, height;// in virtual screen coordinates
 	public float		fov_x, fov_y;
@@ -40,7 +45,7 @@ public class RendererState {
 	public EntityType	entities[];
 
 	public int		num_dlights;
-	public DynamicLightData	dlights[];
+	public DynamicLight	dlights[];
 
 	public int		num_particles;
 	//public particle_t	particles[];

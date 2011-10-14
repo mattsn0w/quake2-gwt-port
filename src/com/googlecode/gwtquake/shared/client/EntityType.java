@@ -30,7 +30,7 @@ import com.googlecode.gwtquake.shared.util.Math3D;
 // ok!
 public class EntityType implements Cloneable{
 	//ptr
-	public RendererModel model; // opaque type outside refresh
+	public Model model; // opaque type outside refresh
 	public float angles[] = { 0, 0, 0 };
 
 	/*
@@ -55,7 +55,7 @@ public class EntityType implements Cloneable{
 	public float alpha; // ignore if RF_TRANSLUCENT isn't set
 
 	// reference
-	public ModelImage skin; // NULL for inline skin
+	public Image skin; // NULL for inline skin
 	public int flags;
 	
 	

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 import static com.googlecode.gwtquake.shared.common.Constants.CVAR_ARCHIVE;
 import static com.googlecode.gwtquake.shared.common.Constants.CVAR_USERINFO;
@@ -44,9 +44,6 @@ import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.game.Plane;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.ModelLeaf;
-import com.googlecode.gwtquake.shared.render.RendererModel;
 import com.googlecode.gwtquake.shared.util.Math3D;
 import com.googlecode.gwtquake.shared.util.Vargs;
 
@@ -56,7 +53,7 @@ import com.googlecode.gwtquake.shared.util.Vargs;
  * 
  * @author cwei
  */
-public class Main {
+public class Entities {
 
 
 	/*
@@ -95,7 +92,7 @@ public class Main {
 	/**
 	 * R_RotateForEntity
 	 */
-	static final void R_RotateForEntity(EntityType e) {
+	static final void rotateForEntity(EntityType e) {
 	  GlState.gl.glTranslatef(e.origin[0], e.origin[1], e.origin[2]);
 
 	  GlState.gl.glRotatef(e.angles[1], 0, 0, 1);
@@ -114,7 +111,7 @@ public class Main {
 	/**
 	 * R_DrawSpriteModel
 	 */
-	static void R_DrawSpriteModel(EntityType e) {
+	static void drawSpriteModel(EntityType e) {
 		float alpha = 1.0F;
 
 		QuakeFiles.dsprframe_t frame;
@@ -133,20 +130,20 @@ public class Main {
 			alpha = e.alpha;
 
 		if (alpha != 1.0F)
-		  GlState.gl.glEnable(GlAdapter.GL_BLEND);
+		  GlState.gl.glEnable(Gl1Context.GL_BLEND);
 
 		GlState.gl.glColor4f(1, 1, 1, alpha);
 
 		Images.GL_Bind(GlState.currentmodel.skins[e.frame].texnum);
 
-		Images.GL_TexEnv(GlAdapter.GL_MODULATE);
+		Images.GL_TexEnv(Gl1Context.GL_MODULATE);
 
 //		if (alpha == 1.0)
 //		  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 //		else
 //		  gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
-		GlState.gl.glBegin(GlAdapter._GL_QUADS);
+		GlState.gl.glBegin(Gl1Context._GL_QUADS);
 
 		GlState.gl.glTexCoord2f(0, 1);
 		Math3D.VectorMA(e.origin, -frame.origin_y, GlState.vup, GlState.point);
@@ -171,10 +168,10 @@ public class Main {
 		GlState.gl.glEnd();
 
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		Images.GL_TexEnv(GlAdapter.GL_REPLACE);
+		Images.GL_TexEnv(Gl1Context.GL_REPLACE);
 
 		if (alpha != 1.0F)
-		  GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		  GlState.gl.glDisable(Gl1Context.GL_BLEND);
 
 		GlState.gl.glColor4f(1, 1, 1, 1);
 	}
@@ -191,19 +188,19 @@ public class Main {
 			GlState.shadelight[2] = 0.8F;
 		}
 		else {
-			Light.R_LightPoint(GlState.currententity.origin, GlState.shadelight);
+			DynamicLights.R_LightPoint(GlState.currententity.origin, GlState.shadelight);
 		}
 
 		GlState.gl.glPushMatrix();
-		R_RotateForEntity(GlState.currententity);
+		rotateForEntity(GlState.currententity);
 
-		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
 		GlState.gl.glColor3f(GlState.shadelight[0], GlState.shadelight[1], GlState.shadelight[2]);
 
 		// this replaces the TRIANGLE_FAN
 		//glut.glutWireCube(gl, 20);
 
-		GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
+		GlState.gl.glBegin(Gl1Context.GL_TRIANGLE_FAN);
 		GlState.gl.glVertex3f(0, 0, -16);
 		int i;
 		for (i=0 ; i<=4 ; i++) {
@@ -211,7 +208,7 @@ public class Main {
 		}
 		GlState.gl.glEnd();
 		
-		GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
+		GlState.gl.glBegin(Gl1Context.GL_TRIANGLE_FAN);
 		GlState.gl.glVertex3f (0, 0, 16);
 		for (i=4 ; i>=0 ; i--) {
 		  GlState.gl.glVertex3f((float)(16.0f * Math.cos(i * Math.PI / 2)), (float)(16.0f * Math.sin(i * Math.PI / 2)), 0.0f);
@@ -221,7 +218,7 @@ public class Main {
 		
 		GlState.gl.glColor3f(1, 1, 1);
 		GlState.gl.glPopMatrix();
-		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
 	}
 
 	/**
@@ -255,7 +252,7 @@ public class Main {
 						Surfaces.R_DrawBrushModel(GlState.currententity);
 						break;
 					case GlConstants.mod_sprite :
-						R_DrawSpriteModel(GlState.currententity);
+						drawSpriteModel(GlState.currententity);
 						break;
 					default :
 						Com.Error(Constants.ERR_DROP, "Bad modeltype");
@@ -289,7 +286,7 @@ public class Main {
 						Surfaces.R_DrawBrushModel(GlState.currententity);
 						break;
 					case GlConstants.mod_sprite :
-						R_DrawSpriteModel(GlState.currententity);
+						drawSpriteModel(GlState.currententity);
 						break;
 					default :
 						Com.Error(Constants.ERR_DROP, "Bad modeltype");
@@ -311,10 +308,10 @@ public class Main {
 		
 		Images.GL_Bind(GlState.r_particletexture.texnum);
 		GlState.gl.glDepthMask(false); // no z buffering
-		GlState.gl.glEnable(GlAdapter.GL_BLEND);
-		Images.GL_TexEnv(GlAdapter.GL_MODULATE);
+		GlState.gl.glEnable(Gl1Context.GL_BLEND);
+		Images.GL_TexEnv(Gl1Context.GL_MODULATE);
 		
-		GlState.gl.glBegin(GlAdapter.GL_TRIANGLES);
+		GlState.gl.glBegin(Gl1Context.GL_TRIANGLES);
 
 		FloatBuffer sourceVertices = Particles.vertexArray;
 		IntBuffer sourceColors = Particles.colorArray;
@@ -353,10 +350,10 @@ public class Main {
 		}
 		GlState.gl.glEnd();
 		
-		GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glDisable(Gl1Context.GL_BLEND);
 		GlState.gl.glColor4f(1, 1, 1, 1);
 		GlState.gl.glDepthMask(true); // back to normal Z buffering
-		Images.GL_TexEnv(GlAdapter.GL_REPLACE);
+		Images.GL_TexEnv(Gl1Context.GL_REPLACE);
 	}
 
 	/**
@@ -368,23 +365,23 @@ public class Main {
 
 			//gl.glEnableClientState(GLAdapter.GL_VERTEX_ARRAY);
 		  GlState.gl.glVertexPointer(3, 0, Particles.vertexArray);
-		  GlState.gl.glEnableClientState(GlAdapter.GL_COLOR_ARRAY);
+		  GlState.gl.glEnableClientState(Gl1Context.GL_COLOR_ARRAY);
 		  GlState.gl.glColorPointer(4, true, 0, Particles.getColorAsByteBuffer());
 			
 		  GlState.gl.glDepthMask(false);
-		  GlState.gl.glEnable(GlAdapter.GL_BLEND);
-		  GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		  GlState.gl.glEnable(Gl1Context.GL_BLEND);
+		  GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
 		  GlState.gl.glPointSize(GlState.gl_particle_size.value);
 			
-		  GlState.gl.glDrawArrays(GlAdapter.GL_POINTS, 0, GlState.r_newrefdef.num_particles);
+		  GlState.gl.glDrawArrays(Gl1Context.GL_POINTS, 0, GlState.r_newrefdef.num_particles);
 			
-		  GlState.gl.glDisableClientState(GlAdapter.GL_COLOR_ARRAY);
+		  GlState.gl.glDisableClientState(Gl1Context.GL_COLOR_ARRAY);
 			//gl.glDisableClientState(GLAdapter.GL_VERTEX_ARRAY);
 
-		  GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		  GlState.gl.glDisable(Gl1Context.GL_BLEND);
 		  GlState.gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		  GlState.gl.glDepthMask(true);
-		  GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		  GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
 
 		}
 		else {
@@ -403,9 +400,9 @@ public class Main {
 			return;
 
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		GlState.gl.glEnable(GlAdapter.GL_BLEND);
-		GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glEnable(Gl1Context.GL_BLEND);
+		GlState.gl.glDisable(Gl1Context.GL_DEPTH_TEST);
+		GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
 
 		GlState.gl.glLoadIdentity();
 
@@ -415,7 +412,7 @@ public class Main {
 
 		GlState.gl.glColor4f(GlState.v_blend[0], GlState.v_blend[1], GlState.v_blend[2], GlState.v_blend[3]);
 
-		GlState.gl.glBegin(GlAdapter._GL_QUADS);
+		GlState.gl.glBegin(Gl1Context._GL_QUADS);
 
 		GlState.gl.glVertex3f(10, 100, 100);
 		GlState.gl.glVertex3f(10, -100, 100);
@@ -423,27 +420,14 @@ public class Main {
 		GlState.gl.glVertex3f(10, 100, -100);
 		GlState.gl.glEnd();
 
-		GlState.gl.glDisable(GlAdapter.GL_BLEND);
-		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+		GlState.gl.glDisable(Gl1Context.GL_BLEND);
+		GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
 //		gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 
 		GlState.gl.glColor4f(1, 1, 1, 1);
 	}
 
 	// =======================================================================
-
-	/**
-	 * SignbitsForPlane
-	 */
-	static int SignbitsForPlane(Plane out) {
-		// for fast box on planeside test
-		int bits = 0;
-		for (int j = 0; j < 3; j++) {
-			if (out.normal[j] < 0)
-				bits |= (1 << j);
-		}
-		return bits;
-	}
 
 	/**
 	 * R_SetFrustum
@@ -461,7 +445,7 @@ public class Main {
 		for (int i = 0; i < 4; i++) {
 			GlState.frustum[i].type = Constants.PLANE_ANYZ;
 			GlState.frustum[i].dist = Math3D.DotProduct(GlState.r_origin, GlState.frustum[i].normal);
-			GlState.frustum[i].signbits = (byte) SignbitsForPlane(GlState.frustum[i]);
+			GlState.frustum[i].signbits = (byte) Plane.SignbitsForPlane(GlState.frustum[i]);
 		}
 	}
 
@@ -479,7 +463,7 @@ public class Main {
 		Math3D.AngleVectors(GlState.r_newrefdef.viewangles, GlState.vpn, GlState.vright, GlState.vup);
 
 		//	current viewcluster
-		ModelLeaf leaf;
+		Leaf leaf;
 		if ((GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0) {
 			GlState.r_oldviewcluster = GlState.r_viewcluster;
 			GlState.r_oldviewcluster2 = GlState.r_viewcluster2;
@@ -511,16 +495,16 @@ public class Main {
 
 		// clear out the portion of the screen that the NOWORLDMODEL defines
 		if ((GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) != 0) {
-		  GlState.gl.glEnable(GlAdapter.GL_SCISSOR_TEST);
+		  GlState.gl.glEnable(Gl1Context.GL_SCISSOR_TEST);
 		  GlState.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		  GlState.gl.glScissor(
 				GlState.r_newrefdef.x,
 				GlState.vid.height - GlState.r_newrefdef.height - GlState.r_newrefdef.y,
 				GlState.r_newrefdef.width,
 				GlState.r_newrefdef.height);
-		  GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
+		  GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT | Gl1Context.GL_DEPTH_BUFFER_BIT);
 		  GlState.gl.glClearColor(1.0f, 0.0f, 0.5f, 0.5f);
-		  GlState.gl.glDisable(GlAdapter.GL_SCISSOR_TEST);
+		  GlState.gl.glDisable(Gl1Context.GL_SCISSOR_TEST);
 		}
 	}
 
@@ -571,13 +555,13 @@ public class Main {
 		// set up projection matrix
 		//
 		float screenaspect = (float) GlState.r_newrefdef.width / GlState.r_newrefdef.height;
-		GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
+		GlState.gl.glMatrixMode(Gl1Context.GL_PROJECTION);
 		GlState.gl.glLoadIdentity();
 		MYgluPerspective(GlState.r_newrefdef.fov_y, screenaspect, 4, 4096);
 
-		GlState.gl.glCullFace(GlAdapter.GL_FRONT);
+		GlState.gl.glCullFace(Gl1Context.GL_FRONT);
 
-		GlState.gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
+		GlState.gl.glMatrixMode(Gl1Context.GL_MODELVIEW);
 		GlState.gl.glLoadIdentity();
 
 		GlState.gl.glRotatef(-90, 1, 0, 0); // put Z going up
@@ -587,20 +571,20 @@ public class Main {
 		GlState.gl.glRotatef(-GlState.r_newrefdef.viewangles[1], 0, 0, 1);
 		GlState.gl.glTranslatef(-GlState.r_newrefdef.vieworg[0], -GlState.r_newrefdef.vieworg[1], -GlState.r_newrefdef.vieworg[2]);
 
-		GlState.gl.glGetFloat(GlAdapter._GL_MODELVIEW_MATRIX, GlState.r_world_matrix);
+		GlState.gl.glGetFloat(Gl1Context._GL_MODELVIEW_MATRIX, GlState.r_world_matrix);
 		GlState.r_world_matrix.clear();
 
 		//
 		// set drawing parms
 		//
 		if (GlState.gl_cull.value != 0.0f)
-		  GlState.gl.glEnable(GlAdapter.GL_CULL_FACE);
+		  GlState.gl.glEnable(Gl1Context.GL_CULL_FACE);
 		else
-		  GlState.gl.glDisable(GlAdapter.GL_CULL_FACE);
+		  GlState.gl.glDisable(Gl1Context.GL_CULL_FACE);
 
-		GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glDisable(Gl1Context.GL_BLEND);
 //		gl.glDisable(GLAdapter.GL_ALPHA_TEST);
-		GlState.gl.glEnable(GlAdapter.GL_DEPTH_TEST);
+		GlState.gl.glEnable(Gl1Context.GL_DEPTH_TEST);
 	}
 
 	/**
@@ -610,30 +594,30 @@ public class Main {
 		if (GlState.gl_ztrick.value != 0.0f) {
 
 			if (GlState.gl_clear.value != 0.0f) {
-			  GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
+			  GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT);
 			}
 
 			GlState.trickframe++;
 			if ((GlState.trickframe & 1) != 0) {
 				GlState.gldepthmin = 0;
 				GlState.gldepthmax = 0.49999f;
-				GlState.gl.glDepthFunc(GlAdapter.GL_LEQUAL);
+				GlState.gl.glDepthFunc(Gl1Context.GL_LEQUAL);
 			}
 			else {
 				GlState.gldepthmin = 1;
 				GlState.gldepthmax = 0.5f;
-				GlState.gl.glDepthFunc(GlAdapter.GL_GEQUAL);
+				GlState.gl.glDepthFunc(Gl1Context.GL_GEQUAL);
 			}
 		}
 		else {
 			if (GlState.gl_clear.value != 0.0f)
-			  GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT | GlAdapter.GL_DEPTH_BUFFER_BIT);
+			  GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT | Gl1Context.GL_DEPTH_BUFFER_BIT);
 			else
-			  GlState.gl.glClear(GlAdapter.GL_DEPTH_BUFFER_BIT);
+			  GlState.gl.glClear(Gl1Context.GL_DEPTH_BUFFER_BIT);
 
 			GlState.gldepthmin = 0;
 			GlState.gldepthmax = 1;
-			GlState.gl.glDepthFunc(GlAdapter.GL_LEQUAL);
+			GlState.gl.glDepthFunc(Gl1Context.GL_LEQUAL);
 		}
 		GlState.gl.glDepthRange(GlState.gldepthmin, GlState.gldepthmax);
 	}
@@ -669,7 +653,7 @@ public class Main {
 			GlState.c_alias_polys = 0;
 		}
 
-		Light.R_PushDlights();
+		DynamicLights.push();
 
 		if (GlState.gl_finish.value != 0.0f)
 		  GlState.gl.glFinish();
@@ -686,7 +670,7 @@ public class Main {
 
 		R_DrawEntitiesOnList();
 
-		Light.R_RenderDlights();
+		DynamicLights.render();
 
 		R_DrawParticles();
 
@@ -708,14 +692,14 @@ public class Main {
 	static void R_SetGL2D() {
 		// set 2D virtual screen size
 	  GlState.gl.glViewport(0, 0, GlState.vid.width, GlState.vid.height);
-	  GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
+	  GlState.gl.glMatrixMode(Gl1Context.GL_PROJECTION);
 	  GlState.gl.glLoadIdentity();
 	  GlState.gl.glOrtho(0, GlState.vid.width, GlState.vid.height, 0, -99999, 99999);
-	  GlState.gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
+	  GlState.gl.glMatrixMode(Gl1Context.GL_MODELVIEW);
 	  GlState.gl.glLoadIdentity();
-	  GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-	  GlState.gl.glDisable(GlAdapter.GL_CULL_FACE);
-	  GlState.gl.glDisable(GlAdapter.GL_BLEND);
+	  GlState.gl.glDisable(Gl1Context.GL_DEPTH_TEST);
+	  GlState.gl.glDisable(Gl1Context.GL_CULL_FACE);
+	  GlState.gl.glDisable(Gl1Context.GL_BLEND);
 //	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
 	  GlState.gl.glColor4f(1, 1, 1, 1);
 	}
@@ -729,7 +713,7 @@ public class Main {
 
 		// save off light value for server to look at (BIG HACK!)
 
-		Light.R_LightPoint(GlState.r_newrefdef.vieworg, GlState.light);
+		DynamicLights.R_LightPoint(GlState.r_newrefdef.vieworg, GlState.light);
 
 		// pick the greatest component, which should be the same
 		// as the mono value returned by software
@@ -858,8 +842,8 @@ public class Main {
 	static boolean R_Init2() {
 		GlState.qglPointParameterfEXT = true;
 		GlState.qglActiveTextureARB = true;
-		GlState.GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
-		GlState.GL_TEXTURE1 = GlAdapter.GL_TEXTURE1;
+		GlState.GL_TEXTURE0 = Gl1Context.GL_TEXTURE0;
+		GlState.GL_TEXTURE1 = Gl1Context.GL_TEXTURE1;
 
 		if (!(GlState.qglActiveTextureARB))
 			return false;
@@ -872,7 +856,7 @@ public class Main {
 		Drawing.Draw_InitLocal();
 
 		int err = GlState.gl.glGetError();
-		if (err != GlAdapter.GL_NO_ERROR)
+		if (err != Gl1Context.GL_NO_ERROR)
 			Window.Printf(
 				Constants.PRINT_ALL,
 				"glGetError() = 0x%x\n\t%s\n",
@@ -928,7 +912,7 @@ public class Main {
 		Images.GL_SetTexturePalette(GlState.r_rawpalette);
 
 		GlState.gl.glClearColor(0, 0, 0, 0);
-		GlState.gl.glClear(GlAdapter.GL_COLOR_BUFFER_BIT);
+		GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT);
 		GlState.gl.glClearColor(1f, 0f, 0.5f, 0.5f);
 	}
 
@@ -965,8 +949,8 @@ public class Main {
 			Math3D.VectorAdd(GlState.start_points[i], GlState.direction, GlState.end_points[i]);
 		}
 
-		GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
-		GlState.gl.glEnable(GlAdapter.GL_BLEND);
+		GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
+		GlState.gl.glEnable(Gl1Context.GL_BLEND);
 		GlState.gl.glDepthMask(false);
 
 		float r = (QuakeImage.PALETTE_ABGR[e.skinnum & 0xFF]) & 0xFF;
@@ -979,7 +963,7 @@ public class Main {
 
 		GlState.gl.glColor4f(r, g, b, e.alpha);
 
-		GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_STRIP);
+		GlState.gl.glBegin(Gl1Context.GL_TRIANGLE_STRIP);
 		
 		float[] v;
 		
@@ -995,8 +979,8 @@ public class Main {
 		}
 		GlState.gl.glEnd();
 
-		GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
-		GlState.gl.glDisable(GlAdapter.GL_BLEND);
+		GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
+		GlState.gl.glDisable(Gl1Context.GL_BLEND);
 		GlState.gl.glDepthMask(true);
 	}
 }

@@ -52,4 +52,17 @@ public class Plane
 		pad[0] = 0;
 		pad[1] = 0;
 	}
+
+	/**
+	 * SignbitsForPlane
+	 */
+	public static int SignbitsForPlane(Plane out) {
+		// for fast box on planeside test
+		int bits = 0;
+		for (int j = 0; j < 3; j++) {
+			if (out.normal[j] < 0)
+				bits |= (1 << j);
+		}
+		return bits;
+	}
 }

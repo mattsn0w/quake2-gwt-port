@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.client.Dimension;
@@ -34,10 +34,6 @@ import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
-import com.googlecode.gwtquake.shared.render.DisplayMode;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.ModelImage;
-import com.googlecode.gwtquake.shared.render.RendererModel;
 
 
 /**
@@ -59,7 +55,7 @@ public abstract class GlRenderer {
 		// pre init
 		if (!R_Init(vid_xpos, vid_ypos)) return false;
 		// post init		
-		boolean ok = Main.R_Init2();
+		boolean ok = Entities.R_Init2();
 		if (!ok) {
 			Window.Printf(Constants.PRINT_ALL, "Missing multi-texturing for LWJGL renderer\n");
 		}
@@ -78,7 +74,7 @@ public abstract class GlRenderer {
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#Shutdown()
 	 */
 	public void Shutdown() {
-		Main.R_Shutdown();
+		Entities.R_Shutdown();
 	}
 
 	/** 
@@ -91,28 +87,28 @@ public abstract class GlRenderer {
 	/** 
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#RegisterModel(java.lang.String)
 	 */
-	public final void RegisterModel(String name, AsyncCallback<RendererModel> callback) {
+	public final void RegisterModel(String name, AsyncCallback<Model> callback) {
 		Models.R_RegisterModel(name, callback);
 	}
 
 	/** 
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#RegisterSkin(java.lang.String)
 	 */
-	public final ModelImage RegisterSkin(String name) {
+	public final Image RegisterSkin(String name) {
 		return Images.R_RegisterSkin(name);
 	}
 	
 	/** 
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#RegisterPic(java.lang.String)
 	 */
-	public ModelImage RegisterPic(String name) {
-		return Drawing.Draw_FindPic(name);
+	public Image RegisterPic(String name) {
+		return Images.findPicture(name);
 	}
 	/** 
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#SetSky(java.lang.String, float, float[])
 	 */
 	public final void SetSky(String name, float rotate, float[] axis) {
-		Warp.R_SetSky(name, rotate, axis);
+		SkyBox.R_SetSky(name, rotate, axis);
 	}
 
 	/** 
@@ -126,12 +122,12 @@ public abstract class GlRenderer {
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#RenderFrame(com.googlecode.gwtquake.shared.client.RendererState)
 	 */
 	public final void RenderFrame(RendererState fd) {
-		Main.R_RenderFrame(fd);
+		Entities.R_RenderFrame(fd);
 	}
 
   public void DrawChar(int x, int y, int ch) {
     Images.GL_Bind(Images.draw_chars.texnum);
-    GlState.gl.glBegin (GlAdapter._GL_QUADS);
+    GlState.gl.glBegin (Gl1Context._GL_QUADS);
     DrawChar_(x, y, ch);
     GlState.gl.glEnd();
   }
@@ -150,7 +146,7 @@ public abstract class GlRenderer {
 
   public void DrawString(int x, int y, String str, int ofs, int len, boolean alt) {
     Images.GL_Bind(Images.draw_chars.texnum);
-    GlState.gl.glBegin (GlAdapter._GL_QUADS);
+    GlState.gl.glBegin (Gl1Context._GL_QUADS);
     for (int i = 0; i < len; ++i) {
       DrawChar_(x, y, str.charAt(ofs + i) + (alt ? 128 : 0));
       x += 8;
@@ -160,7 +156,7 @@ public abstract class GlRenderer {
 
   public void DrawString(int x, int y, byte[] str, int ofs, int len) {
     Images.GL_Bind(Images.draw_chars.texnum);
-    GlState.gl.glBegin (GlAdapter._GL_QUADS);
+    GlState.gl.glBegin (Gl1Context._GL_QUADS);
     for (int i = 0; i < len; ++i) {
       DrawChar_(x, y, str[ofs + i]);
       x += 8;
@@ -172,7 +168,7 @@ public abstract class GlRenderer {
 	 * @see com.googlecode.gwtquake.shared.client.Renderer#CinematicSetPalette(byte[])
 	 */
 	public void CinematicSetPalette(byte[] palette) {
-		Main.R_SetPalette(palette);
+		Entities.R_SetPalette(palette);
 	}
 
 
@@ -205,9 +201,9 @@ public abstract class GlRenderer {
 	
 	public void DrawStretchPic (int x, int y, int w, int h, String pic) {
       
-      ModelImage image;
+      Image image;
 
-      image = Drawing.Draw_FindPic(pic);
+      image = Images.findPicture(pic);
       if (image == null)
       {
           Window.Printf (Constants.PRINT_ALL, "Can't find pic: " + pic +'\n');
@@ -221,7 +217,7 @@ public abstract class GlRenderer {
 //      gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
       Images.GL_Bind(image.texnum);
-      GlState.gl.glBegin (GlAdapter.SIMPLE_TEXUTRED_QUAD);
+      GlState.gl.glBegin (Gl1Context.SIMPLE_TEXUTRED_QUAD);
       GlState.gl.glVertex2f (x, y);
       GlState.gl.glVertex2f (x+w, y);
       GlState.gl.glVertex2f (x+w, y+h);
@@ -233,7 +229,7 @@ public abstract class GlRenderer {
   }
 
 	public final void DrawGetPicSize(Dimension dim, String pic)    {
-      ModelImage image = Drawing.Draw_FindPic(pic);
+      Image image = Images.findPicture(pic);
       dim.width = (image != null) ? image.width : -1;
       dim.height = (image != null) ? image.height : -1;
   }
@@ -272,9 +268,9 @@ public abstract class GlRenderer {
     =============
     */
     public final void DrawTileClear(int x, int y, int w, int h, String pic) {
-        ModelImage  image;
+        Image  image;
 
-        image = Drawing.Draw_FindPic(pic);
+        image = Images.findPicture(pic);
         if (image == null)
         {
             Window.Printf(Constants.PRINT_ALL, "Can't find pic: " + pic + '\n');
@@ -285,7 +281,7 @@ public abstract class GlRenderer {
 //        gl.glDisable(GLAdapter.GL_ALPHA_TEST);
 
         Images.GL_Bind(image.texnum);
-        GlState.gl.glBegin (GlAdapter._GL_QUADS);
+        GlState.gl.glBegin (Gl1Context._GL_QUADS);
         GlState.gl.glTexCoord2f(x/64.0f, y/64.0f);
         GlState.gl.glVertex2f (x, y);
         GlState.gl.glTexCoord2f( (x+w)/64.0f, y/64.0f);
@@ -316,7 +312,7 @@ public abstract class GlRenderer {
         if ( colorIndex > 255)
             Com.Error(Constants.ERR_FATAL, "Draw_Fill: bad color");
 
-        GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+        GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
 
         int color = QuakeImage.PALETTE_ABGR[colorIndex]; 
 
@@ -326,7 +322,7 @@ public abstract class GlRenderer {
             (byte)((color >> 16) & 0xff) // b
         );
 
-        GlState.gl.glBegin (GlAdapter._GL_QUADS);
+        GlState.gl.glBegin (Gl1Context._GL_QUADS);
 
         GlState.gl.glVertex2f(x,y);
         GlState.gl.glVertex2f(x+w, y);
@@ -335,7 +331,7 @@ public abstract class GlRenderer {
 
         GlState.gl.glEnd();
         GlState.gl.glColor3f(1,1,1);
-        GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+        GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
     }
 
     //=============================================================================
@@ -349,10 +345,10 @@ public abstract class GlRenderer {
      * @see com.googlecode.gwtquake.shared.client.Renderer#DrawFadeScreen()
      */
     public void DrawFadeScreen() {
-      GlState.gl.glEnable(GlAdapter.GL_BLEND);
-      GlState.gl.glDisable(GlAdapter.GL_TEXTURE_2D);
+      GlState.gl.glEnable(Gl1Context.GL_BLEND);
+      GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
       GlState.gl.glColor4f(0, 0, 0, 0.8f);
-      GlState.gl.glBegin(GlAdapter._GL_QUADS);
+      GlState.gl.glBegin(Gl1Context._GL_QUADS);
 
       GlState.gl.glVertex2f(0,0);
       GlState.gl.glVertex2f(GlState.vid.width, 0);
@@ -361,8 +357,8 @@ public abstract class GlRenderer {
 
       GlState.gl.glEnd();
       GlState.gl.glColor4f(1,1,1,1);
-      GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
-      GlState.gl.glDisable(GlAdapter.GL_BLEND);
+      GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
+      GlState.gl.glDisable(Gl1Context.GL_BLEND);
     }
 
     /*
@@ -372,9 +368,9 @@ public abstract class GlRenderer {
     */
     public void DrawPic(int x, int y, String pic)
     {
-        ModelImage image;
+        Image image;
 
-        image = Drawing.Draw_FindPic(pic);
+        image = Images.findPicture(pic);
         if (image == null)
         {
             Window.Printf(Constants.PRINT_ALL, "Can't find pic: " +pic + '\n');
@@ -388,7 +384,7 @@ public abstract class GlRenderer {
 
         Images.GL_Bind(image.texnum);
 
-        GlState.gl.glBegin (GlAdapter.SIMPLE_TEXUTRED_QUAD);
+        GlState.gl.glBegin (Gl1Context.SIMPLE_TEXUTRED_QUAD);
         GlState.gl.glVertex2f (x, y);
         GlState.gl.glVertex2f (x+image.width, y);
         GlState.gl.glVertex2f (x+image.width, y+image.height);
@@ -448,7 +444,7 @@ public abstract class GlRenderer {
                     frac += fracstep;
                 }
             }
-            GlState.gl.glTexImage2D (GlAdapter.GL_TEXTURE_2D, 0, GlAdapter.GL_RGBA/*gl_tex_solid_format*/, 256, 256, 0, GlAdapter.GL_RGBA, GlAdapter.GL_UNSIGNED_BYTE, Drawing.image32);
+            GlState.gl.glTexImage2D (Gl1Context.GL_TEXTURE_2D, 0, Gl1Context.GL_RGBA/*gl_tex_solid_format*/, 256, 256, 0, Gl1Context.GL_RGBA, Gl1Context.GL_UNSIGNED_BYTE, Drawing.image32);
 //      }
 //      else
 //      {
@@ -481,13 +477,13 @@ public abstract class GlRenderer {
 //                         GLAdapter.GL_UNSIGNED_BYTE, 
 //                         image8 );
 //      }
-        GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, GlAdapter.GL_LINEAR);
-        GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, GlAdapter.GL_LINEAR);
+        GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, Gl1Context.GL_LINEAR);
+        GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, Gl1Context.GL_LINEAR);
 
 //      if ( ( gl_config.renderer == GL_RENDERER_MCD ) || ( (gl_config.renderer & GL_RENDERER_RENDITION) != 0 ) ) 
 //        gl.glDisable (GLAdapter.GL_ALPHA_TEST);
 
-        GlState.gl.glBegin (GlAdapter._GL_QUADS);
+        GlState.gl.glBegin (Gl1Context._GL_QUADS);
         GlState.gl.glTexCoord2f (0, 0);
         GlState.gl.glVertex2f (x, y);
         GlState.gl.glTexCoord2f (1, 0);
@@ -535,7 +531,7 @@ public abstract class GlRenderer {
 
 
           GlState.gl.log("searching new display mode");
-        DisplayMode displayMode = GlBase.findDisplayMode(newDim);
+        DisplayMode displayMode = DisplayModes.findDisplayMode(newDim);
           GlState.gl.log("copying w/h");
         newDim.width = displayMode.getWidth();
         newDim.height = displayMode.getHeight();
@@ -610,7 +606,7 @@ public abstract class GlRenderer {
 
         Images.Draw_GetPalette();
 
-        Main.R_Register();
+        Entities.R_Register();
 
         // set our "safe" modes
         GlState.gl_state.prev_mode = 3;
@@ -679,14 +675,14 @@ public abstract class GlRenderer {
         ** go into 2D mode
         */
         GlState.gl.glViewport(0, 0, GlState.vid.width, GlState.vid.height);
-        GlState.gl.glMatrixMode(GlAdapter.GL_PROJECTION);
+        GlState.gl.glMatrixMode(Gl1Context.GL_PROJECTION);
         GlState.gl.glLoadIdentity();
         GlState.gl.glOrtho(0, GlState.vid.width, GlState.vid.height, 0, -99999, 99999);
-        GlState.gl.glMatrixMode(GlAdapter.GL_MODELVIEW);
+        GlState.gl.glMatrixMode(Gl1Context.GL_MODELVIEW);
         GlState.gl.glLoadIdentity();
-        GlState.gl.glDisable(GlAdapter.GL_DEPTH_TEST);
-        GlState.gl.glDisable(GlAdapter.GL_CULL_FACE);
-        GlState.gl.glDisable(GlAdapter.GL_BLEND);
+        GlState.gl.glDisable(Gl1Context.GL_DEPTH_TEST);
+        GlState.gl.glDisable(Gl1Context.GL_CULL_FACE);
+        GlState.gl.glDisable(Gl1Context.GL_BLEND);
 //      gl.glEnable(GLAdapter.GL_ALPHA_TEST);
         GlState.gl.glColor4f(1, 1, 1, 1);
 
@@ -698,9 +694,9 @@ public abstract class GlRenderer {
 
             if (GlState.camera_separation == 0 || !GlState.stereo_enabled) {
                 if (GlState.gl_drawbuffer.string.equalsIgnoreCase("GL_FRONT"))
-                  GlState.gl.glDrawBuffer(GlAdapter.GL_FRONT);
+                  GlState.gl.glDrawBuffer(Gl1Context.GL_FRONT);
                 else
-                  GlState.gl.glDrawBuffer(GlAdapter.GL_BACK);
+                  GlState.gl.glDrawBuffer(Gl1Context.GL_BACK);
             }
         }
 
@@ -730,7 +726,7 @@ public abstract class GlRenderer {
         //
         // clear screen if desired
         //
-        Main.R_Clear();
+        Entities.R_Clear();
     }
 
 }

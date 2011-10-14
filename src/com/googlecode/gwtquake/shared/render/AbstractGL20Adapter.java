@@ -21,7 +21,7 @@
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 
 
@@ -32,9 +32,6 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
-import com.googlecode.gwtquake.shared.render.DisplayMode;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.GlDebugWrapper;
 
 
 /**
@@ -42,10 +39,7 @@ import com.googlecode.gwtquake.shared.render.GlDebugWrapper;
  * 
  * @author haustein@google.com (Stefan Haustein)
  */
-public abstract class AbstractGL20Adapter extends GlAdapter {
-
-  // looks like the buffer access semantics may be different for lwjgl and JSR239? :-/
-  protected static final boolean AUTO_REWIND = true;
+public abstract class AbstractGL20Adapter extends Gl1Context {
 
   private int matrixMode = GL_MODELVIEW;
   
