@@ -26,8 +26,8 @@ package com.googlecode.gwtquake.shared.client;
 import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
-import com.googlecode.gwtquake.shared.render.ModelImage;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.Image;
+import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.sys.KBD;
 
 
@@ -65,9 +65,9 @@ public interface Renderer {
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	void BeginRegistration(String map, Command continueCommand);
-	void RegisterModel(String name, AsyncCallback<RendererModel> callback);
-	ModelImage RegisterSkin(String name);
-	ModelImage RegisterPic(String name);
+	void RegisterModel(String name, AsyncCallback<Model> callback);
+	Image RegisterSkin(String name);
+	Image RegisterPic(String name);
 	void SetSky(String name, float rotate, /* vec3_t */
 	float[] axis);
 	void EndRegistration();
@@ -115,5 +115,5 @@ public interface Renderer {
   void GL_ResampleTexture(int[] data, int width, int height, int[] scaled,
       int scaled_width, int scaled_height);
 
-  ModelImage GL_LoadNewImage(String name, int type);
+  Image GL_LoadNewImage(String name, int type);
 }

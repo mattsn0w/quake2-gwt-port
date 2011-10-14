@@ -21,15 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.GlPolygon;
-import com.googlecode.gwtquake.shared.render.ModelSurface;
 import com.googlecode.gwtquake.shared.util.Math3D;
 import com.googlecode.gwtquake.shared.util.Vec3Cache;
 
@@ -40,7 +37,7 @@ import com.googlecode.gwtquake.shared.util.Vec3Cache;
  *  
  * @author cwei
  */
-public class Warp  {
+public class SkyBox  {
 	/**
 	 * BoundPoly
 	 * @param numverts
@@ -152,7 +149,7 @@ public class Warp  {
 		// poly = Hunk_Alloc (sizeof(glpoly_t) + ((numverts-4)+2) * VERTEXSIZE*sizeof(float));
 
 		// init polys
-		GlPolygon poly = GlPolygon.create(numverts + 2);
+		Polygon poly = Polygons.create(numverts + 2);
 
 		poly.next = GlState.warpface.polys;
 		GlState.warpface.polys = poly;
@@ -163,9 +160,9 @@ public class Warp  {
 		float total_t = 0;
 		float s, t;
 		for (i = 0; i < numverts; i++) {
-            poly.x(i + 1, verts[i][0]);
-            poly.y(i + 1, verts[i][1]);
-            poly.z(i + 1, verts[i][2]);
+            poly.setX(i + 1, verts[i][0]);
+            poly.setY(i + 1, verts[i][1]);
+            poly.setZ(i + 1, verts[i][2]);
             s = Math3D.DotProduct(verts[i], GlState.warpface.texinfo.vecs[0]);
             t = Math3D.DotProduct(verts[i], GlState.warpface.texinfo.vecs[1]);
 
@@ -173,24 +170,24 @@ public class Warp  {
             total_t += t;
             Math3D.VectorAdd(total, verts[i], total);
 
-            poly.s1(i + 1, s);
-            poly.t1(i + 1, t);
+            poly.setS1(i + 1, s);
+            poly.setT1(i + 1, t);
         }
         
         float scale = 1.0f / numverts; 
-        poly.x(0, total[0] * scale);
-        poly.y(0, total[1] * scale);
-        poly.z(0, total[2] * scale);
-        poly.s1(0, total_s * scale);
-        poly.t1(0, total_t * scale);
+        poly.setX(0, total[0] * scale);
+        poly.setY(0, total[1] * scale);
+        poly.setZ(0, total[2] * scale);
+        poly.setS1(0, total_s * scale);
+        poly.setT1(0, total_t * scale);
 
-        poly.x(i + 1, poly.x(1));
-        poly.y(i + 1, poly.y(1));
-        poly.z(i + 1, poly.z(1));
-        poly.s1(i + 1, poly.s1(1));
-        poly.t1(i + 1, poly.t1(1));
-        poly.s2(i + 1, poly.s2(1));
-        poly.t2(i + 1, poly.t2(1));
+        poly.setX(i + 1, poly.getX(1));
+        poly.setY(i + 1, poly.getY(1));
+        poly.setZ(i + 1, poly.getZ(1));
+        poly.setS1(i + 1, poly.getS1(1));
+        poly.setT1(i + 1, poly.getT1(1));
+        poly.setS2(i + 1, poly.getS2(1));
+        poly.setT2(i + 1, poly.getT2(1));
         
         Vec3Cache.release(); // total
 	}
@@ -203,7 +200,7 @@ public class Warp  {
 	 * boundaries so that turbulent and sky warps
 	 * can be done reasonably.
 	 */
-    static void GL_SubdivideSurface(ModelSurface fa) {
+    static void GL_SubdivideSurface(Surface fa) {
         float[][] verts = tmpVerts;
         float[] vec;
         GlState.warpface = fa;
@@ -224,46 +221,7 @@ public class Warp  {
         SubdividePolygon(numverts, verts);
     }
 
-/**
-	 * EmitWaterPolys
-	 * Does a water warp on the pre-fragmented glpoly_t chain
-	 */
-	static void EmitWaterPolys(ModelSurface fa)
-	{
-		float rdt = GlState.r_newrefdef.time;
 
-		float scroll;
-		if ((fa.texinfo.flags & Constants.SURF_FLOWING) != 0)
-			scroll = -64 * ( (GlState.r_newrefdef.time*0.5f) - (int)(GlState.r_newrefdef.time*0.5f) );
-		else
-			scroll = 0;
-		
-		int i;
-		float s, t, os, ot;
-		GlPolygon p, bp;
-        for (bp = fa.polys; bp != null; bp = bp.next) {
-            p = bp;
-
-            GlState.gl.glBegin(GlAdapter.GL_TRIANGLE_FAN);
-            for (i = 0; i < p.numverts; i++) {
-                os = p.s1(i);
-                ot = p.t1(i);
-
-                s = os
-                        + GlConstants.SIN[(int) ((ot * 0.125f + GlState.r_newrefdef.time) * GlConstants.TURBSCALE) & 255];
-                s += scroll;
-                s *= (1.0f / 64);
-
-                t = ot
-                        + GlConstants.SIN[(int) ((os * 0.125f + rdt) * GlConstants.TURBSCALE) & 255];
-                t *= (1.0f / 64);
-
-                GlState.gl.glTexCoord2f(s, t);
-                GlState.gl.glVertex3f(p.x(i), p.y(i), p.z(i));
-            }
-            GlState.gl.glEnd();
-        }
-	}
 
 //	  ===================================================================
 
@@ -493,14 +451,14 @@ public class Warp  {
 	/**
 	 * R_AddSkySurface
 	 */
-	static void R_AddSkySurface(ModelSurface fa)
+	static void R_AddSkySurface(Surface fa)
 	{
 	    // calculate vertex values for sky box
-        for (GlPolygon p = fa.polys; p != null; p = p.next) {
+        for (Polygon p = fa.polys; p != null; p = p.next) {
             for (int i = 0; i < p.numverts; i++) {
-                verts[i][0] = p.x(i) - GlState.r_origin[0];
-                verts[i][1] = p.y(i) - GlState.r_origin[1];
-                verts[i][2] = p.z(i) - GlState.r_origin[2];
+                verts[i][0] = p.getX(i) - GlState.r_origin[0];
+                verts[i][1] = p.getY(i) - GlState.r_origin[1];
+                verts[i][2] = p.getZ(i) - GlState.r_origin[2];
             }
             ClipSkyPolygon(p.numverts, verts, 0);
         }
@@ -607,7 +565,7 @@ public class Warp  {
 
 			Images.GL_Bind(GlState.sky_images[skytexorder[i]].texnum);
 			
-			GlState.gl.glBegin(GlAdapter._GL_QUADS);
+			GlState.gl.glBegin(Gl1Context._GL_QUADS);
 			MakeSkyVec(skymins[0][i], skymins[1][i], i);
 			MakeSkyVec(skymins[0][i], skymaxs[1][i], i);
 			MakeSkyVec(skymaxs[0][i], skymaxs[1][i], i);
@@ -646,7 +604,7 @@ public class Warp  {
 
 //			gl.log("loadSky:" + pathname);
 			
-			GlState.sky_images[i] = Images.GL_FindImage(pathname, QuakeImage.it_sky);
+			GlState.sky_images[i] = Images.findTexture(pathname, QuakeImage.it_sky);
 
 			if (GlState.sky_images[i] == null)
 				GlState.sky_images[i] = GlState.r_notexture;

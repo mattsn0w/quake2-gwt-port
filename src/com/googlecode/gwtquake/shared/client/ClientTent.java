@@ -29,7 +29,7 @@ import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.PlayerState;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.sound.Sfx;
 import com.googlecode.gwtquake.shared.sound.Sound;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -82,7 +82,7 @@ public class ClientTent {
 
         int dest_entity;
 
-        RendererModel model;
+        Model model;
 
         int endtime;
 
@@ -174,39 +174,39 @@ public class ClientTent {
 
     static Sfx cl_sfx_footsteps[] = new Sfx[4];
 
-    static RendererModel cl_mod_explode;
+    static Model cl_mod_explode;
 
-    static RendererModel cl_mod_smoke;
+    static Model cl_mod_smoke;
 
-    static RendererModel cl_mod_flash;
+    static Model cl_mod_flash;
 
-    static RendererModel cl_mod_parasite_segment;
+    static Model cl_mod_parasite_segment;
 
-    static RendererModel cl_mod_grapple_cable;
+    static Model cl_mod_grapple_cable;
 
-    static RendererModel cl_mod_parasite_tip;
+    static Model cl_mod_parasite_tip;
 
-    static RendererModel cl_mod_explo4;
+    static Model cl_mod_explo4;
 
-    static RendererModel cl_mod_bfg_explo;
+    static Model cl_mod_bfg_explo;
 
-    static RendererModel cl_mod_powerscreen;
+    static Model cl_mod_powerscreen;
 
     //	   RAFAEL
-    static RendererModel cl_mod_plasmaexplo;
+    static Model cl_mod_plasmaexplo;
 
     //	  ROGUE
     static Sfx cl_sfx_lightning;
 
     static Sfx cl_sfx_disrexp;
 
-    static RendererModel cl_mod_lightning;
+    static Model cl_mod_lightning;
 
-    static RendererModel cl_mod_heatbeam;
+    static Model cl_mod_heatbeam;
 
-    static RendererModel cl_mod_monster_heatbeam;
+    static Model cl_mod_monster_heatbeam;
 
-    static RendererModel cl_mod_explo4_big;
+    static Model cl_mod_explo4_big;
 
     //	  ROGUE
     /*
@@ -256,7 +256,7 @@ public class ClientTent {
     /*
      * ================= CL_RegisterTEntModels =================
      */
-    private abstract static class LoadCallback implements AsyncCallback<RendererModel> {
+    private abstract static class LoadCallback implements AsyncCallback<Model> {
       public void onFailure(Throwable e) {
         System.err.println("Unable to load model: " + e.getMessage());
       }
@@ -265,79 +265,79 @@ public class ClientTent {
     static void RegisterTEntModels() {
       // TODO(jgw): There's gotta be a simpler way to do this.
       Globals.re.RegisterModel("models/objects/explode/tris.md2", new LoadCallback() {        
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_explode = response;
         }
       });
 
       Globals.re.RegisterModel("models/objects/smoke/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_smoke = response;
         }
      });
 
       Globals.re.RegisterModel("models/objects/flash/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_flash = response;
         }
      });
 
       Globals.re.RegisterModel("models/monsters/parasite/segment/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_parasite_segment = response;
         }
      });
 
       Globals.re.RegisterModel("models/ctf/segment/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_grapple_cable = response;
         }
      });
 
       Globals.re.RegisterModel("models/monsters/parasite/tip/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_parasite_tip = response;
         }
      });
 
       Globals.re.RegisterModel("models/objects/r_explode/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_explo4 = response;
         }
      });
 
       Globals.re.RegisterModel("sprites/s_bfg2.sp2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_bfg_explo = response;
         }
      });
 
       Globals.re.RegisterModel("models/items/armor/effect/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_powerscreen = response;
         }
      });
 
       Globals.re.RegisterModel("models/objects/r_explode2/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_explo4_big = response;
         }
      });
 
       Globals.re.RegisterModel("models/proj/lightning/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_lightning = response;
         }
      });
 
       Globals.re.RegisterModel("models/proj/beam/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_heatbeam = response;
         }
      });
 
       Globals.re.RegisterModel("models/proj/widowbeam/tris.md2", new LoadCallback() {
-        public void onSuccess(RendererModel response) {
+        public void onSuccess(Model response) {
           cl_mod_monster_heatbeam = response;
         }
      });
@@ -441,7 +441,7 @@ public class ClientTent {
      * CL_ParseBeam
      * =================
      */
-    static int ParseBeam(RendererModel model) {
+    static int ParseBeam(Model model) {
         int ent;
         float[] start = new float[3];
         float[] end = new float[3];
@@ -486,7 +486,7 @@ public class ClientTent {
     /*
      * ================= CL_ParseBeam2 =================
      */
-    static int ParseBeam2(RendererModel model) {
+    static int ParseBeam2(Model model) {
         int ent;
         float[] start = new float[3];
         float[] end = new float[3];
@@ -537,7 +537,7 @@ public class ClientTent {
      * ================= CL_ParsePlayerBeam - adds to the cl_playerbeam array
      * instead of the cl_beams array =================
      */
-    static int ParsePlayerBeam(RendererModel model) {
+    static int ParsePlayerBeam(Model model) {
         int ent;
         float[] start = new float[3];
         float[] end = new float[3];
@@ -602,7 +602,7 @@ public class ClientTent {
     /*
      * ================= CL_ParseLightning =================
      */
-    static int ParseLightning(RendererModel model) {
+    static int ParseLightning(Model model) {
         int srcEnt, destEnt;
         beam_t[] b;
         int i;

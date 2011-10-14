@@ -31,11 +31,11 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlDebugWrapper extends GlAdapter {
+public class GlDebugWrapper extends Gl1Context {
 
-	final GlAdapter gl;
+	final Gl1Context gl;
 
-	public GlDebugWrapper(GlAdapter gl) {
+	public GlDebugWrapper(Gl1Context gl) {
 		this.gl = gl;
 	}
 

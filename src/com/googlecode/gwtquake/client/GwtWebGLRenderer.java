@@ -38,14 +38,13 @@ import com.google.gwt.html5.client.CanvasPixelArray;
 import com.google.gwt.html5.client.CanvasRenderingContext2D;
 import com.google.gwt.html5.client.ImageData;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Image;
 import com.googlecode.gwtquake.shared.client.Renderer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ResourceLoader;
-import com.googlecode.gwtquake.shared.render.ModelImage;
-import com.googlecode.gwtquake.shared.render.gl.GlRenderer;
-import com.googlecode.gwtquake.shared.render.gl.GlState;
-import com.googlecode.gwtquake.shared.render.gl.Images;
+import com.googlecode.gwtquake.shared.render.GlRenderer;
+import com.googlecode.gwtquake.shared.render.GlState;
+import com.googlecode.gwtquake.shared.render.Images;
+import com.googlecode.gwtquake.shared.render.Image;
 import com.googlecode.gwtquake.shared.sys.KBD;
 
 import static com.google.gwt.webgl.client.WebGLRenderingContext.*;
@@ -109,7 +108,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	WebGLAdapter webGL;
 	CanvasElement canvas1;
 	CanvasElement canvas2;
-	ArrayList<ModelImage> imageQueue = new ArrayList<ModelImage>();
+	ArrayList<Image> imageQueue = new ArrayList<Image>();
 	int waitingForImages;
 	VideoElement video;
 	CanvasElement canvas;
@@ -202,8 +201,8 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
     return $wnd.__imageSizes[name];
   }-*/;
 	
-	public ModelImage GL_LoadNewImage(final String name, int type) {
-		final ModelImage image = Images.GL_Find_free_image_t(name, type);
+	public Image GL_LoadNewImage(final String name, int type) {
+		final Image image = Images.GL_Find_free_image_t(name, type);
 
 		int cut = name.lastIndexOf('.');
 		String normalizedName = cut == -1 ? name : name.substring(0, cut);
@@ -239,7 +238,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	    Document doc = Document.get();
 
 	    while(!ResourceLoader.Pump() && waitingForImages < MAX_IMAGE_REQUEST_COUNT && imageQueue.size() > 0) {
-	      final ModelImage image = imageQueue.remove(0);
+	      final Image image = imageQueue.remove(0);
 
 	      final ImageElement img = doc.createImageElement();
               String picUrl = convertPicName(image.name, image.type);
@@ -254,7 +253,8 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	        loaded(image, img);
 	      } else {
 	    	waitingForImages(+1);
-	        Image imgWidget = Image.wrap(img);
+	        com.google.gwt.user.client.ui.Image imgWidget = 
+	        		com.google.gwt.user.client.ui.Image.wrap(img);
 	        final ImageElement finalImg = img;
 	        imgWidget.addLoadHandler(new LoadHandler() {
 	          public void onLoad(LoadEvent event) {
@@ -293,14 +293,14 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	  }
 	}
 	
-	public void loaded(ModelImage image, ImageElement img) {
+	public void loaded(Image image, ImageElement img) {
 		setPicDataHighLevel(image, img);
 	//	setPicDataLowLevel(image, img);
 	}
 		
 	ByteBuffer bb = ByteBuffer.allocateDirect(128*128*4);
 	
-	public void setPicDataHighLevel(ModelImage image, ImageElement img) {
+	public void setPicDataHighLevel(Image image, ImageElement img) {
 		image.has_alpha = true;
 		image.complete = true;
 		image.height = img.getHeight();
@@ -341,7 +341,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 		GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
 	}
 
-  public void __setPicDataHighLevel(ModelImage image, ImageElement img) {
+  public void __setPicDataHighLevel(Image image, ImageElement img) {
     image.has_alpha = true;
     image.complete = true;
     image.height = img.getHeight();
@@ -354,7 +354,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
     GlState.gl.glTexParameterf(TEXTURE_2D, TEXTURE_MAG_FILTER, LINEAR);
   }
 
-	public void setPicDataLowLevel(ModelImage image, ImageElement img) {
+	public void setPicDataLowLevel(Image image, ImageElement img) {
 		CanvasElement canvas = (CanvasElement) Document.get().createElement("canvas");
 		int w = img.getWidth();
 		int h = img.getHeight();
@@ -377,7 +377,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 			pic[i] = (byte) pixels.get(i);
 		}
 		
-		Images.GL_SetPicData(image, pic, w, h, 32);
+		Image.GL_SetPicData(image, pic, w, h, 32);
 	}
 	
 	 protected void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {

@@ -61,9 +61,9 @@ import com.google.gwt.webgl.client.WebGLRenderingContext;
 import com.googlecode.gwtgl.binding.WebGLShader;
 import com.googlecode.gwtgl.binding.WebGLTexture;
 import com.googlecode.gwtgl.binding.WebGLUniformLocation;
+import com.googlecode.gwtquake.shared.render.AbstractGL20Adapter;
 import com.googlecode.gwtquake.shared.render.DisplayMode;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.gl.AbstractGL20Adapter;
+import com.googlecode.gwtquake.shared.render.Gl1Context;
 
 /**
  * Partial mapping of lwjgl to WebGL.
@@ -236,11 +236,11 @@ public class WebGLAdapter extends AbstractGL20Adapter {
     gl.attachShader(programObject, fragmentShader);
 
     // Bind "vPosition" to attribute 0
-    gl.bindAttribLocation(programObject, GlAdapter.ARRAY_POSITION, "a_position");
-    gl.bindAttribLocation(programObject, GlAdapter.ARRAY_COLOR, "a_color");
-    gl.bindAttribLocation(programObject, GlAdapter.ARRAY_TEXCOORD_0,
+    gl.bindAttribLocation(programObject, Gl1Context.ARRAY_POSITION, "a_position");
+    gl.bindAttribLocation(programObject, Gl1Context.ARRAY_COLOR, "a_color");
+    gl.bindAttribLocation(programObject, Gl1Context.ARRAY_TEXCOORD_0,
         "a_texCoord0");
-    gl.bindAttribLocation(programObject, GlAdapter.ARRAY_TEXCOORD_1,
+    gl.bindAttribLocation(programObject, Gl1Context.ARRAY_TEXCOORD_1,
         "a_texCoord1");
 
     // Link the program
@@ -330,7 +330,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   }
 
   private final void glColorPointer(int size, int type, int stride, Buffer buf) {
-    glVertexAttribPointer(GlAdapter.ARRAY_COLOR, size, type, true, stride, buf);
+    glVertexAttribPointer(Gl1Context.ARRAY_COLOR, size, type, true, stride, buf);
     checkError("glColorPointer");
   }
 
@@ -423,7 +423,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
 
   @Override
   public void glTexCoordPointer(int size, int byteStride, FloatBuffer buf) {
-    glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_0 + clientActiveTexture,
+    glVertexAttribPointer(Gl1Context.ARRAY_TEXCOORD_0 + clientActiveTexture,
         size, GL_FLOAT, false, byteStride, buf);
     checkError("texCoordPointer");
   }
@@ -482,7 +482,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
 
   @Override
   public void glVertexPointer(int size, int byteStride, FloatBuffer buf) {
-    glVertexAttribPointer(GlAdapter.ARRAY_POSITION, size, GL_FLOAT, false,
+    glVertexAttribPointer(Gl1Context.ARRAY_POSITION, size, GL_FLOAT, false,
         byteStride, buf);
     checkError("glVertexPointer");
 
@@ -544,7 +544,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
 
   @Override
   public final void glColor4f(float red, float green, float blue, float alpha) {
-    gl.vertexAttrib4f(GlAdapter.ARRAY_COLOR, red, green, blue, alpha);
+    gl.vertexAttrib4f(Gl1Context.ARRAY_COLOR, red, green, blue, alpha);
     checkError("glColor4f");
   }
 
@@ -612,7 +612,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   }
 
   public void updatTCBuffer(FloatBuffer buf, int offset, int count) {
-    BufferData bd = bufferData[GlAdapter.ARRAY_TEXCOORD_0];
+    BufferData bd = bufferData[Gl1Context.ARRAY_TEXCOORD_0];
     gl.bindBuffer(ARRAY_BUFFER, bd.buffer);
 
     int pos = buf.position();
@@ -687,21 +687,21 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   public final void glEnableClientState(int i) {
     switch (i) {
       case GL_COLOR_ARRAY:
-        gl.enableVertexAttribArray(GlAdapter.ARRAY_COLOR);
+        gl.enableVertexAttribArray(Gl1Context.ARRAY_COLOR);
         checkError("enableClientState colorArr");
         break;
       case GL_VERTEX_ARRAY:
-        gl.enableVertexAttribArray(GlAdapter.ARRAY_POSITION);
+        gl.enableVertexAttribArray(Gl1Context.ARRAY_POSITION);
         checkError("enableClientState vertexArrr");
         break;
       case GL_TEXTURE_COORD_ARRAY:
         switch (clientActiveTexture) {
           case 0:
-            gl.enableVertexAttribArray(GlAdapter.ARRAY_TEXCOORD_0);
+            gl.enableVertexAttribArray(Gl1Context.ARRAY_TEXCOORD_0);
             checkError("enableClientState texCoord0");
             break;
           case 1:
-            gl.enableVertexAttribArray(GlAdapter.ARRAY_TEXCOORD_1);
+            gl.enableVertexAttribArray(Gl1Context.ARRAY_TEXCOORD_1);
             checkError("enableClientState texCoord1");
             break;
           default:
@@ -717,18 +717,18 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   public final void glDisableClientState(int i) {
     switch (i) {
       case GL_COLOR_ARRAY:
-        gl.disableVertexAttribArray(GlAdapter.ARRAY_COLOR);
+        gl.disableVertexAttribArray(Gl1Context.ARRAY_COLOR);
         break;
       case GL_VERTEX_ARRAY:
-        gl.disableVertexAttribArray(GlAdapter.ARRAY_POSITION);
+        gl.disableVertexAttribArray(Gl1Context.ARRAY_POSITION);
         break;
       case GL_TEXTURE_COORD_ARRAY:
         switch (clientActiveTexture) {
           case 0:
-            gl.disableVertexAttribArray(GlAdapter.ARRAY_TEXCOORD_0);
+            gl.disableVertexAttribArray(Gl1Context.ARRAY_TEXCOORD_0);
             break;
           case 1:
-            gl.disableVertexAttribArray(GlAdapter.ARRAY_TEXCOORD_1);
+            gl.disableVertexAttribArray(Gl1Context.ARRAY_TEXCOORD_1);
             break;
           default:
             throw new RuntimeException();

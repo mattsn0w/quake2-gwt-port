@@ -34,7 +34,7 @@ import java.nio.ShortBuffer;
 /** 
  * Common interface for a WebGL and LWJGL based implementation. 
  */
-public abstract class GlAdapter {
+public abstract class Gl1Context {
 	public static final int GL_ADD                                   = 0x0104;
     public static final int GL_ALIASED_LINE_WIDTH_RANGE              = 0x846E;
     public static final int GL_ALIASED_POINT_SIZE_RANGE              = 0x846D;
@@ -300,7 +300,7 @@ public abstract class GlAdapter {
     private int st0011BufferId = generateStaticBufferId();
 	
 	
-	protected GlAdapter() {
+	protected Gl1Context() {
 		st0011.put(0);
 		st0011.put(0);
 
@@ -439,7 +439,7 @@ public abstract class GlAdapter {
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glVertexAttribPointer(ARRAY_TEXCOORD_0, 2, GL_FLOAT, false, 0, 0, st0011, st0011BufferId);
 			glTexCoordPointer(2, 0, st0011);
-			glDrawArrays(GlAdapter.GL_TRIANGLE_FAN, 0, 4);
+			glDrawArrays(Gl1Context.GL_TRIANGLE_FAN, 0, 4);
 		} else {
 			if (texCoordBuf.position() > 0) {
 				texCoordBuf.flip();
@@ -450,7 +450,7 @@ public abstract class GlAdapter {
 			if (mode == _GL_QUADS) {
 				//Log.w("GLX", "glDrawQuads; count: " + count);
 				for (int i = 0; i < count; i += 4) {
-					glDrawArrays(GlAdapter.GL_TRIANGLE_FAN, i, 4);
+					glDrawArrays(Gl1Context.GL_TRIANGLE_FAN, i, 4);
 				}
 			} else {
 				glDrawArrays(mode, 0, count);

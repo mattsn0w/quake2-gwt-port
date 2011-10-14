@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 
 
@@ -33,8 +33,6 @@ import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.util.Lib;
 
 /**
@@ -52,7 +50,7 @@ public class Drawing  {
 	*/
 	static void Draw_InitLocal() {
 		// load console characters
-		Images.draw_chars = Images.GL_FindImage("pics/conchars.pcx", QuakeImage.it_pic);
+		Images.draw_chars = Images.findTexture("pics/conchars.pcx", QuakeImage.it_pic);
 	}
 
 	/*
@@ -68,38 +66,10 @@ public class Drawing  {
 	
 	
 	
-	/*
-	=============
-	Draw_FindPic
-	=============
-	*/
-	protected static ModelImage Draw_FindPic(String name) {
-		ModelImage image = null;
-		String fullname;
-
-		if (!name.startsWith("/") && !name.startsWith("\\")) {
-			fullname = "pics/" + name + ".pcx";
-		} else {
-			fullname = name.substring(1);
-		}
-		image = Images.GL_FindImage(fullname, QuakeImage.it_pic);
-		return image;
-	}
-
-
-	/*
-	=============
-	Draw_GetPicSize
-	=============
-	*/
-	
-	/*
-	=============
-	Draw_StretchPic
-	=============
-	*/
 	
 
+
+	
 	
 // ====================================================================
 

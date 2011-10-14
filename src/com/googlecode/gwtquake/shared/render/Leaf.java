@@ -23,11 +23,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package com.googlecode.gwtquake.shared.render;
 
-public class SubModel {
-  public float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
-  public float[] origin = { 0, 0, 0 }; // for sounds or lights
-  public float radius;
-  public int headnode;
-  public int visleafs; // not including the solid leaf 0
-  public int firstface, numfaces;
+public class Leaf extends Node {
+  // leaf specific
+  public int cluster;
+  public int area;
+
+  // public msurface_t firstmarksurface;
+  public int nummarksurfaces;
+
+  // added by cwei
+  int markIndex;
+  Surface[] markSurfaces;
+
+  public void setMarkSurface(int markIndex, Surface[] markSurfaces) {
+    this.markIndex = markIndex;
+    this.markSurfaces = markSurfaces;
+  }
+
+  public Surface getMarkSurface(int index) {
+    assert (index >= 0 && index <= nummarksurfaces) : "mleaf: markSurface bug (index = "
+        + index + "; num = " + nummarksurfaces + ")";
+    // TODO code in Surf.R_RecursiveWorldNode aendern (der Pointer wird wie in C
+    // zu weit gezaehlt)
+    return (index < nummarksurfaces) ? markSurfaces[markIndex + index] : null;
+  }
+
 }

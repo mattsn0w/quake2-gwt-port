@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
  */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 
 
@@ -33,8 +33,6 @@ import com.googlecode.gwtquake.shared.client.EntityType;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeFiles;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.ModelImage;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
 /**
@@ -158,7 +156,7 @@ public class Mesh {
 
     // PMM - added double shell
     if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
-      GlState.gl.glDisable( GlAdapter.GL_TEXTURE_2D );
+      GlState.gl.glDisable( Gl1Context.GL_TEXTURE_2D );
 
     float frontlerp = 1.0f - backlerp;
 
@@ -196,7 +194,7 @@ public class Mesh {
     }
     else
     {
-      GlState.gl.glEnableClientState( GlAdapter.GL_COLOR_ARRAY );
+      GlState.gl.glEnableClientState( Gl1Context.GL_COLOR_ARRAY );
 
       FloatBuffer color = colorArrayBuf;
       color.limit(num_xyz * 4);
@@ -223,7 +221,7 @@ public class Mesh {
     FloatBuffer dstTextureCoords = textureArrayBuf;
 
     GlState.gl.glTexCoordPointer( 2, 0, dstTextureCoords);
-    GlState.gl.glEnableClientState( GlAdapter.GL_TEXTURE_COORD_ARRAY);
+    GlState.gl.glEnableClientState( Gl1Context.GL_TEXTURE_COORD_ARRAY);
 
     int pos = 0;
     int[] counts = paliashdr.counts;
@@ -247,9 +245,9 @@ public class Mesh {
 
       srcIndexBuf = paliashdr.indexElements[j];
 
-      mode = GlAdapter.GL_TRIANGLE_STRIP;
+      mode = Gl1Context.GL_TRIANGLE_STRIP;
       if (count < 0) {
-        mode = GlAdapter.GL_TRIANGLE_FAN;
+        mode = Gl1Context.GL_TRIANGLE_FAN;
         count = -count;
       }
       srcIndex = pos << 1;
@@ -281,9 +279,9 @@ public class Mesh {
 
     // PMM - added double damage shell
     if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
-      GlState.gl.glEnable( GlAdapter.GL_TEXTURE_2D );
+      GlState.gl.glEnable( Gl1Context.GL_TEXTURE_2D );
 
-    GlState.gl.glDisableClientState( GlAdapter.GL_COLOR_ARRAY );
+    GlState.gl.glDisableClientState( Gl1Context.GL_COLOR_ARRAY );
   }
 
 
@@ -308,7 +306,7 @@ public class Mesh {
 
     // PMM - added double shell
     if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0)
-      GlState.gl.glDisable( GlAdapter.GL_TEXTURE_2D );
+      GlState.gl.glDisable( Gl1Context.GL_TEXTURE_2D );
 
     float frontlerp = 1.0f - backlerp;
 
@@ -403,18 +401,18 @@ public class Mesh {
     }
 
     if (hasColorArray) {
-      GlState.gl.glEnableClientState( GlAdapter.GL_COLOR_ARRAY );
+      GlState.gl.glEnableClientState( Gl1Context.GL_COLOR_ARRAY );
       dstColors.flip();
       GlState.gl.glColorPointer(4, 0, dstColors);
     }
 
     GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);	
-    GlState.gl.glEnableClientState( GlAdapter.GL_TEXTURE_COORD_ARRAY);
+    GlState.gl.glEnableClientState( Gl1Context.GL_TEXTURE_COORD_ARRAY);
 
     FloatBuffer tc0 = paliashdr.textureCoordBuf;
     int limit = tc0.limit();
     tc0.limit(tc0.position() + pos * 2);
-    GlState.gl.glVertexAttribPointer(GlAdapter.ARRAY_TEXCOORD_0, 2, GlAdapter.GL_FLOAT, false, 0, 0,
+    GlState.gl.glVertexAttribPointer(Gl1Context.ARRAY_TEXCOORD_0, 2, Gl1Context.GL_FLOAT, false, 0, 0,
         paliashdr.textureCoordBuf, paliashdr.staticTextureBufId);
     tc0.limit(limit);
 
@@ -428,9 +426,9 @@ public class Mesh {
       if (count == 0)
         break;		// done
 
-      mode = GlAdapter.GL_TRIANGLE_STRIP;
+      mode = Gl1Context.GL_TRIANGLE_STRIP;
       if (count < 0) {
-        mode = GlAdapter.GL_TRIANGLE_FAN;
+        mode = Gl1Context.GL_TRIANGLE_FAN;
         count = -count;
       }
       GlState.gl.glDrawArrays(mode, pos, count);
@@ -440,9 +438,9 @@ public class Mesh {
 
     // PMM - added double damage shell
     if ( (GlState.currententity.flags & ( Constants.RF_SHELL_RED | Constants.RF_SHELL_GREEN | Constants.RF_SHELL_BLUE | Constants.RF_SHELL_DOUBLE | Constants.RF_SHELL_HALF_DAM)) != 0 )
-      GlState.gl.glEnable( GlAdapter.GL_TEXTURE_2D );
+      GlState.gl.glEnable( Gl1Context.GL_TEXTURE_2D );
 
-    GlState.gl.glDisableClientState( GlAdapter.GL_COLOR_ARRAY );
+    GlState.gl.glDisableClientState( Gl1Context.GL_COLOR_ARRAY );
   }
 
 
@@ -452,7 +450,7 @@ public class Mesh {
    */
   static void GL_DrawAliasShadow(QuakeFiles.dmdl_t paliashdr, int posenum)
   {
-    float lheight = GlState.currententity.origin[2] - Light.lightspot[2];
+    float lheight = GlState.currententity.origin[2] - DynamicLights.lightspot[2];
     //		qfiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
     int[] order = paliashdr.glCmds;
     float height = -lheight + 1.0f;
@@ -472,10 +470,10 @@ public class Mesh {
       if (count < 0)
       {
         count = -count;
-        GlState.gl.glBegin (GlAdapter.GL_TRIANGLE_FAN);
+        GlState.gl.glBegin (Gl1Context.GL_TRIANGLE_FAN);
       }
       else
-        GlState.gl.glBegin (GlAdapter.GL_TRIANGLE_STRIP);
+        GlState.gl.glBegin (Gl1Context.GL_TRIANGLE_STRIP);
 
       do
       {
@@ -673,7 +671,7 @@ public class Mesh {
     }
     else
     {
-      Light.R_LightPoint (GlState.currententity.origin, shadelight);
+      DynamicLights.R_LightPoint (GlState.currententity.origin, shadelight);
 
       // player lighting hack for communication back to server
       // big hack!
@@ -773,24 +771,24 @@ public class Mesh {
 
     if ( (GlState.currententity.flags & Constants.RF_WEAPONMODEL) != 0 && (GlState.r_lefthand.value == 1.0f) )
     {
-      GlState.gl.glMatrixMode( GlAdapter.GL_PROJECTION );
+      GlState.gl.glMatrixMode( Gl1Context.GL_PROJECTION );
       GlState.gl.glPushMatrix();
       GlState.gl.glLoadIdentity();
       GlState.gl.glScalef( -1, 1, 1 );
-      Main.MYgluPerspective( GlState.r_newrefdef.fov_y, ( float ) GlState.r_newrefdef.width / GlState.r_newrefdef.height,  4,  4096);
-      GlState.gl.glMatrixMode( GlAdapter.GL_MODELVIEW );
+      Entities.MYgluPerspective( GlState.r_newrefdef.fov_y, ( float ) GlState.r_newrefdef.width / GlState.r_newrefdef.height,  4,  4096);
+      GlState.gl.glMatrixMode( Gl1Context.GL_MODELVIEW );
 
-      GlState.gl.glCullFace( GlAdapter.GL_BACK );
+      GlState.gl.glCullFace( Gl1Context.GL_BACK );
     }
 
     GlState.gl.glPushMatrix ();
     e.angles[GlConstants.PITCH] = -e.angles[GlConstants.PITCH];	// sigh.
-    Main.R_RotateForEntity (e);
+    Entities.rotateForEntity (e);
     e.angles[GlConstants.PITCH] = -e.angles[GlConstants.PITCH];	// sigh.
 
 
 
-    ModelImage		skin;
+    Image		skin;
     // select skin
     if (GlState.currententity.skin != null)
       skin = GlState.currententity.skin;	// custom player skin
@@ -811,12 +809,12 @@ public class Mesh {
 
     // draw it
 
-    GlState.gl.glShadeModel (GlAdapter.GL_SMOOTH);
+    GlState.gl.glShadeModel (Gl1Context.GL_SMOOTH);
 
-    Images.GL_TexEnv( GlAdapter.GL_MODULATE );
+    Images.GL_TexEnv( Gl1Context.GL_MODULATE );
     if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
     {
-      GlState.gl.glEnable (GlAdapter.GL_BLEND);
+      GlState.gl.glEnable (Gl1Context.GL_BLEND);
     }
 
 
@@ -841,22 +839,22 @@ public class Mesh {
 
     GL_DrawAliasFrameLerpDA(paliashdr, GlState.currententity.backlerp);
 
-    Images.GL_TexEnv( GlAdapter.GL_REPLACE );
-    GlState.gl.glShadeModel (GlAdapter.GL_FLAT);
+    Images.GL_TexEnv( Gl1Context.GL_REPLACE );
+    GlState.gl.glShadeModel (Gl1Context.GL_FLAT);
 
     GlState.gl.glPopMatrix ();
 
     if ( ( GlState.currententity.flags & Constants.RF_WEAPONMODEL ) != 0 && ( GlState.r_lefthand.value == 1.0F ) )
     {
-      GlState.gl.glMatrixMode( GlAdapter.GL_PROJECTION );
+      GlState.gl.glMatrixMode( Gl1Context.GL_PROJECTION );
       GlState.gl.glPopMatrix();
-      GlState.gl.glMatrixMode( GlAdapter.GL_MODELVIEW );
-      GlState.gl.glCullFace( GlAdapter.GL_FRONT );
+      GlState.gl.glMatrixMode( Gl1Context.GL_MODELVIEW );
+      GlState.gl.glCullFace( Gl1Context.GL_FRONT );
     }
 
     if ( (GlState.currententity.flags & Constants.RF_TRANSLUCENT) != 0 )
     {
-      GlState.gl.glDisable (GlAdapter.GL_BLEND);
+      GlState.gl.glDisable (Gl1Context.GL_BLEND);
     }
 
     if ( (GlState.currententity.flags & Constants.RF_DEPTHHACK) != 0)
@@ -865,13 +863,13 @@ public class Mesh {
     if ( GlState.gl_shadows.value != 0.0f && (GlState.currententity.flags & (Constants.RF_TRANSLUCENT | Constants.RF_WEAPONMODEL)) == 0)
     {
       GlState.gl.glPushMatrix ();
-      Main.R_RotateForEntity (e);
-      GlState.gl.glDisable (GlAdapter.GL_TEXTURE_2D);
-      GlState.gl.glEnable (GlAdapter.GL_BLEND);
+      Entities.rotateForEntity (e);
+      GlState.gl.glDisable (Gl1Context.GL_TEXTURE_2D);
+      GlState.gl.glEnable (Gl1Context.GL_BLEND);
       GlState.gl.glColor4f (0,0,0,0.5f);
       GL_DrawAliasShadow (paliashdr, GlState.currententity.frame );
-      GlState.gl.glEnable (GlAdapter.GL_TEXTURE_2D);
-      GlState.gl.glDisable (GlAdapter.GL_BLEND);
+      GlState.gl.glEnable (Gl1Context.GL_TEXTURE_2D);
+      GlState.gl.glDisable (Gl1Context.GL_BLEND);
       GlState.gl.glPopMatrix ();
     }
     GlState.gl.glColor4f (1,1,1,1);

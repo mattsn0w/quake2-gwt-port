@@ -26,8 +26,7 @@ package com.googlecode.gwtquake.shared.client;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.Model;
 import com.googlecode.gwtquake.shared.game.UserCommand;
-import com.googlecode.gwtquake.shared.render.ModelImage;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.Image;
 import com.googlecode.gwtquake.shared.sound.*;
 
 
@@ -120,11 +119,12 @@ public class ClientState {
 	//
 	// locally derived information from server state
 	//
-	RendererModel model_draw[] = new RendererModel[Constants.MAX_MODELS];
+	com.googlecode.gwtquake.shared.render.Model model_draw[] = 
+	    new com.googlecode.gwtquake.shared.render.Model[Constants.MAX_MODELS];
 	Model model_clip[] = new Model[Constants.MAX_MODELS];
 
 	public Sfx sound_precache[] = new Sfx[Constants.MAX_SOUNDS];
-	ModelImage image_precache[] = new ModelImage[Constants.MAX_IMAGES];
+	Image image_precache[] = new Image[Constants.MAX_IMAGES];
 
 	ClientInfo clientinfo[] = new ClientInfo[Constants.MAX_CLIENTS];
 	ClientInfo baseclientinfo = new ClientInfo();

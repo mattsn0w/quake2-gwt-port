@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 import java.nio.FloatBuffer;
 
@@ -30,11 +30,6 @@ import com.googlecode.gwtquake.shared.client.EntityType;
 import com.googlecode.gwtquake.shared.client.RendererState;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.game.Plane;
-import com.googlecode.gwtquake.shared.render.DisplayMode;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
-import com.googlecode.gwtquake.shared.render.ModelImage;
-import com.googlecode.gwtquake.shared.render.ModelSurface;
-import com.googlecode.gwtquake.shared.render.RendererModel;
 
 public class GlState 
 {
@@ -54,7 +49,7 @@ public class GlState
 	public static byte originalRedGammaTable[]= new byte [256];
 	public static byte originalGreenGammaTable[]= new byte [256];
 	public static byte originalBlueGammaTable[]= new byte [256];
-  public static GlAdapter gl;
+  public static Gl1Context gl;
   // window position on the screen
   static int window_xpos;
   // IMPORTED FUNCTIONS
@@ -69,20 +64,20 @@ public class GlState
   // default disabled
   static boolean qglActiveTextureARB = false;
   static boolean qglPointParameterfEXT = false;
-  static int GL_TEXTURE0 = GlAdapter.GL_TEXTURE0;
-  static int GL_TEXTURE1 = GlAdapter.GL_TEXTURE1;
-  static RendererModel r_worldmodel;
+  static int GL_TEXTURE0 = Gl1Context.GL_TEXTURE0;
+  static int GL_TEXTURE1 = Gl1Context.GL_TEXTURE1;
+  static Model r_worldmodel;
   static float gldepthmax;
   static Plane frustum[] = { new Plane(), new Plane(), new Plane(), new Plane()};
-  static RendererModel currentmodel;
-  static ModelImage r_notexture; // use for bad textures
+  static Model currentmodel;
+  static Image r_notexture; // use for bad textures
   static float gldepthmin;
-  static ModelImage r_particletexture; // little dot for particles
+  static Image r_particletexture; // little dot for particles
   static EntityType currententity;
   static int r_visframecount; // bumped when going to a new PVS
   static GlState gl_state = new GlState();
-  static int r_framecount; // used for dlight push checking
-  static int c_brush_polys;
+  public static int r_framecount; // used for dlight push checking
+  public static int c_brush_polys;
   static int c_alias_polys;
   static float v_blend[] = { 0, 0, 0, 0 }; // final blending color
   //
@@ -98,7 +93,7 @@ public class GlState
   //
   //	   screen size info
   //
-  static RendererState r_newrefdef = new RendererState();
+  public static RendererState r_newrefdef = new RendererState();
   static ConsoleVariable gl_nosubimage;
   static ConsoleVariable gl_allow_software;
   static ConsoleVariable gl_vertex_arrays;
@@ -120,7 +115,7 @@ public class GlState
   static ConsoleVariable gl_lightmap;
   static ConsoleVariable gl_shadows;
   static ConsoleVariable gl_mode;
-  static ConsoleVariable gl_dynamic;
+  public static ConsoleVariable gl_dynamic;
   static ConsoleVariable gl_monolightmap;
   static ConsoleVariable gl_modulate;
   static ConsoleVariable gl_nobind;
@@ -186,8 +181,8 @@ public class GlState
   static String skyname;
   static float	skyrotate;
   static float[] skyaxis = {0, 0, 0};
-  static ModelImage[] sky_images = new ModelImage[6];
-  static ModelSurface	warpface;
+  static Image[] sky_images = new Image[6];
+  static Surface	warpface;
   static float[] dists = new float[GlConstants.MAX_CLIP_VERTS];
 
 }

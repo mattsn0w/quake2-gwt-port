@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
 
 
@@ -30,7 +30,6 @@ import java.nio.FloatBuffer;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
-import com.googlecode.gwtquake.shared.render.GlAdapter;
 
 
 /**
@@ -188,34 +187,34 @@ public class Misc {
 	{
 	  GlState.gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
 		//gl.glClearColor(0, 0, 0, 0); // replaced with black
-	  GlState.gl.glCullFace(GlAdapter.GL_FRONT);
-	  GlState.gl.glEnable(GlAdapter.GL_TEXTURE_2D);
+	  GlState.gl.glCullFace(Gl1Context.GL_FRONT);
+	  GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
 
 //	  gl.glEnable(GLAdapter.GL_ALPHA_TEST);
-	  GlState.gl.glAlphaFunc(GlAdapter.GL_GREATER, 0.666f);
+	  GlState.gl.glAlphaFunc(Gl1Context.GL_GREATER, 0.666f);
 
-	  GlState.gl.glDisable (GlAdapter.GL_DEPTH_TEST);
-	  GlState.gl.glDisable (GlAdapter.GL_CULL_FACE);
-	  GlState.gl.glDisable (GlAdapter.GL_BLEND);
+	  GlState.gl.glDisable (Gl1Context.GL_DEPTH_TEST);
+	  GlState.gl.glDisable (Gl1Context.GL_CULL_FACE);
+	  GlState.gl.glDisable (Gl1Context.GL_BLEND);
 
 	  GlState.gl.glColor4f (1,1,1,1);
 
 	  System.out.println("   gl.glPolygonMode (GLAdapter.GL_FRONT_AND_BACK, GLAdapter.GL_FILL);");
-	  GlState.gl.glShadeModel (GlAdapter.GL_FLAT);
+	  GlState.gl.glShadeModel (Gl1Context.GL_FLAT);
 
 		Images.GL_TextureMode( GlState.gl_texturemode.string );
 		Images.GL_TextureAlphaMode( GlState.gl_texturealphamode.string );
 		Images.GL_TextureSolidMode( GlState.gl_texturesolidmode.string );
 
-		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MIN_FILTER, Images.gl_filter_min);
-		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_MAG_FILTER, Images.gl_filter_max);
+		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, Images.gl_filter_min);
+		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, Images.gl_filter_max);
 
-		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_S, GlAdapter.GL_REPEAT);
-		GlState.gl.glTexParameterf(GlAdapter.GL_TEXTURE_2D, GlAdapter.GL_TEXTURE_WRAP_T, GlAdapter.GL_REPEAT);
+		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_WRAP_S, Gl1Context.GL_REPEAT);
+		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_WRAP_T, Gl1Context.GL_REPEAT);
 
-		GlState.gl.glBlendFunc (GlAdapter.GL_SRC_ALPHA, GlAdapter.GL_ONE_MINUS_SRC_ALPHA);
+		GlState.gl.glBlendFunc (Gl1Context.GL_SRC_ALPHA, Gl1Context.GL_ONE_MINUS_SRC_ALPHA);
 
-		Images.GL_TexEnv( GlAdapter.GL_REPLACE );
+		Images.GL_TexEnv( Gl1Context.GL_REPLACE );
 
 		if ( GlState.qglPointParameterfEXT )
 		{
@@ -225,9 +224,9 @@ public class Misc {
 			att_buffer.put(1,GlState.gl_particle_att_b.value);
 			att_buffer.put(2,GlState.gl_particle_att_c.value);
 			
-			GlState.gl.glEnable( GlAdapter.GL_POINT_SMOOTH );
-			GlState.gl.glPointParameterf(GlAdapter.GL_POINT_SIZE_MIN, GlState.gl_particle_min_size.value );
-			GlState.gl.glPointParameterf( GlAdapter.GL_POINT_SIZE_MAX, GlState.gl_particle_max_size.value );
+			GlState.gl.glEnable( Gl1Context.GL_POINT_SMOOTH );
+			GlState.gl.glPointParameterf(Gl1Context.GL_POINT_SIZE_MIN, GlState.gl_particle_min_size.value );
+			GlState.gl.glPointParameterf( Gl1Context.GL_POINT_SIZE_MAX, GlState.gl_particle_max_size.value );
 			System.out.println("  gl.glPointParameter( GLAdapter.GL_DISTANCE_ATTENUATION, att_buffer );");
 		}
 
@@ -243,9 +242,9 @@ public class Misc {
 		/*
 		 * vertex array extension
 		 */
-		GlState.gl.glEnableClientState(GlAdapter.GL_VERTEX_ARRAY);
+		GlState.gl.glEnableClientState(Gl1Context.GL_VERTEX_ARRAY);
 		GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);
-		GlState.gl.glEnableClientState(GlAdapter.GL_TEXTURE_COORD_ARRAY);
+		GlState.gl.glEnableClientState(Gl1Context.GL_TEXTURE_COORD_ARRAY);
 	}
 
 	static void GL_UpdateSwapInterval()

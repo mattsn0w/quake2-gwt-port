@@ -28,18 +28,15 @@ import java.nio.ByteBuffer;
 
 import com.googlecode.gwtquake.shared.common.Constants;
 
-public class ModelEdge {
-
+public class Edge {
     public static final int DISK_SIZE = 2 * Constants.SIZE_OF_SHORT;
-
     public static final int MEM_SIZE = 3 * Constants.SIZE_OF_INT;
 
     // unsigned short
     public int[] v = new int[2];
-
     public int cachededgeoffset;
 
-    public ModelEdge(ByteBuffer b) {
+    public Edge(ByteBuffer b) {
         v[0] = b.getShort() & 0xFFFF;
         v[1] = b.getShort() & 0xFFFF;
     }

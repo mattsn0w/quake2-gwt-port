@@ -34,7 +34,7 @@ public class ModelTextureInfo {
 	public int flags;
 	public int numframes;
 	public ModelTextureInfo next; // animation chain
-	public ModelImage image;
+	public Image image;
 	
 	public void clear() {
 		Arrays.fill(vecs[0], 0);
@@ -44,6 +44,25 @@ public class ModelTextureInfo {
 		numframes = 0;
 		next = null;
 		image = null;
+	}
+
+	/**
+	 * R_TextureAnimation
+	 * Returns the proper texture for a given time and base texture
+	 */
+	public static Image R_TextureAnimation(ModelTextureInfo tex)
+	{
+		if (tex.next == null)
+			return tex.image;
+	
+		int c = GlState.currententity.frame % tex.numframes;
+		while (c != 0)
+		{
+			tex = tex.next;
+			c--;
+		}
+	
+		return tex.image;
 	}
 	
 }

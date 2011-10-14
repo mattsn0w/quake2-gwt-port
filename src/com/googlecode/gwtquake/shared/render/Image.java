@@ -23,11 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.render;
 
-import com.googlecode.gwtquake.shared.common.Constants;
+import com.googlecode.gwtquake.shared.common.QuakeImage;
 
-public class ModelImage {
-	
-	public static final int MAX_NAME_SIZE = Constants.MAX_QPATH;
+public class Image {
 	
 	// used to get the pos in array
 	// added by cwei
@@ -40,14 +38,14 @@ public class ModelImage {
 	public int width, height; // source image
 	public int upload_width, upload_height; // after power of two and picmip
 	public int registration_sequence; // 0 = free
-	public ModelSurface texturechain; // for sort-by-texture world drawing
+	public Surface texturechain; // for sort-by-texture world drawing
 	public int texnum; // gl texture binding
 	public boolean has_alpha;
 
 	public boolean paletted;
 	public boolean complete;
 	
-	public ModelImage(int id) {
+	public Image(int id) {
 		this.id = id;
 	}
 	
@@ -73,5 +71,30 @@ public class ModelImage {
 	
 	public String toString() {
 		return name + ":" + texnum;
+	}
+
+	public static void GL_SetPicData(Image image, byte[] pic, int width, int height, int bits) {   
+	    image.width = width;
+	    image.height = height;
+	    image.complete = true;
+	    
+	    int i;
+	
+	    if (image.type == QuakeImage.it_skin && bits == 8) {
+	        Images.R_FloodFillSkin(pic, width, height);
+	    } 
+	
+	    //image.texnum = TEXNUM_IMAGES + image.getId(); //image pos in array
+	    Images.GL_Bind(image.texnum);
+	
+	    if (bits == 8) {
+	        image.has_alpha = Images.GL_Upload8(pic, width, height, (image.type != QuakeImage.it_pic && image.type != QuakeImage.it_sky), image.type == QuakeImage.it_sky);
+	    }
+	    else {
+	        int[] tmp = QuakeImage.bytesToIntsAbgr(pic);
+	        image.has_alpha = Images.GL_Upload32(tmp, width, height, (image.type != QuakeImage.it_pic && image.type != QuakeImage.it_sky));
+	    }
+	    image.upload_width = Images.upload_width; // after power of 2 and scales
+	    image.upload_height = Images.upload_height;
 	}
 }

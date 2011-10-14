@@ -31,7 +31,7 @@ import java.util.Random;
 import com.googlecode.gwtquake.shared.client.*;
 import com.googlecode.gwtquake.shared.game.*;
 import com.googlecode.gwtquake.shared.render.DummyRenderer;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.Model;
 
 /**
  * Globals ist the collection of global variables and constants.
@@ -364,7 +364,7 @@ public class Globals {
 	public static int sys_frame_time;
 	public static int chat_bufferlen = 0;
 	public static int gun_frame;
-	public static RendererModel gun_model;
+	public static Model gun_model;
 	public static NetworkAddress net_from = new NetworkAddress();
 	
 	// logfile

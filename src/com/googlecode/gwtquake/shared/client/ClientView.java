@@ -30,8 +30,8 @@ import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.render.RendererModel;
-import com.googlecode.gwtquake.shared.render.gl.Models;
+import com.googlecode.gwtquake.shared.render.Models;
+import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.sys.Sys;
 
 
@@ -117,8 +117,8 @@ public class ClientView {
                   final String finalName = name;
                   
                   Globals.re.RegisterModel(Globals.cl.configstrings[Constants.CS_MODELS + i], 
-                      new AsyncCallback<RendererModel>() {
-                        public void onSuccess(RendererModel response) {
+                      new AsyncCallback<Model>() {
+                        public void onSuccess(Model response) {
                           Globals.cl.model_draw[finalI] = response;
                           if (finalName.charAt(0) == '*')
                             Globals.cl.model_clip[finalI] = CM.InlineModel(

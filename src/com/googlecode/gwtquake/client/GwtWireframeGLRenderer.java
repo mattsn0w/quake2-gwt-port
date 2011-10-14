@@ -23,11 +23,11 @@ import com.google.gwt.core.client.JsArrayInteger;
 import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.html5.client.CanvasRenderingContext2D;
 import com.googlecode.gwtquake.shared.client.Renderer;
-import com.googlecode.gwtquake.shared.render.ModelImage;
-import com.googlecode.gwtquake.shared.render.gl.GlRenderer;
-import com.googlecode.gwtquake.shared.render.gl.GlState;
-import com.googlecode.gwtquake.shared.render.gl.Images;
-import com.googlecode.gwtquake.shared.render.gl.WireframeRenderer;
+import com.googlecode.gwtquake.shared.render.GlRenderer;
+import com.googlecode.gwtquake.shared.render.GlState;
+import com.googlecode.gwtquake.shared.render.Images;
+import com.googlecode.gwtquake.shared.render.Image;
+import com.googlecode.gwtquake.shared.render.WireframeRenderer;
 import com.googlecode.gwtquake.shared.sys.KBD;
 
 public class GwtWireframeGLRenderer extends GlRenderer implements Renderer {
@@ -87,8 +87,8 @@ public class GwtWireframeGLRenderer extends GlRenderer implements Renderer {
     return $wnd.__imageSizes[name];
   }-*/;
   
-  public ModelImage GL_LoadNewImage(final String name, int type) {
-		final ModelImage image = Images.GL_Find_free_image_t(name, type);
+  public Image GL_LoadNewImage(final String name, int type) {
+		final Image image = Images.GL_Find_free_image_t(name, type);
 
 		JsArrayInteger d = getImageSize(name);
 		if (d == null) {

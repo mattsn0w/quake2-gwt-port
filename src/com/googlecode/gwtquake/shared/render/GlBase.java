@@ -8,7 +8,7 @@ of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
@@ -21,34 +21,57 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.client;
+package com.googlecode.gwtquake.shared.render;
 
+
+
+
+import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Constants;
-import com.googlecode.gwtquake.shared.render.*;
+import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 
-
-public class ClientInfo {
-	String	name	="";
-	String	cinfo	="";
-	Image skin;	// ptr
-	Image icon;	// ptr
-	String iconname	="";
-	Model model;	// ptr
-	Model weaponmodel[] = new Model[Constants.MAX_CLIENTWEAPONMODELS]; // arary of references
+/**
+ * LWJGLBase
+ * 
+ * @author dsanders/cwei
+ */
+public  class GlBase {
 	
-//	public void reset()
-//	{
-//		set(new clientinfo_t());
-//	}
-	
-	public void set (ClientInfo from)
-	{
-		name = from.name;
-		cinfo = from.cinfo;
-		skin = from.skin;
-		icon = from.icon;
-		iconname = from.iconname;
-		model = from.model;
-		System.arraycopy(from.weaponmodel,0, weaponmodel, 0 , Constants.MAX_CLIENTWEAPONMODELS);
+	protected static void GLimp_Shutdown() {
+		GlState.gl.shutdow();
 	}
+
+	/**
+	 * @return true
+	 */
+	protected static boolean GLimp_Init(int xpos, int ypos) {
+		// do nothing
+		GlState.window_xpos = xpos;
+		GlState.window_ypos = ypos;
+		return true;
+	}
+
+	
+
+	static void GLimp_BeginFrame(float camera_separation) {
+		// do nothing
+	}
+
+	static void GLimp_AppActivate(boolean activate) {
+		// do nothing
+	}
+
+	static void GLimp_EnableLogging(boolean enable) {
+		// do nothing
+	}
+
+	static void GLimp_LogNewFrame() {
+		// do nothing
+	}
+
+	
+	
+	
+	
+
 }

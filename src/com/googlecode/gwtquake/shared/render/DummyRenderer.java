@@ -59,20 +59,20 @@ public class DummyRenderer implements Renderer {
 	  callback.execute();
 	}
 
-	public void RegisterModel(String name, AsyncCallback<RendererModel> callback) {
+	public void RegisterModel(String name, AsyncCallback<Model> callback) {
 	}
 
   /* (non-Javadoc)
 	 * @see jake2.client.refexport_t#RegisterSkin(java.lang.String)
 	 */
-	public ModelImage RegisterSkin(String name) {
+	public Image RegisterSkin(String name) {
 		return null;
 	}
 
 	/* (non-Javadoc)
 	 * @see jake2.client.refexport_t#RegisterPic(java.lang.String)
 	 */
-	public ModelImage RegisterPic(String name) {
+	public Image RegisterPic(String name) {
 		return null;
 	}
 
@@ -222,7 +222,7 @@ public class DummyRenderer implements Renderer {
   }
 
   @Override
-  public ModelImage GL_LoadNewImage(String name, int type) {
+  public Image GL_LoadNewImage(String name, int type) {
     // TODO Auto-generated method stub
     return null;
   }

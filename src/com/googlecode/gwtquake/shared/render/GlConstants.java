@@ -21,9 +21,8 @@
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render.gl;
+package com.googlecode.gwtquake.shared.render;
 
-import com.googlecode.gwtquake.shared.render.GlAdapter;
 
 
 /**

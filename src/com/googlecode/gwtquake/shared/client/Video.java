@@ -54,7 +54,8 @@ import com.googlecode.gwtquake.shared.common.ConsoleVariables;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
-import com.googlecode.gwtquake.shared.render.RendererModel;
+import com.googlecode.gwtquake.shared.render.DynamicLight;
+import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.sys.Timer;
 import com.googlecode.gwtquake.shared.util.Math3D;
 import com.googlecode.gwtquake.shared.util.Vargs;
@@ -76,7 +77,7 @@ public final class Video {
 
     static int r_numdlights;
 
-    static DynamicLightData[] r_dlights = new DynamicLightData[MAX_DLIGHTS];
+    static DynamicLight[] r_dlights = new DynamicLight[MAX_DLIGHTS];
 
     static int r_numentities;
 
@@ -89,7 +90,7 @@ public final class Video {
     static Lightstyle[] r_lightstyles = new Lightstyle[MAX_LIGHTSTYLES];
     static {
         for (int i = 0; i < r_dlights.length; i++)
-            r_dlights[i] = new DynamicLightData();
+            r_dlights[i] = new DynamicLight();
         for (int i = 0; i < r_entities.length; i++)
             r_entities[i] = new EntityType();
         for (int i = 0; i < r_lightstyles.length; i++)
@@ -146,7 +147,7 @@ public final class Video {
      * =====================
      */
     static void AddLight(float[] org, float intensity, float r, float g, float b) {
-        DynamicLightData dl;
+        DynamicLight dl;
 
         if (r_numdlights >= MAX_DLIGHTS)
             return;
@@ -240,12 +241,12 @@ public final class Video {
     static void TestLights() {
         int i, j;
         float f, r;
-        DynamicLightData dl;
+        DynamicLight dl;
 
         r_numdlights = 32;
         //memset (r_dlights, 0, sizeof(r_dlights));
         for (i = 0; i < r_dlights.length; i++)
-            r_dlights[i] = new DynamicLightData();
+            r_dlights[i] = new DynamicLight();
 
         for (i = 0; i < r_numdlights; i++) {
             dl = r_dlights[i];
@@ -286,8 +287,8 @@ public final class Video {
                 return;
             }
             String name = "models/" + Commands.Argv(1) + "/tris.md2";
-            re.RegisterModel(name, new AsyncCallback<RendererModel>() {
-              public void onSuccess(RendererModel response) {
+            re.RegisterModel(name, new AsyncCallback<Model>() {
+              public void onSuccess(Model response) {
                 gun_model = response;
               }
 
