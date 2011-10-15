@@ -61,17 +61,16 @@ import com.google.gwt.webgl.client.WebGLRenderingContext;
 import com.googlecode.gwtgl.binding.WebGLShader;
 import com.googlecode.gwtgl.binding.WebGLTexture;
 import com.googlecode.gwtgl.binding.WebGLUniformLocation;
-import com.googlecode.gwtquake.shared.render.AbstractGL20Adapter;
 import com.googlecode.gwtquake.shared.render.DisplayMode;
 import com.googlecode.gwtquake.shared.render.Gl1Context;
 
 /**
- * Partial mapping of lwjgl to WebGL.
+ * Partial mapping of GL1.x to WebGL.
  * 
  * @author Stefan Haustein
  */
 @SuppressWarnings("unchecked")
-public class WebGLAdapter extends AbstractGL20Adapter {
+public class WebGLGl1Contect extends Gl1Context {
 
   static final int SMALL_BUF_COUNT = 4;
 
@@ -121,9 +120,7 @@ public class WebGLAdapter extends AbstractGL20Adapter {
   private JsArrayInteger textureFormat = (JsArrayInteger) JavaScriptObject.createArray();
   private WebGLBuffer elementBuffer;
 
-  public WebGLAdapter(CanvasElement canvas) {
-    super(canvas.getWidth(), canvas.getHeight());
-
+  public WebGLGl1Contect(CanvasElement canvas) {
     this.canvas = canvas;
     gl = canvas.getContextWebGL();
 
@@ -486,19 +483,6 @@ public class WebGLAdapter extends AbstractGL20Adapter {
         byteStride, buf);
     checkError("glVertexPointer");
 
-  }
-
-  @Override
-  public void setDisplayMode(DisplayMode displayMode) {
-    canvas.setWidth(displayMode.width);
-    canvas.setHeight(displayMode.height);
-  }
-
-  public DisplayMode[] getAvailableDisplayModes() {
-    return new DisplayMode[]{
-        getDisplayMode(),
-        new DisplayMode(Window.getClientWidth(), Window.getClientHeight(), 32,
-            60)};
   }
 
   @Override

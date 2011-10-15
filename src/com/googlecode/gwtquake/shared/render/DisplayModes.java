@@ -3,11 +3,12 @@ package com.googlecode.gwtquake.shared.render;
 import java.util.LinkedList;
 
 import com.googlecode.gwtquake.shared.client.Dimension;
+import com.googlecode.gwtquake.shared.common.Globals;
 
 public class DisplayModes {
 
 	static DisplayMode[] getModeList() {
-			DisplayMode[] modes = GlState.gl.getAvailableDisplayModes();
+			DisplayMode[] modes = Globals.re.getAvailableDisplayModes();
 			
 			LinkedList<DisplayMode> l = new LinkedList<DisplayMode>();
 			l.add(GlState.oldDisplayMode);

@@ -27,7 +27,6 @@ import com.googlecode.gwtquake.shared.render.GlRenderer;
 import com.googlecode.gwtquake.shared.render.GlState;
 import com.googlecode.gwtquake.shared.render.Images;
 import com.googlecode.gwtquake.shared.render.Image;
-import com.googlecode.gwtquake.shared.render.WireframeRenderer;
 import com.googlecode.gwtquake.shared.sys.KBD;
 
 public class GwtWireframeGLRenderer extends GlRenderer implements Renderer {
@@ -35,7 +34,8 @@ public class GwtWireframeGLRenderer extends GlRenderer implements Renderer {
 	private CanvasRenderingContext2D ctx;
 
 	public GwtWireframeGLRenderer(final CanvasElement canvas) {
-		GlState.gl = new WireframeRenderer(canvas, canvas.getWidth(), canvas.getHeight());
+	  super(canvas.getWidth(), canvas.getHeight());
+		GlState.gl = new WireframeGl1Context(canvas);
 		init();
 	}
 

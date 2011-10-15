@@ -26,6 +26,7 @@ package com.googlecode.gwtquake.shared.client;
 import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
 import com.googlecode.gwtquake.shared.common.ExecutableCommand;
+import com.googlecode.gwtquake.shared.render.DisplayMode;
 import com.googlecode.gwtquake.shared.render.Image;
 import com.googlecode.gwtquake.shared.render.Model;
 import com.googlecode.gwtquake.shared.sys.KBD;
@@ -116,4 +117,9 @@ public interface Renderer {
       int scaled_width, int scaled_height);
 
   Image GL_LoadNewImage(String name, int type);
+  
+  public DisplayMode[] getAvailableDisplayModes();
+  
+  public DisplayMode getDisplayMode();
+
 }

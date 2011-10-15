@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.render;
+package com.googlecode.gwtquake.client;
 
 
 import java.nio.Buffer;
@@ -31,6 +31,8 @@ import java.nio.ShortBuffer;
 
 import com.google.gwt.html5.client.CanvasElement;
 import com.google.gwt.html5.client.CanvasRenderingContext2D;
+import com.googlecode.gwtquake.shared.render.DisplayMode;
+import com.googlecode.gwtquake.shared.render.Gl1Context;
 import com.googlecode.gwtquake.shared.util.CanvasHelper;
 
 /**
@@ -39,7 +41,7 @@ import com.googlecode.gwtquake.shared.util.CanvasHelper;
  * 
  * @author Stefan Haustein
  */
-public class WireframeRenderer extends AbstractGL20Adapter {
+public class WireframeGl1Context extends Gl1Context {
 
 	FloatBuffer colorBuffer;
 
@@ -62,8 +64,7 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 	
 	private final CanvasElement canvas;
 	
-	public WireframeRenderer(CanvasElement canvas, int w, int h) {
-		super(w, h);
+	public WireframeGl1Context(CanvasElement canvas) {
 		this.canvas = canvas;
 		swapBuffers();
 	}
@@ -470,11 +471,6 @@ public class WireframeRenderer extends AbstractGL20Adapter {
 			IntBuffer pixels) {
 	}
 
-
-	@Override
-	public void setDisplayMode(DisplayMode displayMode) {
-		// ignored
-	}
 
 	@Override
 	public void shutdow() {
