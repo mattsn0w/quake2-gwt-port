@@ -227,4 +227,16 @@ public class DummyRenderer implements Renderer {
     return null;
   }
 
+  @Override
+  public DisplayMode[] getAvailableDisplayModes() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public DisplayMode getDisplayMode() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

@@ -31,12 +31,15 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlDebugWrapper extends Gl1Context {
+/**
+ * Wrapper for a Gl1Context that logs most calls. 
+ */
+public class Gl1DebugWrapper extends Gl1Context {
 
 	final Gl1Context gl;
 
-	public GlDebugWrapper(Gl1Context gl) {
-		this.gl = gl;
+	public Gl1DebugWrapper(Gl1Context gl) {
+	  this.gl = gl;
 	}
 
 	public void big(String s) {
@@ -463,18 +466,6 @@ public class GlDebugWrapper extends Gl1Context {
 			IntBuffer pixels) {
 		print("glTexSubImage2D", target, level, xoffset, yoffset, width, height, format, type, pixels);
 		gl.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
-	}
-
-	@Override
-	public DisplayMode getDisplayMode() {
-		print("getDisplayMode");
-		return gl.getDisplayMode();
-	}
-
-	@Override
-	public void setDisplayMode(DisplayMode displayMode) {
-		print("setDisplayMode", displayMode);
-		gl.setDisplayMode(displayMode);
 	}
 
 	@Override

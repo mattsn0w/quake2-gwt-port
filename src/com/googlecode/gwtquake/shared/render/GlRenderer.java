@@ -42,6 +42,19 @@ import com.googlecode.gwtquake.shared.game.ConsoleVariable;
  * @author dsanders/cwei
  */
 public abstract class GlRenderer {
+int width;
+int height;
+  protected GlRenderer(int width, int height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  public DisplayMode[] getAvailableDisplayModes() {
+    return new DisplayMode[] { getDisplayMode() };
+  }
+  public DisplayMode getDisplayMode() {
+    return new DisplayMode(width, height, 24, 60);
+  }
 
 	// ============================================================================
 	// public interface for Renderer implementations
@@ -523,7 +536,7 @@ public abstract class GlRenderer {
       
       GlState.gl.log("determining old display mode");
         if (GlState.oldDisplayMode == null) {
-            GlState.oldDisplayMode = GlState.gl.getDisplayMode();
+            GlState.oldDisplayMode = getDisplayMode();
         }
 
         // destroy the existing window
@@ -538,7 +551,8 @@ public abstract class GlRenderer {
         
           GlState.gl.log("setting mode: " + displayMode);
 
-        GlState.gl.setDisplayMode(displayMode);
+        this.width = newDim.width;
+        this.height = newDim.height;
 
           GlState.gl.log("storing mode");
         GlState.vid.width = newDim.width;

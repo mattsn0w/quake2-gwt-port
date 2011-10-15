@@ -105,7 +105,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	ByteBuffer holoDeckTexture = ByteBuffer.allocateDirect(HOLODECK_TEXTURE_SIZE * 
 			HOLODECK_TEXTURE_SIZE * 4);
 
-	WebGLAdapter webGL;
+	WebGLGl1Contect webGL;
 	CanvasElement canvas1;
 	CanvasElement canvas2;
 	ArrayList<Image> imageQueue = new ArrayList<Image>();
@@ -114,7 +114,8 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 	CanvasElement canvas;
 	
 	public GwtWebGLRenderer(CanvasElement canvas, Element video) {
-		GlState.gl = this.webGL = new WebGLAdapter(canvas);
+	  super(canvas.getWidth(), canvas.getHeight());
+		GlState.gl = this.webGL = new WebGLGl1Contect(canvas);
 		this.canvas = canvas;
 		this.video = (VideoElement) video;
 		
