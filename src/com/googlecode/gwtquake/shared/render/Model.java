@@ -263,7 +263,7 @@ public class Model implements Cloneable {
 		GlState.r_framecount = 1;		// no dlightcache
 	
 		Images.GL_EnableMultitexture( true );
-		Images.GL_SelectTexture( GlState.GL_TEXTURE1);
+		Images.GL_SelectTexture( Gl1Context.GL_TEXTURE1);
 	
 		/*
 		** setup the base lightstyles so the lightmaps won't have to be regenerated
@@ -299,7 +299,7 @@ public class Model implements Cloneable {
 		** format then we should change this code to use real alpha maps.
 		*/
 		
-		char format = GlState.gl_monolightmap.string.toUpperCase().charAt(0);
+		char format = GlConfig.gl_monolightmap.string.toUpperCase().charAt(0);
 		
 		if ( format == 'A' )
 		{
@@ -337,7 +337,7 @@ public class Model implements Cloneable {
 		/*
 		** initialize the dynamic lightmap texture
 		*/
-		Images.GL_Bind( GlState.gl_state.lightmap_textures + 0 );
+		Images.GL_Bind( GlConfig.gl_state.lightmap_textures + 0 );
 		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, Gl1Context.GL_LINEAR);
 		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, Gl1Context.GL_LINEAR);
 		GlState.gl.glTexImage2D( Gl1Context.GL_TEXTURE_2D, 

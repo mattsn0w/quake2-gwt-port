@@ -79,7 +79,7 @@ public class Entities {
 	static final boolean R_CullBox(float[] mins, float[] maxs) {
 		assert(mins.length == 3 && maxs.length == 3) : "vec3_t bug";
 
-		if (GlState.r_nocull.value != 0)
+		if (GlConfig.r_nocull.value != 0)
 			return false;
 
 		for (int i = 0; i < 4; i++) {
@@ -225,7 +225,7 @@ public class Entities {
 	 * R_DrawEntitiesOnList
 	 */
 	static void R_DrawEntitiesOnList() {
-		if (GlState.r_drawentities.value == 0.0f)
+		if (GlConfig.r_drawentities.value == 0.0f)
 			return;
 
 		// draw non-transparent first
@@ -361,7 +361,7 @@ public class Entities {
 	 */
 	static void R_DrawParticles() {
 
-		if (GlState.gl_ext_pointparameters.value != 0.0f && GlState.qglPointParameterfEXT) {
+		if (GlConfig.gl_ext_pointparameters.value != 0.0f && GlState.qglPointParameterfEXT) {
 
 			//gl.glEnableClientState(GLAdapter.GL_VERTEX_ARRAY);
 		  GlState.gl.glVertexPointer(3, 0, Particles.vertexArray);
@@ -371,7 +371,7 @@ public class Entities {
 		  GlState.gl.glDepthMask(false);
 		  GlState.gl.glEnable(Gl1Context.GL_BLEND);
 		  GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
-		  GlState.gl.glPointSize(GlState.gl_particle_size.value);
+		  GlState.gl.glPointSize(GlConfig.gl_particle_size.value);
 			
 		  GlState.gl.glDrawArrays(Gl1Context.GL_POINTS, 0, GlState.r_newrefdef.num_particles);
 			
@@ -393,7 +393,7 @@ public class Entities {
 	 * R_PolyBlend
 	 */
 	static void R_PolyBlend() {
-		if (GlState.gl_polyblend.value == 0.0f)
+		if (GlConfig.gl_polyblend.value == 0.0f)
 			return;
 
 		if (GlState.v_blend[3] == 0.0f)
@@ -523,8 +523,8 @@ public class Entities {
 		double xmin = ymin * aspect;
 		double xmax = ymax * aspect;
 
-		xmin += - (2 * GlState.gl_state.camera_separation) / zNear;
-		xmax += - (2 * GlState.gl_state.camera_separation) / zNear;
+		xmin += - (2 * GlConfig.gl_state.camera_separation) / zNear;
+		xmax += - (2 * GlConfig.gl_state.camera_separation) / zNear;
 
 		GlState.gl.glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
 	}
@@ -577,7 +577,7 @@ public class Entities {
 		//
 		// set drawing parms
 		//
-		if (GlState.gl_cull.value != 0.0f)
+		if (GlConfig.gl_cull.value != 0.0f)
 		  GlState.gl.glEnable(Gl1Context.GL_CULL_FACE);
 		else
 		  GlState.gl.glDisable(Gl1Context.GL_CULL_FACE);
@@ -591,9 +591,9 @@ public class Entities {
 	 * R_Clear
 	 */
 	static void R_Clear() {
-		if (GlState.gl_ztrick.value != 0.0f) {
+		if (GlConfig.gl_ztrick.value != 0.0f) {
 
-			if (GlState.gl_clear.value != 0.0f) {
+			if (GlConfig.gl_clear.value != 0.0f) {
 			  GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT);
 			}
 
@@ -610,7 +610,7 @@ public class Entities {
 			}
 		}
 		else {
-			if (GlState.gl_clear.value != 0.0f)
+			if (GlConfig.gl_clear.value != 0.0f)
 			  GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT | Gl1Context.GL_DEPTH_BUFFER_BIT);
 			else
 			  GlState.gl.glClear(Gl1Context.GL_DEPTH_BUFFER_BIT);
@@ -635,7 +635,7 @@ public class Entities {
 	 */
 	static void R_RenderView(RendererState fd) {
 
-		if (GlState.r_norefresh.value != 0.0f)
+		if (GlConfig.r_norefresh.value != 0.0f)
 			return;
 
 		GlState.r_newrefdef = fd;
@@ -648,14 +648,14 @@ public class Entities {
 		if (GlState.r_worldmodel == null && (GlState.r_newrefdef.rdflags & Constants.RDF_NOWORLDMODEL) == 0)
 			Com.Error(Constants.ERR_DROP, "R_RenderView: NULL worldmodel");
 
-		if (GlState.r_speeds.value != 0.0f) {
+		if (GlConfig.r_speeds.value != 0.0f) {
 			GlState.c_brush_polys = 0;
 			GlState.c_alias_polys = 0;
 		}
 
 		DynamicLights.push();
 
-		if (GlState.gl_finish.value != 0.0f)
+		if (GlConfig.gl_finish.value != 0.0f)
 		  GlState.gl.glFinish();
 
 		R_SetupFrame();
@@ -678,7 +678,7 @@ public class Entities {
 
 		R_Flash();
 
-		if (GlState.r_speeds.value != 0.0f) {
+		if (GlConfig.r_speeds.value != 0.0f) {
 			Window.Printf(
 				Constants.PRINT_ALL,
 				"%4i wpoly %4i epoly %i tex %i lmaps\n",
@@ -719,15 +719,15 @@ public class Entities {
 		// as the mono value returned by software
 		if (GlState.light[0] > GlState.light[1]) {
 			if (GlState.light[0] > GlState.light[2])
-				GlState.r_lightlevel.value = 150 * GlState.light[0];
+				GlConfig.r_lightlevel.value = 150 * GlState.light[0];
 			else
-				GlState.r_lightlevel.value = 150 * GlState.light[2];
+				GlConfig.r_lightlevel.value = 150 * GlState.light[2];
 		}
 		else {
 			if (GlState.light[1] > GlState.light[2])
-				GlState.r_lightlevel.value = 150 * GlState.light[1];
+				GlConfig.r_lightlevel.value = 150 * GlState.light[1];
 			else
-				GlState.r_lightlevel.value = 150 * GlState.light[2];
+				GlConfig.r_lightlevel.value = 150 * GlState.light[2];
 		}
 	}
 
@@ -744,72 +744,7 @@ public class Entities {
 	 * R_Register
 	 */
 	protected static void R_Register() {
-		GlState.r_lefthand = ConsoleVariables.Get("hand", "0", CVAR_USERINFO | CVAR_ARCHIVE);
-		GlState.r_norefresh = ConsoleVariables.Get("r_norefresh", "0", 0);
-		GlState.r_fullbright = ConsoleVariables.Get("r_fullbright", "0", 0);
-		GlState.r_drawentities = ConsoleVariables.Get("r_drawentities", "1", 0);
-		GlState.r_drawworld = ConsoleVariables.Get("r_drawworld", "1", 0);
-		GlState.r_novis = ConsoleVariables.Get("r_novis", "0", 0);
-		GlState.r_nocull = ConsoleVariables.Get("r_nocull", "0", 0);
-		GlState.r_lerpmodels = ConsoleVariables.Get("r_lerpmodels", "1", 0);
-		GlState.r_speeds = ConsoleVariables.Get("r_speeds", "0", 0);
-
-		GlState.r_lightlevel = ConsoleVariables.Get("r_lightlevel", "1", 0);
-
-		GlState.gl_nosubimage = ConsoleVariables.Get("gl_nosubimage", "0", 0);
-		GlState.gl_allow_software = ConsoleVariables.Get("gl_allow_software", "0", 0);
-
-		GlState.gl_particle_min_size = ConsoleVariables.Get("gl_particle_min_size", "2", CVAR_ARCHIVE);
-		GlState.gl_particle_max_size = ConsoleVariables.Get("gl_particle_max_size", "40", CVAR_ARCHIVE);
-		GlState.gl_particle_size = ConsoleVariables.Get("gl_particle_size", "40", CVAR_ARCHIVE);
-		GlState.gl_particle_att_a = ConsoleVariables.Get("gl_particle_att_a", "0.01", CVAR_ARCHIVE);
-		GlState.gl_particle_att_b = ConsoleVariables.Get("gl_particle_att_b", "0.0", CVAR_ARCHIVE);
-		GlState.gl_particle_att_c = ConsoleVariables.Get("gl_particle_att_c", "0.01", CVAR_ARCHIVE);
-
-		GlState.gl_modulate = ConsoleVariables.Get("gl_modulate", "1.5", CVAR_ARCHIVE);
-		GlState.gl_log = ConsoleVariables.Get("gl_log", "0", 0);
-		GlState.gl_bitdepth = ConsoleVariables.Get("gl_bitdepth", "0", 0);
-		GlState.gl_mode = ConsoleVariables.Get("gl_mode", "3", CVAR_ARCHIVE); // 640x480
-		GlState.gl_lightmap = ConsoleVariables.Get("gl_lightmap", "0", 0);
-		GlState.gl_shadows = ConsoleVariables.Get("gl_shadows", "0", CVAR_ARCHIVE);
-		GlState.gl_dynamic = ConsoleVariables.Get("gl_dynamic", "1", 0);
-		GlState.gl_nobind = ConsoleVariables.Get("gl_nobind", "0", 0);
-		GlState.gl_round_down = ConsoleVariables.Get("gl_round_down", "1", 0);
-		GlState.gl_picmip = ConsoleVariables.Get("gl_picmip", "0", 0);
-		GlState.gl_skymip = ConsoleVariables.Get("gl_skymip", "0", 0);
-		GlState.gl_showtris = ConsoleVariables.Get("gl_showtris", "0", 0);
-		GlState.gl_ztrick = ConsoleVariables.Get("gl_ztrick", "0", 0);
-		GlState.gl_finish = ConsoleVariables.Get("gl_finish", "0", CVAR_ARCHIVE);
-		GlState.gl_clear = ConsoleVariables.Get("gl_clear", "0", 0);
-		GlState.gl_cull = ConsoleVariables.Get("gl_cull", "1", 0);
-		GlState.gl_polyblend = ConsoleVariables.Get("gl_polyblend", "1", 0);
-		GlState.gl_flashblend = ConsoleVariables.Get("gl_flashblend", "0", 0);
-		GlState.gl_playermip = ConsoleVariables.Get("gl_playermip", "0", 0);
-		GlState.gl_monolightmap = ConsoleVariables.Get("gl_monolightmap", "0", 0);
-		GlState.gl_driver = ConsoleVariables.Get("gl_driver", "opengl32", CVAR_ARCHIVE);
-		GlState.gl_texturemode = ConsoleVariables.Get("gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE);
-		GlState.gl_texturealphamode = ConsoleVariables.Get("gl_texturealphamode", "default", CVAR_ARCHIVE);
-		GlState.gl_texturesolidmode = ConsoleVariables.Get("gl_texturesolidmode", "default", CVAR_ARCHIVE);
-		GlState.gl_lockpvs = ConsoleVariables.Get("gl_lockpvs", "0", 0);
-
-		GlState.gl_vertex_arrays = ConsoleVariables.Get("gl_vertex_arrays", "1", CVAR_ARCHIVE);
-
-		GlState.gl_ext_swapinterval = ConsoleVariables.Get("gl_ext_swapinterval", "1", CVAR_ARCHIVE);
-		GlState.gl_ext_palettedtexture = ConsoleVariables.Get("gl_ext_palettedtexture", "0", CVAR_ARCHIVE);
-		GlState.gl_ext_multitexture = ConsoleVariables.Get("gl_ext_multitexture", "1", CVAR_ARCHIVE);
-		GlState.gl_ext_pointparameters = ConsoleVariables.Get("gl_ext_pointparameters", "1", CVAR_ARCHIVE);
-		GlState.gl_ext_compiled_vertex_array = ConsoleVariables.Get("gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE);
-
-		GlState.gl_drawbuffer = ConsoleVariables.Get("gl_drawbuffer", "GL_BACK", 0);
-		GlState.gl_swapinterval = ConsoleVariables.Get("gl_swapinterval", "0", CVAR_ARCHIVE);
-
-		GlState.gl_saturatelighting = ConsoleVariables.Get("gl_saturatelighting", "0", 0);
-
-		GlState.gl_3dlabs_broken = ConsoleVariables.Get("gl_3dlabs_broken", "1", CVAR_ARCHIVE);
-
-		GlState.vid_fullscreen = ConsoleVariables.Get("vid_fullscreen", "0", CVAR_ARCHIVE);
-		GlState.vid_gamma = ConsoleVariables.Get("vid_gamma", "1.0", CVAR_ARCHIVE);
-		GlState.vid_ref = ConsoleVariables.Get("vid_ref", "lwjgl", CVAR_ARCHIVE);
+		GlConfig.init();
 
 		Commands.addCommand("imagelist", new ExecutableCommand() {
 			public void execute() {
@@ -834,55 +769,6 @@ public class Entities {
 		});
 	}
 
-
-	
-	/**
-	 * R_Init2
-	 */
-	static boolean R_Init2() {
-		GlState.qglPointParameterfEXT = true;
-		GlState.qglActiveTextureARB = true;
-		GlState.GL_TEXTURE0 = Gl1Context.GL_TEXTURE0;
-		GlState.GL_TEXTURE1 = Gl1Context.GL_TEXTURE1;
-
-		if (!(GlState.qglActiveTextureARB))
-			return false;
-
-		Misc.GL_SetDefaultState();
-
-		Images.GL_InitImages();
-		Models.Mod_Init();
-		Misc.R_InitParticleTexture();
-		Drawing.Draw_InitLocal();
-
-		int err = GlState.gl.glGetError();
-		if (err != Gl1Context.GL_NO_ERROR)
-			Window.Printf(
-				Constants.PRINT_ALL,
-				"glGetError() = 0x%x\n\t%s\n",
-				new Vargs(2).add(err).add("" + GlState.gl.glGetString(err)));
-
-		return true;
-	}
-
-	/**
-	 * R_Shutdown
-	 */
-	protected static void R_Shutdown() {
-		Commands.RemoveCommand("modellist");
-		Commands.RemoveCommand("screenshot");
-		Commands.RemoveCommand("imagelist");
-		Commands.RemoveCommand("gl_strings");
-
-		Models.Mod_FreeAll();
-
-		Images.GL_ShutdownImages();
-
-		/*
-		 * shut down OS specific OpenGL stuff like contexts, etc.
-		 */
-		GlBase.GLimp_Shutdown();
-	}
 
 	
 	/**

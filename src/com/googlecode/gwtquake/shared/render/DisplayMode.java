@@ -27,38 +27,8 @@ import com.googlecode.gwtquake.shared.client.Dimension;
 
 public class DisplayMode extends Dimension {
 
-  int bitsPerPixel;
-  int refreshRate;
-
-  public DisplayMode(int width, int height, int bitsPerPixel, int refreshRate) {
+  public DisplayMode(int width, int height) {
     super(width, height);
-    this.bitsPerPixel = bitsPerPixel;
-    this.refreshRate = refreshRate;
-  }
-
-  public int getRefreshRate() {
-    return refreshRate;
-  }
-
-  public int getBitsPerPixel() {
-    return this.bitsPerPixel;
-  }
-
-  public int getFrequency() {
-    return refreshRate;
-  }
-
-  static String getModeString(DisplayMode m) {
-    StringBuffer sb = new StringBuffer();
-    sb.append(m.getWidth());
-    sb.append('x');
-    sb.append(m.getHeight());
-    sb.append('x');
-    sb.append(m.getBitsPerPixel());
-    sb.append('@');
-    sb.append(m.getFrequency());
-    sb.append("Hz");
-    return sb.toString();
   }
 
 }

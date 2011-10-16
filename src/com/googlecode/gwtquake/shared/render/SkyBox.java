@@ -151,8 +151,8 @@ public class SkyBox  {
 		// init polys
 		Polygon poly = Polygons.create(numverts + 2);
 
-		poly.next = GlState.warpface.polys;
-		GlState.warpface.polys = poly;
+		poly.next = SkyBox.warpface.polys;
+		SkyBox.warpface.polys = poly;
 		
 		float[] total = Vec3Cache.get();
 		Math3D.VectorClear(total);
@@ -163,8 +163,8 @@ public class SkyBox  {
             poly.setX(i + 1, verts[i][0]);
             poly.setY(i + 1, verts[i][1]);
             poly.setZ(i + 1, verts[i][2]);
-            s = Math3D.DotProduct(verts[i], GlState.warpface.texinfo.vecs[0]);
-            t = Math3D.DotProduct(verts[i], GlState.warpface.texinfo.vecs[1]);
+            s = Math3D.DotProduct(verts[i], SkyBox.warpface.texinfo.vecs[0]);
+            t = Math3D.DotProduct(verts[i], SkyBox.warpface.texinfo.vecs[1]);
 
             total_s += s;
             total_t += t;
@@ -203,7 +203,7 @@ public class SkyBox  {
     static void GL_SubdivideSurface(Surface fa) {
         float[][] verts = tmpVerts;
         float[] vec;
-        GlState.warpface = fa;
+        SkyBox.warpface = fa;
         //
         // convert edges back to a normal polygon
         //
@@ -388,7 +388,7 @@ public class SkyBox  {
 			}
 			else
 				sides[i] = SIDE_ON;
-			GlState.dists[i] = d;
+			SkyBox.dists[i] = d;
 		}
 
 		if (!front || !back)
@@ -399,7 +399,7 @@ public class SkyBox  {
 
 		// clip it
 		sides[i] = sides[0];
-		GlState.dists[i] = GlState.dists[0];
+		SkyBox.dists[i] = SkyBox.dists[0];
 		Math3D.VectorCopy(vecs[0], vecs[i]);
 
 		int newc0 = 0; 	int  newc1 = 0;
@@ -430,7 +430,7 @@ public class SkyBox  {
 			if (sides[i] == SIDE_ON || sides[i+1] == SIDE_ON || sides[i+1] == sides[i])
 				continue;
 
-			d = GlState.dists[i] / (GlState.dists[i] - GlState.dists[i+1]);
+			d = SkyBox.dists[i] / (SkyBox.dists[i] - SkyBox.dists[i+1]);
 			for (j=0 ; j<3 ; j++)
 			{
 				e = v[j] + d * (vecs[i + 1][j] - v[j]);
@@ -534,7 +534,7 @@ public class SkyBox  {
 	{
 		int i;
 		
-		if (GlState.skyrotate != 0)
+		if (SkyBox.skyrotate != 0)
 		{	// check for no sky at all
 			for (i=0 ; i<6 ; i++)
 				if (skymins[0][i] < skymaxs[0][i]
@@ -547,11 +547,11 @@ public class SkyBox  {
 
 		GlState.gl.glPushMatrix ();
 		GlState.gl.glTranslatef (GlState.r_origin[0], GlState.r_origin[1], GlState.r_origin[2]);
-		GlState.gl.glRotatef (GlState.r_newrefdef.time * GlState.skyrotate, GlState.skyaxis[0], GlState.skyaxis[1], GlState.skyaxis[2]);
+		GlState.gl.glRotatef (GlState.r_newrefdef.time * SkyBox.skyrotate, SkyBox.skyaxis[0], SkyBox.skyaxis[1], SkyBox.skyaxis[2]);
 		
 		for (i=0 ; i<6 ; i++)
 		{
-			if (GlState.skyrotate != 0)
+			if (SkyBox.skyrotate != 0)
 			{	// hack, forces full sky to draw when rotating
 				skymins[0][i] = -1;
 				skymins[1][i] = -1;
@@ -563,7 +563,7 @@ public class SkyBox  {
 			|| skymins[1][i] >= skymaxs[1][i])
 				continue;
 
-			Images.GL_Bind(GlState.sky_images[skytexorder[i]].texnum);
+			Images.GL_Bind(SkyBox.sky_images[skytexorder[i]].texnum);
 			
 			GlState.gl.glBegin(Gl1Context._GL_QUADS);
 			MakeSkyVec(skymins[0][i], skymins[1][i], i);
@@ -588,30 +588,30 @@ public class SkyBox  {
 	{
 		assert (axis.length == 3) : "vec3_t bug";
 		String pathname;
-		GlState.skyname = name;
+		SkyBox.skyname = name;
 
-		GlState.skyrotate = rotate;
-		Math3D.VectorCopy(axis, GlState.skyaxis);
+		SkyBox.skyrotate = rotate;
+		Math3D.VectorCopy(axis, SkyBox.skyaxis);
 
 		for (int i=0 ; i<6 ; i++)
 		{
 			// chop down rotating skies for less memory
-			if (GlState.gl_skymip.value != 0 || GlState.skyrotate != 0)
-				GlState.gl_picmip.value++;
+			if (GlConfig.gl_skymip.value != 0 || SkyBox.skyrotate != 0)
+				GlConfig.gl_picmip.value++;
 
 			// Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
-			pathname = "env/" + GlState.skyname + suf[i] + ".tga";
+			pathname = "env/" + SkyBox.skyname + suf[i] + ".tga";
 
 //			gl.log("loadSky:" + pathname);
 			
-			GlState.sky_images[i] = Images.findTexture(pathname, QuakeImage.it_sky);
+			SkyBox.sky_images[i] = Images.findTexture(pathname, QuakeImage.it_sky);
 
-			if (GlState.sky_images[i] == null)
-				GlState.sky_images[i] = GlState.r_notexture;
+			if (SkyBox.sky_images[i] == null)
+				SkyBox.sky_images[i] = GlState.r_notexture;
 
-			if (GlState.gl_skymip.value != 0 || GlState.skyrotate != 0)
+			if (GlConfig.gl_skymip.value != 0 || SkyBox.skyrotate != 0)
 			{	// take less memory
-				GlState.gl_picmip.value--;
+				GlConfig.gl_picmip.value--;
 				sky_min = 1.0f / 256;
 				sky_max = 255.0f / 256;
 			}
@@ -622,4 +622,16 @@ public class SkyBox  {
 			}
 		}
 	}
+
+  static float[] skyaxis = {0, 0, 0};
+
+  static String skyname;
+
+  static float	skyrotate;
+
+  static Image[] sky_images = new Image[6];
+
+  static Surface	warpface;
+
+  static float[] dists = new float[GlConstants.MAX_CLIP_VERTS];
 }

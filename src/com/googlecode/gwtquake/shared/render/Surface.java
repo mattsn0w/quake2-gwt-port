@@ -131,7 +131,7 @@ public class Surface
 	        int smax = (surf.extents[0] >> 4) + 1;
 	        int tmax = (surf.extents[1] >> 4) + 1;
 	        int size = smax * tmax;
-	        if (size > ((DynamicLights.s_blocklights.length * Constants.SIZE_OF_FLOAT) >> 4))
+	        if (size > ((Surfaces.s_blocklights.length * Constants.SIZE_OF_FLOAT) >> 4))
 	        	Com.Error(Constants.ERR_DROP, "Bad s_blocklights size");
 	
 	        //   try {
@@ -140,7 +140,7 @@ public class Surface
 	        	//             int maps;
 	
 	        	for (i = 0; i < size * 3; i++)
-	        		DynamicLights.s_blocklights[i] = 255;
+	        		Surfaces.s_blocklights[i] = 255;
 	
 	        	// TODO useless? hoz
 	        	//				for (maps = 0 ; maps < Defines.MAXLIGHTMAPS &&
@@ -169,15 +169,15 @@ public class Surface
 	
 	        		for (maps = 0; maps < Constants.MAXLIGHTMAPS
 	        		&& surf.styles[maps] != (byte) 255; maps++) {
-	        			bl = DynamicLights.s_blocklights;
+	        			bl = Surfaces.s_blocklights;
 	        			int blp = 0;
 	
 	        			//                    for (i = 0; i < 3; i++)
 	        			//                        scale[i] = gl_modulate.value
 	        			//                                * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
-	        			scale0 = GlState.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[0];
-	        			scale1 = GlState.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[1];
-	        			scale2 = GlState.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[2];
+	        			scale0 = GlConfig.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[0];
+	        			scale1 = GlConfig.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[1];
+	        			scale2 = GlConfig.gl_modulate.value * GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[2];
 	
 	        			if (scale0 == 1.0F && scale1 == 1.0F
 	        					&& scale2 == 1.0F) {
@@ -204,21 +204,21 @@ public class Surface
 	        		//			memset( s_blocklights, 0, sizeof( s_blocklights[0] ) * size *
 	        		// 3 );
 	
-	        		Arrays.fill(DynamicLights.s_blocklights, 0, size * 3, 0.0f);
+	        		Arrays.fill(Surfaces.s_blocklights, 0, size * 3, 0.0f);
 	
 	        		for (maps = 0; maps < Constants.MAXLIGHTMAPS
 	        		&& surf.styles[maps] != (byte) 255; maps++) {
-	        			bl = DynamicLights.s_blocklights;
+	        			bl = Surfaces.s_blocklights;
 	        			int blp = 0;
 	
 	        			//                    for (i = 0; i < 3; i++)
 	        			//                        scale[i] = gl_modulate.value
 	        			//                                * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
-	        			scale0 = GlState.gl_modulate.value
+	        			scale0 = GlConfig.gl_modulate.value
 	        			* GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[0];
-	        			scale1 = GlState.gl_modulate.value
+	        			scale1 = GlConfig.gl_modulate.value
 	        			* GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[1];
-	        			scale2 = GlState.gl_modulate.value
+	        			scale2 = GlConfig.gl_modulate.value
 	        			* GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[2];
 	
 	
@@ -256,10 +256,10 @@ public class Surface
 	
 	        // put into texture format
 	        stride -= smax;
-	        bl = DynamicLights.s_blocklights;
+	        bl = Surfaces.s_blocklights;
 	        int blp = 0;
 	
-	        int monolightmap = GlState.gl_monolightmap.string.charAt(0);
+	        int monolightmap = GlConfig.gl_monolightmap.string.charAt(0);
 	
 	        int destp = 0;
 	
@@ -453,7 +453,7 @@ public class Surface
 			local0 = Math3D.DotProduct (DynamicLights.impact, tex.vecs[0]) + tex.vecs[0][3] - surf.texturemins[0];
 			local1 = Math3D.DotProduct (DynamicLights.impact, tex.vecs[1]) + tex.vecs[1][3] - surf.texturemins[1];
 	
-			pfBL = DynamicLights.s_blocklights;
+			pfBL = Surfaces.s_blocklights;
 			int pfBLindex = 0;
 			for (t = 0, ftacc = 0 ; t<tmax ; t++, ftacc += 16)
 			{
@@ -662,7 +662,7 @@ public class Surface
 			if ( gotoDynamic || ( surf.dlightframe == GlState.r_framecount ) )
 			{
 				//	label dynamic:
-				if ( GlState.gl_dynamic.value != 0 )
+				if ( GlConfig.gl_dynamic.value != 0 )
 				{
 					if ( (surf.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33 | Constants.SURF_TRANS66 | Constants.SURF_WARP )) == 0 )
 					{
@@ -691,7 +691,7 @@ public class Surface
 				{
 					lmtex = 0;
 				}
-				Images.GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
+				Images.GL_MBind( Gl1Context.GL_TEXTURE1, GlConfig.gl_state.lightmap_textures + lmtex );
 				GlState.gl.glTexSubImage2D( Gl1Context.GL_TEXTURE_2D, 0,
 						  surf.light_s, surf.light_t, 
 						  smax, tmax, 
@@ -701,8 +701,8 @@ public class Surface
 			}
 				GlState.c_brush_polys++;
 	
-				Images.GL_MBind( GlState.GL_TEXTURE0, image.texnum );
-				Images.GL_MBind( GlState.GL_TEXTURE1, GlState.gl_state.lightmap_textures + lmtex );
+				Images.GL_MBind( Gl1Context.GL_TEXTURE0, image.texnum );
+				Images.GL_MBind( Gl1Context.GL_TEXTURE1, GlConfig.gl_state.lightmap_textures + lmtex );
 	
 				// ==========
 				//	  PGM
@@ -833,7 +833,7 @@ public class Surface
 		if ( gotoDynamic || ( fa.dlightframe == GlState.r_framecount ) )
 		{
 			//	label dynamic:
-			if ( GlState.gl_dynamic.value != 0 )
+			if ( GlConfig.gl_dynamic.value != 0 )
 			{
 				if (( fa.texinfo.flags & (Constants.SURF_SKY | Constants.SURF_TRANS33 | Constants.SURF_TRANS66 | Constants.SURF_WARP ) ) == 0)
 				{

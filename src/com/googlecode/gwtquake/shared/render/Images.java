@@ -112,29 +112,29 @@ public abstract class Images {
 
     static void GL_EnableMultitexture(boolean enable) {
         if (enable) {
-            GL_SelectTexture(GlState.GL_TEXTURE1);
+            GL_SelectTexture(Gl1Context.GL_TEXTURE1);
             GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
             GL_TexEnv(Gl1Context.GL_REPLACE);
         }
         else {
-            GL_SelectTexture(GlState.GL_TEXTURE1);
+            GL_SelectTexture(Gl1Context.GL_TEXTURE1);
             GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
             GL_TexEnv(Gl1Context.GL_REPLACE);
         }
-        GL_SelectTexture(GlState.GL_TEXTURE0);
+        GL_SelectTexture(Gl1Context.GL_TEXTURE0);
         GL_TexEnv(Gl1Context.GL_REPLACE);
     }
 
     static void GL_SelectTexture(int texture /* GLenum */) {
         int tmu;
 
-        tmu = (texture == GlState.GL_TEXTURE0) ? 0 : 1;
+        tmu = (texture == Gl1Context.GL_TEXTURE0) ? 0 : 1;
 
-        if (tmu == GlState.gl_state.currenttmu) {
+        if (tmu == GlConfig.gl_state.currenttmu) {
             return;
         }
 
-        GlState.gl_state.currenttmu = tmu;
+        GlConfig.gl_state.currenttmu = tmu;
 
         GlState.gl.glActiveTexture(texture);
         GlState.gl.glClientActiveTexture(texture);
@@ -145,33 +145,33 @@ public abstract class Images {
     public static void GL_TexEnv(int mode /* GLenum */
     ) {
 
-        if (mode != lastmodes[GlState.gl_state.currenttmu]) {
+        if (mode != lastmodes[GlConfig.gl_state.currenttmu]) {
           GlState.gl.glTexEnvi(Gl1Context.GL_TEXTURE_ENV, Gl1Context.GL_TEXTURE_ENV_MODE, mode);
-            lastmodes[GlState.gl_state.currenttmu] = mode;
+            lastmodes[GlConfig.gl_state.currenttmu] = mode;
         }
     }
 
     public static void GL_Bind(int texnum) {
 
-        if ((GlState.gl_nobind.value != 0) && (draw_chars != null)) {
+        if ((GlConfig.gl_nobind.value != 0) && (draw_chars != null)) {
             // performance evaluation option
             texnum = draw_chars.texnum;
         }
-        if (GlState.gl_state.currenttextures[GlState.gl_state.currenttmu] == texnum)
+        if (GlConfig.gl_state.currenttextures[GlConfig.gl_state.currenttmu] == texnum)
             return;
 
-        GlState.gl_state.currenttextures[GlState.gl_state.currenttmu] = texnum;
+        GlConfig.gl_state.currenttextures[GlConfig.gl_state.currenttmu] = texnum;
         GlState.gl.glBindTexture(Gl1Context.GL_TEXTURE_2D, texnum);
     }
 
     static void GL_MBind(int target /* GLenum */, int texnum) {
         GL_SelectTexture(target);
-        if (target == GlState.GL_TEXTURE0) {
-            if (GlState.gl_state.currenttextures[0] == texnum)
+        if (target == Gl1Context.GL_TEXTURE0) {
+            if (GlConfig.gl_state.currenttextures[0] == texnum)
                 return;
         }
         else {
-            if (GlState.gl_state.currenttextures[1] == texnum)
+            if (GlConfig.gl_state.currenttextures[1] == texnum)
                 return;
         }
         GL_Bind(texnum);
@@ -659,16 +659,16 @@ public abstract class Images {
 //      for (int j=0; j<256*256; j++) paletted_texture.put(j,(byte)0);
 
         for (scaled_width = 1; scaled_width < width; scaled_width <<= 1);
-        if (GlState.gl_round_down.value > 0.0f && scaled_width > width && mipmap)
+        if (GlConfig.gl_round_down.value > 0.0f && scaled_width > width && mipmap)
             scaled_width >>= 1;
         for (scaled_height = 1; scaled_height < height; scaled_height <<= 1);
-        if (GlState.gl_round_down.value > 0.0f && scaled_height > height && mipmap)
+        if (GlConfig.gl_round_down.value > 0.0f && scaled_height > height && mipmap)
             scaled_height >>= 1;
 
         // let people sample down the world textures for speed
         if (mipmap) {
-            scaled_width >>= (int) GlState.gl_picmip.value;
-            scaled_height >>= (int) GlState.gl_picmip.value;
+            scaled_width >>= (int) GlConfig.gl_picmip.value;
+            scaled_height >>= (int) GlConfig.gl_picmip.value;
         }
 
         // don't ever bother with >256 textures
@@ -1031,7 +1031,7 @@ public abstract class Images {
     */
     static void GL_InitImages() {
         int i, j;
-        float g = GlState.vid_gamma.value;
+        float g = GlConfig.vid_gamma.value;
 
         GlState.registration_sequence = 1;
 
@@ -1041,7 +1041,7 @@ public abstract class Images {
         if (intensity.value <= 1)
             ConsoleVariables.Set("intensity", "1");
 
-        GlState.gl_state.inverse_intensity = 1 / intensity.value;
+        GlConfig.gl_state.inverse_intensity = 1 / intensity.value;
 
         Draw_GetPalette();
 
