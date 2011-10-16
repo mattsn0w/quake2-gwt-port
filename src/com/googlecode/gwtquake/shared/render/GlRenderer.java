@@ -70,9 +70,44 @@ public abstract class GlRenderer implements Renderer {
    */
   public boolean Init(int vid_xpos, int vid_ypos) {
     // pre init
-    if (!R_Init(vid_xpos, vid_ypos)) {
+    assert (GlConstants.SIN.length == 256) : "warpsin table bug";
+
+    Window.Printf(Constants.PRINT_ALL, "ref_gl version: " + GlConstants.REF_VERSION + '\n');
+    Images.Draw_GetPalette();  
+    GlConfig.init();
+    
+    Commands.addCommand("imagelist", new ExecutableCommand() {
+    	public void execute() {
+    		Images.GL_ImageList_f();
+    	}
+    });
+    
+    Commands.addCommand("screenshot", new ExecutableCommand() {
+    	public void execute() {
+    		Misc.GL_ScreenShot_f();
+    	}
+    });
+    Commands.addCommand("modellist", new ExecutableCommand() {
+    	public void execute() {
+    		Models.Mod_Modellist_f();
+    	}
+    });
+    Commands.addCommand("gl_strings", new ExecutableCommand() {
+    	public void execute() {
+    		Misc.GL_Strings_f();
+    	}
+    });
+
+    // set our "safe" modes
+    GlState.prev_mode = 3;
+
+    // create the window and set up the context
+    if (!R_SetMode()) {
+      Window.Printf(Constants.PRINT_ALL,
+          "ref_gl::R_Init() - could not R_SetMode()\n");
       return false;
     }
+
     // post init
     GlState.qglPointParameterfEXT = true;
     
@@ -89,6 +124,7 @@ public abstract class GlRenderer implements Renderer {
     		Constants.PRINT_ALL,
     		"glGetError() = 0x%x\n\t%s\n",
     		new Vargs(2).add(err).add("" + GlState.gl.glGetString(err)));
+    //	return false;
     }
     return true;
   }
@@ -212,7 +248,31 @@ public abstract class GlRenderer implements Renderer {
    * @see com.googlecode.gwtquake.shared.client.Renderer#CinematicSetPalette(byte[])
    */
   public void CinematicSetPalette(byte[] palette) {
-    Entities.R_SetPalette(palette);
+    // 256 RGB values (768 bytes)
+    // or null
+    int i;
+    int color = 0;
+    
+    if (palette != null) {
+    	int j =0;
+    	for (i = 0; i < 256; i++) {
+    		color = (palette[j++] & 0xFF) << 0;
+    		color |= (palette[j++] & 0xFF) << 8;
+    		color |= (palette[j++] & 0xFF) << 16;
+    		color |= 0xFF000000;
+    		GlState.r_rawpalette[i] = color;
+    	}
+    }
+    else {
+    	for (i = 0; i < 256; i++) {
+    		GlState.r_rawpalette[i] = QuakeImage.PALETTE_ABGR[i] | 0xff000000;
+    	}
+    }
+    Images.GL_SetTexturePalette(GlState.r_rawpalette);
+    
+    GlState.gl.glClearColor(0, 0, 0, 0);
+    GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT);
+    GlState.gl.glClearColor(1f, 0f, 0.5f, 0.5f);
   }
 
   /**
@@ -621,36 +681,6 @@ public abstract class GlRenderer implements Renderer {
     return true;
   }
 
-  /**
-   * R_Init
-   */
-  protected boolean R_Init(int vid_xpos, int vid_ypos) {
-
-    assert (GlConstants.SIN.length == 256) : "warpsin table bug";
-
-    // fill r_turbsin
-    for (int j = 0; j < 256; j++) {
-      GlState.r_turbsin[j] = GlConstants.SIN[j] * 0.5f;
-    }
-
-    Window.Printf(Constants.PRINT_ALL, "ref_gl version: "
-        + GlConstants.REF_VERSION + '\n');
-
-    Images.Draw_GetPalette();
-
-    Entities.R_Register();
-
-    // set our "safe" modes
-    GlState.prev_mode = 3;
-
-    // create the window and set up the context
-    if (!R_SetMode()) {
-      Window.Printf(Constants.PRINT_ALL,
-          "ref_gl::R_Init() - could not R_SetMode()\n");
-      return false;
-    }
-    return true;
-  }
 
  /**
    * this is a hack for jogl renderers.

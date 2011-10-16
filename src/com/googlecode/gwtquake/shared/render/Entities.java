@@ -27,12 +27,9 @@ import static com.googlecode.gwtquake.shared.common.Constants.CVAR_ARCHIVE;
 import static com.googlecode.gwtquake.shared.common.Constants.CVAR_USERINFO;
 
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import com.googlecode.gwtquake.shared.client.Dimension;
 import com.googlecode.gwtquake.shared.client.EntityType;
-import com.googlecode.gwtquake.shared.client.Particles;
 import com.googlecode.gwtquake.shared.client.RendererState;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Com;
@@ -297,98 +294,6 @@ public class Entities {
 		GlState.gl.glDepthMask(true); // back to writing
 	}
 	
-	/**
-	 * GL_DrawParticles
-	 */
-	static void GL_DrawParticles(int num_particles) {
-		float origin_x, origin_y, origin_z;
-
-		Math3D.VectorScale(GlState.vup, 1.5f, GlState.up);
-		Math3D.VectorScale(GlState.vright, 1.5f, GlState.right);
-		
-		Images.GL_Bind(GlState.r_particletexture.texnum);
-		GlState.gl.glDepthMask(false); // no z buffering
-		GlState.gl.glEnable(Gl1Context.GL_BLEND);
-		Images.GL_TexEnv(Gl1Context.GL_MODULATE);
-		
-		GlState.gl.glBegin(Gl1Context.GL_TRIANGLES);
-
-		FloatBuffer sourceVertices = Particles.vertexArray;
-		IntBuffer sourceColors = Particles.colorArray;
-		float scale;
-		int color;
-		for (int j = 0, i = 0; i < num_particles; i++) {
-			origin_x = sourceVertices.get(j++);
-			origin_y = sourceVertices.get(j++);
-			origin_z = sourceVertices.get(j++);
-
-			// hack a scale up to keep particles from disapearing
-			scale =
-				(origin_x - GlState.r_origin[0]) * GlState.vpn[0]
-					+ (origin_y - GlState.r_origin[1]) * GlState.vpn[1]
-					+ (origin_z - GlState.r_origin[2]) * GlState.vpn[2];
-
-			scale = (scale < 20) ? 1 :  1 + scale * 0.004f;
-
-			color = sourceColors.get(i);
-		
-			GlState.gl.glColor4ub(
-				(byte)((color) & 0xFF),
-				(byte)((color >> 8) & 0xFF),
-				(byte)((color >> 16) & 0xFF),
-				(byte)((color >>> 24))
-			);
-			// first vertex
-			GlState.gl.glTexCoord2f(0.0625f, 0.0625f);
-			GlState.gl.glVertex3f(origin_x, origin_y, origin_z);
-			// second vertex
-			GlState.gl.glTexCoord2f(1.0625f, 0.0625f);
-			GlState.gl.glVertex3f(origin_x + GlState.up[0] * scale, origin_y + GlState.up[1] * scale, origin_z + GlState.up[2] * scale);
-			// third vertex
-			GlState.gl.glTexCoord2f(0.0625f, 1.0625f);
-			GlState.gl.glVertex3f(origin_x + GlState.right[0] * scale, origin_y + GlState.right[1] * scale, origin_z + GlState.right[2] * scale);
-		}
-		GlState.gl.glEnd();
-		
-		GlState.gl.glDisable(Gl1Context.GL_BLEND);
-		GlState.gl.glColor4f(1, 1, 1, 1);
-		GlState.gl.glDepthMask(true); // back to normal Z buffering
-		Images.GL_TexEnv(Gl1Context.GL_REPLACE);
-	}
-
-	/**
-	 * R_DrawParticles
-	 */
-	static void R_DrawParticles() {
-
-		if (GlConfig.gl_ext_pointparameters.value != 0.0f && GlState.qglPointParameterfEXT) {
-
-			//gl.glEnableClientState(GLAdapter.GL_VERTEX_ARRAY);
-		  GlState.gl.glVertexPointer(3, 0, Particles.vertexArray);
-		  GlState.gl.glEnableClientState(Gl1Context.GL_COLOR_ARRAY);
-		  GlState.gl.glColorPointer(4, true, 0, Particles.getColorAsByteBuffer());
-			
-		  GlState.gl.glDepthMask(false);
-		  GlState.gl.glEnable(Gl1Context.GL_BLEND);
-		  GlState.gl.glDisable(Gl1Context.GL_TEXTURE_2D);
-		  GlState.gl.glPointSize(GlConfig.gl_particle_size.value);
-			
-		  GlState.gl.glDrawArrays(Gl1Context.GL_POINTS, 0, GlState.r_newrefdef.num_particles);
-			
-		  GlState.gl.glDisableClientState(Gl1Context.GL_COLOR_ARRAY);
-			//gl.glDisableClientState(GLAdapter.GL_VERTEX_ARRAY);
-
-		  GlState.gl.glDisable(Gl1Context.GL_BLEND);
-		  GlState.gl.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		  GlState.gl.glDepthMask(true);
-		  GlState.gl.glEnable(Gl1Context.GL_TEXTURE_2D);
-
-		}
-		else {
-			GL_DrawParticles(GlState.r_newrefdef.num_particles);
-		}
-	}
-
 	/**
 	 * R_PolyBlend
 	 */
@@ -672,7 +577,7 @@ public class Entities {
 
 		DynamicLights.render();
 
-		R_DrawParticles();
+		com.googlecode.gwtquake.shared.render.Particles.R_DrawParticles();
 
 		Surfaces.R_DrawAlphaSurfaces();
 
@@ -738,68 +643,6 @@ public class Entities {
 		R_RenderView(fd);
 		R_SetLightLevel();
 		R_SetGL2D();
-	}
-
-	/**
-	 * R_Register
-	 */
-	protected static void R_Register() {
-		GlConfig.init();
-
-		Commands.addCommand("imagelist", new ExecutableCommand() {
-			public void execute() {
-				Images.GL_ImageList_f();
-			}
-		});
-
-		Commands.addCommand("screenshot", new ExecutableCommand() {
-			public void execute() {
-				Misc.GL_ScreenShot_f();
-			}
-		});
-		Commands.addCommand("modellist", new ExecutableCommand() {
-			public void execute() {
-				Models.Mod_Modellist_f();
-			}
-		});
-		Commands.addCommand("gl_strings", new ExecutableCommand() {
-			public void execute() {
-				Misc.GL_Strings_f();
-			}
-		});
-	}
-
-
-	
-	/**
-	 * R_SetPalette
-	 */
-	static void R_SetPalette(byte[] palette) {
-		// 256 RGB values (768 bytes)
-		// or null
-		int i;
-		int color = 0;
-
-		if (palette != null) {
-			int j =0;
-			for (i = 0; i < 256; i++) {
-				color = (palette[j++] & 0xFF) << 0;
-				color |= (palette[j++] & 0xFF) << 8;
-				color |= (palette[j++] & 0xFF) << 16;
-				color |= 0xFF000000;
-				GlState.r_rawpalette[i] = color;
-			}
-		}
-		else {
-			for (i = 0; i < 256; i++) {
-				GlState.r_rawpalette[i] = QuakeImage.PALETTE_ABGR[i] | 0xff000000;
-			}
-		}
-		Images.GL_SetTexturePalette(GlState.r_rawpalette);
-
-		GlState.gl.glClearColor(0, 0, 0, 0);
-		GlState.gl.glClear(Gl1Context.GL_COLOR_BUFFER_BIT);
-		GlState.gl.glClearColor(1f, 0f, 0.5f, 0.5f);
 	}
 
 	/**

@@ -21,16 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    Copyright 2003-2004 Bytonic Software
    Copyright 2010 Google Inc.
 */
-package com.googlecode.gwtquake.shared.client;
+package com.googlecode.gwtquake.shared.render;
 
 /**
  * cparticle_t
  *  
  * @author cwei
  */
-public class ParticleData {
+public class Particle {
 
-	public ParticleData next;
+	public Particle next;
 	public float time;
 
 	public float[] org = {0, 0, 0}; // vec3_t

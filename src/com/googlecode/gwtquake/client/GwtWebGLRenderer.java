@@ -378,7 +378,7 @@ public class GwtWebGLRenderer extends GlRenderer implements Renderer {
 			pic[i] = (byte) pixels.get(i);
 		}
 		
-		Image.GL_SetPicData(image, pic, w, h, 32);
+		Image.setData(image, pic, w, h, 32);
 	}
 	
 	 protected void debugLightmap(IntBuffer lightmapBuffer, int w, int h, float scale) {

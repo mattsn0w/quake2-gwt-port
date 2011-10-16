@@ -163,7 +163,7 @@ public class Node {
 					// the polygon is visible, so add it to the texture
 					// sorted chain
 					// FIXME: this is a hack for animation
-					image = ModelTextureInfo.R_TextureAnimation(surf.texinfo);
+					image = Texture.R_TextureAnimation(surf.texinfo);
 					surf.texturechain = image.texturechain;
 					image.texturechain = surf;
 				}
@@ -221,7 +221,7 @@ public class Node {
 	
 		Surface surf;
 		int s, t, ds, dt;
-		ModelTextureInfo tex;
+		Texture tex;
 		ByteBuffer lightmap;
 		int maps;
 		for (int i=0 ; i<node.numsurfaces ; i++, surfIndex++)
@@ -283,5 +283,17 @@ public class Node {
 		Vec3Cache.release(); // mid
 		return r;
 	}
+  /*
+  =================
+  Mod_SetParent
+  =================
+  */
+  static void Mod_SetParent(Node node, Node parent)
+  {
+  	node.parent = parent;
+  	if (node.contents != -1) return;
+  	Mod_SetParent(node.children[0], node);
+  	Mod_SetParent(node.children[1], node);
+  }
 
 }

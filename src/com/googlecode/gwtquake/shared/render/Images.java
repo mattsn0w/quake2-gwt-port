@@ -25,20 +25,16 @@ package com.googlecode.gwtquake.shared.render;
 
 
 
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.googlecode.gwtquake.shared.client.Dimension;
-import com.googlecode.gwtquake.shared.client.Particles;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
-import com.googlecode.gwtquake.shared.common.QuakeFileSystem;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.util.Lib;
@@ -880,7 +876,7 @@ public abstract class Images {
     }
     static Image GL_LoadPic(String name, byte[] pic, int width, int height, int type, int bits) {
         Image image = GL_Find_free_image_t(name, type);
-        Image.GL_SetPicData(image, pic, width, height, bits);
+        Image.setData(image, pic, width, height, bits);
         return image;
     }
         

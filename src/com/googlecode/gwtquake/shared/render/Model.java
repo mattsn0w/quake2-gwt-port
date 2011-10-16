@@ -74,7 +74,7 @@ public class Model implements Cloneable {
 	public Leaf leafs[];
 
 	public int numvertexes;
-	public ModelVertex vertexes[];
+	public Vertex vertexes[];
 
 	public int numedges;
 	public Edge edges[];
@@ -84,7 +84,7 @@ public class Model implements Cloneable {
 	public Node nodes[];
 
 	public int numtexinfo;
-	public ModelTextureInfo texinfo[];
+	public Texture texinfo[];
 
 	public int numsurfaces;
 	public Surface surfaces[];
@@ -239,7 +239,17 @@ public class Model implements Cloneable {
 	  return clone;
 	}
 
-	/**
+	/*
+  ================
+  Mod_Free
+  ================
+  */
+  static void Mod_Free (Model mod)
+  {
+  	mod.clear();
+  }
+
+  /**
 	 * GL_BeginBuildingLightmaps
 	 */
 	static void GL_BeginBuildingLightmaps(Model m)
