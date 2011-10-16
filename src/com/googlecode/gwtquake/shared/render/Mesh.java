@@ -42,12 +42,12 @@ import com.googlecode.gwtquake.shared.util.Math3D;
  */
 public class Mesh {
 
-  static float[][] r_avertexnormals = Anorms.VERTEXNORMALS;
+  static float[][] r_avertexnormals = GlConstants.VERTEXNORMALS;
   static float[] shadevector = {0, 0, 0};
   static float[] shadelight = {0, 0, 0};
 
 
-  static float[][]	r_avertexnormal_dots = Anorms.VERTEXNORMAL_DOTS;
+  static float[][]	r_avertexnormal_dots = GlConstants.VERTEXNORMAL_DOTS;
 
   static float[] shadedots = r_avertexnormal_dots[0];
 
@@ -217,7 +217,7 @@ public class Mesh {
       }
     }
 
-    GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);
+    GlState.gl.glClientActiveTexture(Gl1Context.GL_TEXTURE0);
     FloatBuffer dstTextureCoords = textureArrayBuf;
 
     GlState.gl.glTexCoordPointer( 2, 0, dstTextureCoords);
@@ -406,7 +406,7 @@ public class Mesh {
       GlState.gl.glColorPointer(4, 0, dstColors);
     }
 
-    GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);	
+    GlState.gl.glClientActiveTexture(Gl1Context.GL_TEXTURE0);	
     GlState.gl.glEnableClientState( Gl1Context.GL_TEXTURE_COORD_ARRAY);
 
     FloatBuffer tc0 = paliashdr.textureCoordBuf;
@@ -629,7 +629,7 @@ public class Mesh {
 
     if ( (e.flags & Constants.RF_WEAPONMODEL) != 0 )
     {
-      if ( GlState.r_lefthand.value == 2.0f )
+      if ( GlConfig.r_lefthand.value == 2.0f )
         return;
     }
 
@@ -682,20 +682,20 @@ public class Mesh {
         if (shadelight[0] > shadelight[1])
         {
           if (shadelight[0] > shadelight[2])
-            GlState.r_lightlevel.value = 150*shadelight[0];
+            GlConfig.r_lightlevel.value = 150*shadelight[0];
           else
-            GlState.r_lightlevel.value = 150*shadelight[2];
+            GlConfig.r_lightlevel.value = 150*shadelight[2];
         }
         else
         {
           if (shadelight[1] > shadelight[2])
-            GlState.r_lightlevel.value = 150*shadelight[1];
+            GlConfig.r_lightlevel.value = 150*shadelight[1];
           else
-            GlState.r_lightlevel.value = 150*shadelight[2];
+            GlConfig.r_lightlevel.value = 150*shadelight[2];
         }
       }
 
-      if ( GlState.gl_monolightmap.string.charAt(0) != '0' )
+      if ( GlConfig.gl_monolightmap.string.charAt(0) != '0' )
       {
         float s = shadelight[0];
 
@@ -769,7 +769,7 @@ public class Mesh {
     if ( (GlState.currententity.flags & Constants.RF_DEPTHHACK) != 0) // hack the depth range to prevent view model from poking into walls
       GlState.gl.glDepthRange(GlState.gldepthmin, (float) (GlState.gldepthmin + 0.3*(GlState.gldepthmax-GlState.gldepthmin)));
 
-    if ( (GlState.currententity.flags & Constants.RF_WEAPONMODEL) != 0 && (GlState.r_lefthand.value == 1.0f) )
+    if ( (GlState.currententity.flags & Constants.RF_WEAPONMODEL) != 0 && (GlConfig.r_lefthand.value == 1.0f) )
     {
       GlState.gl.glMatrixMode( Gl1Context.GL_PROJECTION );
       GlState.gl.glPushMatrix();
@@ -834,7 +834,7 @@ public class Mesh {
       GlState.currententity.oldframe = 0;
     }
 
-    if ( GlState.r_lerpmodels.value == 0.0f)
+    if ( GlConfig.r_lerpmodels.value == 0.0f)
       GlState.currententity.backlerp = 0;
 
     GL_DrawAliasFrameLerpDA(paliashdr, GlState.currententity.backlerp);
@@ -844,7 +844,7 @@ public class Mesh {
 
     GlState.gl.glPopMatrix ();
 
-    if ( ( GlState.currententity.flags & Constants.RF_WEAPONMODEL ) != 0 && ( GlState.r_lefthand.value == 1.0F ) )
+    if ( ( GlState.currententity.flags & Constants.RF_WEAPONMODEL ) != 0 && ( GlConfig.r_lefthand.value == 1.0F ) )
     {
       GlState.gl.glMatrixMode( Gl1Context.GL_PROJECTION );
       GlState.gl.glPopMatrix();
@@ -860,7 +860,7 @@ public class Mesh {
     if ( (GlState.currententity.flags & Constants.RF_DEPTHHACK) != 0)
       GlState.gl.glDepthRange (GlState.gldepthmin, GlState.gldepthmax);
 
-    if ( GlState.gl_shadows.value != 0.0f && (GlState.currententity.flags & (Constants.RF_TRANSLUCENT | Constants.RF_WEAPONMODEL)) == 0)
+    if ( GlConfig.gl_shadows.value != 0.0f && (GlState.currententity.flags & (Constants.RF_TRANSLUCENT | Constants.RF_WEAPONMODEL)) == 0)
     {
       GlState.gl.glPushMatrix ();
       Entities.rotateForEntity (e);

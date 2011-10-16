@@ -202,9 +202,9 @@ public class Misc {
 	  System.out.println("   gl.glPolygonMode (GLAdapter.GL_FRONT_AND_BACK, GLAdapter.GL_FILL);");
 	  GlState.gl.glShadeModel (Gl1Context.GL_FLAT);
 
-		Images.GL_TextureMode( GlState.gl_texturemode.string );
-		Images.GL_TextureAlphaMode( GlState.gl_texturealphamode.string );
-		Images.GL_TextureSolidMode( GlState.gl_texturesolidmode.string );
+		Images.GL_TextureMode( GlConfig.gl_texturemode.string );
+		Images.GL_TextureAlphaMode( GlConfig.gl_texturealphamode.string );
+		Images.GL_TextureSolidMode( GlConfig.gl_texturesolidmode.string );
 
 		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, Images.gl_filter_min);
 		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, Images.gl_filter_max);
@@ -220,13 +220,13 @@ public class Misc {
 		{
 			// float[] attenuations = { gl_particle_att_a.value, gl_particle_att_b.value, gl_particle_att_c.value };
 			FloatBuffer att_buffer=GlState.gl.createFloatBuffer(4);
-			att_buffer.put(0,GlState.gl_particle_att_a.value);
-			att_buffer.put(1,GlState.gl_particle_att_b.value);
-			att_buffer.put(2,GlState.gl_particle_att_c.value);
+			att_buffer.put(0,GlConfig.gl_particle_att_a.value);
+			att_buffer.put(1,GlConfig.gl_particle_att_b.value);
+			att_buffer.put(2,GlConfig.gl_particle_att_c.value);
 			
 			GlState.gl.glEnable( Gl1Context.GL_POINT_SMOOTH );
-			GlState.gl.glPointParameterf(Gl1Context.GL_POINT_SIZE_MIN, GlState.gl_particle_min_size.value );
-			GlState.gl.glPointParameterf( Gl1Context.GL_POINT_SIZE_MAX, GlState.gl_particle_max_size.value );
+			GlState.gl.glPointParameterf(Gl1Context.GL_POINT_SIZE_MIN, GlConfig.gl_particle_min_size.value );
+			GlState.gl.glPointParameterf( Gl1Context.GL_POINT_SIZE_MAX, GlConfig.gl_particle_max_size.value );
 			System.out.println("  gl.glPointParameter( GLAdapter.GL_DISTANCE_ATTENUATION, att_buffer );");
 		}
 
@@ -243,15 +243,15 @@ public class Misc {
 		 * vertex array extension
 		 */
 		GlState.gl.glEnableClientState(Gl1Context.GL_VERTEX_ARRAY);
-		GlState.gl.glClientActiveTexture(GlState.GL_TEXTURE0);
+		GlState.gl.glClientActiveTexture(Gl1Context.GL_TEXTURE0);
 		GlState.gl.glEnableClientState(Gl1Context.GL_TEXTURE_COORD_ARRAY);
 	}
 
 	static void GL_UpdateSwapInterval()
 	{
-		if ( GlState.gl_swapinterval.modified )
+		if ( GlConfig.gl_swapinterval.modified )
 		{
-			GlState.gl_swapinterval.modified = false;
+			GlConfig.gl_swapinterval.modified = false;
 		}
 	}
 }

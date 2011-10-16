@@ -264,9 +264,9 @@ public class Node {
 				for (maps = 0 ; maps < Constants.MAXLIGHTMAPS && surf.styles[maps] != (byte)255; maps++)
 				{
 					rgb = GlState.r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb;
-					scale0 = GlState.gl_modulate.value * rgb[0];
-					scale1 = GlState.gl_modulate.value * rgb[1];
-					scale2 = GlState.gl_modulate.value * rgb[2];
+					scale0 = GlConfig.gl_modulate.value * rgb[0];
+					scale1 = GlConfig.gl_modulate.value * rgb[1];
+					scale2 = GlConfig.gl_modulate.value * rgb[2];
 	
 					DynamicLights.pointcolor[0] += (lightmap.get(lightmapIndex + 0) & 0xFF) * scale0 * (1.0f/255);
 					DynamicLights.pointcolor[1] += (lightmap.get(lightmapIndex + 1) & 0xFF) * scale1 * (1.0f/255);
