@@ -59,7 +59,7 @@ public class Surface
 	public Surface lightmapchain;
 
 	// TODO check this
-	public ModelTextureInfo texinfo = new ModelTextureInfo();
+	public Texture texinfo = new Texture();
 
 	// lighting info
 	public int dlightframe;
@@ -109,7 +109,62 @@ public class Surface
 		if (samples != null) samples.clear();
 	}
 
-	//	TODO sync with jogl renderer. hoz
+	/*
+  ================
+  CalcSurfaceExtents
+  
+  Fills in s.texturemins[] and s.extents[]
+  ================
+  */
+  static void CalcSurfaceExtents(Surface s)
+  {
+  	float[] mins = {0, 0};
+  	float[] maxs = {0, 0};
+  	float val;
+  
+  	int j, e;
+  	Vertex v;
+  	int[] bmins = {0, 0};
+  	int[] bmaxs = {0, 0};
+  
+  	mins[0] = mins[1] = 999999;
+  	maxs[0] = maxs[1] = -99999;
+  
+  	Texture tex = s.texinfo;
+  
+  	for (int i=0 ; i<s.numedges ; i++)
+  	{
+  		e = Models.loadmodel.surfedges[s.firstedge+i];
+  		if (e >= 0)
+  			v = Models.loadmodel.vertexes[Models.loadmodel.edges[e].v[0]];
+  		else
+  			v = Models.loadmodel.vertexes[Models.loadmodel.edges[-e].v[1]];
+  	
+  		for (j=0 ; j<2 ; j++)
+  		{
+  			val = v.position[0] * tex.vecs[j][0] + 
+  				v.position[1] * tex.vecs[j][1] +
+  				v.position[2] * tex.vecs[j][2] +
+  				tex.vecs[j][3];
+  			if (val < mins[j])
+  				mins[j] = val;
+  			if (val > maxs[j])
+  				maxs[j] = val;
+  		}
+  	}
+  
+  	for (int i=0 ; i<2 ; i++)
+  	{	
+  		bmins[i] = (int)Math.floor(mins[i]/16);
+  		bmaxs[i] = (int)Math.ceil(maxs[i]/16);
+  
+  		s.texturemins[i] = (short)(bmins[i] * 16);
+  		s.extents[i] = (short)((bmaxs[i] - bmins[i]) * 16);
+  
+  	}
+  }
+
+    //	TODO sync with jogl renderer. hoz
 		/**
 		 * R_BuildLightMap
 		 * 
@@ -424,7 +479,7 @@ public class Surface
 	
 		int smax = (surf.extents[0]>>4)+1;
 		int tmax = (surf.extents[1]>>4)+1;
-		ModelTextureInfo tex = surf.texinfo;
+		Texture tex = surf.texinfo;
 	
 		float local0, local1;
 		for (int lnum=0 ; lnum<GlState.r_newrefdef.num_dlights ; lnum++)
@@ -672,7 +727,7 @@ public class Surface
 			}
 	
 			Polygon p;
-			Image image = ModelTextureInfo.R_TextureAnimation( surf.texinfo );
+			Image image = Texture.R_TextureAnimation( surf.texinfo );
 			int lmtex = surf.lightmaptexturenum;
 	
 			if ( is_dynamic )
@@ -779,7 +834,7 @@ public class Surface
 	{
 		GlState.c_brush_polys++;
 	
-		Image image = ModelTextureInfo.R_TextureAnimation(fa.texinfo);
+		Image image = Texture.R_TextureAnimation(fa.texinfo);
 	
 		if ((fa.flags & Constants.SURF_DRAWTURB) != 0)
 		{	

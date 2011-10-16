@@ -411,15 +411,15 @@ public class Models  {
 	*/
 	static void Mod_LoadVertexes(Lump l)
 	{
-		ModelVertex[] vertexes;
+		Vertex[] vertexes;
 		int i, count;
 
-		if ( (l.filelen % ModelVertex.DISK_SIZE) != 0)
+		if ( (l.filelen % Vertex.DISK_SIZE) != 0)
 			Com.Error(Constants.ERR_DROP, "MOD_LoadBmodel: funny lump size in " + loadmodel.name);
 
-		count = l.filelen / ModelVertex.DISK_SIZE;
+		count = l.filelen / Vertex.DISK_SIZE;
 		
-		vertexes = new ModelVertex[count];
+		vertexes = new Vertex[count];
 
 		loadmodel.vertexes = vertexes;
 		loadmodel.numvertexes = count;
@@ -430,7 +430,7 @@ public class Models  {
 
 		for ( i=0 ; i<count ; i++)
 		{
-			vertexes[i] = new ModelVertex(bb);
+			vertexes[i] = new Vertex(bb);
 		}
 	}
 
@@ -533,8 +533,8 @@ public class Models  {
 	static void Mod_LoadTexinfo(Lump l)
 	{
 		TextureInfo in;
-		ModelTextureInfo[] out;
-		ModelTextureInfo step;
+		Texture[] out;
+		Texture step;
 		int i;
 		int next;
 		String name;
@@ -544,9 +544,9 @@ public class Models  {
 
 		int count = l.filelen / TextureInfo.SIZE;
 		// out = Hunk_Alloc ( count*sizeof(*out));
-		out = new ModelTextureInfo[count];
+		out = new Texture[count];
 		for ( i=0 ; i<count ; i++) {
-			out[i] = new ModelTextureInfo();
+			out[i] = new Texture();
 		}
 
 		loadmodel.texinfo = out;
@@ -580,61 +580,6 @@ public class Models  {
 			out[i].numframes = 1;
 			for (step = out[i].next ; (step != null) && (step != out[i]) ; step=step.next)
 				out[i].numframes++;
-		}
-	}
-
-	/*
-	================
-	CalcSurfaceExtents
-
-	Fills in s.texturemins[] and s.extents[]
-	================
-	*/
-	static void CalcSurfaceExtents(Surface s)
-	{
-		float[] mins = {0, 0};
-		float[] maxs = {0, 0};
-		float val;
-
-		int j, e;
-		ModelVertex v;
-		int[] bmins = {0, 0};
-		int[] bmaxs = {0, 0};
-
-		mins[0] = mins[1] = 999999;
-		maxs[0] = maxs[1] = -99999;
-
-		ModelTextureInfo tex = s.texinfo;
-	
-		for (int i=0 ; i<s.numedges ; i++)
-		{
-			e = loadmodel.surfedges[s.firstedge+i];
-			if (e >= 0)
-				v = loadmodel.vertexes[loadmodel.edges[e].v[0]];
-			else
-				v = loadmodel.vertexes[loadmodel.edges[-e].v[1]];
-		
-			for (j=0 ; j<2 ; j++)
-			{
-				val = v.position[0] * tex.vecs[j][0] + 
-					v.position[1] * tex.vecs[j][1] +
-					v.position[2] * tex.vecs[j][2] +
-					tex.vecs[j][3];
-				if (val < mins[j])
-					mins[j] = val;
-				if (val > maxs[j])
-					maxs[j] = val;
-			}
-		}
-
-		for (int i=0 ; i<2 ; i++)
-		{	
-			bmins[i] = (int)Math.floor(mins[i]/16);
-			bmaxs[i] = (int)Math.ceil(maxs[i]/16);
-
-			s.texturemins[i] = (short)(bmins[i] * 16);
-			s.extents[i] = (short)((bmaxs[i] - bmins[i]) * 16);
-
 		}
 	}
 
@@ -695,7 +640,7 @@ public class Models  {
 	        
 	        out.texinfo = loadmodel.texinfo[ti];
 	        
-	        CalcSurfaceExtents(out);
+	        Surface.CalcSurfaceExtents(out);
 	        
 	        // lighting info
 	        
@@ -736,19 +681,6 @@ public class Models  {
 	    Surfaces.GL_EndBuildingLightmaps();
 	}
 
-
-	/*
-	=================
-	Mod_SetParent
-	=================
-	*/
-	static void Mod_SetParent(Node node, Node parent)
-	{
-		node.parent = parent;
-		if (node.contents != -1) return;
-		Mod_SetParent(node.children[0], node);
-		Mod_SetParent(node.children[1], node);
-	}
 
 	/*
 	=================
@@ -804,7 +736,7 @@ public class Models  {
 			}
 		}
 	
-		Mod_SetParent(loadmodel.nodes[0], null);	// sets nodes and leafs
+		Node.Mod_SetParent(loadmodel.nodes[0], null);	// sets nodes and leafs
 	}
 
 	/*
@@ -1212,7 +1144,7 @@ public class Models  {
 		// this guarantees that mod_known[0] is the world map
 		flushmap = ConsoleVariables.Get("flushmap", "0", 0);
 		if ((world_model != null) && !world_model.name.equals(fullname) || flushmap.value != 0.0f) {
-			Mod_Free(world_model);
+			Model.Mod_Free(world_model);
 			
 			Com.Println("setting world_model to null");
 			world_model = null;
@@ -1315,7 +1247,7 @@ public class Models  {
         continue;
       if (mod.registration_sequence != GlState.registration_sequence)
       { // don't need this model
-        Mod_Free(mod);
+        Model.Mod_Free(mod);
       } else {
         // precompile AliasModels
         if (mod.type == GlConstants.mod_alias)
@@ -1332,16 +1264,6 @@ public class Models  {
 
 	/*
 	================
-	Mod_Free
-	================
-	*/
-	static void Mod_Free (Model mod)
-	{
-		mod.clear();
-	}
-
-	/*
-	================
 	Mod_FreeAll
 	================
 	*/
@@ -1354,7 +1276,7 @@ public class Models  {
     for (String name : modelReqs.keySet()) {
       ModelRequest req = modelReqs.get(name);
       if (req.model.extradata != null)
-        Mod_Free(req.model);
+        Model.Mod_Free(req.model);
     }
 	}
 

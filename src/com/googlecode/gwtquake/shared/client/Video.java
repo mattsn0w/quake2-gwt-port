@@ -56,6 +56,7 @@ import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.render.DynamicLight;
 import com.googlecode.gwtquake.shared.render.Model;
+import com.googlecode.gwtquake.shared.render.Particles;
 import com.googlecode.gwtquake.shared.sys.Timer;
 import com.googlecode.gwtquake.shared.util.Math3D;
 import com.googlecode.gwtquake.shared.util.Vargs;

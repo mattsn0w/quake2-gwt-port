@@ -100,7 +100,6 @@ public class GlState
   // stack variable
   static float[] temp = {0, 0, 0};
   static int trickframe = 0;
-  static float[] r_turbsin = new float[256];
   static int[] r_rawpalette = new int[256];
   static float[][] start_points = new float[GlConstants.NUM_BEAM_SEGS][3];
   // array of vec3_t

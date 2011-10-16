@@ -18,26 +18,24 @@
  *  
  */
 /* Modifications
-   Copyright 2003-2004 Bytonic Software
-   Copyright 2010 Google Inc.
-*/
+ Copyright 2003-2004 Bytonic Software
+ Copyright 2010 Google Inc.
+ */
 package com.googlecode.gwtquake.shared.render;
-
 
 import java.nio.ByteBuffer;
 
 import com.googlecode.gwtquake.shared.common.Constants;
 
-public class ModelVertex {
-    public static final int DISK_SIZE = 3 * Constants.SIZE_OF_FLOAT;
+public class Vertex {
+  public static final int DISK_SIZE = 3 * Constants.SIZE_OF_FLOAT;
+  public static final int MEM_SIZE = 3 * Constants.SIZE_OF_FLOAT;
 
-    public static final int MEM_SIZE = 3 * Constants.SIZE_OF_FLOAT;
+  public float[] position = { 0, 0, 0 };
 
-    public float[] position = { 0, 0, 0 };
-
-    public ModelVertex(ByteBuffer b) {
-        position[0] = b.getFloat();
-        position[1] = b.getFloat();
-        position[2] = b.getFloat();
-    }
+  public Vertex(ByteBuffer b) {
+    position[0] = b.getFloat();
+    position[1] = b.getFloat();
+    position[2] = b.getFloat();
+  }
 }

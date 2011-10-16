@@ -73,7 +73,7 @@ public class Image {
 		return name + ":" + texnum;
 	}
 
-	public static void GL_SetPicData(Image image, byte[] pic, int width, int height, int bits) {   
+	public static void setData(Image image, byte[] pic, int width, int height, int bits) {   
 	    image.width = width;
 	    image.height = height;
 	    image.complete = true;

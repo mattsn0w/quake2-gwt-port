@@ -29,6 +29,7 @@ import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
 import com.googlecode.gwtquake.shared.game.EntityState;
 import com.googlecode.gwtquake.shared.game.monsters.MonsterFlash;
+import com.googlecode.gwtquake.shared.render.Particle;
 import com.googlecode.gwtquake.shared.sound.Sound;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
@@ -54,11 +55,11 @@ public class ClientEffects {
     }
   }
 
-  static ParticleData[] particles = new ParticleData[Constants.MAX_PARTICLES];
+  static Particle[] particles = new Particle[Constants.MAX_PARTICLES];
 
   static {
     for (int i = 0; i < particles.length; i++)
-      particles[i] = new ParticleData();
+      particles[i] = new Particle();
   }
 
   static int cl_numparticles = Constants.MAX_PARTICLES;
@@ -993,7 +994,7 @@ public class ClientEffects {
    */
   static void ParticleEffect(float[] org, float[] dir, int color, int count) {
     int j;
-    ParticleData p;
+    Particle p;
     float d;
 
     for (int i = 0; i < count; i++) {
@@ -1026,7 +1027,7 @@ public class ClientEffects {
    */
   static void ParticleEffect2(float[] org, float[] dir, int color, int count) {
     int j;
-    ParticleData p;
+    Particle p;
     float d;
 
     for (int i = 0; i < count; i++) {
@@ -1060,7 +1061,7 @@ public class ClientEffects {
    */
   static void ParticleEffect3(float[] org, float[] dir, int color, int count) {
     int j;
-    ParticleData p;
+    Particle p;
     float d;
 
     for (int i = 0; i < count; i++) {
@@ -1093,7 +1094,7 @@ public class ClientEffects {
    */
   static void TeleporterParticles(EntityState ent) {
     int j;
-    ParticleData p;
+    Particle p;
 
     for (int i = 0; i < 8; i++) {
       if (free_particles == null)
@@ -1129,7 +1130,7 @@ public class ClientEffects {
    */
   static void LogoutEffect(float[] org, int type) {
     int j;
-    ParticleData p;
+    Particle p;
 
     for (int i = 0; i < 500; i++) {
       if (free_particles == null)
@@ -1170,7 +1171,7 @@ public class ClientEffects {
    */
   static void ItemRespawnParticles(float[] org) {
     int j;
-    ParticleData p;
+    Particle p;
 
     for (int i = 0; i < 64; i++) {
       if (free_particles == null)
@@ -1204,7 +1205,7 @@ public class ClientEffects {
    */
   static void ExplosionParticles(float[] org) {
     int j;
-    ParticleData p;
+    Particle p;
 
     for (int i = 0; i < 256; i++) {
       if (free_particles == null)
@@ -1231,7 +1232,7 @@ public class ClientEffects {
   }
 
   static void BigTeleportParticles(float[] org) {
-    ParticleData p;
+    Particle p;
     float angle, dist;
 
     for (int i = 0; i < 4096; i++) {
@@ -1272,7 +1273,7 @@ public class ClientEffects {
    */
   static void BlasterParticles(float[] org, float[] dir) {
     int j;
-    ParticleData p;
+    Particle p;
     float d;
 
     int count = 40;
@@ -1312,7 +1313,7 @@ public class ClientEffects {
   static void BlasterTrail(float[] start, float[] end) {
     float len;
     int j;
-    ParticleData p;
+    Particle p;
     int dec;
 
     Math3D.VectorCopy(start, move);
@@ -1359,7 +1360,7 @@ public class ClientEffects {
   static void FlagTrail(float[] start, float[] end, float color) {
     float len;
     int j;
-    ParticleData p;
+    Particle p;
     int dec;
 
     Math3D.VectorCopy(start, move);
@@ -1403,7 +1404,7 @@ public class ClientEffects {
    * ===============
    */
   static void DiminishingTrail(float[] start, float[] end, ClientEntity old, int flags) {
-    ParticleData p;
+    Particle p;
     float orgscale;
     float velscale;
 
@@ -1490,7 +1491,7 @@ public class ClientEffects {
   static void RocketTrail(float[] start, float[] end, ClientEntity old) {
     float len;
     int j;
-    ParticleData p;
+    Particle p;
     float dec;
 
     // smoke
@@ -1542,7 +1543,7 @@ public class ClientEffects {
   static void RailTrail(float[] start, float[] end) {
     float len;
     int j;
-    ParticleData p;
+    Particle p;
     float dec;
     float[] right = new float[3];
     float[] up = new float[3];
@@ -1626,7 +1627,7 @@ public class ClientEffects {
   static void IonripperTrail(float[] start, float[] ent) {
     float len;
     int j;
-    ParticleData p;
+    Particle p;
     int dec;
     int left = 0;
 
@@ -1682,7 +1683,7 @@ public class ClientEffects {
   static void BubbleTrail(float[] start, float[] end) {
     float len;
     int i, j;
-    ParticleData p;
+    Particle p;
     float dec;
 
     Math3D.VectorCopy(start, move);
@@ -1724,7 +1725,7 @@ public class ClientEffects {
    */
   static void FlyParticles(float[] origin, int count) {
     int i;
-    ParticleData p;
+    Particle p;
     float angle;
     float sp, sy, cp, cy;
     float dist = 64;
@@ -1815,7 +1816,7 @@ public class ClientEffects {
   //#define BEAMLENGTH 16
   static void BfgParticles(EntityType ent) {
     int i;
-    ParticleData p;
+    Particle p;
     float angle;
     float sp, sy, cp, cy;
     float dist = 64;
@@ -1881,7 +1882,7 @@ public class ClientEffects {
   static void TrapParticles(EntityType ent) {
     float len;
     int j;
-    ParticleData p;
+    Particle p;
     int dec;
 
     ent.origin[2] -= 14;
@@ -1972,7 +1973,7 @@ public class ClientEffects {
   //	  FIXME combined with CL_ExplosionParticles
   static void BFGExplosionParticles(float[] org) {
     int j;
-    ParticleData p;
+    Particle p;
 
     for (int i = 0; i < 256; i++) {
       if (free_particles == null)
@@ -2006,7 +2007,7 @@ public class ClientEffects {
    * ===============
    */
   static void TeleportParticles(float[] org) {
-    ParticleData p;
+    Particle p;
     float vel;
 
     for (int i = -16; i <= 16; i += 4)
@@ -2048,12 +2049,12 @@ public class ClientEffects {
    * =============== CL_AddParticles ===============
    */
   static void AddParticles() {
-    ParticleData p, next;
+    Particle p, next;
     float alpha;
     float time = 0.0f;
     float time2;
     int color;
-    ParticleData active, tail;
+    Particle active, tail;
 
     active = null;
     tail = null;
@@ -2157,7 +2158,7 @@ public class ClientEffects {
 
   static final int PARTICLE_GRAVITY = 40;
 
-  static ParticleData active_particles, free_particles;
+  static Particle active_particles, free_particles;
 
   /*
    * =============== CL_BigTeleportParticles ===============

@@ -25,6 +25,7 @@ package com.googlecode.gwtquake.shared.client;
 
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
+import com.googlecode.gwtquake.shared.render.Particle;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
@@ -83,7 +84,7 @@ public class ClientNewFx {
     static void DebugTrail(float[] start, float[] end) {
         float len;
         //		int j;
-        ParticleData p;
+        Particle p;
         float dec;
         //		int i;
         //		float d, c, s;
@@ -135,7 +136,7 @@ public class ClientNewFx {
     static void ForceWall(float[] start, float[] end, int color) {
         float len;
         int j;
-        ParticleData p;
+        Particle p;
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
@@ -186,7 +187,7 @@ public class ClientNewFx {
     static void BubbleTrail2(float[] start, float[] end, int dist) {
         float len;
         int i, j;
-        ParticleData p;
+        Particle p;
         float dec;
 
         Math3D.VectorCopy(start, move);
@@ -231,7 +232,7 @@ public class ClientNewFx {
     static void Heatbeam(float[] start, float[] forward) {
         float len;
         int j;
-        ParticleData p;
+        Particle p;
         int i;
         float c, s;
         float ltime;
@@ -325,7 +326,7 @@ public class ClientNewFx {
     static void ParticleSteamEffect(float[] org, float[] dir, int color,
             int count, int magnitude) {
         int i, j;
-        ParticleData p;
+        Particle p;
         float d;
 
         //		vectoangles2 (dir, angle_dir);
@@ -368,7 +369,7 @@ public class ClientNewFx {
     //	  float[] org, float[] dir, int color, int count, int magnitude)
     {
         int i, j;
-        ParticleData p;
+        Particle p;
         float d;
 
         //		vectoangles2 (dir, angle_dir);
@@ -416,7 +417,7 @@ public class ClientNewFx {
      */
     static void TrackerTrail(float[] start, float[] end, int particleColor) {
         float len;
-        ParticleData p;
+        Particle p;
         int dec;
         float dist;
 
@@ -463,7 +464,7 @@ public class ClientNewFx {
     // stack variable
     // dir
     static void Tracker_Shell(float[] origin) {
-        ParticleData p;
+        Particle p;
 
         for (int i = 0; i < 300; i++) {
             if (ClientEffects.free_particles == null)
@@ -492,7 +493,7 @@ public class ClientNewFx {
     // stack variable
     // dir
     static void MonsterPlasma_Shell(float[] origin) {
-        ParticleData p;
+        Particle p;
 
         for (int i = 0; i < 40; i++) {
             if (ClientEffects.free_particles == null)
@@ -526,7 +527,7 @@ public class ClientNewFx {
     // dir
     static void Widowbeamout(ClientSustain self) {
         int i;
-        ParticleData p;
+        Particle p;
 
         float ratio;
 
@@ -564,7 +565,7 @@ public class ClientNewFx {
     // dir
     static void Nukeblast(ClientSustain self) {
         int i;
-        ParticleData p;
+        Particle p;
 
         float ratio;
 
@@ -602,7 +603,7 @@ public class ClientNewFx {
     // dir
     static void WidowSplash(float[] org) {
         int i;
-        ParticleData p;
+        Particle p;
 
         for (i = 0; i < 256; i++) {
             if (ClientEffects.free_particles == null)
@@ -640,7 +641,7 @@ public class ClientNewFx {
     static void TagTrail(float[] start, float[] end, float color) {
         float len;
         int j;
-        ParticleData p;
+        Particle p;
         int dec;
 
         Math3D.VectorCopy(start, move);
@@ -681,7 +682,7 @@ public class ClientNewFx {
      */
     static void ColorExplosionParticles(float[] org, int color, int run) {
         int i, j;
-        ParticleData p;
+        Particle p;
 
         for (i = 0; i < 128; i++) {
             if (ClientEffects.free_particles == null)
@@ -716,7 +717,7 @@ public class ClientNewFx {
     static void ParticleSmokeEffect(float[] org, float[] dir, int color,
             int count, int magnitude) {
         int i, j;
-        ParticleData p;
+        Particle p;
         float d;
 
         Math3D.MakeNormalVectors(dir, r, u);
@@ -756,7 +757,7 @@ public class ClientNewFx {
      */
     static void BlasterParticles2(float[] org, float[] dir, long color) {
         int i, j;
-        ParticleData p;
+        Particle p;
         float d;
         int count;
 
@@ -796,7 +797,7 @@ public class ClientNewFx {
     static void BlasterTrail2(float[] start, float[] end) {
         float len;
         int j;
-        ParticleData p;
+        Particle p;
         int dec;
 
         Math3D.VectorCopy(start, move);

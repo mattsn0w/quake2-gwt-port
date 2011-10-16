@@ -25,7 +25,7 @@ package com.googlecode.gwtquake.shared.render;
 
 import java.util.Arrays;
 
-public class ModelTextureInfo {
+public class Texture {
 	// [s/t][xyz offset]
 	public float vecs[][] = {
 		 { 0, 0, 0, 0 },
@@ -33,7 +33,7 @@ public class ModelTextureInfo {
 	};
 	public int flags;
 	public int numframes;
-	public ModelTextureInfo next; // animation chain
+	public Texture next; // animation chain
 	public Image image;
 	
 	public void clear() {
@@ -50,7 +50,7 @@ public class ModelTextureInfo {
 	 * R_TextureAnimation
 	 * Returns the proper texture for a given time and base texture
 	 */
-	public static Image R_TextureAnimation(ModelTextureInfo tex)
+	public static Image R_TextureAnimation(Texture tex)
 	{
 		if (tex.next == null)
 			return tex.image;
