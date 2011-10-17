@@ -39,6 +39,7 @@ import com.googlecode.gwtquake.shared.common.ResourceLoader;
 import com.googlecode.gwtquake.shared.common.TextureInfo;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.game.Plane;
+import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 import com.googlecode.gwtquake.shared.util.Vargs;
 
@@ -1288,9 +1289,8 @@ public class Models  {
 	static ShortBuffer globalModelVertexIndexBuf; 
 	
 	static  void init() {
-		
-		globalModelTextureCoordBuf = GlState.gl.createFloatBuffer(MODEL_BUFFER_SIZE * 2);
-		globalModelVertexIndexBuf = GlState.gl.createShortBuffer(MODEL_BUFFER_SIZE);
+		globalModelTextureCoordBuf = Lib.newFloatBuffer(MODEL_BUFFER_SIZE * 2);
+		globalModelVertexIndexBuf = Lib.newShortBuffer(MODEL_BUFFER_SIZE);
 	}
 	
 	

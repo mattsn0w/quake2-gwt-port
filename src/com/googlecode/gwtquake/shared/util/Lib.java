@@ -32,6 +32,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Compatibility;
@@ -390,4 +391,9 @@ public class Lib {
 	  bb.order(order);
 	  return bb;
 	}
+
+  public static ShortBuffer newShortBuffer(int size) {
+    ByteBuffer bb = newByteBuffer(size * 2);
+    return bb.asShortBuffer();
+  }
 }

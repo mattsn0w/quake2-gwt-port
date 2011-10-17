@@ -31,6 +31,8 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
+import com.googlecode.gwtquake.shared.util.Lib;
+
 /**
  * Abstract GL1 context that implements the stuff that quake2 needs from GL1.x that is not present
  * in GL 2 ES.
@@ -295,9 +297,9 @@ public abstract class Gl1Context {
   private int staticBufferId = 0;
 
   // private ShortBuffer shortBuffer = createShortBuffer(64);
-  private FloatBuffer texCoordBuf = createFloatBuffer(BEGIN_END_MAX_VERTICES * 2);
-  private FloatBuffer vertexBuf = createFloatBuffer(BEGIN_END_MAX_VERTICES * 3);
-  private FloatBuffer st0011 = createFloatBuffer(8);
+  private FloatBuffer texCoordBuf = Lib.newFloatBuffer(BEGIN_END_MAX_VERTICES * 2);
+  private FloatBuffer vertexBuf = Lib.newFloatBuffer(BEGIN_END_MAX_VERTICES * 3);
+  private FloatBuffer st0011 = Lib.newFloatBuffer(8);
   private int st0011BufferId = generateStaticBufferId();
   private int matrixMode = GL_MODELVIEW;
   protected int viewportX;
@@ -681,16 +683,6 @@ public abstract class Gl1Context {
     return true;
   }
 
-  public FloatBuffer createFloatBuffer(int size) {
-    // return FloatBuffer.allocate(size);
-    return createByteBuffer(size * 4).asFloatBuffer();
-  }
-
-  public ShortBuffer createShortBuffer(int size) {
-    // return ShortBuffer.allocate(size);
-    return createByteBuffer(size * 2).asShortBuffer();
-  }
-
   public void glOrtho(int left, int right, int bottom, int top, int near,
       int far) {
     float l = left;
@@ -759,17 +751,6 @@ public abstract class Gl1Context {
     m.get(currentMatrix);
     m.position(p);
     mvpDirty = true;
-  }
-
-  public ByteBuffer createByteBuffer(int size) {
-    ByteBuffer bb = ByteBuffer.allocateDirect(size);
-    bb.order(ByteOrder.nativeOrder());
-    return bb;
-  }
-
-  public IntBuffer createIntBuffer(int size) {
-    // return IntBuffer.allocate(size);
-    return createByteBuffer(size * 4).asIntBuffer();
   }
 
   

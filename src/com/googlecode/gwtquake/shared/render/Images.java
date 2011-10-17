@@ -967,7 +967,7 @@ public abstract class Images {
     
     static void init() {
 //      paletted_texture = gl.createByteBuffer(256*256);
-        texnumBuffer=GlState.gl.createIntBuffer(1);
+        texnumBuffer=Lib.newIntBuffer(1);
     }
     
     /*

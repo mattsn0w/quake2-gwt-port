@@ -33,6 +33,7 @@ import com.googlecode.gwtquake.shared.client.EntityType;
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.QuakeFiles;
+import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
 
 /**
@@ -109,16 +110,16 @@ public class Mesh {
 
 
   static public void init() {
-    colorArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 4);
-    vertexArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 3);
-    textureArrayBuf = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 2);
+    colorArrayBuf = Lib.newFloatBuffer(QuakeFiles.MAX_VERTS * 4);
+    vertexArrayBuf = Lib.newFloatBuffer(QuakeFiles.MAX_VERTS * 3);
+    textureArrayBuf = Lib.newFloatBuffer(QuakeFiles.MAX_VERTS * 2);
 
 
     int FACTOR = 4;
 
-    colorArrayBuf2 = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 4 *FACTOR);
-    vertexArrayBuf2 = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 3 * FACTOR);
-    textureArrayBuf2 = GlState.gl.createFloatBuffer(QuakeFiles.MAX_VERTS * 2 * FACTOR);
+    colorArrayBuf2 = Lib.newFloatBuffer(QuakeFiles.MAX_VERTS * 4 *FACTOR);
+    vertexArrayBuf2 = Lib.newFloatBuffer(QuakeFiles.MAX_VERTS * 3 * FACTOR);
+    textureArrayBuf2 = Lib.newFloatBuffer(QuakeFiles.MAX_VERTS * 2 * FACTOR);
 
   }
 

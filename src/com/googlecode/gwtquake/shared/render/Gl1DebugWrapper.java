@@ -311,17 +311,6 @@ public class Gl1DebugWrapper extends Gl1Context {
 		gl.glTexCoordPointer(size, stride, buf);
 	}
 
-	@Override
-	public FloatBuffer createFloatBuffer(int size) {
-		print("createFloatBuffer", size);
-		return gl.createFloatBuffer(size);
-	}
-
-	@Override
-	public ShortBuffer createShortBuffer(int size) {
-		print("createShortBuffer", size);
-		return gl.createShortBuffer(size);
-	}
 
 	@Override
 	public void glAlphaFunc(int i, float j) {
@@ -490,19 +479,6 @@ public class Gl1DebugWrapper extends Gl1Context {
 	public void glPointParameterf(int id, float value) {
 		print("glPointParameterf", id, value);
 	}
-
-	@Override
-	public ByteBuffer createByteBuffer(int size) {
-		print("createByteBuffer", size);
-		return gl.createByteBuffer(size);
-	}
-
-	@Override
-	public IntBuffer createIntBuffer(int i) {
-		print("createIntBuffer", i);
-		return gl.createIntBuffer(i);
-	}
-
 	@Override
 	public void glGetInteger(int what, IntBuffer params) {
 		// TODO Auto-generated method stub
