@@ -115,7 +115,7 @@ public abstract class GlRenderer implements Renderer {
     
     Images.GL_InitImages();
     Models.Mod_Init();
-    Misc.R_InitParticleTexture();
+    Particles.R_InitParticleTexture();
     Drawing.Draw_InitLocal();
     
     int err = GlState.gl.glGetError();
