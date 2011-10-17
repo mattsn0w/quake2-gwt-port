@@ -29,7 +29,6 @@ import java.nio.FloatBuffer;
 
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Constants;
-import com.googlecode.gwtquake.shared.common.QuakeImage;
 
 
 /**
@@ -39,42 +38,7 @@ import com.googlecode.gwtquake.shared.common.QuakeImage;
  */
 public class Misc {
 
-	static void R_InitParticleTexture()
-	{
-		int		x,y;
-		byte[] data = new byte[8 * 8 * 4];
-
-		//
-		// particle texture
-		//
-		for (x=0 ; x<8 ; x++)
-		{
-			for (y=0 ; y<8 ; y++)
-			{
-				data[y * 32 + x * 4 + 0] = (byte)255;
-				data[y * 32 + x * 4 + 1] = (byte)255;
-				data[y * 32 + x * 4 + 2] = (byte)255;
-				data[y * 32 + x * 4 + 3] = (byte)(GlConstants.dottexture[x][y]*255);
-
-			}
-		}
-		GlState.r_particletexture = Images.GL_LoadPic("***particle***", data, 8, 8, QuakeImage.it_sprite, 32);
-
-		//
-		// also use this for bad textures, but without alpha
-		//
-		for (x=0 ; x<8 ; x++)
-		{
-			for (y=0 ; y<8 ; y++)
-			{
-				data[y * 32 + x * 4 + 0] = (byte)(GlConstants.dottexture[x&3][y&3]*255);
-				data[y * 32 + x * 4 + 1] = 0; // dottexture[x&3][y&3]*255;
-				data[y * 32 + x * 4 + 2] = 0; //dottexture[x&3][y&3]*255;
-				data[y * 32 + x * 4 + 3] = (byte)255;
-			}
-		}
-		GlState.r_notexture = Images.GL_LoadPic("***r_notexture***", data, 8, 8, QuakeImage.it_wall, 32);
-	}
+	
 
 //	/* 
 //	============================================================================== 
