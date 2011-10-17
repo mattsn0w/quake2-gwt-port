@@ -666,7 +666,7 @@ public class Models  {
 	                out.extents[i] = 16384;
 	                out.texturemins[i] = -8192;
 	            }
-	           SkyBox.GL_SubdivideSurface(out); // cut up polygon for warps
+	           Surface.GL_SubdivideSurface(out); // cut up polygon for warps
 	        }
 	        
 	        // create lightmaps and polygons

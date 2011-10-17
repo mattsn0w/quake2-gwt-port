@@ -145,23 +145,6 @@ public class GlConstants  {
 
     protected static final int rserr_unknown = 3;
 
-    /*
-    ==================
-    R_InitParticleTexture
-    ==================
-    */
-    static byte[][] dottexture =
-    {
-    	{0,0,0,0,0,0,0,0},
-    	{0,0,1,1,0,0,0,0},
-    	{0,1,1,1,1,0,0,0},
-    	{0,1,1,1,1,0,0,0},
-    	{0,0,1,1,0,0,0,0},
-    	{0,0,0,0,0,0,0,0},
-    	{0,0,0,0,0,0,0,0},
-    	{0,0,0,0,0,0,0,0},
-    };
-
     private final static int TGA_HEADER_SIZE = 18;
 
     static final int NUM_BEAM_SEGS = 6;
