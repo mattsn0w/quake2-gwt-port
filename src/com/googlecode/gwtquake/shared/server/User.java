@@ -27,6 +27,7 @@ package com.googlecode.gwtquake.shared.server;
 import java.nio.ByteBuffer;
 
 import com.googlecode.gwtquake.shared.common.Buffer;
+import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.CommandBuffer;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
@@ -168,16 +169,15 @@ public class User {
         gamedir = ConsoleVariables.VariableString("gamedir");
 
         // send the serverdata
-        Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+        Buffers.writeByte(ServerMain.sv_client.netchan.message,
                         Constants.svc_serverdata);
-        Buffer.WriteInt(ServerMain.sv_client.netchan.message,
+        Buffer.putInt(ServerMain.sv_client.netchan.message,
                 Constants.PROTOCOL_VERSION);
         
-        Buffer.WriteLong(ServerMain.sv_client.netchan.message,
-                        ServerInit.svs.spawncount);
-        Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+        Buffer.putInt(ServerMain.sv_client.netchan.message, ServerInit.svs.spawncount);
+        Buffers.writeByte(ServerMain.sv_client.netchan.message,
                 ServerInit.sv.attractloop ? 1 : 0);
-        Buffer.WriteString(ServerMain.sv_client.netchan.message, gamedir);
+        Buffers.WriteString(ServerMain.sv_client.netchan.message, gamedir);
 
         if (ServerInit.sv.state == Constants.ss_cinematic
                 || ServerInit.sv.state == Constants.ss_pic)
@@ -189,7 +189,7 @@ public class User {
         Buffer.WriteShort(ServerMain.sv_client.netchan.message, playernum);
 
         // send full levelname
-        Buffer.WriteString(ServerMain.sv_client.netchan.message,
+        Buffers.WriteString(ServerMain.sv_client.netchan.message,
                 ServerInit.sv.configstrings[Constants.CS_NAME]);
 
         //
@@ -203,9 +203,9 @@ public class User {
             ServerMain.sv_client.lastcmd = new UserCommand();
 
             // begin fetching configstrings
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_stufftext);
-            Buffer.WriteString(ServerMain.sv_client.netchan.message,
+            Buffers.WriteString(ServerMain.sv_client.netchan.message,
                     "cmd configstrings " + ServerInit.svs.spawncount + " 0\n");
         }
         
@@ -239,10 +239,10 @@ public class User {
                 && start < Constants.MAX_CONFIGSTRINGS) {
             if (ServerInit.sv.configstrings[start] != null
                     && ServerInit.sv.configstrings[start].length() != 0) {
-                Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+                Buffers.writeByte(ServerMain.sv_client.netchan.message,
                         Constants.svc_configstring);
                 Buffer.WriteShort(ServerMain.sv_client.netchan.message, start);
-                Buffer.WriteString(ServerMain.sv_client.netchan.message,
+                Buffers.WriteString(ServerMain.sv_client.netchan.message,
                         ServerInit.sv.configstrings[start]);
             }
             start++;
@@ -251,14 +251,14 @@ public class User {
         // send next command
 
         if (start == Constants.MAX_CONFIGSTRINGS) {
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_stufftext);
-            Buffer.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
+            Buffers.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
                     + ServerInit.svs.spawncount + " 0\n");
         } else {
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_stufftext);
-            Buffer.WriteString(ServerMain.sv_client.netchan.message,
+            Buffers.WriteString(ServerMain.sv_client.netchan.message,
                     "cmd configstrings " + ServerInit.svs.spawncount + " " + start
                             + "\n");
         }
@@ -297,7 +297,7 @@ public class User {
                 && start < Constants.MAX_EDICTS) {
             base = ServerInit.sv.baselines[start];
             if (base.modelindex != 0 || base.sound != 0 || base.effects != 0) {
-                Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+                Buffers.writeByte(ServerMain.sv_client.netchan.message,
                         Constants.svc_spawnbaseline);
                 Delta.WriteDeltaEntity(nullstate, base,
                         ServerMain.sv_client.netchan.message, true, true);
@@ -308,14 +308,14 @@ public class User {
         // send next command
 
         if (start == Constants.MAX_EDICTS) {
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_stufftext);
-            Buffer.WriteString(ServerMain.sv_client.netchan.message, "precache "
+            Buffers.WriteString(ServerMain.sv_client.netchan.message, "precache "
                     + ServerInit.svs.spawncount + "\n");
         } else {
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_stufftext);
-            Buffer.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
+            Buffers.WriteString(ServerMain.sv_client.netchan.message, "cmd baselines "
                     + ServerInit.svs.spawncount + " " + start + "\n");
         }
     }
@@ -358,7 +358,7 @@ public class User {
         if (r > 1024)
             r = 1024;
 
-        Buffer.WriteByte(ServerMain.sv_client.netchan.message, Constants.svc_download);
+        Buffers.writeByte(ServerMain.sv_client.netchan.message, Constants.svc_download);
         Buffer.WriteShort(ServerMain.sv_client.netchan.message, r);
 
         ServerMain.sv_client.downloadcount += r;
@@ -366,8 +366,8 @@ public class User {
         if (size == 0)
             size = 1;
         percent = ServerMain.sv_client.downloadcount * 100 / size;
-        Buffer.WriteByte(ServerMain.sv_client.netchan.message, percent);
-        Buffer.Write(ServerMain.sv_client.netchan.message, ServerMain.sv_client.download,
+        Buffers.writeByte(ServerMain.sv_client.netchan.message, percent);
+        Buffers.Write(ServerMain.sv_client.netchan.message, ServerMain.sv_client.download,
                 ServerMain.sv_client.downloadcount - r, r);
 
         if (ServerMain.sv_client.downloadcount != ServerMain.sv_client.downloadsize)
@@ -409,10 +409,10 @@ public class User {
                                                                                         // subdirectory
                 || name.indexOf('/') == -1) { // don't allow anything with ..
                                               // path
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_download);
             Buffer.WriteShort(ServerMain.sv_client.netchan.message, -1);
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message, 0);
+            Buffers.writeByte(ServerMain.sv_client.netchan.message, 0);
             return;
         }
 
@@ -445,10 +445,10 @@ public class User {
                 ServerMain.sv_client.download = null;
             }
 
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message,
+            Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_download);
             Buffer.WriteShort(ServerMain.sv_client.netchan.message, -1);
-            Buffer.WriteByte(ServerMain.sv_client.netchan.message, 0);
+            Buffers.writeByte(ServerMain.sv_client.netchan.message, 0);
             return;
         }
 
@@ -599,7 +599,7 @@ public class User {
                 return;
             }
 
-            c = Buffer.ReadByte(Globals.net_message);
+            c = Buffers.readUnsignedByte(Globals.net_message);
             if (c == -1)
                 break;
 
@@ -613,7 +613,7 @@ public class User {
                 break;
 
             case Constants.clc_userinfo:
-                cl.userinfo = Buffer.ReadString(Globals.net_message);
+                cl.userinfo = Buffers.getString(Globals.net_message);
                 ServerMain.SV_UserinfoChanged(cl);
                 break;
 
@@ -623,8 +623,8 @@ public class User {
 
                 move_issued = true;
                 checksumIndex = Globals.net_message.readcount;
-                checksum = Buffer.ReadByte(Globals.net_message);
-                lastframe = Buffer.ReadLong(Globals.net_message);
+                checksum = Buffers.readUnsignedByte(Globals.net_message);
+                lastframe = Buffer.getLong(Globals.net_message);
 
                 if (lastframe != cl.lastframe) {
                     cl.lastframe = lastframe;
@@ -687,7 +687,7 @@ public class User {
                 break;
 
             case Constants.clc_stringcmd:
-                s = Buffer.ReadString(Globals.net_message);
+                s = Buffers.getString(Globals.net_message);
 
                 // malicious users may try using too many string commands
                 if (++stringCmdCount < User.MAX_STRINGCMDS)

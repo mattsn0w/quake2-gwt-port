@@ -25,6 +25,7 @@ package com.googlecode.gwtquake.shared.server;
 
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 
 import com.googlecode.gwtquake.shared.common.*;
 import com.googlecode.gwtquake.shared.game.*;
@@ -61,7 +62,7 @@ public class ServerEntities {
         int from_num_entities;
         int bits;
 
-        Buffer.WriteByte(msg, Constants.svc_packetentities);
+        Buffers.writeByte(msg, Constants.svc_packetentities);
 
         if (from == null)
             from_num_entities = 0;
@@ -115,14 +116,14 @@ public class ServerEntities {
                 if (oldnum >= 256)
                     bits |= Constants.U_NUMBER16 | Constants.U_MOREBITS1;
 
-                Buffer.WriteByte(msg, bits & 255);
+                Buffers.writeByte(msg, bits & 255);
                 if ((bits & 0x0000ff00) != 0)
-                    Buffer.WriteByte(msg, (bits >> 8) & 255);
+                    Buffers.writeByte(msg, (bits >> 8) & 255);
 
                 if ((bits & Constants.U_NUMBER16) != 0)
                     Buffer.WriteShort(msg, oldnum);
                 else
-                    Buffer.WriteByte(msg, oldnum);
+                    Buffers.writeByte(msg, oldnum);
 
                 oldindex++;
                 continue;
@@ -215,12 +216,12 @@ public class ServerEntities {
         pflags |= Constants.PS_WEAPONINDEX;
 
         // write it
-        Buffer.WriteByte(msg, Constants.svc_playerinfo);
+        Buffers.writeByte(msg, Constants.svc_playerinfo);
         Buffer.WriteShort(msg, pflags);
 
         // write the pmove_state_t
         if ((pflags & Constants.PS_M_TYPE) != 0)
-            Buffer.WriteByte(msg, ps.pmove.pm_type);
+            Buffers.writeByte(msg, ps.pmove.pm_type);
 
         if ((pflags & Constants.PS_M_ORIGIN) != 0) {
             Buffer.WriteShort(msg, ps.pmove.origin[0]);
@@ -235,10 +236,10 @@ public class ServerEntities {
         }
 
         if ((pflags & Constants.PS_M_TIME) != 0)
-            Buffer.WriteByte(msg, ps.pmove.pm_time);
+            Buffers.writeByte(msg, ps.pmove.pm_time);
 
         if ((pflags & Constants.PS_M_FLAGS) != 0)
-            Buffer.WriteByte(msg, ps.pmove.pm_flags);
+            Buffers.writeByte(msg, ps.pmove.pm_flags);
 
         if ((pflags & Constants.PS_M_GRAVITY) != 0)
             Buffer.WriteShort(msg, ps.pmove.gravity);
@@ -251,54 +252,54 @@ public class ServerEntities {
 
         // write the rest of the player_state_t
         if ((pflags & Constants.PS_VIEWOFFSET) != 0) {
-            Buffer.WriteChar(msg, (int) (ps.viewoffset[0] * 4));
-            Buffer.WriteChar(msg, (int) (ps.viewoffset[1] * 4));
-            Buffer.WriteChar(msg, (int) (ps.viewoffset[2] * 4));
+            Buffers.writeByte(msg, (int) (ps.viewoffset[0] * 4));
+            Buffers.writeByte(msg, (int) (ps.viewoffset[1] * 4));
+            Buffers.writeByte(msg, (int) (ps.viewoffset[2] * 4));
         }
 
         if ((pflags & Constants.PS_VIEWANGLES) != 0) {
-            Buffer.WriteAngle16(msg, ps.viewangles[0]);
-            Buffer.WriteAngle16(msg, ps.viewangles[1]);
-            Buffer.WriteAngle16(msg, ps.viewangles[2]);
+            Buffers.WriteAngle16(msg, ps.viewangles[0]);
+            Buffers.WriteAngle16(msg, ps.viewangles[1]);
+            Buffers.WriteAngle16(msg, ps.viewangles[2]);
         }
 
         if ((pflags & Constants.PS_KICKANGLES) != 0) {
-            Buffer.WriteChar(msg, (int) (ps.kick_angles[0] * 4));
-            Buffer.WriteChar(msg, (int) (ps.kick_angles[1] * 4));
-            Buffer.WriteChar(msg, (int) (ps.kick_angles[2] * 4));
+            Buffers.writeByte(msg, (int) (ps.kick_angles[0] * 4));
+            Buffers.writeByte(msg, (int) (ps.kick_angles[1] * 4));
+            Buffers.writeByte(msg, (int) (ps.kick_angles[2] * 4));
         }
 
         if ((pflags & Constants.PS_WEAPONINDEX) != 0) {
-            Buffer.WriteByte(msg, ps.gunindex);
+            Buffers.writeByte(msg, ps.gunindex);
         }
 
         if ((pflags & Constants.PS_WEAPONFRAME) != 0) {
-            Buffer.WriteByte(msg, ps.gunframe);
-            Buffer.WriteChar(msg, (int) (ps.gunoffset[0] * 4));
-            Buffer.WriteChar(msg, (int) (ps.gunoffset[1] * 4));
-            Buffer.WriteChar(msg, (int) (ps.gunoffset[2] * 4));
-            Buffer.WriteChar(msg, (int) (ps.gunangles[0] * 4));
-            Buffer.WriteChar(msg, (int) (ps.gunangles[1] * 4));
-            Buffer.WriteChar(msg, (int) (ps.gunangles[2] * 4));
+            Buffers.writeByte(msg, ps.gunframe);
+            Buffers.writeByte(msg, (int) (ps.gunoffset[0] * 4));
+            Buffers.writeByte(msg, (int) (ps.gunoffset[1] * 4));
+            Buffers.writeByte(msg, (int) (ps.gunoffset[2] * 4));
+            Buffers.writeByte(msg, (int) (ps.gunangles[0] * 4));
+            Buffers.writeByte(msg, (int) (ps.gunangles[1] * 4));
+            Buffers.writeByte(msg, (int) (ps.gunangles[2] * 4));
         }
 
         if ((pflags & Constants.PS_BLEND) != 0) {
-            Buffer.WriteByte(msg, (int) (ps.blend[0] * 255));
-            Buffer.WriteByte(msg, (int) (ps.blend[1] * 255));
-            Buffer.WriteByte(msg, (int) (ps.blend[2] * 255));
-            Buffer.WriteByte(msg, (int) (ps.blend[3] * 255));
+            Buffers.writeByte(msg, (int) (ps.blend[0] * 255));
+            Buffers.writeByte(msg, (int) (ps.blend[1] * 255));
+            Buffers.writeByte(msg, (int) (ps.blend[2] * 255));
+            Buffers.writeByte(msg, (int) (ps.blend[3] * 255));
         }
         if ((pflags & Constants.PS_FOV) != 0)
-			Buffer.WriteByte(msg, (int) ps.fov);
+			Buffers.writeByte(msg, (int) ps.fov);
         if ((pflags & Constants.PS_RDFLAGS) != 0)
-            Buffer.WriteByte(msg, ps.rdflags);
+            Buffers.writeByte(msg, ps.rdflags);
 
         // send stats
         statbits = 0;
         for (i = 0; i < Constants.MAX_STATS; i++)
             if (ps.stats[i] != ops.stats[i])
                 statbits |= 1 << i;
-        Buffer.WriteLong(msg, statbits);
+        Buffer.putInt(msg, statbits);
         for (i = 0; i < Constants.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)
                 Buffer.WriteShort(msg, ps.stats[i]);
@@ -330,15 +331,15 @@ public class ServerEntities {
             lastframe = client.lastframe;
         }
 
-        Buffer.WriteByte(msg, Constants.svc_frame);
-        Buffer.WriteLong(msg, ServerInit.sv.framenum);
-        Buffer.WriteLong(msg, lastframe); // what we are delta'ing from
-        Buffer.WriteByte(msg, client.surpressCount); // rate dropped packets
+        Buffers.writeByte(msg, Constants.svc_frame);
+        Buffer.putInt(msg, ServerInit.sv.framenum);
+        Buffer.putInt(msg, lastframe); // what we are delta'ing from
+        Buffers.writeByte(msg, client.surpressCount); // rate dropped packets
         client.surpressCount = 0;
 
         // send over the areabits
-        Buffer.WriteByte(msg, frame.areabytes);
-        Buffer.Write(msg, frame.areabits, frame.areabytes);
+        Buffers.writeByte(msg, frame.areabytes);
+        Buffers.Write(msg, frame.areabits, frame.areabytes);
 
         // delta encode the playerstate
         SV_WritePlayerstateToClient(oldframe, frame, msg);
@@ -541,21 +542,19 @@ public class ServerEntities {
         int e;
         Entity ent;
         EntityState nostate = new EntityState(null);
-        Buffer buf = new Buffer();
-        byte buf_data[] = new byte[32768];
         int len;
 
         if (ServerInit.svs.demofile == null)
             return;
 
         //memset (nostate, 0, sizeof(nostate));
-        Buffer.Init(buf, buf_data, buf_data.length);
+        Buffer buf = Buffer.allocate(32768).order(ByteOrder.LITTLE_ENDIAN);
 
         // write a frame message that doesn't contain a player_state_t
-        Buffer.WriteByte(buf, Constants.svc_frame);
-        Buffer.WriteLong(buf, ServerInit.sv.framenum);
+        Buffers.writeByte(buf, Constants.svc_frame);
+        Buffer.putInt(buf, ServerInit.sv.framenum);
 
-        Buffer.WriteByte(buf, Constants.svc_packetentities);
+        Buffers.writeByte(buf, Constants.svc_packetentities);
 
         e = 1;
         ent = GameBase.g_edicts[e];
@@ -576,7 +575,7 @@ public class ServerEntities {
         Buffer.WriteShort(buf, 0); // end of packetentities
 
         // now add the accumulated multicast information
-        Buffer.Write(buf, ServerInit.svs.demo_multicast.data,
+        Buffers.Write(buf, ServerInit.svs.demo_multicast.data,
                 ServerInit.svs.demo_multicast.cursize);
         ServerInit.svs.demo_multicast.clear();
 

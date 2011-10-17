@@ -43,7 +43,7 @@ public class ClientInventory {
 		int i;
 
 		for (i = 0; i < Constants.MAX_ITEMS; i++)
-			Globals.cl.inventory[i] = Buffer.ReadShort(Globals.net_message);
+			Globals.cl.inventory[i] = Buffer.getShort(Globals.net_message);
 	}
 
 	/*

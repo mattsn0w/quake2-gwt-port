@@ -49,10 +49,10 @@ public class ServerGame {
         client = ServerInit.svs.clients[p - 1];
 
         if (reliable)
-            Buffer.Write(client.netchan.message, ServerInit.sv.multicast.data,
+            Buffers.Write(client.netchan.message, ServerInit.sv.multicast.data,
                     ServerInit.sv.multicast.cursize);
         else
-            Buffer.Write(client.datagram, ServerInit.sv.multicast.data,
+            Buffers.Write(client.datagram, ServerInit.sv.multicast.data,
                     ServerInit.sv.multicast.cursize);
 
         ServerInit.sv.multicast.clear();
@@ -108,8 +108,8 @@ public class ServerGame {
         if (n < 1 || n > ServerMain.maxclients.value)
             return; // Com_Error (ERR_DROP, "centerprintf to a non-client");
 
-        Buffer.WriteByte(ServerInit.sv.multicast, Constants.svc_centerprint);
-        Buffer.WriteString(ServerInit.sv.multicast, fmt);
+        Buffers.writeByte(ServerInit.sv.multicast, Constants.svc_centerprint);
+        Buffers.WriteString(ServerInit.sv.multicast, fmt);
         PF_Unicast(ent, true);
     }
 
@@ -168,20 +168,20 @@ public class ServerGame {
         if (ServerInit.sv.state != Constants.ss_loading) { // send the update to
                                                       // everyone
             ServerInit.sv.multicast.clear();
-            Buffer.WriteChar(ServerInit.sv.multicast, Constants.svc_configstring);
+            Buffers.writeByte(ServerInit.sv.multicast, Constants.svc_configstring);
             Buffer.WriteShort(ServerInit.sv.multicast, index);
-            Buffer.WriteString(ServerInit.sv.multicast, val);
+            Buffers.WriteString(ServerInit.sv.multicast, val);
 
             ServerSend.SV_Multicast(Globals.vec3_origin, Constants.MULTICAST_ALL_R);
         }
     }
 
     public static void PF_WriteChar(int c) {
-        Buffer.WriteChar(ServerInit.sv.multicast, c);
+        Buffers.writeByte(ServerInit.sv.multicast, c);
     }
 
     public static void PF_WriteByte(int c) {
-        Buffer.WriteByte(ServerInit.sv.multicast, c);
+        Buffers.writeByte(ServerInit.sv.multicast, c);
     }
 
     public static void PF_WriteShort(int c) {
@@ -189,19 +189,19 @@ public class ServerGame {
     }
 
     public static void PF_WriteLong(int c) {
-        Buffer.WriteLong(ServerInit.sv.multicast, c);
+        Buffer.putInt(ServerInit.sv.multicast, c);
     }
 
     public static void PF_WriteFloat(float f) {
-        Buffer.WriteFloat(ServerInit.sv.multicast, f);
+        Buffer.putFloat(ServerInit.sv.multicast, f);
     }
 
     public static void PF_WriteString(String s) {
-        Buffer.WriteString(ServerInit.sv.multicast, s);
+        Buffers.WriteString(ServerInit.sv.multicast, s);
     }
 
     public static void PF_WritePos(float[] pos) {
-        Buffer.WritePos(ServerInit.sv.multicast, pos);
+        Buffers.WritePos(ServerInit.sv.multicast, pos);
     }
 
     public static void PF_WriteDir(float[] dir) {
@@ -209,7 +209,7 @@ public class ServerGame {
     }
 
     public static void PF_WriteAngle(float f) {
-        Buffer.WriteAngle(ServerInit.sv.multicast, f);
+        Buffers.WriteAngle(ServerInit.sv.multicast, f);
     }
 
     /**
@@ -322,7 +322,7 @@ public class ServerGame {
         float d, bestd;
     
         if (dir == null) {
-            Buffer.WriteByte(sb, 0);
+            Buffers.writeByte(sb, 0);
             return;
         }
     
@@ -335,6 +335,6 @@ public class ServerGame {
                 best = i;
             }
         }
-        Buffer.WriteByte(sb, best);
+        Buffers.writeByte(sb, best);
     }
 }

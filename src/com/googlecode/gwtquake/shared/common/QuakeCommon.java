@@ -57,7 +57,6 @@ public final class QuakeCommon {
 			// cvar and command buffer management
 			Com.InitArgv(args);
 
-			CommandBuffer.Init();
 			
 			Commands.Init();
 			ConsoleVariables.Init();

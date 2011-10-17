@@ -27,6 +27,7 @@ package com.googlecode.gwtquake.shared.server;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteOrder;
 
 import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.client.Client;
@@ -64,9 +65,9 @@ public class ServerInit {
         if (sv.state != Constants.ss_loading) { 
             // send the update to everyone
             sv.multicast.clear();
-            Buffer.WriteChar(sv.multicast, Constants.svc_configstring);
+            Buffers.writeByte(sv.multicast, Constants.svc_configstring);
             Buffer.WriteShort(sv.multicast, start + i);
-            Buffer.WriteString(sv.multicast, name);
+            Buffers.WriteString(sv.multicast, name);
             ServerSend.SV_Multicast(Globals.vec3_origin, Constants.MULTICAST_ALL_R);
         }
 
@@ -212,7 +213,7 @@ public class ServerInit {
             PlayerMovements.pm_airaccelerate = 0;
         }
 
-        Buffer.Init(sv.multicast, sv.multicast_buf, sv.multicast_buf.length);
+        sv.multicast = Buffer.wrap(sv.multicast_buf).order(ByteOrder.LITTLE_ENDIAN);
 
         sv.name = server;
 

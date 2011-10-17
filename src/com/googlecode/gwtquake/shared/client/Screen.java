@@ -54,7 +54,7 @@ import static com.googlecode.gwtquake.shared.common.Globals.re;
 import static com.googlecode.gwtquake.shared.common.Globals.scr_vrect;
 import static com.googlecode.gwtquake.shared.common.Globals.viddef;
 
-import com.googlecode.gwtquake.shared.common.Buffer;
+import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Compatibility;
 import com.googlecode.gwtquake.shared.common.ConsoleVariables;
@@ -1408,8 +1408,8 @@ public final class Screen {
      */
     static void FinishCinematic() {
         // tell the server to advance to the next map / cinematic
-        Buffer.WriteByte(cls.netchan.message, clc_stringcmd);
-        Buffer.Print(cls.netchan.message, "nextserver " + cl.servercount + '\n');
+        Buffers.writeByte(cls.netchan.message, clc_stringcmd);
+        Buffers.Print(cls.netchan.message, "nextserver " + cl.servercount + '\n');
         re.showVideo(null);
     }
 
