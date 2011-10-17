@@ -577,7 +577,7 @@ public class Entities {
 
 		DynamicLights.render();
 
-		com.googlecode.gwtquake.shared.render.Particles.R_DrawParticles();
+		com.googlecode.gwtquake.shared.render.Particles.draw();
 
 		Surfaces.R_DrawAlphaSurfaces();
 

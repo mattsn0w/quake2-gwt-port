@@ -35,6 +35,7 @@ import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.game.Plane;
 import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Math3D;
+import com.googlecode.gwtquake.shared.util.Vec3Cache;
 
 /**
  * Surf
@@ -695,5 +696,135 @@ public abstract class Surfaces {
   }
 
   static float[] s_blocklights = new float[34 * 34 * 3];
+
+  /**
+   * SubdividePolygon
+   * 
+   * @param numverts
+   * @param verts
+   */
+  static void SubdividePolygon(Surface warp, int numverts, float[][] verts) {
+    int i, j, k;
+    float m;
+    float[][] front = new float[64][3];
+    float[][] back = new float[64][3];
+  
+    int f, b;
+    float[] dist = new float[64];
+    float frac;
+  
+    if (numverts > 60)
+      Com.Error(Constants.ERR_DROP, "numverts = " + numverts);
+  
+    float[] mins = Vec3Cache.get();
+    float[] maxs = Vec3Cache.get();
+  
+    SkyBox.BoundPoly(numverts, verts, mins, maxs);
+    float[] v;
+    // x,y und z
+    for (i = 0; i < 3; i++) {
+      m = (mins[i] + maxs[i]) * 0.5f;
+      m = GlConstants.SUBDIVIDE_SIZE
+          * (float) Math.floor(m / GlConstants.SUBDIVIDE_SIZE + 0.5f);
+      if (maxs[i] - m < 8)
+        continue;
+      if (m - mins[i] < 8)
+        continue;
+  
+      // cut it
+      for (j = 0; j < numverts; j++) {
+        dist[j] = verts[j][i] - m;
+      }
+  
+      // wrap cases
+      dist[j] = dist[0];
+  
+      Math3D.VectorCopy(verts[0], verts[numverts]);
+  
+      f = b = 0;
+      for (j = 0; j < numverts; j++) {
+        v = verts[j];
+        if (dist[j] >= 0) {
+          Math3D.VectorCopy(v, front[f]);
+          f++;
+        }
+        if (dist[j] <= 0) {
+          Math3D.VectorCopy(v, back[b]);
+          b++;
+        }
+        if (dist[j] == 0 || dist[j + 1] == 0)
+          continue;
+  
+        if ((dist[j] > 0) != (dist[j + 1] > 0)) {
+          // clip point
+          frac = dist[j] / (dist[j] - dist[j + 1]);
+          for (k = 0; k < 3; k++)
+            front[f][k] = back[b][k] = v[k] + frac * (verts[j + 1][k] - v[k]);
+  
+          f++;
+          b++;
+        }
+      }
+  
+      SubdividePolygon(warp, f, front);
+      SubdividePolygon(warp, b, back);
+  
+      Vec3Cache.release(2); // mins, maxs
+      return;
+    }
+  
+    Vec3Cache.release(2); // mins, maxs
+  
+    // add a point in the center to help keep warp valid
+  
+    // wird im Konstruktor erschlagen
+    // poly = Hunk_Alloc (sizeof(glpoly_t) + ((numverts-4)+2) *
+    // VERTEXSIZE*sizeof(float));
+  
+    // init polys
+    Polygon poly = Polygons.create(numverts + 2);
+  
+    poly.next = warp.polys;
+    warp.polys = poly;
+  
+    float[] total = Vec3Cache.get();
+    Math3D.VectorClear(total);
+    float total_s = 0;
+    float total_t = 0;
+    float s, t;
+    for (i = 0; i < numverts; i++) {
+      poly.setX(i + 1, verts[i][0]);
+      poly.setY(i + 1, verts[i][1]);
+      poly.setZ(i + 1, verts[i][2]);
+      s = Math3D.DotProduct(verts[i], warp.texinfo.vecs[0]);
+      t = Math3D.DotProduct(verts[i], warp.texinfo.vecs[1]);
+  
+      total_s += s;
+      total_t += t;
+      Math3D.VectorAdd(total, verts[i], total);
+  
+      poly.setS1(i + 1, s);
+      poly.setT1(i + 1, t);
+    }
+  
+    float scale = 1.0f / numverts;
+    poly.setX(0, total[0] * scale);
+    poly.setY(0, total[1] * scale);
+    poly.setZ(0, total[2] * scale);
+    poly.setS1(0, total_s * scale);
+    poly.setT1(0, total_t * scale);
+  
+    poly.setX(i + 1, poly.getX(1));
+    poly.setY(i + 1, poly.getY(1));
+    poly.setZ(i + 1, poly.getZ(1));
+    poly.setS1(i + 1, poly.getS1(1));
+    poly.setT1(i + 1, poly.getT1(1));
+    poly.setS2(i + 1, poly.getS2(1));
+    poly.setT2(i + 1, poly.getT2(1));
+  
+    Vec3Cache.release(); // total
+  }
+
+  //static Surface warpface;
 
 }
