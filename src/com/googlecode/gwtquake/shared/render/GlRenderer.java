@@ -36,6 +36,7 @@ import com.googlecode.gwtquake.shared.common.ExecutableCommand;
 import com.googlecode.gwtquake.shared.common.QuakeImage;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
+import com.googlecode.gwtquake.shared.util.Lib;
 import com.googlecode.gwtquake.shared.util.Vargs;
 
 /**
@@ -130,7 +131,7 @@ public abstract class GlRenderer implements Renderer {
   }
 
   protected void init() {
-    GlState.r_world_matrix = GlState.gl.createFloatBuffer(16);
+    GlState.r_world_matrix = Lib.newFloatBuffer(16);
     Images.init();
     Mesh.init();
     Models.init();

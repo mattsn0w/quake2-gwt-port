@@ -29,6 +29,7 @@ import java.nio.FloatBuffer;
 
 import com.googlecode.gwtquake.shared.client.Window;
 import com.googlecode.gwtquake.shared.common.Constants;
+import com.googlecode.gwtquake.shared.util.Lib;
 
 
 /**
@@ -183,7 +184,7 @@ public class Misc {
 		if ( GlState.qglPointParameterfEXT )
 		{
 			// float[] attenuations = { gl_particle_att_a.value, gl_particle_att_b.value, gl_particle_att_c.value };
-			FloatBuffer att_buffer=GlState.gl.createFloatBuffer(4);
+			FloatBuffer att_buffer=Lib.newFloatBuffer(4);
 			att_buffer.put(0,GlConfig.gl_particle_att_a.value);
 			att_buffer.put(1,GlConfig.gl_particle_att_b.value);
 			att_buffer.put(2,GlConfig.gl_particle_att_c.value);

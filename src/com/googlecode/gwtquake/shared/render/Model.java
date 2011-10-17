@@ -338,7 +338,7 @@ public class Model implements Cloneable {
 		}
 	
 		if (Surfaces.dummy == null) {
-			Surfaces.dummy = GlState.gl.createIntBuffer(128*128);
+			Surfaces.dummy = Lib.newIntBuffer(128*128);
 			for (int p = 0; p < 128 * 128; p++) {
 				Surfaces.dummy.put(p, 0x0ffffffff);
 			}
