@@ -26,6 +26,7 @@ package com.googlecode.gwtquake.shared.client;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteOrder;
 
 import com.googlecode.gwtquake.shared.common.*;
 import com.googlecode.gwtquake.shared.game.*;
@@ -126,8 +127,6 @@ public final class Client {
     public void execute() {
       try {
         String name;
-        byte buf_data[] = new byte[Constants.MAX_MSGLEN];
-        Buffer buf = new Buffer();
         int i;
         EntityState ent;
 
@@ -167,17 +166,18 @@ public final class Client {
         //
         // write out messages to hold the startup information
         //
-        Buffer.Init(buf, buf_data, Constants.MAX_MSGLEN);
+        Buffer buf = Buffer.allocate(Constants.MAX_MSGLEN);
+        buf.order(ByteOrder.LITTLE_ENDIAN);
 
         // send the serverdata
-        Buffer.WriteByte(buf, Constants.svc_serverdata);
-        Buffer.WriteInt(buf, Constants.PROTOCOL_VERSION);
-        Buffer.WriteInt(buf, 0x10000 + Globals.cl.servercount);
-        Buffer.WriteByte(buf, 1); // demos are always attract loops
-        Buffer.WriteString(buf, Globals.cl.gamedir);
+        Buffers.writeByte(buf, Constants.svc_serverdata);
+        Buffer.putInt(buf, Constants.PROTOCOL_VERSION);
+        Buffer.putInt(buf, 0x10000 + Globals.cl.servercount);
+        Buffers.writeByte(buf, 1); // demos are always attract loops
+        Buffers.WriteString(buf, Globals.cl.gamedir);
         Buffer.WriteShort(buf, Globals.cl.playernum);
 
-        Buffer.WriteString(buf, Globals.cl.configstrings[Constants.CS_NAME]);
+        Buffers.WriteString(buf, Globals.cl.configstrings[Constants.CS_NAME]);
 
         // configstrings
         for (i = 0; i < Constants.MAX_CONFIGSTRINGS; i++) {
@@ -191,9 +191,9 @@ public final class Client {
               buf.cursize = 0;
             }
 
-            Buffer.WriteByte(buf, Constants.svc_configstring);
+            Buffers.writeByte(buf, Constants.svc_configstring);
             Buffer.WriteShort(buf, i);
-            Buffer.WriteString(buf, Globals.cl.configstrings[i]);
+            Buffers.WriteString(buf, Globals.cl.configstrings[i]);
           }
 
         }
@@ -211,13 +211,13 @@ public final class Client {
             buf.cursize = 0;
           }
 
-          Buffer.WriteByte(buf, Constants.svc_spawnbaseline);
+          Buffers.writeByte(buf, Constants.svc_spawnbaseline);
           Delta.WriteDeltaEntity(nullstate,
               Globals.cl_entities[i].baseline, buf, true, true);
         }
 
-        Buffer.WriteByte(buf, Constants.svc_stufftext);
-        Buffer.WriteString(buf, "precache\n");
+        Buffers.writeByte(buf, Constants.svc_stufftext);
+        Buffers.WriteString(buf, "precache\n");
 
         // write it to the demo file
         Globals.cls.demofile.writeInt(EndianHandler.swapInt(buf.cursize));
@@ -242,9 +242,9 @@ public final class Client {
 
       // don't forward the first argument
       if (Commands.Argc() > 1) {
-        Buffer.WriteByte(Globals.cls.netchan.message,
+        Buffers.writeByte(Globals.cls.netchan.message,
             Constants.clc_stringcmd);
-        Buffer.Print(Globals.cls.netchan.message, Commands.Args());
+        Buffers.Print(Globals.cls.netchan.message, Commands.Args());
       }
     }
   };
@@ -404,9 +404,8 @@ public final class Client {
       if (Globals.cls.state == Constants.ca_connected) {
         Com.Printf("reconnecting...\n");
         Globals.cls.state = Constants.ca_connected;
-        Buffer.WriteChar(Globals.cls.netchan.message,
-            Constants.clc_stringcmd);
-        Buffer.WriteString(Globals.cls.netchan.message, "new");
+        Buffers.writeByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
+        Buffers.WriteString(Globals.cls.netchan.message, "new");
         return;
       }
 
@@ -740,7 +739,7 @@ public final class Client {
   static void parseStatusMessage() {
     String s;
 
-    s = Buffer.ReadString(Globals.net_message);
+    s = Buffers.getString(Globals.net_message);
 
     Com.Printf(s + "\n");
     Menu.AddToServerList(Globals.net_from, s);
@@ -755,10 +754,10 @@ public final class Client {
     String s;
     String c;
 
-    Buffer.BeginReading(Globals.net_message);
-    Buffer.ReadLong(Globals.net_message); // skip the -1
+    Buffer.reset(Globals.net_message);
+    Buffer.getLong(Globals.net_message); // skip the -1
 
-    s = Buffer.ReadStringLine(Globals.net_message);
+    s = Buffers.getLine(Globals.net_message);
 
     Commands.TokenizeString(s.toCharArray(), false);
 
@@ -774,8 +773,8 @@ public final class Client {
       }
       NetworkChannel.Setup(Globals.cls.netchan, Constants.NS_CLIENT,
           Globals.net_from, Globals.cls.quakePort);
-      Buffer.WriteChar(Globals.cls.netchan.message, Constants.clc_stringcmd);
-      Buffer.WriteString(Globals.cls.netchan.message, "new");
+      Buffers.writeByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
+      Buffers.WriteString(Globals.cls.netchan.message, "new");
       Globals.cls.state = Constants.ca_connected;
       return;
     }
@@ -792,14 +791,14 @@ public final class Client {
         Com.Printf("Command packet from remote host.  Ignored.\n");
         return;
       }
-      s = Buffer.ReadString(Globals.net_message);
+      s = Buffers.getString(Globals.net_message);
       CommandBuffer.AddText(s);
       CommandBuffer.AddText("\n");
       return;
     }
     // print command from somewhere
     if (c.equals("print")) {
-      s = Buffer.ReadString(Globals.net_message);
+      s = Buffers.getString(Globals.net_message);
       if (s.length() > 0)
         Com.Printf(s);
       return;
@@ -1228,8 +1227,8 @@ public final class Client {
     ClientParser.RegisterSounds();
     ClientView.PrepRefresh();
 
-    Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
-    Buffer.WriteString(Globals.cls.netchan.message, "begin "
+    Buffers.writeByte(Globals.cls.netchan.message, Constants.clc_stringcmd);
+    Buffers.WriteString(Globals.cls.netchan.message, "begin "
         + Client.precache_spawncount + "\n");
   }
 

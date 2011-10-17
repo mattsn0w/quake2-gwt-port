@@ -34,14 +34,7 @@ public final class CommandBuffer {
 
     private static final byte[] line = new byte[1024];
     private static final byte[] tmp = new byte[8192];
-
-    /**
-     *  
-     */
-    public static void Init() {
-        Buffer.Init(Globals.cmd_text, Globals.cmd_text_buf,
-                Globals.cmd_text_buf.length);
-    }
+  
 
     public static void InsertText(String text) {
 
@@ -59,7 +52,7 @@ public final class CommandBuffer {
 
         // add the copied off data
         if (templen != 0) {
-            Buffer.Write(Globals.cmd_text, tmp, templen);
+            Buffers.Write(Globals.cmd_text, tmp, templen);
         }
     }
 
@@ -143,7 +136,7 @@ public final class CommandBuffer {
             Compatibility.printStackTrace(new Exception());
             return;
         }
-        Buffer.Write(Globals.cmd_text, Lib.stringToBytes(text), l);
+        Buffers.Write(Globals.cmd_text, Lib.stringToBytes(text), l);
     }
 
     /**

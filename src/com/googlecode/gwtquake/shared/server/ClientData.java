@@ -69,8 +69,7 @@ public class ClientData {
 
 	// The datagram is written to by sound calls, prints, temp ents, etc.
 	// It can be harmlessly overflowed.
-	Buffer datagram = new Buffer();
-	byte datagram_buf[] = new byte[Constants.MAX_MSGLEN];
+	Buffer datagram = Buffer.allocate(Constants.MAX_MSGLEN);
 
 	ClientFrame frames[] = new ClientFrame[Constants.UPDATE_BACKUP]; // updates can be delta'd from here
 

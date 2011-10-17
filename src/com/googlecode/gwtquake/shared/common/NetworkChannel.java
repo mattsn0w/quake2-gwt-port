@@ -23,6 +23,8 @@
  */
 package com.googlecode.gwtquake.shared.common;
 
+import java.nio.ByteOrder;
+
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
 import com.googlecode.gwtquake.shared.sys.NET;
 import com.googlecode.gwtquake.shared.sys.Timer;
@@ -80,7 +82,7 @@ import com.googlecode.gwtquake.shared.util.Lib;
 
 public class NetworkChannel {
 
-  static final Buffer send = new Buffer();
+ // static final Buffer send = new Buffer();
   static final byte send_buf[] = new byte[Constants.MAX_MSGLEN];
   public static byte net_message_buffer[] = new byte[Constants.MAX_MSGLEN];
 
@@ -108,7 +110,7 @@ public class NetworkChannel {
   public int reliable_sequence; // single bit
   public int last_reliable_sequence; // sequence number of last send
   // reliable staging and holding areas
-  public Buffer message = new Buffer(); // writing buffer to send to server
+  public Buffer message; // writing buffer to send to server
   // leave space for header
   public byte message_buf[] = new byte[Constants.MAX_MSGLEN - 16];
   // message is copied to this buffer when it is first transfered
@@ -164,13 +166,13 @@ public class NetworkChannel {
     int qport;
 
     // get sequence numbers
-    Buffer.BeginReading(msg);
-    sequence = Buffer.ReadLong(msg);
-    sequence_ack = Buffer.ReadLong(msg);
+    Buffer.reset(msg);
+    sequence = Buffer.getLong(msg);
+    sequence_ack = Buffer.getLong(msg);
 
     // read the qport if we are a server
     if (chan.sock == Constants.NS_SERVER)
-      qport = Buffer.ReadShort(msg);
+      qport = Buffer.getShort(msg);
 
     // achtung unsigned int
     reliable_message = sequence >>> 31;
@@ -272,7 +274,7 @@ public class NetworkChannel {
     }
 
     // write the packet header
-    Buffer.Init(send, send_buf, send_buf.length);
+    Buffer send = Buffer.wrap(send_buf).order(ByteOrder.LITTLE_ENDIAN);
 
     w1 = (chan.outgoing_sequence & ~(1 << 31)) | (send_reliable << 31);
     w2 = (chan.incoming_sequence & ~(1 << 31))
@@ -281,8 +283,8 @@ public class NetworkChannel {
     chan.outgoing_sequence++;
     chan.last_sent = (int) Globals.curtime;
 
-    Buffer.WriteInt(send, w1);
-    Buffer.WriteInt(send, w2);
+    Buffer.putInt(send, w1);
+    Buffer.putInt(send, w2);
 
     // send the qport if we are a client
     if (chan.sock == Constants.NS_CLIENT)
@@ -290,13 +292,13 @@ public class NetworkChannel {
 
     // copy the reliable message to the packet first
     if (send_reliable != 0) {
-      Buffer.Write(send, chan.reliable_buf, chan.reliable_length);
+      Buffers.Write(send, chan.reliable_buf, chan.reliable_length);
       chan.last_reliable_sequence = chan.outgoing_sequence;
     }
 
     // add the unreliable part if space is available
     if (send.maxsize - send.cursize >= length)
-      Buffer.Write(send, data, length);
+      Buffers.Write(send, data, length);
     else
       Com.Printf("Netchan_Transmit: dumped unreliable\n");
 
@@ -335,7 +337,7 @@ public class NetworkChannel {
     chan.incoming_sequence = 0;
     chan.outgoing_sequence = 1;
 
-    Buffer.Init(chan.message, chan.message_buf, chan.message_buf.length);
+    chan.message = Buffer.wrap(chan.message_buf).order(ByteOrder.LITTLE_ENDIAN);
     chan.message.allowoverflow = true;
   }
 
@@ -350,10 +352,10 @@ public class NetworkChannel {
       int length, byte data[]) {
 
     // write the packet header
-    Buffer.Init(send, send_buf, Constants.MAX_MSGLEN);
+    Buffer send = Buffer.allocate(Constants.MAX_MSGLEN);
 
-    Buffer.WriteInt(send, -1); // -1 sequence means out of band
-    Buffer.Write(send, data, length);
+    Buffer.putInt(send, -1); // -1 sequence means out of band
+    Buffers.Write(send, data, length);
 
     // send the datagram
     NET.SendPacket(net_socket, send.cursize, send.data, adr);

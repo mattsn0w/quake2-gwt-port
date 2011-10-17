@@ -29,10 +29,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteOrder;
 import java.util.Calendar;
 
 import com.google.gwt.user.client.Command;
 import com.googlecode.gwtquake.shared.common.Buffer;
+import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Compatibility;
@@ -922,8 +924,6 @@ public class ServerCommands {
 	public static void SV_ServerRecord_f() {
 		//char	name[MAX_OSPATH];
 		String name;
-		byte buf_data[] = new byte[32768];
-		Buffer buf = new Buffer();
 		int len;
 		int i;
 
@@ -959,33 +959,33 @@ public class ServerCommands {
 		}
 
 		// setup a buffer to catch all multicasts
-		Buffer.Init(ServerInit.svs.demo_multicast, ServerInit.svs.demo_multicast_buf, ServerInit.svs.demo_multicast_buf.length);
+		ServerInit.svs.demo_multicast = Buffer.wrap(ServerInit.svs.demo_multicast_buf).order(ByteOrder.LITTLE_ENDIAN);
 
 		//
 		// write a single giant fake message with all the startup info
 		//
-		Buffer.Init(buf, buf_data, buf_data.length);
+		Buffer buf = Buffer.allocate(32768).order(ByteOrder.LITTLE_ENDIAN);
 
 		//
 		// serverdata needs to go over for all types of servers
 		// to make sure the protocol is right, and to set the gamedir
 		//
 		// send the serverdata
-		Buffer.WriteByte(buf, Constants.svc_serverdata);
-		Buffer.WriteLong(buf, Constants.PROTOCOL_VERSION);
-		Buffer.WriteLong(buf, ServerInit.svs.spawncount);
+		Buffers.writeByte(buf, Constants.svc_serverdata);
+		Buffer.putInt(buf, Constants.PROTOCOL_VERSION);
+		Buffer.putInt(buf, ServerInit.svs.spawncount);
 		// 2 means server demo
-		Buffer.WriteByte(buf, 2); // demos are always attract loops
-		Buffer.WriteString(buf, ConsoleVariables.VariableString("gamedir"));
+		Buffers.writeByte(buf, 2); // demos are always attract loops
+		Buffers.WriteString(buf, ConsoleVariables.VariableString("gamedir"));
 		Buffer.WriteShort(buf, -1);
 		// send full levelname
-		Buffer.WriteString(buf, ServerInit.sv.configstrings[Constants.CS_NAME]);
+		Buffers.WriteString(buf, ServerInit.sv.configstrings[Constants.CS_NAME]);
 
 		for (i = 0; i < Constants.MAX_CONFIGSTRINGS; i++)
 			if (ServerInit.sv.configstrings[i].length() == 0) {
-				Buffer.WriteByte(buf, Constants.svc_configstring);
+				Buffers.writeByte(buf, Constants.svc_configstring);
 				Buffer.WriteShort(buf, i);
-				Buffer.WriteString(buf, ServerInit.sv.configstrings[i]);
+				Buffers.WriteString(buf, ServerInit.sv.configstrings[i]);
 			}
 
 		// write it to the demo file

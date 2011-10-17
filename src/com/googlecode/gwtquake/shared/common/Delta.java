@@ -58,7 +58,7 @@ public class Delta {
         if (cmd.impulse != from.impulse)
             bits |= Constants.CM_IMPULSE;
 
-        Buffer.WriteByte(buf, bits);
+        Buffers.writeByte(buf, bits);
 
         if ((bits & Constants.CM_ANGLE1) != 0)
             Buffer.WriteShort(buf, cmd.angles[0]);
@@ -75,12 +75,12 @@ public class Delta {
             Buffer.WriteShort(buf, cmd.upmove);
 
         if ((bits & Constants.CM_BUTTONS) != 0)
-            Buffer.WriteByte(buf, cmd.buttons);
+            Buffers.writeByte(buf, cmd.buttons);
         if ((bits & Constants.CM_IMPULSE) != 0)
-            Buffer.WriteByte(buf, cmd.impulse);
+            Buffers.writeByte(buf, cmd.impulse);
 
-        Buffer.WriteByte(buf, cmd.msec);
-        Buffer.WriteByte(buf, cmd.lightlevel);
+        Buffers.writeByte(buf, cmd.msec);
+        Buffers.writeByte(buf, cmd.lightlevel);
     }
 
     /*
@@ -189,17 +189,17 @@ public class Delta {
         else if ((bits & 0x0000ff00) != 0)
             bits |= Constants.U_MOREBITS1;
 
-        Buffer.WriteByte(msg, bits & 255);
+        Buffers.writeByte(msg, bits & 255);
 
         if ((bits & 0xff000000) != 0) {
-            Buffer.WriteByte(msg, (bits >>> 8) & 255);
-            Buffer.WriteByte(msg, (bits >>> 16) & 255);
-            Buffer.WriteByte(msg, (bits >>> 24) & 255);
+            Buffers.writeByte(msg, (bits >>> 8) & 255);
+            Buffers.writeByte(msg, (bits >>> 16) & 255);
+            Buffers.writeByte(msg, (bits >>> 24) & 255);
         } else if ((bits & 0x00ff0000) != 0) {
-            Buffer.WriteByte(msg, (bits >>> 8) & 255);
-            Buffer.WriteByte(msg, (bits >>> 16) & 255);
+            Buffers.writeByte(msg, (bits >>> 8) & 255);
+            Buffers.writeByte(msg, (bits >>> 16) & 255);
         } else if ((bits & 0x0000ff00) != 0) {
-            Buffer.WriteByte(msg, (bits >>> 8) & 255);
+            Buffers.writeByte(msg, (bits >>> 8) & 255);
         }
 
         //----------
@@ -207,68 +207,68 @@ public class Delta {
         if ((bits & Constants.U_NUMBER16) != 0)
             Buffer.WriteShort(msg, to.number);
         else
-            Buffer.WriteByte(msg, to.number);
+            Buffers.writeByte(msg, to.number);
 
         if ((bits & Constants.U_MODEL) != 0)
-            Buffer.WriteByte(msg, to.modelindex);
+            Buffers.writeByte(msg, to.modelindex);
         if ((bits & Constants.U_MODEL2) != 0)
-            Buffer.WriteByte(msg, to.modelindex2);
+            Buffers.writeByte(msg, to.modelindex2);
         if ((bits & Constants.U_MODEL3) != 0)
-            Buffer.WriteByte(msg, to.modelindex3);
+            Buffers.writeByte(msg, to.modelindex3);
         if ((bits & Constants.U_MODEL4) != 0)
-            Buffer.WriteByte(msg, to.modelindex4);
+            Buffers.writeByte(msg, to.modelindex4);
 
         if ((bits & Constants.U_FRAME8) != 0)
-            Buffer.WriteByte(msg, to.frame);
+            Buffers.writeByte(msg, to.frame);
         if ((bits & Constants.U_FRAME16) != 0)
             Buffer.WriteShort(msg, to.frame);
 
         if ((bits & Constants.U_SKIN8) != 0 && (bits & Constants.U_SKIN16) != 0) //used for laser
                                                              // colors
-            Buffer.WriteInt(msg, to.skinnum);
+            Buffer.putInt(msg, to.skinnum);
         else if ((bits & Constants.U_SKIN8) != 0)
-            Buffer.WriteByte(msg, to.skinnum);
+            Buffers.writeByte(msg, to.skinnum);
         else if ((bits & Constants.U_SKIN16) != 0)
             Buffer.WriteShort(msg, to.skinnum);
 
         if ((bits & (Constants.U_EFFECTS8 | Constants.U_EFFECTS16)) == (Constants.U_EFFECTS8 | Constants.U_EFFECTS16))
-            Buffer.WriteInt(msg, to.effects);
+            Buffer.putInt(msg, to.effects);
         else if ((bits & Constants.U_EFFECTS8) != 0)
-            Buffer.WriteByte(msg, to.effects);
+            Buffers.writeByte(msg, to.effects);
         else if ((bits & Constants.U_EFFECTS16) != 0)
             Buffer.WriteShort(msg, to.effects);
 
         if ((bits & (Constants.U_RENDERFX8 | Constants.U_RENDERFX16)) == (Constants.U_RENDERFX8 | Constants.U_RENDERFX16))
-            Buffer.WriteInt(msg, to.renderfx);
+            Buffer.putInt(msg, to.renderfx);
         else if ((bits & Constants.U_RENDERFX8) != 0)
-            Buffer.WriteByte(msg, to.renderfx);
+            Buffers.writeByte(msg, to.renderfx);
         else if ((bits & Constants.U_RENDERFX16) != 0)
             Buffer.WriteShort(msg, to.renderfx);
 
         if ((bits & Constants.U_ORIGIN1) != 0)
-            Buffer.WriteCoord(msg, to.origin[0]);
+            Buffers.WriteCoord(msg, to.origin[0]);
         if ((bits & Constants.U_ORIGIN2) != 0)
-            Buffer.WriteCoord(msg, to.origin[1]);
+            Buffers.WriteCoord(msg, to.origin[1]);
         if ((bits & Constants.U_ORIGIN3) != 0)
-            Buffer.WriteCoord(msg, to.origin[2]);
+            Buffers.WriteCoord(msg, to.origin[2]);
 
         if ((bits & Constants.U_ANGLE1) != 0)
-            Buffer.WriteAngle(msg, to.angles[0]);
+            Buffers.WriteAngle(msg, to.angles[0]);
         if ((bits & Constants.U_ANGLE2) != 0)
-            Buffer.WriteAngle(msg, to.angles[1]);
+            Buffers.WriteAngle(msg, to.angles[1]);
         if ((bits & Constants.U_ANGLE3) != 0)
-            Buffer.WriteAngle(msg, to.angles[2]);
+            Buffers.WriteAngle(msg, to.angles[2]);
 
         if ((bits & Constants.U_OLDORIGIN) != 0) {
-            Buffer.WriteCoord(msg, to.old_origin[0]);
-            Buffer.WriteCoord(msg, to.old_origin[1]);
-            Buffer.WriteCoord(msg, to.old_origin[2]);
+            Buffers.WriteCoord(msg, to.old_origin[0]);
+            Buffers.WriteCoord(msg, to.old_origin[1]);
+            Buffers.WriteCoord(msg, to.old_origin[2]);
         }
 
         if ((bits & Constants.U_SOUND) != 0)
-            Buffer.WriteByte(msg, to.sound);
+            Buffers.writeByte(msg, to.sound);
         if ((bits & Constants.U_EVENT) != 0)
-            Buffer.WriteByte(msg, to.event);
+            Buffers.writeByte(msg, to.event);
         if ((bits & Constants.U_SOLID) != 0)
             Buffer.WriteShort(msg, to.solid);
     }
@@ -286,36 +286,36 @@ public class Delta {
         //memcpy(move, from, sizeof(* move));
         // IMPORTANT!! copy without new
         move.set(from);
-        bits = Buffer.ReadByte(msg_read);
+        bits = Buffers.readUnsignedByte(msg_read);
 
         // read current angles
         if ((bits & Constants.CM_ANGLE1) != 0)
-            move.angles[0] = Buffer.ReadShort(msg_read);
+            move.angles[0] = Buffer.getShort(msg_read);
         if ((bits & Constants.CM_ANGLE2) != 0)
-            move.angles[1] = Buffer.ReadShort(msg_read);
+            move.angles[1] = Buffer.getShort(msg_read);
         if ((bits & Constants.CM_ANGLE3) != 0)
-            move.angles[2] = Buffer.ReadShort(msg_read);
+            move.angles[2] = Buffer.getShort(msg_read);
 
         // read movement
         if ((bits & Constants.CM_FORWARD) != 0)
-            move.forwardmove = Buffer.ReadShort(msg_read);
+            move.forwardmove = Buffer.getShort(msg_read);
         if ((bits & Constants.CM_SIDE) != 0)
-            move.sidemove = Buffer.ReadShort(msg_read);
+            move.sidemove = Buffer.getShort(msg_read);
         if ((bits & Constants.CM_UP) != 0)
-            move.upmove = Buffer.ReadShort(msg_read);
+            move.upmove = Buffer.getShort(msg_read);
 
         // read buttons
         if ((bits & Constants.CM_BUTTONS) != 0)
-            move.buttons = (byte) Buffer.ReadByte(msg_read);
+            move.buttons = (byte) Buffers.readUnsignedByte(msg_read);
 
         if ((bits & Constants.CM_IMPULSE) != 0)
-            move.impulse = (byte) Buffer.ReadByte(msg_read);
+            move.impulse = (byte) Buffers.readUnsignedByte(msg_read);
 
         // read time to run command
-        move.msec = (byte) Buffer.ReadByte(msg_read);
+        move.msec = (byte) Buffers.readUnsignedByte(msg_read);
 
         // read the light level
-        move.lightlevel = (byte) Buffer.ReadByte(msg_read);
+        move.lightlevel = (byte) Buffers.readUnsignedByte(msg_read);
 
     }    
             

@@ -25,6 +25,7 @@ package com.googlecode.gwtquake.shared.server;
 
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 
 import com.googlecode.gwtquake.shared.common.*;
 import com.googlecode.gwtquake.shared.game.*;
@@ -99,7 +100,7 @@ public class ServerMain {
      */
     public static void SV_DropClient(ClientData drop) {
         // add the disconnect
-        Buffer.WriteByte(drop.netchan.message, Constants.svc_disconnect);
+        Buffers.writeByte(drop.netchan.message, Constants.svc_disconnect);
 
         if (drop.state == Constants.cs_spawned) {
             // call the prog function for removing a client
@@ -393,9 +394,8 @@ public class ServerMain {
 
         ServerInit.svs.clients[i].state = Constants.cs_connected;
 
-        Buffer.Init(ServerInit.svs.clients[i].datagram,
-                ServerInit.svs.clients[i].datagram_buf,
-                ServerInit.svs.clients[i].datagram_buf.length);
+        ServerInit.svs.clients[i].datagram.clear();
+        ServerInit.svs.clients[i].datagram.order(ByteOrder.LITTLE_ENDIAN);
         
         ServerInit.svs.clients[i].datagram.allowoverflow = true;
         ServerInit.svs.clients[i].lastmessage = ServerInit.svs.realtime; // don't timeout
@@ -468,10 +468,10 @@ public class ServerMain {
         String s;
         String c;
 
-        Buffer.BeginReading(Globals.net_message);
-        Buffer.ReadLong(Globals.net_message); // skip the -1 marker
+        Buffer.reset(Globals.net_message);
+        Buffer.getLong(Globals.net_message); // skip the -1 marker
 
-        s = Buffer.ReadStringLine(Globals.net_message);
+        s = Buffers.getLine(Globals.net_message);
 
         Commands.TokenizeString(s.toCharArray(), false);
 
@@ -576,10 +576,10 @@ public class ServerMain {
 
             // read the qport out of the message so we can fix up
             // stupid address translating routers
-            Buffer.BeginReading(Globals.net_message);
-            Buffer.ReadLong(Globals.net_message); // sequence number
-            Buffer.ReadLong(Globals.net_message); // sequence number
-            qport = Buffer.ReadShort(Globals.net_message) & 0xffff;
+            Buffer.reset(Globals.net_message);
+            Buffer.getLong(Globals.net_message); // sequence number
+            Buffer.getLong(Globals.net_message); // sequence number
+            qport = Buffer.getShort(Globals.net_message) & 0xffff;
 
             // check for packets from connected clients
             for (i = 0; i < ServerMain.maxclients.value; i++) {
@@ -905,8 +905,7 @@ public class ServerMain {
         ServerMain.sv_reconnect_limit = ConsoleVariables.Get("sv_reconnect_limit", "3",
                 Constants.CVAR_ARCHIVE);
 
-        Buffer.Init(Globals.net_message, Globals.net_message_buffer,
-                Globals.net_message_buffer.length);
+        Globals.net_message = Buffer.wrap(Globals.net_message_buffer).order(ByteOrder.LITTLE_ENDIAN);
     }
 
     /**
@@ -920,14 +919,14 @@ public class ServerMain {
         ClientData cl;
 
         Globals.net_message.clear();
-        Buffer.WriteByte(Globals.net_message, Constants.svc_print);
-        Buffer.WriteByte(Globals.net_message, Constants.PRINT_HIGH);
-        Buffer.WriteString(Globals.net_message, message);
+        Buffers.writeByte(Globals.net_message, Constants.svc_print);
+        Buffers.writeByte(Globals.net_message, Constants.PRINT_HIGH);
+        Buffers.WriteString(Globals.net_message, message);
 
         if (reconnect)
-            Buffer.WriteByte(Globals.net_message, Constants.svc_reconnect);
+            Buffers.writeByte(Globals.net_message, Constants.svc_reconnect);
         else
-            Buffer.WriteByte(Globals.net_message, Constants.svc_disconnect);
+            Buffers.writeByte(Globals.net_message, Constants.svc_disconnect);
 
         // send it twice
         // stagger the packets to crutch operating system limited buffers

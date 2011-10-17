@@ -49,9 +49,9 @@ public class ServerSend {
 			NetworkChannel.Netchan_OutOfBand(Constants.NS_SERVER, Globals.net_from, s.length(), Lib.stringToBytes(s));
 		}
 		else if (sv_redirected == Constants.RD_CLIENT) {
-			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Constants.svc_print);
-			Buffer.WriteByte(ServerMain.sv_client.netchan.message, Constants.PRINT_HIGH);
-			Buffer.WriteStringTrimmed(ServerMain.sv_client.netchan.message, outputbuf);
+			Buffers.writeByte(ServerMain.sv_client.netchan.message, Constants.svc_print);
+			Buffers.writeByte(ServerMain.sv_client.netchan.message, Constants.PRINT_HIGH);
+			Buffers.WriteStringTrimmed(ServerMain.sv_client.netchan.message, outputbuf);
         }
 	}
 	/*
@@ -74,9 +74,9 @@ public class ServerSend {
 		if (level < cl.messagelevel)
 			return;
 
-		Buffer.WriteByte(cl.netchan.message, Constants.svc_print);
-		Buffer.WriteByte(cl.netchan.message, level);
-		Buffer.WriteString(cl.netchan.message, s);
+		Buffers.writeByte(cl.netchan.message, Constants.svc_print);
+		Buffers.writeByte(cl.netchan.message, level);
+		Buffers.WriteString(cl.netchan.message, s);
 	}
 	/*
 	=================
@@ -101,9 +101,9 @@ public class ServerSend {
 				continue;
 			if (cl.state != Constants.cs_spawned)
 				continue;
-			Buffer.WriteByte(cl.netchan.message, Constants.svc_print);
-			Buffer.WriteByte(cl.netchan.message, level);
-			Buffer.WriteString(cl.netchan.message, s);
+			Buffers.writeByte(cl.netchan.message, Constants.svc_print);
+			Buffers.writeByte(cl.netchan.message, level);
+			Buffers.WriteString(cl.netchan.message, s);
 		}
 	}
 	/*
@@ -118,8 +118,8 @@ public class ServerSend {
 		if (ServerInit.sv.state == 0)
 			return;
 
-		Buffer.WriteByte(ServerInit.sv.multicast, Constants.svc_stufftext);
-		Buffer.WriteString(ServerInit.sv.multicast, s);
+		Buffers.writeByte(ServerInit.sv.multicast, Constants.svc_stufftext);
+		Buffers.WriteString(ServerInit.sv.multicast, s);
 		SV_Multicast(null, Constants.MULTICAST_ALL_R);
 	}
 	/*
@@ -155,7 +155,7 @@ public class ServerSend {
 
 		// if doing a serverrecord, store everything
 		if (ServerInit.svs.demofile != null)
-			Buffer.Write(ServerInit.svs.demo_multicast, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
+			Buffers.Write(ServerInit.svs.demo_multicast, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
 
 		switch (to) {
 			case Constants.MULTICAST_ALL_R :
@@ -210,9 +210,9 @@ public class ServerSend {
 			}
 
 			if (reliable)
-				Buffer.Write(client.netchan.message, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
+				Buffers.Write(client.netchan.message, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
 			else
-				Buffer.Write(client.datagram, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
+				Buffers.Write(client.datagram, ServerInit.sv.multicast.data, ServerInit.sv.multicast.cursize);
 		}
 
 		ServerInit.sv.multicast.clear();
@@ -312,22 +312,22 @@ public class ServerSend {
 			}
 		}
 
-		Buffer.WriteByte(ServerInit.sv.multicast, Constants.svc_sound);
-		Buffer.WriteByte(ServerInit.sv.multicast, flags);
-		Buffer.WriteByte(ServerInit.sv.multicast, soundindex);
+		Buffers.writeByte(ServerInit.sv.multicast, Constants.svc_sound);
+		Buffers.writeByte(ServerInit.sv.multicast, flags);
+		Buffers.writeByte(ServerInit.sv.multicast, soundindex);
 
 		if ((flags & Constants.SND_VOLUME) != 0)
-			Buffer.WriteByte(ServerInit.sv.multicast, (int) (volume * 255));
+			Buffers.writeByte(ServerInit.sv.multicast, (int) (volume * 255));
 		if ((flags & Constants.SND_ATTENUATION) != 0)
-			Buffer.WriteByte(ServerInit.sv.multicast, (int) (attenuation * 64));
+			Buffers.writeByte(ServerInit.sv.multicast, (int) (attenuation * 64));
 		if ((flags & Constants.SND_OFFSET) != 0)
-			Buffer.WriteByte(ServerInit.sv.multicast, (int) (timeofs * 1000));
+			Buffers.writeByte(ServerInit.sv.multicast, (int) (timeofs * 1000));
 
 		if ((flags & Constants.SND_ENT) != 0)
 			Buffer.WriteShort(ServerInit.sv.multicast, sendchan);
 
 		if ((flags & Constants.SND_POS) != 0)
-			Buffer.WritePos(ServerInit.sv.multicast, origin);
+			Buffers.WritePos(ServerInit.sv.multicast, origin);
 
 		// if the sound doesn't attenuate,send it to everyone
 		// (global radio chatter, voiceovers, etc)
@@ -366,7 +366,7 @@ public class ServerSend {
 
 		ServerEntities.SV_BuildClientFrame(client);
 
-		Buffer.Init(msg, msgbuf, msgbuf.length);
+		Buffer msg = Buffer.wrap(msgbuf).order(ByteOrder.LITTLE_ENDIAN);
 		msg.allowoverflow = true;
 
 		// send over all the relevant entity_state_t
@@ -380,7 +380,7 @@ public class ServerSend {
 		if (client.datagram.overflowed)
 			Com.Printf("WARNING: datagram overflowed for " + client.name + "\n");
 		else
-			Buffer.Write(msg, client.datagram.data, client.datagram.cursize);
+			Buffers.Write(msg, client.datagram.data, client.datagram.cursize);
 		client.datagram.clear();
 
 		if (msg.overflowed) { // must have room left for the packet header

@@ -24,6 +24,7 @@
 package com.googlecode.gwtquake.shared.client;
 
 import com.googlecode.gwtquake.shared.common.Buffer;
+import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
@@ -259,11 +260,11 @@ public class ClientEffects {
     float volume;
     String soundname;
 
-    int i = Buffer.ReadShort(Globals.net_message);
+    int i = Buffer.getShort(Globals.net_message);
     if (i < 1 || i >= Constants.MAX_EDICTS)
       Com.Error(Constants.ERR_DROP, "CL_ParseMuzzleFlash: bad entity");
 
-    int weapon = Buffer.ReadByte(Globals.net_message);
+    int weapon = Buffers.readUnsignedByte(Globals.net_message);
     int silenced = weapon & Constants.MZ_SILENCED;
     weapon &= ~Constants.MZ_SILENCED;
 
@@ -512,11 +513,11 @@ public class ClientEffects {
   static void ParseMuzzleFlash2() {
     String soundname;
 
-    int ent = Buffer.ReadShort(Globals.net_message);
+    int ent = Buffer.getShort(Globals.net_message);
     if (ent < 1 || ent >= Constants.MAX_EDICTS)
       Com.Error(Constants.ERR_DROP, "CL_ParseMuzzleFlash2: bad entity");
 
-    int flash_number = Buffer.ReadByte(Globals.net_message);
+    int flash_number = Buffers.readUnsignedByte(Globals.net_message);
 
     // locate the origin
     Math3D.AngleVectors(Globals.cl_entities[ent].current.angles, forward, right, null);

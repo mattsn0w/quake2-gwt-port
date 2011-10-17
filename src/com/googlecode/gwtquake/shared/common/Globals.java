@@ -26,6 +26,7 @@ package com.googlecode.gwtquake.shared.common;
 
 import java.io.FileWriter;
 import java.io.RandomAccessFile;
+import java.nio.ByteOrder;
 import java.util.Random;
 
 import com.googlecode.gwtquake.shared.client.*;
@@ -102,11 +103,11 @@ public class Globals {
 	=============================================================================
 	*/
 
-	public static Buffer cmd_text = new Buffer();
+    public static byte cmd_text_buf[] = new byte[8192];
+    public static byte defer_text_buf[] = new byte[8192];
+	public static Buffer cmd_text = Buffer.wrap(cmd_text_buf).order(ByteOrder.LITTLE_ENDIAN);
 
-	public static byte defer_text_buf[] = new byte[8192];
 
-	public static byte cmd_text_buf[] = new byte[8192];
 	public static CommandAlias cmd_alias;
 
 	//=============================================================================

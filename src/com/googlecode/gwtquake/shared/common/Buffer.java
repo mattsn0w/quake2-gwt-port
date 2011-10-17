@@ -23,10 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.googlecode.gwtquake.shared.common;
 
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import com.googlecode.gwtquake.shared.util.Lib;
-import com.googlecode.gwtquake.shared.util.Math3D;
 
 /**
  * sizebuf_t
@@ -41,45 +40,25 @@ public final class Buffer {
 	// 2k read buffer.
 	public static byte readbuf[] = new byte[2048];
 
+	public static Buffer allocate(int size) {
+	  return wrap(new byte[size]);
+	}
+	
 	public void clear()
 	{
-		if (data!=null)		
+		if (data!=null) {
 			Arrays.fill(data,(byte)0);
+		}
 		cursize = 0;
 		overflowed = false;
+		
 	}
 
-	public static void BeginReading(Buffer msg) {
+	public static void reset(Buffer msg) {
 	    msg.readcount = 0;
 	}
 
-	// returns -1 if no more characters are available, but also [-128 , 127]
-	public static int ReadChar(Buffer msg_read) {
-	    int c;
-	
-	    if (msg_read.readcount + 1 > msg_read.cursize)
-	        c = -1;
-	    else
-	        c = msg_read.data[msg_read.readcount];
-	    msg_read.readcount++;
-	    // kickangles bugfix (rst)
-	    return c;
-	}
-
-	public static int ReadByte(Buffer msg_read) {
-	    int c;
-	
-	    if (msg_read.readcount + 1 > msg_read.cursize)
-	        c = -1;
-	    else
-	        c = msg_read.data[msg_read.readcount] & 0xff;
-	    
-	    msg_read.readcount++;
-	
-	    return c;
-	}
-
-	public static short ReadShort(Buffer msg_read) {
+	public static short getShort(Buffer msg_read) {
 	    int c;
 	
 	    if (msg_read.readcount + 2 > msg_read.cursize)
@@ -92,7 +71,7 @@ public final class Buffer {
 	    return (short) c;
 	}
 
-	public static int ReadLong(Buffer msg_read) {
+	public static int getLong(Buffer msg_read) {
 	    int c;
 	
 	    if (msg_read.readcount + 4 > msg_read.cursize) {
@@ -111,120 +90,18 @@ public final class Buffer {
 	    return c;
 	}
 
-	public static float ReadFloat(Buffer msg_read) {
-	    int n = Buffer.ReadLong(msg_read);
+	public static float getFloat(Buffer msg_read) {
+	    int n = Buffer.getLong(msg_read);
 	    return Compatibility.intBitsToFloat(n);
 	}
 
-	public static String ReadString(Buffer msg_read) {
-	
-	    byte c;
-	    int l = 0;
-	    do {
-	        c = (byte) Buffer.ReadByte(msg_read);
-	        if (c == -1 || c == 0)
-	            break;
-	
-	        Buffer.readbuf[l] = c;
-	        l++;
-	    } while (l < 2047);
-	    
-	    String ret = Compatibility.newString(Buffer.readbuf, 0, l);
-	    // Com.dprintln("MSG.ReadString:[" + ret + "]");
-	    return ret;
-	}
-
-	public static String ReadStringLine(Buffer msg_read) {
-	
-	    int l;
-	    byte c;
-	
-	    l = 0;
-	    do {
-	        c = (byte) Buffer.ReadChar(msg_read);
-	        if (c == -1 || c == 0 || c == 0x0a)
-	            break;
-	        Buffer.readbuf[l] = c;
-	        l++;
-	    } while (l < 2047);
-	    
-	    String ret = Compatibility.newString(Buffer.readbuf, 0, l).trim();
-	    Com.dprintln("MSG.ReadStringLine:[" + ret.replace('\0', '@') + "]");
-	    return ret;
-	}
-
-	public static float ReadCoord(Buffer msg_read) {
-	    return Buffer.ReadShort(msg_read) * (1.0f / 8);
-	}
-
-	public static void ReadPos(Buffer msg_read, float pos[]) {
-	    assert (pos.length == 3) : "vec3_t bug";
-	    pos[0] = Buffer.ReadShort(msg_read) * (1.0f / 8);
-	    pos[1] = Buffer.ReadShort(msg_read) * (1.0f / 8);
-	    pos[2] = Buffer.ReadShort(msg_read) * (1.0f / 8);
-	}
-
-	public static float ReadAngle(Buffer msg_read) {
-	    return Buffer.ReadChar(msg_read) * (360.0f / 256);
-	}
-
-	public static float ReadAngle16(Buffer msg_read) {
-	    return Math3D.SHORT2ANGLE(Buffer.ReadShort(msg_read));
-	}
-
-	public static void ReadData(Buffer msg_read, byte data[], int len) {
-	    for (int i = 0; i < len; i++)
-	        data[i] = (byte) Buffer.ReadByte(msg_read);
-	}
-
-	public static void WriteAngle16(Buffer sb, float f) {
-	    WriteShort(sb, Math3D.ANGLE2SHORT(f));
+	//ok.
+	public static void putFloat(Buffer sb, float f) {
+	    putInt(sb, Compatibility.floatToIntBits(f));
 	}
 
 	//ok.
-	public static void WriteStringTrimmed(Buffer sb, byte s[]) {
-	    WriteString(sb, Compatibility.newString(s).trim());
-	}
-
-	public static void WriteAngle(Buffer sb, float f) {
-	    WriteByte(sb, (int) (f * 256 / 360) & 255);
-	}
-
-	public static void WritePos(Buffer sb, float[] pos) {
-	    assert (pos.length == 3) : "vec3_t bug";
-	    WriteShort(sb, (int) (pos[0] * 8));
-	    WriteShort(sb, (int) (pos[1] * 8));
-	    WriteShort(sb, (int) (pos[2] * 8));
-	}
-
-	public static void WriteCoord(Buffer sb, float f) {
-	    WriteShort(sb, (int) (f * 8));
-	}
-
-	// had a bug, now its ok.
-	public static void WriteString(Buffer sb, String s) {
-	    String x = s;
-	
-	    if (s == null)
-	        x = "";
-	
-	    Write(sb, Lib.stringToBytes(x));
-	    WriteByte(sb, 0);
-	    //Com.dprintln("MSG.WriteString:" + s.replace('\0', '@'));
-	}
-
-	//ok.
-	public static void WriteFloat(Buffer sb, float f) {
-	    WriteInt(sb, Compatibility.floatToIntBits(f));
-	}
-
-	//ok.
-	public static void WriteLong(Buffer sb, int c) {
-	    WriteInt(sb, c);
-	}
-
-	//ok.
-	public static void WriteInt(Buffer sb, int c) {
+	public static void putInt(Buffer sb, int c) {
 	    int i = GetSpace(sb, 4);
 	    sb.data[i++] = (byte) ((c & 0xff));
 	    sb.data[i++] = (byte) ((c >>> 8) & 0xff);
@@ -238,56 +115,8 @@ public final class Buffer {
 	    sb.data[i] = (byte) ((c >>> 8) & 0xFF);
 	}
 
-	//ok.
-	public static void WriteByte(Buffer sb, int c) {
-	    sb.data[GetSpace(sb, 1)] = (byte) (c & 0xFF);
-	}
-
-	//ok.
-	public static void WriteChar(Buffer sb, int c) {
-	    sb.data[GetSpace(sb, 1)] = (byte) (c & 0xFF);
-	}
-
-	// 
-	public static void Print(Buffer buf, String data) {
-	    Com.dprintln("SZ.print():<" + data + ">" );
-		int length = data.length();
-		byte str[] = Lib.stringToBytes(data);
-	
-		if (buf.cursize != 0) {
-	
-			if (buf.data[buf.cursize - 1] != 0) {
-				//memcpy( SZ_GetSpace(buf, len), data, len); // no trailing 0
-				System.arraycopy(str, 0, buf.data, GetSpace(buf, length+1), length);
-			} else {
-				System.arraycopy(str, 0, buf.data, GetSpace(buf, length)-1, length);
-				//memcpy(SZ_GetSpace(buf, len - 1) - 1, data, len); // write over trailing 0
-			}
-		} else
-			// first print.
-			System.arraycopy(str, 0, buf.data, GetSpace(buf, length), length);
-		//memcpy(SZ_GetSpace(buf, len), data, len);
-		
-		buf.data[buf.cursize - 1]=0;
-	}
-
-	public static void Write(Buffer buf, byte data[]) {
-		int length = data.length;
-		//memcpy(SZ_GetSpace(buf, length), data, length);
-		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
-	}
-
-	public static void Write(Buffer buf, byte data[], int offset, int length) {
-		System.arraycopy(data, offset, buf.data, GetSpace(buf, length), length);
-	}
-
-	public static void Write(Buffer buf, byte data[], int length) {
-		//memcpy(SZ_GetSpace(buf, length), data, length);
-		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
-	}
-
 	/** Ask for the pointer using sizebuf_t.cursize (RST) */
-	public static int GetSpace(Buffer buf, int length) {
+	static int GetSpace(Buffer buf, int length) {
 		int oldsize;
 	
 		if (buf.cursize + length > buf.maxsize) {
@@ -308,13 +137,26 @@ public final class Buffer {
 		return oldsize;
 	}
 
-	public static void Init(Buffer buf, byte data[], int length) {
+	public static Buffer wrap(byte[] data) {
+	  Buffer buf = new Buffer();
+	  Buffer.Init(buf, data, data.length);
+	  return buf;
+	}
+	
+	private static void Init(Buffer buf, byte data[], int length) {
 	  // TODO check this. cwei
 	  buf.readcount = 0;
 	
 	  buf.data = data;
-		buf.maxsize = length;
-		buf.cursize = 0;
-		buf.allowoverflow = buf.overflowed = false;
+	  buf.maxsize = length;
+	  buf.cursize = 0;
+	  buf.allowoverflow = buf.overflowed = false;
 	}
+
+  public Buffer order(ByteOrder order) {
+    if (order != ByteOrder.LITTLE_ENDIAN) {
+      throw new RuntimeException("BIG_ENDIAN not supported");
+    }
+    return this;
+  }
 }

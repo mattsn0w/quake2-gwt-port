@@ -67,7 +67,7 @@ public class ServerStatic {
     // serverrecord values
     RandomAccessFile demofile;
 
-    Buffer demo_multicast = new Buffer();
+    Buffer demo_multicast;
 
     byte demo_multicast_buf[] = new byte[Constants.MAX_MSGLEN];
 }

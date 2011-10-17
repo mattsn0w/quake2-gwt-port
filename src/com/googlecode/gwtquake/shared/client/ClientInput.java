@@ -23,6 +23,8 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
+import java.nio.ByteOrder;
+
 import com.googlecode.gwtquake.shared.common.*;
 import com.googlecode.gwtquake.shared.game.Commands;
 import com.googlecode.gwtquake.shared.game.ConsoleVariable;
@@ -648,8 +650,7 @@ public class ClientInput {
 		cl_nodelta = ConsoleVariables.Get("cl_nodelta", "0", 0);
 	}
 
-	private static final Buffer buf = new Buffer();
-	private static final byte[] data = new byte[128];
+	private static final Buffer buf = Buffer.allocate(128);
 	private static final UserCommand nullcmd = new UserCommand();
 	/*
 	 * ================= CL_SendCmd =================
@@ -685,11 +686,13 @@ public class ClientInput {
 		if (Globals.userinfo_modified) {
 			Client.fixUpGender();
 			Globals.userinfo_modified = false;
-			Buffer.WriteByte(Globals.cls.netchan.message, Constants.clc_userinfo);
-			Buffer.WriteString(Globals.cls.netchan.message, ConsoleVariables.Userinfo());
+			Buffers.writeByte(Globals.cls.netchan.message, Constants.clc_userinfo);
+			Buffers.WriteString(Globals.cls.netchan.message, ConsoleVariables.Userinfo());
 		}
 
-		Buffer.Init(buf, data, data.length);
+		buf.clear();
+		buf.order(ByteOrder.LITTLE_ENDIAN);
+//		Buffer.Init(buf, data, data.length);
 
 		if (cmd.buttons != 0 && Globals.cl.cinematictime > 0 && !Globals.cl.attractloop
 				&& Globals.cls.realtime - Globals.cl.cinematictime > 1000) { // skip
@@ -702,18 +705,18 @@ public class ClientInput {
 		}
 
 		// begin a client move command
-		Buffer.WriteByte(buf, Constants.clc_move);
+		Buffers.writeByte(buf, Constants.clc_move);
 
 		// save the position for a checksum byte
 		checksumIndex = buf.cursize;
-		Buffer.WriteByte(buf, 0);
+		Buffers.writeByte(buf, 0);
 
 		// let the server know what the last frame we
 		// got was, so the next message can be delta compressed
 		if (cl_nodelta.value != 0.0f || !Globals.cl.frame.valid || Globals.cls.demowaiting)
-			Buffer.WriteLong(buf, -1); // no compression
-		else
-			Buffer.WriteLong(buf, Globals.cl.frame.serverframe);
+      Buffer.putInt(buf, -1);
+    else
+      Buffer.putInt(buf, Globals.cl.frame.serverframe);
 
 		// send this and the previous cmds in the message, so
 		// if the last packet was dropped, it can be recovered
