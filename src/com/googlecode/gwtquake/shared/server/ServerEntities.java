@@ -121,7 +121,7 @@ public class ServerEntities {
                     Buffers.writeByte(msg, (bits >> 8) & 255);
 
                 if ((bits & Constants.U_NUMBER16) != 0)
-                    Buffer.WriteShort(msg, oldnum);
+                    msg.WriteShort(oldnum);
                 else
                     Buffers.writeByte(msg, oldnum);
 
@@ -130,7 +130,7 @@ public class ServerEntities {
             }
         }
 
-        Buffer.WriteShort(msg, 0); // end of packetentities
+        msg.WriteShort(0); // end of packetentities
 
     }
 
@@ -217,22 +217,22 @@ public class ServerEntities {
 
         // write it
         Buffers.writeByte(msg, Constants.svc_playerinfo);
-        Buffer.WriteShort(msg, pflags);
+        msg.WriteShort(pflags);
 
         // write the pmove_state_t
         if ((pflags & Constants.PS_M_TYPE) != 0)
             Buffers.writeByte(msg, ps.pmove.pm_type);
 
         if ((pflags & Constants.PS_M_ORIGIN) != 0) {
-            Buffer.WriteShort(msg, ps.pmove.origin[0]);
-            Buffer.WriteShort(msg, ps.pmove.origin[1]);
-            Buffer.WriteShort(msg, ps.pmove.origin[2]);
+            msg.WriteShort(ps.pmove.origin[0]);
+            msg.WriteShort(ps.pmove.origin[1]);
+            msg.WriteShort(ps.pmove.origin[2]);
         }
 
         if ((pflags & Constants.PS_M_VELOCITY) != 0) {
-            Buffer.WriteShort(msg, ps.pmove.velocity[0]);
-            Buffer.WriteShort(msg, ps.pmove.velocity[1]);
-            Buffer.WriteShort(msg, ps.pmove.velocity[2]);
+            msg.WriteShort(ps.pmove.velocity[0]);
+            msg.WriteShort(ps.pmove.velocity[1]);
+            msg.WriteShort(ps.pmove.velocity[2]);
         }
 
         if ((pflags & Constants.PS_M_TIME) != 0)
@@ -242,12 +242,12 @@ public class ServerEntities {
             Buffers.writeByte(msg, ps.pmove.pm_flags);
 
         if ((pflags & Constants.PS_M_GRAVITY) != 0)
-            Buffer.WriteShort(msg, ps.pmove.gravity);
+            msg.WriteShort(ps.pmove.gravity);
 
         if ((pflags & Constants.PS_M_DELTA_ANGLES) != 0) {
-            Buffer.WriteShort(msg, ps.pmove.delta_angles[0]);
-            Buffer.WriteShort(msg, ps.pmove.delta_angles[1]);
-            Buffer.WriteShort(msg, ps.pmove.delta_angles[2]);
+            msg.WriteShort(ps.pmove.delta_angles[0]);
+            msg.WriteShort(ps.pmove.delta_angles[1]);
+            msg.WriteShort(ps.pmove.delta_angles[2]);
         }
 
         // write the rest of the player_state_t
@@ -299,10 +299,10 @@ public class ServerEntities {
         for (i = 0; i < Constants.MAX_STATS; i++)
             if (ps.stats[i] != ops.stats[i])
                 statbits |= 1 << i;
-        Buffer.putInt(msg, statbits);
+        msg.putInt(statbits);
         for (i = 0; i < Constants.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)
-                Buffer.WriteShort(msg, ps.stats[i]);
+                msg.WriteShort(ps.stats[i]);
     }
 
     /**
@@ -332,8 +332,8 @@ public class ServerEntities {
         }
 
         Buffers.writeByte(msg, Constants.svc_frame);
-        Buffer.putInt(msg, ServerInit.sv.framenum);
-        Buffer.putInt(msg, lastframe); // what we are delta'ing from
+        msg.putInt(ServerInit.sv.framenum);
+        msg.putInt(lastframe); // what we are delta'ing from
         Buffers.writeByte(msg, client.surpressCount); // rate dropped packets
         client.surpressCount = 0;
 
@@ -552,7 +552,7 @@ public class ServerEntities {
 
         // write a frame message that doesn't contain a player_state_t
         Buffers.writeByte(buf, Constants.svc_frame);
-        Buffer.putInt(buf, ServerInit.sv.framenum);
+        buf.putInt(ServerInit.sv.framenum);
 
         Buffers.writeByte(buf, Constants.svc_packetentities);
 
@@ -572,7 +572,7 @@ public class ServerEntities {
             ent = GameBase.g_edicts[e];
         }
 
-        Buffer.WriteShort(buf, 0); // end of packetentities
+        buf.WriteShort(0); // end of packetentities
 
         // now add the accumulated multicast information
         Buffers.Write(buf, ServerInit.svs.demo_multicast.data,

@@ -169,7 +169,7 @@ public class ServerGame {
                                                       // everyone
             ServerInit.sv.multicast.clear();
             Buffers.writeByte(ServerInit.sv.multicast, Constants.svc_configstring);
-            Buffer.WriteShort(ServerInit.sv.multicast, index);
+            ServerInit.sv.multicast.WriteShort(index);
             Buffers.WriteString(ServerInit.sv.multicast, val);
 
             ServerSend.SV_Multicast(Globals.vec3_origin, Constants.MULTICAST_ALL_R);
@@ -185,15 +185,15 @@ public class ServerGame {
     }
 
     public static void PF_WriteShort(int c) {
-        Buffer.WriteShort(ServerInit.sv.multicast, c);
+        ServerInit.sv.multicast.WriteShort(c);
     }
 
     public static void PF_WriteLong(int c) {
-        Buffer.putInt(ServerInit.sv.multicast, c);
+        ServerInit.sv.multicast.putInt(c);
     }
 
     public static void PF_WriteFloat(float f) {
-        Buffer.putFloat(ServerInit.sv.multicast, f);
+        ServerInit.sv.multicast.putFloat(f);
     }
 
     public static void PF_WriteString(String s) {

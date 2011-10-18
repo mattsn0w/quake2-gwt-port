@@ -166,13 +166,13 @@ public class NetworkChannel {
     int qport;
 
     // get sequence numbers
-    Buffer.reset(msg);
-    sequence = Buffer.getLong(msg);
-    sequence_ack = Buffer.getLong(msg);
+    msg.reset();
+    sequence = msg.getInt();
+    sequence_ack = msg.getInt();
 
     // read the qport if we are a server
     if (chan.sock == Constants.NS_SERVER)
-      qport = Buffer.getShort(msg);
+      qport = msg.getShort();
 
     // achtung unsigned int
     reliable_message = sequence >>> 31;
@@ -283,12 +283,12 @@ public class NetworkChannel {
     chan.outgoing_sequence++;
     chan.last_sent = (int) Globals.curtime;
 
-    Buffer.putInt(send, w1);
-    Buffer.putInt(send, w2);
+    send.putInt(w1);
+    send.putInt(w2);
 
     // send the qport if we are a client
     if (chan.sock == Constants.NS_CLIENT)
-      Buffer.WriteShort(send, (int) consoleQport.value);
+      send.WriteShort((int) consoleQport.value);
 
     // copy the reliable message to the packet first
     if (send_reliable != 0) {
@@ -354,7 +354,7 @@ public class NetworkChannel {
     // write the packet header
     Buffer send = Buffer.allocate(Constants.MAX_MSGLEN);
 
-    Buffer.putInt(send, -1); // -1 sequence means out of band
+    send.putInt(-1); // -1 sequence means out of band
     Buffers.Write(send, data, length);
 
     // send the datagram

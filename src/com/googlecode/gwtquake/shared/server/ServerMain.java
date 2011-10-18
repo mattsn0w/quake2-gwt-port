@@ -468,8 +468,8 @@ public class ServerMain {
         String s;
         String c;
 
-        Buffer.reset(Globals.net_message);
-        Buffer.getLong(Globals.net_message); // skip the -1 marker
+        Globals.net_message.reset();
+        Globals.net_message.getInt(); // skip the -1 marker
 
         s = Buffers.getLine(Globals.net_message);
 
@@ -576,10 +576,10 @@ public class ServerMain {
 
             // read the qport out of the message so we can fix up
             // stupid address translating routers
-            Buffer.reset(Globals.net_message);
-            Buffer.getLong(Globals.net_message); // sequence number
-            Buffer.getLong(Globals.net_message); // sequence number
-            qport = Buffer.getShort(Globals.net_message) & 0xffff;
+            Globals.net_message.reset();
+            Globals.net_message.getInt(); // sequence number
+            Globals.net_message.getInt(); // sequence number
+            qport = Globals.net_message.getShort() & 0xffff;
 
             // check for packets from connected clients
             for (i = 0; i < ServerMain.maxclients.value; i++) {

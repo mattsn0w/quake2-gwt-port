@@ -69,14 +69,14 @@ public class Buffers {
   }
 
   public static float getCoord(Buffer msg_read) {
-      return Buffer.getShort(msg_read) * (1.0f / 8);
+      return msg_read.getShort() * (1.0f / 8);
   }
 
   public static void getPos(Buffer msg_read, float pos[]) {
       assert (pos.length == 3) : "vec3_t bug";
-      pos[0] = Buffer.getShort(msg_read) * (1.0f / 8);
-      pos[1] = Buffer.getShort(msg_read) * (1.0f / 8);
-      pos[2] = Buffer.getShort(msg_read) * (1.0f / 8);
+      pos[0] = msg_read.getShort() * (1.0f / 8);
+      pos[1] = msg_read.getShort() * (1.0f / 8);
+      pos[2] = msg_read.getShort() * (1.0f / 8);
   }
 
   public static float getAngle(Buffer msg_read) {
@@ -84,11 +84,11 @@ public class Buffers {
   }
 
   public static float ReadAngle16(Buffer msg_read) {
-      return Math3D.SHORT2ANGLE(Buffer.getShort(msg_read));
+      return Math3D.SHORT2ANGLE(msg_read.getShort());
   }
 
   public static void WriteAngle16(Buffer sb, float f) {
-      Buffer.WriteShort(sb, Math3D.ANGLE2SHORT(f));
+      sb.WriteShort(Math3D.ANGLE2SHORT(f));
   }
 
   public static void ReadData(Buffer msg_read, byte data[], int len) {
@@ -103,13 +103,13 @@ public class Buffers {
 
   public static void WritePos(Buffer sb, float[] pos) {
       assert (pos.length == 3) : "vec3_t bug";
-      Buffer.WriteShort(sb, (int) (pos[0] * 8));
-      Buffer.WriteShort(sb, (int) (pos[1] * 8));
-      Buffer.WriteShort(sb, (int) (pos[2] * 8));
+      sb.WriteShort((int) (pos[0] * 8));
+      sb.WriteShort((int) (pos[1] * 8));
+      sb.WriteShort((int) (pos[2] * 8));
   }
 
   public static void WriteCoord(Buffer sb, float f) {
-      Buffer.WriteShort(sb, (int) (f * 8));
+      sb.WriteShort((int) (f * 8));
   }
 
   public static void WriteAngle(Buffer sb, float f) {

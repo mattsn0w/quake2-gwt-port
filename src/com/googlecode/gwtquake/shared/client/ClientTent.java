@@ -449,7 +449,7 @@ public class ClientTent {
         beam_t[] b;
         int i;
 
-        ent = Buffer.getShort(Globals.net_message);
+        ent = Globals.net_message.getShort();
 
         Buffers.getPos(Globals.net_message, start);
         Buffers.getPos(Globals.net_message, end);
@@ -495,7 +495,7 @@ public class ClientTent {
         beam_t[] b;
         int i;
 
-        ent = Buffer.getShort(Globals.net_message);
+        ent = Globals.net_message.getShort();
 
         Buffers.getPos(Globals.net_message, start);
         Buffers.getPos(Globals.net_message, end);
@@ -546,7 +546,7 @@ public class ClientTent {
         beam_t[] b;
         int i;
 
-        ent = Buffer.getShort(Globals.net_message);
+        ent = Globals.net_message.getShort();
 
         Buffers.getPos(Globals.net_message, start);
         Buffers.getPos(Globals.net_message, end);
@@ -608,8 +608,8 @@ public class ClientTent {
         beam_t[] b;
         int i;
 
-        srcEnt = Buffer.getShort(Globals.net_message);
-        destEnt = Buffer.getShort(Globals.net_message);
+        srcEnt = Globals.net_message.getShort();
+        destEnt = Globals.net_message.getShort();
 
         Buffers.getPos(Globals.net_message, start);
         Buffers.getPos(Globals.net_message, end);
@@ -691,7 +691,7 @@ public class ClientTent {
         ClientSustain[] s;
         ClientSustain free_sustain;
 
-        id = Buffer.getShort(Globals.net_message); // an id of -1 is an instant
+        id = Globals.net_message.getShort(); // an id of -1 is an instant
                                                  // effect
         if (id != -1) // sustains
         {
@@ -711,9 +711,9 @@ public class ClientTent {
                 ClientTent.ReadDir(Globals.net_message, s[i].dir);
                 r = Buffers.readUnsignedByte(Globals.net_message);
                 s[i].color = r & 0xff;
-                s[i].magnitude = Buffer.getShort(Globals.net_message);
+                s[i].magnitude = Globals.net_message.getShort();
                 s[i].endtime = Globals.cl.time
-                        + Buffer.getLong(Globals.net_message);
+                        + Globals.net_message.getInt();
                 s[i].think = new ClientSustain.ThinkAdapter() {
                     void think(ClientSustain self) {
                         ClientNewFx.ParticleSteamEffect2(self);
@@ -728,8 +728,8 @@ public class ClientTent {
                 Buffers.getPos(Globals.net_message, pos);
                 ClientTent.ReadDir(Globals.net_message, dir);
                 r = Buffers.readUnsignedByte(Globals.net_message);
-                magnitude = Buffer.getShort(Globals.net_message);
-                magnitude = Buffer.getLong(Globals.net_message); // really
+                magnitude = Globals.net_message.getShort();
+                magnitude = Globals.net_message.getInt(); // really
                                                                // interval
             }
         } else // instant
@@ -738,7 +738,7 @@ public class ClientTent {
             Buffers.getPos(Globals.net_message, pos);
             ClientTent.ReadDir(Globals.net_message, dir);
             r = Buffers.readUnsignedByte(Globals.net_message);
-            magnitude = Buffer.getShort(Globals.net_message);
+            magnitude = Globals.net_message.getShort();
             color = r & 0xff;
             ClientNewFx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
             //			S_StartSound (pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
@@ -752,7 +752,7 @@ public class ClientTent {
         ClientSustain[] s;
         ClientSustain free_sustain;
 
-        id = Buffer.getShort(Globals.net_message);
+        id = Globals.net_message.getShort();
 
         free_sustain = null;
         s = cl_sustains;
@@ -1234,7 +1234,7 @@ public class ClientTent {
 
         case Constants.TE_FLASHLIGHT:
             Buffers.getPos(Globals.net_message, pos);
-            ent = Buffer.getShort(Globals.net_message);
+            ent = Globals.net_message.getShort();
             ClientNewFx.flashlight(ent, pos);
             break;
 

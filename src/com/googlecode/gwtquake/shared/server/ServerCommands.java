@@ -972,19 +972,19 @@ public class ServerCommands {
 		//
 		// send the serverdata
 		Buffers.writeByte(buf, Constants.svc_serverdata);
-		Buffer.putInt(buf, Constants.PROTOCOL_VERSION);
-		Buffer.putInt(buf, ServerInit.svs.spawncount);
+		buf.putInt(Constants.PROTOCOL_VERSION);
+		buf.putInt(ServerInit.svs.spawncount);
 		// 2 means server demo
 		Buffers.writeByte(buf, 2); // demos are always attract loops
 		Buffers.WriteString(buf, ConsoleVariables.VariableString("gamedir"));
-		Buffer.WriteShort(buf, -1);
+		buf.WriteShort(-1);
 		// send full levelname
 		Buffers.WriteString(buf, ServerInit.sv.configstrings[Constants.CS_NAME]);
 
 		for (i = 0; i < Constants.MAX_CONFIGSTRINGS; i++)
 			if (ServerInit.sv.configstrings[i].length() == 0) {
 				Buffers.writeByte(buf, Constants.svc_configstring);
-				Buffer.WriteShort(buf, i);
+				buf.WriteShort(i);
 				Buffers.WriteString(buf, ServerInit.sv.configstrings[i]);
 			}
 

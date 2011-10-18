@@ -107,8 +107,129 @@ public class Model implements Cloneable {
 
 	// or whatever
 	public Object extradata;
-	
-	public void clear() {
+
+    /**
+	 * GL_BeginBuildingLightmaps
+	 */
+    void GL_BeginBuildingLightmaps()
+	{
+		GlState.gl.log("BeginBuildingLightmaps!");
+
+		// static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
+
+		// init lightstyles
+		if ( Surfaces.lightstyles == null ) {
+			Surfaces.lightstyles = new Lightstyle[Constants.MAX_LIGHTSTYLES];
+			for (int i = 0; i < Surfaces.lightstyles.length; i++)
+			{
+				Surfaces.lightstyles[i] = new Lightstyle();
+			}
+		}
+
+		// memset( gl_lms.allocated, 0, sizeof(gl_lms.allocated) );
+		Arrays.fill(Surfaces.gl_lms.allocated, 0);
+
+		GlState.r_framecount = 1;		// no dlightcache
+
+		Images.GL_EnableMultitexture( true );
+		Images.GL_SelectTexture( Gl1Context.GL_TEXTURE1);
+
+		/*
+		** setup the base lightstyles so the lightmaps won't have to be regenerated
+		** the first time they're seen
+		*/
+		for (int i=0 ; i < Constants.MAX_LIGHTSTYLES ; i++)
+		{
+			Surfaces.lightstyles[i].rgb[0] = 1;
+			Surfaces.lightstyles[i].rgb[1] = 1;
+			Surfaces.lightstyles[i].rgb[2] = 1;
+			Surfaces.lightstyles[i].white = 3;
+		}
+		GlState.r_newrefdef.lightstyles = Surfaces.lightstyles;
+
+		if (GlState.lightmap_textures == 0)
+		{
+			GlState.lightmap_textures = GlConstants.TEXNUM_LIGHTMAPS;
+		}
+
+		Surfaces.gl_lms.current_lightmap_texture = 1;
+
+		/*
+		** if mono lightmaps are enabled and we want to use alpha
+		** blending (a,1-a) then we're likely running on a 3DLabs
+		** Permedia2.  In a perfect world we'd use a GL_ALPHA lightmap
+		** in order to conserve space and maximize bandwidth, however
+		** this isn't a perfect world.
+		**
+		** So we have to use alpha lightmaps, but stored in GL_RGBA format,
+		** which means we only get 1/16th the color resolution we should when
+		** using alpha lightmaps.  If we find another board that supports
+		** only alpha lightmaps but that can at least support the GL_ALPHA
+		** format then we should change this code to use real alpha maps.
+		*/
+
+		char format = GlConfig.gl_monolightmap.string.toUpperCase().charAt(0);
+
+		if ( format == 'A' )
+		{
+			Surfaces.gl_lms.internal_format = Images.gl_tex_alpha_format;
+		}
+		/*
+		** try to do hacked colored lighting with a blended texture
+		*/
+		else if ( format == 'C' )
+		{
+			Surfaces.gl_lms.internal_format = Images.gl_tex_alpha_format;
+		}
+		else if ( format == 'I' )
+		{
+			GlState.gl.log("INTENSITY");
+			Surfaces.gl_lms.internal_format = 1;
+		}
+		else if ( format == 'L' )
+		{
+			GlState.gl.log("LUMINANCE");
+			Surfaces.gl_lms.internal_format = Gl1Context.GL_LUMINANCE;
+		}
+		else
+		{
+			Surfaces.gl_lms.internal_format = Images.gl_tex_solid_format;
+		}
+
+		if (Surfaces.dummy == null) {
+			Surfaces.dummy = Lib.newIntBuffer(128*128);
+			for (int p = 0; p < 128 * 128; p++) {
+				Surfaces.dummy.put(p, 0x0ffffffff);
+			}
+		}
+
+		/*
+		** initialize the dynamic lightmap texture
+		*/
+		Images.GL_Bind( GlConfig.gl_state.lightmap_textures + 0 );
+		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, Gl1Context.GL_LINEAR);
+		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, Gl1Context.GL_LINEAR);
+		GlState.gl.glTexImage2D( Gl1Context.GL_TEXTURE_2D,
+					   0,
+					   Surfaces.GL_LIGHTMAP_FORMAT,
+					   Surfaces.BLOCK_WIDTH, Surfaces.BLOCK_HEIGHT,
+					   0,
+					   Surfaces.GL_LIGHTMAP_FORMAT,
+					   Gl1Context.GL_UNSIGNED_BYTE,
+					   Surfaces.dummy );
+	}
+
+    /*
+================
+Mod_Free
+================
+*/
+    void Mod_Free()
+{
+      clear();
+}
+
+    public void clear() {
 		name = "";
 		registration_sequence = 0;
 
@@ -239,124 +360,4 @@ public class Model implements Cloneable {
 	  return clone;
 	}
 
-	/*
-  ================
-  Mod_Free
-  ================
-  */
-  static void Mod_Free (Model mod)
-  {
-  	mod.clear();
-  }
-
-  /**
-	 * GL_BeginBuildingLightmaps
-	 */
-	static void GL_BeginBuildingLightmaps(Model m)
-	{
-		GlState.gl.log("BeginBuildingLightmaps!");
-		
-		// static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
-	
-		// init lightstyles
-		if ( Surfaces.lightstyles == null ) {
-			Surfaces.lightstyles = new Lightstyle[Constants.MAX_LIGHTSTYLES];
-			for (int i = 0; i < Surfaces.lightstyles.length; i++)
-			{
-				Surfaces.lightstyles[i] = new Lightstyle();				
-			}
-		}
-	
-		// memset( gl_lms.allocated, 0, sizeof(gl_lms.allocated) );
-		Arrays.fill(Surfaces.gl_lms.allocated, 0);
-	
-		GlState.r_framecount = 1;		// no dlightcache
-	
-		Images.GL_EnableMultitexture( true );
-		Images.GL_SelectTexture( Gl1Context.GL_TEXTURE1);
-	
-		/*
-		** setup the base lightstyles so the lightmaps won't have to be regenerated
-		** the first time they're seen
-		*/
-		for (int i=0 ; i < Constants.MAX_LIGHTSTYLES ; i++)
-		{
-			Surfaces.lightstyles[i].rgb[0] = 1;
-			Surfaces.lightstyles[i].rgb[1] = 1;
-			Surfaces.lightstyles[i].rgb[2] = 1;
-			Surfaces.lightstyles[i].white = 3;
-		}
-		GlState.r_newrefdef.lightstyles = Surfaces.lightstyles;
-	
-		if (GlState.lightmap_textures == 0)
-		{
-			GlState.lightmap_textures = GlConstants.TEXNUM_LIGHTMAPS;
-		}
-	
-		Surfaces.gl_lms.current_lightmap_texture = 1;
-	
-		/*
-		** if mono lightmaps are enabled and we want to use alpha
-		** blending (a,1-a) then we're likely running on a 3DLabs
-		** Permedia2.  In a perfect world we'd use a GL_ALPHA lightmap
-		** in order to conserve space and maximize bandwidth, however 
-		** this isn't a perfect world.
-		**
-		** So we have to use alpha lightmaps, but stored in GL_RGBA format,
-		** which means we only get 1/16th the color resolution we should when
-		** using alpha lightmaps.  If we find another board that supports
-		** only alpha lightmaps but that can at least support the GL_ALPHA
-		** format then we should change this code to use real alpha maps.
-		*/
-		
-		char format = GlConfig.gl_monolightmap.string.toUpperCase().charAt(0);
-		
-		if ( format == 'A' )
-		{
-			Surfaces.gl_lms.internal_format = Images.gl_tex_alpha_format;
-		}
-		/*
-		** try to do hacked colored lighting with a blended texture
-		*/
-		else if ( format == 'C' )
-		{
-			Surfaces.gl_lms.internal_format = Images.gl_tex_alpha_format;
-		}
-		else if ( format == 'I' )
-		{
-			GlState.gl.log("INTENSITY");
-			Surfaces.gl_lms.internal_format = 1;
-		}
-		else if ( format == 'L' ) 
-		{
-			GlState.gl.log("LUMINANCE");
-			Surfaces.gl_lms.internal_format = Gl1Context.GL_LUMINANCE;
-		}
-		else
-		{
-			Surfaces.gl_lms.internal_format = Images.gl_tex_solid_format;
-		}
-	
-		if (Surfaces.dummy == null) {
-			Surfaces.dummy = Lib.newIntBuffer(128*128);
-			for (int p = 0; p < 128 * 128; p++) {
-				Surfaces.dummy.put(p, 0x0ffffffff);
-			}
-		}
-		
-		/*
-		** initialize the dynamic lightmap texture
-		*/
-		Images.GL_Bind( GlConfig.gl_state.lightmap_textures + 0 );
-		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MIN_FILTER, Gl1Context.GL_LINEAR);
-		GlState.gl.glTexParameterf(Gl1Context.GL_TEXTURE_2D, Gl1Context.GL_TEXTURE_MAG_FILTER, Gl1Context.GL_LINEAR);
-		GlState.gl.glTexImage2D( Gl1Context.GL_TEXTURE_2D, 
-					   0, 
-					   Surfaces.GL_LIGHTMAP_FORMAT,
-					   Surfaces.BLOCK_WIDTH, Surfaces.BLOCK_HEIGHT, 
-					   0, 
-					   Surfaces.GL_LIGHTMAP_FORMAT, 
-					   Gl1Context.GL_UNSIGNED_BYTE, 
-					   Surfaces.dummy );
-	}
 }

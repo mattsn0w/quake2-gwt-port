@@ -876,7 +876,7 @@ public abstract class Images {
     }
     static Image GL_LoadPic(String name, byte[] pic, int width, int height, int type, int bits) {
         Image image = GL_Find_free_image_t(name, type);
-        Image.setData(image, pic, width, height, bits);
+        image.setData(pic, width, height, bits);
         return image;
     }
         

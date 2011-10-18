@@ -23,7 +23,6 @@
  */
 package com.googlecode.gwtquake.shared.client;
 
-import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
@@ -260,7 +259,7 @@ public class ClientEffects {
     float volume;
     String soundname;
 
-    int i = Buffer.getShort(Globals.net_message);
+    int i = Globals.net_message.getShort();
     if (i < 1 || i >= Constants.MAX_EDICTS)
       Com.Error(Constants.ERR_DROP, "CL_ParseMuzzleFlash: bad entity");
 
@@ -513,7 +512,7 @@ public class ClientEffects {
   static void ParseMuzzleFlash2() {
     String soundname;
 
-    int ent = Buffer.getShort(Globals.net_message);
+    int ent = Globals.net_message.getShort();
     if (ent < 1 || ent >= Constants.MAX_EDICTS)
       Com.Error(Constants.ERR_DROP, "CL_ParseMuzzleFlash2: bad entity");
 
