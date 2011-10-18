@@ -24,7 +24,6 @@
 package com.googlecode.gwtquake.shared.common;
 
 import com.googlecode.gwtquake.shared.game.*;
-import com.googlecode.gwtquake.shared.util.*;
 
 
 public class Delta {
@@ -61,18 +60,18 @@ public class Delta {
         Buffers.writeByte(buf, bits);
 
         if ((bits & Constants.CM_ANGLE1) != 0)
-            Buffer.WriteShort(buf, cmd.angles[0]);
+            buf.WriteShort(cmd.angles[0]);
         if ((bits & Constants.CM_ANGLE2) != 0)
-            Buffer.WriteShort(buf, cmd.angles[1]);
+            buf.WriteShort(cmd.angles[1]);
         if ((bits & Constants.CM_ANGLE3) != 0)
-            Buffer.WriteShort(buf, cmd.angles[2]);
+            buf.WriteShort(cmd.angles[2]);
 
         if ((bits & Constants.CM_FORWARD) != 0)
-            Buffer.WriteShort(buf, cmd.forwardmove);
+            buf.WriteShort(cmd.forwardmove);
         if ((bits & Constants.CM_SIDE) != 0)
-            Buffer.WriteShort(buf, cmd.sidemove);
+            buf.WriteShort(cmd.sidemove);
         if ((bits & Constants.CM_UP) != 0)
-            Buffer.WriteShort(buf, cmd.upmove);
+            buf.WriteShort(cmd.upmove);
 
         if ((bits & Constants.CM_BUTTONS) != 0)
             Buffers.writeByte(buf, cmd.buttons);
@@ -205,7 +204,7 @@ public class Delta {
         //----------
 
         if ((bits & Constants.U_NUMBER16) != 0)
-            Buffer.WriteShort(msg, to.number);
+            msg.WriteShort(to.number);
         else
             Buffers.writeByte(msg, to.number);
 
@@ -221,29 +220,29 @@ public class Delta {
         if ((bits & Constants.U_FRAME8) != 0)
             Buffers.writeByte(msg, to.frame);
         if ((bits & Constants.U_FRAME16) != 0)
-            Buffer.WriteShort(msg, to.frame);
+            msg.WriteShort(to.frame);
 
         if ((bits & Constants.U_SKIN8) != 0 && (bits & Constants.U_SKIN16) != 0) //used for laser
                                                              // colors
-            Buffer.putInt(msg, to.skinnum);
+            msg.putInt(to.skinnum);
         else if ((bits & Constants.U_SKIN8) != 0)
             Buffers.writeByte(msg, to.skinnum);
         else if ((bits & Constants.U_SKIN16) != 0)
-            Buffer.WriteShort(msg, to.skinnum);
+            msg.WriteShort(to.skinnum);
 
         if ((bits & (Constants.U_EFFECTS8 | Constants.U_EFFECTS16)) == (Constants.U_EFFECTS8 | Constants.U_EFFECTS16))
-            Buffer.putInt(msg, to.effects);
+            msg.putInt(to.effects);
         else if ((bits & Constants.U_EFFECTS8) != 0)
             Buffers.writeByte(msg, to.effects);
         else if ((bits & Constants.U_EFFECTS16) != 0)
-            Buffer.WriteShort(msg, to.effects);
+            msg.WriteShort(to.effects);
 
         if ((bits & (Constants.U_RENDERFX8 | Constants.U_RENDERFX16)) == (Constants.U_RENDERFX8 | Constants.U_RENDERFX16))
-            Buffer.putInt(msg, to.renderfx);
+            msg.putInt(to.renderfx);
         else if ((bits & Constants.U_RENDERFX8) != 0)
             Buffers.writeByte(msg, to.renderfx);
         else if ((bits & Constants.U_RENDERFX16) != 0)
-            Buffer.WriteShort(msg, to.renderfx);
+            msg.WriteShort(to.renderfx);
 
         if ((bits & Constants.U_ORIGIN1) != 0)
             Buffers.WriteCoord(msg, to.origin[0]);
@@ -270,7 +269,7 @@ public class Delta {
         if ((bits & Constants.U_EVENT) != 0)
             Buffers.writeByte(msg, to.event);
         if ((bits & Constants.U_SOLID) != 0)
-            Buffer.WriteShort(msg, to.solid);
+            msg.WriteShort(to.solid);
     }
 
     //============================================================
@@ -290,19 +289,19 @@ public class Delta {
 
         // read current angles
         if ((bits & Constants.CM_ANGLE1) != 0)
-            move.angles[0] = Buffer.getShort(msg_read);
+            move.angles[0] = msg_read.getShort();
         if ((bits & Constants.CM_ANGLE2) != 0)
-            move.angles[1] = Buffer.getShort(msg_read);
+            move.angles[1] = msg_read.getShort();
         if ((bits & Constants.CM_ANGLE3) != 0)
-            move.angles[2] = Buffer.getShort(msg_read);
+            move.angles[2] = msg_read.getShort();
 
         // read movement
         if ((bits & Constants.CM_FORWARD) != 0)
-            move.forwardmove = Buffer.getShort(msg_read);
+            move.forwardmove = msg_read.getShort();
         if ((bits & Constants.CM_SIDE) != 0)
-            move.sidemove = Buffer.getShort(msg_read);
+            move.sidemove = msg_read.getShort();
         if ((bits & Constants.CM_UP) != 0)
-            move.upmove = Buffer.getShort(msg_read);
+            move.upmove = msg_read.getShort();
 
         // read buttons
         if ((bits & Constants.CM_BUTTONS) != 0)

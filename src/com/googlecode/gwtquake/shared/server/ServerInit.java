@@ -66,7 +66,7 @@ public class ServerInit {
             // send the update to everyone
             sv.multicast.clear();
             Buffers.writeByte(sv.multicast, Constants.svc_configstring);
-            Buffer.WriteShort(sv.multicast, start + i);
+            sv.multicast.WriteShort(start + i);
             Buffers.WriteString(sv.multicast, name);
             ServerSend.SV_Multicast(Globals.vec3_origin, Constants.MULTICAST_ALL_R);
         }

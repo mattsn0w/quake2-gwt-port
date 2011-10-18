@@ -614,7 +614,7 @@ public class Models  {
 	    
 	    GlState.currentmodel = loadmodel;
 	    
-	    Model.GL_BeginBuildingLightmaps(loadmodel);
+	    loadmodel.GL_BeginBuildingLightmaps();
 	    
 	    QuakeFiles.dface_t in;
 	    Surface out;
@@ -641,7 +641,7 @@ public class Models  {
 	        
 	        out.texinfo = loadmodel.texinfo[ti];
 	        
-	        Surface.CalcSurfaceExtents(out);
+	        out.CalcSurfaceExtents();
 	        
 	        // lighting info
 	        
@@ -667,7 +667,7 @@ public class Models  {
 	                out.extents[i] = 16384;
 	                out.texturemins[i] = -8192;
 	            }
-	           Surface.GL_SubdivideSurface(out); // cut up polygon for warps
+	           out.GL_SubdivideSurface(); // cut up polygon for warps
 	        }
 	        
 	        // create lightmaps and polygons
@@ -1145,7 +1145,7 @@ public class Models  {
 		// this guarantees that mod_known[0] is the world map
 		flushmap = ConsoleVariables.Get("flushmap", "0", 0);
 		if ((world_model != null) && !world_model.name.equals(fullname) || flushmap.value != 0.0f) {
-			Model.Mod_Free(world_model);
+			world_model.Mod_Free();
 			
 			Com.Println("setting world_model to null");
 			world_model = null;
@@ -1248,7 +1248,7 @@ public class Models  {
         continue;
       if (mod.registration_sequence != GlState.registration_sequence)
       { // don't need this model
-        Model.Mod_Free(mod);
+        mod.Mod_Free();
       } else {
         // precompile AliasModels
         if (mod.type == GlConstants.mod_alias)
@@ -1277,7 +1277,7 @@ public class Models  {
     for (String name : modelReqs.keySet()) {
       ModelRequest req = modelReqs.get(name);
       if (req.model.extradata != null)
-        Model.Mod_Free(req.model);
+        req.model.Mod_Free();
     }
 	}
 

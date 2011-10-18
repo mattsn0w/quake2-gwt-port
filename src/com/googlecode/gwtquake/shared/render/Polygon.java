@@ -35,7 +35,28 @@ public class Polygon {
   Polygon() {
   }
 
-  final void clear() {
+    /**
+   * DrawGLPoly
+   */
+  public void draw() {
+    GlState.gl.glDrawArrays(Gl1Context._GL_POLYGON, pos, numverts);
+  }
+
+    /**
+     * DrawGLFlowingPoly version that handles scrolling texture
+     */
+    public void drawFlowing() {
+      float scroll = -64 * ((GlState.r_newrefdef.time / 40.0f) -
+          (int) (GlState.r_newrefdef.time / 40.0f));
+      if (scroll == 0.0f) {
+        scroll = -64.0f;
+      }
+      beginScrolling(scroll);
+      GlState.gl.glDrawArrays(Gl1Context._GL_POLYGON, pos, numverts);
+      endScrolling();
+    }
+
+    final void clear() {
     next = null;
     chain = null;
     numverts = 0;
@@ -113,24 +134,4 @@ public class Polygon {
     }
   }
 
-  /**
-   * DrawGLFlowingPoly version that handles scrolling texture
-   */
-  public static void drawFlowing(Polygon p) {
-    float scroll = -64 * ((GlState.r_newrefdef.time / 40.0f) - 
-        (int) (GlState.r_newrefdef.time / 40.0f));
-    if (scroll == 0.0f) {
-      scroll = -64.0f;
-    }
-    p.beginScrolling(scroll);
-    GlState.gl.glDrawArrays(Gl1Context._GL_POLYGON, p.pos, p.numverts);
-    p.endScrolling();
-  }
-
-  /**
-   * DrawGLPoly
-   */
-  public static void draw(Polygon p) {
-    GlState.gl.glDrawArrays(Gl1Context._GL_POLYGON, p.pos, p.numverts);
-  }
 }

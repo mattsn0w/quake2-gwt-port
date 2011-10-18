@@ -26,7 +26,6 @@ package com.googlecode.gwtquake.shared.server;
 
 import java.nio.ByteBuffer;
 
-import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.CommandBuffer;
@@ -171,10 +170,10 @@ public class User {
         // send the serverdata
         Buffers.writeByte(ServerMain.sv_client.netchan.message,
                         Constants.svc_serverdata);
-        Buffer.putInt(ServerMain.sv_client.netchan.message,
+        ServerMain.sv_client.netchan.message.putInt(
                 Constants.PROTOCOL_VERSION);
         
-        Buffer.putInt(ServerMain.sv_client.netchan.message, ServerInit.svs.spawncount);
+        ServerMain.sv_client.netchan.message.putInt(ServerInit.svs.spawncount);
         Buffers.writeByte(ServerMain.sv_client.netchan.message,
                 ServerInit.sv.attractloop ? 1 : 0);
         Buffers.WriteString(ServerMain.sv_client.netchan.message, gamedir);
@@ -186,7 +185,7 @@ public class User {
             //playernum = sv_client - svs.clients;
             playernum = ServerMain.sv_client.serverindex;
 
-        Buffer.WriteShort(ServerMain.sv_client.netchan.message, playernum);
+        ServerMain.sv_client.netchan.message.WriteShort(playernum);
 
         // send full levelname
         Buffers.WriteString(ServerMain.sv_client.netchan.message,
@@ -241,7 +240,7 @@ public class User {
                     && ServerInit.sv.configstrings[start].length() != 0) {
                 Buffers.writeByte(ServerMain.sv_client.netchan.message,
                         Constants.svc_configstring);
-                Buffer.WriteShort(ServerMain.sv_client.netchan.message, start);
+                ServerMain.sv_client.netchan.message.WriteShort(start);
                 Buffers.WriteString(ServerMain.sv_client.netchan.message,
                         ServerInit.sv.configstrings[start]);
             }
@@ -359,7 +358,7 @@ public class User {
             r = 1024;
 
         Buffers.writeByte(ServerMain.sv_client.netchan.message, Constants.svc_download);
-        Buffer.WriteShort(ServerMain.sv_client.netchan.message, r);
+        ServerMain.sv_client.netchan.message.WriteShort(r);
 
         ServerMain.sv_client.downloadcount += r;
         size = ServerMain.sv_client.downloadsize;
@@ -411,7 +410,7 @@ public class User {
                                               // path
             Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_download);
-            Buffer.WriteShort(ServerMain.sv_client.netchan.message, -1);
+            ServerMain.sv_client.netchan.message.WriteShort(-1);
             Buffers.writeByte(ServerMain.sv_client.netchan.message, 0);
             return;
         }
@@ -447,7 +446,7 @@ public class User {
 
             Buffers.writeByte(ServerMain.sv_client.netchan.message,
                     Constants.svc_download);
-            Buffer.WriteShort(ServerMain.sv_client.netchan.message, -1);
+            ServerMain.sv_client.netchan.message.WriteShort(-1);
             Buffers.writeByte(ServerMain.sv_client.netchan.message, 0);
             return;
         }
@@ -624,7 +623,7 @@ public class User {
                 move_issued = true;
                 checksumIndex = Globals.net_message.readcount;
                 checksum = Buffers.readUnsignedByte(Globals.net_message);
-                lastframe = Buffer.getLong(Globals.net_message);
+                lastframe = Globals.net_message.getInt();
 
                 if (lastframe != cl.lastframe) {
                     cl.lastframe = lastframe;

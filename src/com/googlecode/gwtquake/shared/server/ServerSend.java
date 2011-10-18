@@ -324,7 +324,7 @@ public class ServerSend {
 			Buffers.writeByte(ServerInit.sv.multicast, (int) (timeofs * 1000));
 
 		if ((flags & Constants.SND_ENT) != 0)
-			Buffer.WriteShort(ServerInit.sv.multicast, sendchan);
+			ServerInit.sv.multicast.WriteShort(sendchan);
 
 		if ((flags & Constants.SND_POS) != 0)
 			Buffers.WritePos(ServerInit.sv.multicast, origin);

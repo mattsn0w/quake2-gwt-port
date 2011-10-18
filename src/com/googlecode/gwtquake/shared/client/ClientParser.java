@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
-import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.CM;
 import com.googlecode.gwtquake.shared.common.Com;
@@ -207,7 +206,7 @@ public class ClientParser {
     public static void ParseDownload() {
 
         // read the data
-        int size = Buffer.getShort(Globals.net_message);
+        int size = Globals.net_message.getShort();
         int percent = Buffers.readUnsignedByte(Globals.net_message);
         if (size == -1) {
             Com.Printf("Server does not have this file.\n");
@@ -306,7 +305,7 @@ public class ClientParser {
         Globals.cls.state = Constants.ca_connected;
 
         //	   parse protocol version number
-        i = Buffer.getLong(Globals.net_message);
+        i = Globals.net_message.getInt();
         Globals.cls.serverProtocol = i;
 
         // BIG HACK to let demos from release work with the 3.0x patch!!!
@@ -315,7 +314,7 @@ public class ClientParser {
             Com.Error(Constants.ERR_DROP, "Server returned version " + i
                     + ", not " + Constants.PROTOCOL_VERSION);
 
-        Globals.cl.servercount = Buffer.getLong(Globals.net_message);
+        Globals.cl.servercount = Globals.net_message.getInt();
         Globals.cl.attractloop = Buffers.readUnsignedByte(Globals.net_message) != 0;
 
         // game directory
@@ -334,7 +333,7 @@ public class ClientParser {
 //            Cvar.Set("game", str);
 
         // parse player entity number
-        Globals.cl.playernum = Buffer.getShort(Globals.net_message);
+        Globals.cl.playernum = Globals.net_message.getShort();
         Com.dprintln("numplayers=" + Globals.cl.playernum);
         // get the full level name
         str = Buffers.getString(Globals.net_message);
@@ -536,7 +535,7 @@ public class ClientParser {
      * ================ CL_ParseConfigString ================
      */
     public static void ParseConfigString() {
-        int i = Buffer.getShort(Globals.net_message);
+        int i = Globals.net_message.getShort();
 
         if (i < 0 || i >= Constants.MAX_CONFIGSTRINGS)
             Com.Error(Constants.ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
@@ -629,7 +628,7 @@ public class ClientParser {
         int channel;
         int ent;
         if ((flags & Constants.SND_ENT) != 0) { // entity reletive
-            channel = Buffer.getShort(Globals.net_message);
+            channel = Globals.net_message.getShort();
             ent = channel >> 3;
             if (ent > Constants.MAX_EDICTS)
                 Com.Error(Constants.ERR_DROP, "CL_ParseStartSoundPacket: ent = "

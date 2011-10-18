@@ -171,9 +171,9 @@ public abstract class Surfaces {
       if ((s.flags & Constants.SURF_DRAWTURB) != 0)
         Surface.EmitWaterPolys(s);
       else if ((s.texinfo.flags & Constants.SURF_FLOWING) != 0) // PGM 9/16/98
-        Polygon.drawFlowing(s.polys); // PGM
+        s.polys.drawFlowing(); // PGM
       else
-        Polygon.draw(s.polys);
+        s.polys.draw();
     }
 
     Images.GL_TexEnv(Gl1Context.GL_REPLACE);

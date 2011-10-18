@@ -24,7 +24,6 @@
 package com.googlecode.gwtquake.shared.client;
 
 import com.googlecode.gwtquake.shared.common.AsyncCallback;
-import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Buffers;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
@@ -86,7 +85,7 @@ public class ClientEntities {
 				bitcounts[i]++;
 
 		if ((total & Constants.U_NUMBER16) != 0)
-			number = Buffer.getShort(Globals.net_message);
+			number = Globals.net_message.getShort();
 		else
 			number = Buffers.readUnsignedByte(Globals.net_message);
 
@@ -120,31 +119,31 @@ public class ClientEntities {
 		if ((bits & Constants.U_FRAME8) != 0)
 			to.frame = Buffers.readUnsignedByte(Globals.net_message);
 		if ((bits & Constants.U_FRAME16) != 0)
-			to.frame = Buffer.getShort(Globals.net_message);
+			to.frame = Globals.net_message.getShort();
 
 		if ((bits & Constants.U_SKIN8) != 0 && (bits & Constants.U_SKIN16) != 0) //used
 																			 // for
 																			 // laser
 																			 // colors
-			to.skinnum = Buffer.getLong(Globals.net_message);
+			to.skinnum = Globals.net_message.getInt();
 		else if ((bits & Constants.U_SKIN8) != 0)
 			to.skinnum = Buffers.readUnsignedByte(Globals.net_message);
 		else if ((bits & Constants.U_SKIN16) != 0)
-			to.skinnum = Buffer.getShort(Globals.net_message);
+			to.skinnum = Globals.net_message.getShort();
 
 		if ((bits & (Constants.U_EFFECTS8 | Constants.U_EFFECTS16)) == (Constants.U_EFFECTS8 | Constants.U_EFFECTS16))
-			to.effects = Buffer.getLong(Globals.net_message);
+			to.effects = Globals.net_message.getInt();
 		else if ((bits & Constants.U_EFFECTS8) != 0)
 			to.effects = Buffers.readUnsignedByte(Globals.net_message);
 		else if ((bits & Constants.U_EFFECTS16) != 0)
-			to.effects = Buffer.getShort(Globals.net_message);
+			to.effects = Globals.net_message.getShort();
 
 		if ((bits & (Constants.U_RENDERFX8 | Constants.U_RENDERFX16)) == (Constants.U_RENDERFX8 | Constants.U_RENDERFX16))
-			to.renderfx = Buffer.getLong(Globals.net_message);
+			to.renderfx = Globals.net_message.getInt();
 		else if ((bits & Constants.U_RENDERFX8) != 0)
 			to.renderfx = Buffers.readUnsignedByte(Globals.net_message);
 		else if ((bits & Constants.U_RENDERFX16) != 0)
-			to.renderfx = Buffer.getShort(Globals.net_message);
+			to.renderfx = Globals.net_message.getShort();
 
 		if ((bits & Constants.U_ORIGIN1) != 0)
 			to.origin[0] = Buffers.getCoord(Globals.net_message);
@@ -172,7 +171,7 @@ public class ClientEntities {
 			to.event = 0;
 
 		if ((bits & Constants.U_SOLID) != 0)
-			to.solid = Buffer.getShort(Globals.net_message);
+			to.solid = Globals.net_message.getShort();
 	}
 
 	/*
@@ -371,7 +370,7 @@ public class ClientEntities {
 			//memset (state, 0, sizeof(*state));
 			state.clear();
 
-		flags = Buffer.getShort(Globals.net_message);
+		flags = Globals.net_message.getShort();
 
 		//
 		// parse the pmove_state_t
@@ -380,15 +379,15 @@ public class ClientEntities {
 			state.pmove.pm_type = Buffers.readUnsignedByte(Globals.net_message);
 
 		if ((flags & Constants.PS_M_ORIGIN) != 0) {
-			state.pmove.origin[0] = Buffer.getShort(Globals.net_message);
-			state.pmove.origin[1] = Buffer.getShort(Globals.net_message);
-			state.pmove.origin[2] = Buffer.getShort(Globals.net_message);
+			state.pmove.origin[0] = Globals.net_message.getShort();
+			state.pmove.origin[1] = Globals.net_message.getShort();
+			state.pmove.origin[2] = Globals.net_message.getShort();
 		}
 
 		if ((flags & Constants.PS_M_VELOCITY) != 0) {
-			state.pmove.velocity[0] = Buffer.getShort(Globals.net_message);
-			state.pmove.velocity[1] = Buffer.getShort(Globals.net_message);
-			state.pmove.velocity[2] = Buffer.getShort(Globals.net_message);
+			state.pmove.velocity[0] = Globals.net_message.getShort();
+			state.pmove.velocity[1] = Globals.net_message.getShort();
+			state.pmove.velocity[2] = Globals.net_message.getShort();
 		}
 
 		if ((flags & Constants.PS_M_TIME) != 0) {
@@ -399,12 +398,12 @@ public class ClientEntities {
 			state.pmove.pm_flags = (byte) Buffers.readUnsignedByte(Globals.net_message);
 
 		if ((flags & Constants.PS_M_GRAVITY) != 0)
-			state.pmove.gravity = Buffer.getShort(Globals.net_message);
+			state.pmove.gravity = Globals.net_message.getShort();
 
 		if ((flags & Constants.PS_M_DELTA_ANGLES) != 0) {
-			state.pmove.delta_angles[0] = Buffer.getShort(Globals.net_message);
-			state.pmove.delta_angles[1] = Buffer.getShort(Globals.net_message);
-			state.pmove.delta_angles[2] = Buffer.getShort(Globals.net_message);
+			state.pmove.delta_angles[0] = Globals.net_message.getShort();
+			state.pmove.delta_angles[1] = Globals.net_message.getShort();
+			state.pmove.delta_angles[2] = Globals.net_message.getShort();
 		}
 
 		if (Globals.cl.attractloop)
@@ -461,10 +460,10 @@ public class ClientEntities {
 			state.rdflags = Buffers.readUnsignedByte(Globals.net_message);
 
 		// parse stats
-		statbits = Buffer.getLong(Globals.net_message);
+		statbits = Globals.net_message.getInt();
 		for (i = 0; i < Constants.MAX_STATS; i++)
 			if ((statbits & (1 << i)) != 0)
-				state.stats[i] = Buffer.getShort(Globals.net_message);
+				state.stats[i] = Globals.net_message.getShort();
 	}
 
 	/*
@@ -499,8 +498,8 @@ public class ClientEntities {
 		//memset( cl.frame, 0, sizeof(cl.frame));
 		Globals.cl.frame.reset();
 
-		Globals.cl.frame.serverframe = Buffer.getLong(Globals.net_message);
-		Globals.cl.frame.deltaframe = Buffer.getLong(Globals.net_message);
+		Globals.cl.frame.serverframe = Globals.net_message.getInt();
+		Globals.cl.frame.deltaframe = Globals.net_message.getInt();
 		Globals.cl.frame.servertime = Globals.cl.frame.serverframe * 100;
 
 		// BIG HACK to let old demos continue to work

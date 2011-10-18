@@ -714,9 +714,9 @@ public class ClientInput {
 		// let the server know what the last frame we
 		// got was, so the next message can be delta compressed
 		if (cl_nodelta.value != 0.0f || !Globals.cl.frame.valid || Globals.cls.demowaiting)
-      Buffer.putInt(buf, -1);
+      buf.putInt(-1);
     else
-      Buffer.putInt(buf, Globals.cl.frame.serverframe);
+      buf.putInt(Globals.cl.frame.serverframe);
 
 		// send this and the previous cmds in the message, so
 		// if the last packet was dropped, it can be recovered

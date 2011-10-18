@@ -48,8 +48,33 @@ public class Image {
 	public Image(int id) {
 		this.id = id;
 	}
-	
-	public void clear() {
+
+    public void setData(byte[] pic, int width, int height, int bits) {
+        width = width;
+        height = height;
+        complete = true;
+
+        int i;
+
+        if (type == QuakeImage.it_skin && bits == 8) {
+            Images.R_FloodFillSkin(pic, width, height);
+        }
+
+        //image.texnum = TEXNUM_IMAGES + image.getId(); //image pos in array
+        Images.GL_Bind(texnum);
+
+        if (bits == 8) {
+            has_alpha = Images.GL_Upload8(pic, width, height, (type != QuakeImage.it_pic && type != QuakeImage.it_sky), type == QuakeImage.it_sky);
+        }
+        else {
+            int[] tmp = QuakeImage.bytesToIntsAbgr(pic);
+            has_alpha = Images.GL_Upload32(tmp, width, height, (type != QuakeImage.it_pic && type != QuakeImage.it_sky));
+        }
+        upload_width = Images.upload_width; // after power of 2 and scales
+        upload_height = Images.upload_height;
+    }
+
+    public void clear() {
 		// don't clear the id
 		// wichtig !!!
 		name = "";
@@ -73,28 +98,4 @@ public class Image {
 		return name + ":" + texnum;
 	}
 
-	public static void setData(Image image, byte[] pic, int width, int height, int bits) {   
-	    image.width = width;
-	    image.height = height;
-	    image.complete = true;
-	    
-	    int i;
-	
-	    if (image.type == QuakeImage.it_skin && bits == 8) {
-	        Images.R_FloodFillSkin(pic, width, height);
-	    } 
-	
-	    //image.texnum = TEXNUM_IMAGES + image.getId(); //image pos in array
-	    Images.GL_Bind(image.texnum);
-	
-	    if (bits == 8) {
-	        image.has_alpha = Images.GL_Upload8(pic, width, height, (image.type != QuakeImage.it_pic && image.type != QuakeImage.it_sky), image.type == QuakeImage.it_sky);
-	    }
-	    else {
-	        int[] tmp = QuakeImage.bytesToIntsAbgr(pic);
-	        image.has_alpha = Images.GL_Upload32(tmp, width, height, (image.type != QuakeImage.it_pic && image.type != QuakeImage.it_sky));
-	    }
-	    image.upload_width = Images.upload_width; // after power of 2 and scales
-	    image.upload_height = Images.upload_height;
-	}
 }

@@ -171,11 +171,11 @@ public final class Client {
 
         // send the serverdata
         Buffers.writeByte(buf, Constants.svc_serverdata);
-        Buffer.putInt(buf, Constants.PROTOCOL_VERSION);
-        Buffer.putInt(buf, 0x10000 + Globals.cl.servercount);
+        buf.putInt(Constants.PROTOCOL_VERSION);
+        buf.putInt(0x10000 + Globals.cl.servercount);
         Buffers.writeByte(buf, 1); // demos are always attract loops
         Buffers.WriteString(buf, Globals.cl.gamedir);
-        Buffer.WriteShort(buf, Globals.cl.playernum);
+        buf.WriteShort(Globals.cl.playernum);
 
         Buffers.WriteString(buf, Globals.cl.configstrings[Constants.CS_NAME]);
 
@@ -192,7 +192,7 @@ public final class Client {
             }
 
             Buffers.writeByte(buf, Constants.svc_configstring);
-            Buffer.WriteShort(buf, i);
+            buf.WriteShort(i);
             Buffers.WriteString(buf, Globals.cl.configstrings[i]);
           }
 
@@ -754,8 +754,8 @@ public final class Client {
     String s;
     String c;
 
-    Buffer.reset(Globals.net_message);
-    Buffer.getLong(Globals.net_message); // skip the -1
+    Globals.net_message.reset();
+    Globals.net_message.getInt(); // skip the -1
 
     s = Buffers.getLine(Globals.net_message);
 

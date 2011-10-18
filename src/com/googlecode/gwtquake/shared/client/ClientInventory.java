@@ -23,7 +23,6 @@
 */
 package com.googlecode.gwtquake.shared.client;
 
-import com.googlecode.gwtquake.shared.common.Buffer;
 import com.googlecode.gwtquake.shared.common.Com;
 import com.googlecode.gwtquake.shared.common.Constants;
 import com.googlecode.gwtquake.shared.common.Globals;
@@ -43,7 +42,7 @@ public class ClientInventory {
 		int i;
 
 		for (i = 0; i < Constants.MAX_ITEMS; i++)
-			Globals.cl.inventory[i] = Buffer.getShort(Globals.net_message);
+			Globals.cl.inventory[i] = Globals.net_message.getShort();
 	}
 
 	/*

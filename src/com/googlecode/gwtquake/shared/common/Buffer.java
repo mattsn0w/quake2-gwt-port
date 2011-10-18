@@ -43,8 +43,69 @@ public final class Buffer {
 	public static Buffer allocate(int size) {
 	  return wrap(new byte[size]);
 	}
-	
-	public void clear()
+
+    public void WriteShort(int c) {
+	    int i = GetSpace(this, 2);
+	    data[i++] = (byte) (c & 0xff);
+	    data[i] = (byte) ((c >>> 8) & 0xFF);
+	}
+
+    //ok.
+	public void putInt(int c) {
+	    int i = GetSpace(this, 4);
+	    data[i++] = (byte) ((c & 0xff));
+	    data[i++] = (byte) ((c >>> 8) & 0xff);
+	    data[i++] = (byte) ((c >>> 16) & 0xff);
+	    data[i++] = (byte) ((c >>> 24) & 0xff);
+	}
+
+    //ok.
+	public void putFloat(float f) {
+	    this.putInt(Compatibility.floatToIntBits(f));
+	}
+
+    public float getFloat() {
+	    int n = getInt();
+	    return Compatibility.intBitsToFloat(n);
+	}
+
+    public int getInt() {
+	    int c;
+
+	    if (readcount + 4 > cursize) {
+	        Com.Printf("buffer underrun in ReadLong!");
+	        c = -1;
+	    }
+
+	    else
+	        c = (data[readcount] & 0xff)
+	                | ((data[readcount + 1] & 0xff) << 8)
+	                | ((data[readcount + 2] & 0xff) << 16)
+	                | ((data[readcount + 3] & 0xff) << 24);
+
+	    readcount += 4;
+
+	    return c;
+	}
+
+    public short getShort() {
+	    int c;
+
+	    if (readcount + 2 > cursize)
+	        c = -1;
+	    else
+	        c = (short) ((data[readcount] & 0xff) + (data[readcount + 1] << 8));
+
+	    readcount += 2;
+
+	    return (short) c;
+	}
+
+    public void reset() {
+        readcount = 0;
+    }
+
+    public void clear()
 	{
 		if (data!=null) {
 			Arrays.fill(data,(byte)0);
@@ -54,68 +115,7 @@ public final class Buffer {
 		
 	}
 
-	public static void reset(Buffer msg) {
-	    msg.readcount = 0;
-	}
-
-	public static short getShort(Buffer msg_read) {
-	    int c;
-	
-	    if (msg_read.readcount + 2 > msg_read.cursize)
-	        c = -1;
-	    else
-	        c = (short) ((msg_read.data[msg_read.readcount] & 0xff) + (msg_read.data[msg_read.readcount + 1] << 8));
-	
-	    msg_read.readcount += 2;
-	
-	    return (short) c;
-	}
-
-	public static int getLong(Buffer msg_read) {
-	    int c;
-	
-	    if (msg_read.readcount + 4 > msg_read.cursize) {
-	        Com.Printf("buffer underrun in ReadLong!");
-	        c = -1;
-	    }
-	
-	    else
-	        c = (msg_read.data[msg_read.readcount] & 0xff)
-	                | ((msg_read.data[msg_read.readcount + 1] & 0xff) << 8)
-	                | ((msg_read.data[msg_read.readcount + 2] & 0xff) << 16)
-	                | ((msg_read.data[msg_read.readcount + 3] & 0xff) << 24);
-	
-	    msg_read.readcount += 4;
-	
-	    return c;
-	}
-
-	public static float getFloat(Buffer msg_read) {
-	    int n = Buffer.getLong(msg_read);
-	    return Compatibility.intBitsToFloat(n);
-	}
-
-	//ok.
-	public static void putFloat(Buffer sb, float f) {
-	    putInt(sb, Compatibility.floatToIntBits(f));
-	}
-
-	//ok.
-	public static void putInt(Buffer sb, int c) {
-	    int i = GetSpace(sb, 4);
-	    sb.data[i++] = (byte) ((c & 0xff));
-	    sb.data[i++] = (byte) ((c >>> 8) & 0xff);
-	    sb.data[i++] = (byte) ((c >>> 16) & 0xff);
-	    sb.data[i++] = (byte) ((c >>> 24) & 0xff);
-	}
-
-	public static void WriteShort(Buffer sb, int c) {
-	    int i = GetSpace(sb, 2);
-	    sb.data[i++] = (byte) (c & 0xff);
-	    sb.data[i] = (byte) ((c >>> 8) & 0xFF);
-	}
-
-	/** Ask for the pointer using sizebuf_t.cursize (RST) */
+    /** Ask for the pointer using sizebuf_t.cursize (RST) */
 	static int GetSpace(Buffer buf, int length) {
 		int oldsize;
 	
